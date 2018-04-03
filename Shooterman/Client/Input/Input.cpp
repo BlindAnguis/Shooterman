@@ -5,11 +5,11 @@
 #include <iostream>
 
 Input::Input(MessageHandler* messageHandler) :
-m_messageHandler(messageHandler)
+  m_messageHandler(messageHandler)
 {
-  std::cout << "Starting input module..." << std::endl;
+  std::cout << "Starting Input module..." << std::endl;
   m_inputThread = new std::thread(&Input::readInput, this);
-  std::cout << "Starting input module done" << std::endl;
+  std::cout << "Starting Input module done" << std::endl;
 }
 
 void Input::readInput() {
@@ -40,8 +40,8 @@ void Input::readInput() {
 }
 
 void Input::shutDown() {
-  std::cout << "Shutdown of input module requested..." << std::endl;
+  std::cout << "Shutdown of Input module requested..." << std::endl;
   m_running = false;
   m_inputThread->join();
-  std::cout << "Shutdown of input module done" << std::endl;
+  std::cout << "Shutdown of Input module done" << std::endl;
 }
