@@ -15,6 +15,9 @@ void MessageHandler::publishInputMessage(sf::Packet message) {
 sf::Packet MessageHandler::readInputMessage() {
   sf::Packet message;
   message << -1;
+
+  //std::cout << "Queue size: " << m_inputQueue.size() << std::endl;
+
   m_inputQueueMutex.lock();
   if (!m_inputQueue.empty()) {
     message = m_inputQueue.front();

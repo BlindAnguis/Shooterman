@@ -14,13 +14,13 @@ GameLoop::GameLoop() {
 void GameLoop::start() {
   std::cout << "Start Server" << std::endl;
   mGameLoopThread = new std::thread(&GameLoop::gameLoop, this);
-  std::cout << "Server finished" << std::endl;
 }
 
 void GameLoop::stop() {
   std::cout << "Exit server" << std::endl;
   mRunning = false;
   mGameLoopThread->join();
+  std::cout << "Server finished" << std::endl;
 }
 
 void GameLoop::gameLoop() {
@@ -31,21 +31,28 @@ void GameLoop::gameLoop() {
   while (mRunning) {
     sf::Packet inputMessage = mMessageHandler->readInputMessage();
     int input;
+    int messageId;
+    inputMessage >> messageId;
+
+    std::cout << "Message id: " << messageId << std::endl;
+
     inputMessage >> input;
+
+    std::cout << "input: " << input << std::endl;
 
     switch (state) {
     case GameLoopState::LOBBY:
       std::cout << "In the lobby" << std::endl;
-      
+
       if (input == A_KEY) {
         state = GameLoopState::SETUP_GAME;
       }
       break;
 
     case GameLoopState::SETUP_GAME:
-      std::cout << "Setting up the game" << std::endl;
+      //std::cout << "Setting up the game" << std::endl;
       state = GameLoopState::PLAYING;
-      std::cout << "Game setup finished" << std::endl;
+      //std::cout << "Game setup finished" << std::endl;
       break;
 
     case GameLoopState::PLAYING:
@@ -56,19 +63,21 @@ void GameLoop::gameLoop() {
       break;
 
     case GameLoopState::GAME_OVER:
-      std::cout << "Enter the game over screen" << std::endl;
+      //std::cout << "Enter the game over screen" << std::endl;
       state = GameLoopState::EXIT;
-      std::cout << "Exit the game over screen" << std::endl;
+      //std::cout << "Exit the game over screen" << std::endl;
       break;
 
     case GameLoopState::EXIT:
-      std::cout << "The game should exit" << std::endl;
+      //std::cout << "The game should exit" << std::endl;
       //stop();
-      std::cout << "Exiting the game" << std::endl;
+      //std::cout << "Exiting the game" << std::endl;
       break;
 
     default:
       std::cout << "This state doesn't exist" << std::endl;
     }
-  }
+
+    sf::sleep(sf::milliseconds(20));
+  }  
 }
