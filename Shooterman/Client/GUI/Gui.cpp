@@ -2,8 +2,7 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 
-Gui::Gui(MessageHandler* messageHandler) :
-  m_messageHandler(messageHandler) {
+Gui::Gui() {
   std::cout << "Starting GUI module..." << std::endl;
   m_guiThread = new std::thread(&Gui::render, this);
   std::cout << "Starting GUI module done" << std::endl;
@@ -15,7 +14,7 @@ void Gui::render()  {
   m_window->setFramerateLimit(60);
 
   while (m_window->isOpen()) {
-    sf::Packet p = m_messageHandler->readGraphicsMessage();
+    //sf::Packet p = m_messageHandler->readGraphicsMessage();
 
     sf::CircleShape shape(50.f);
     shape.setPosition(200, 200);

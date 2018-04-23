@@ -2,14 +2,37 @@
 
 #include <iostream>
 
-MessageHandler::MessageHandler() {
-  std::cout << "Message handler started" << std::endl;
+void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
+  std::cout << "[MESSAGEHANDLER] New subscriber added to system list" << std::endl;
+  m_systemSubscriberList.push_back(newSubscriber);
 }
 
-void MessageHandler::publishInputMessage(sf::Packet message) {
-  m_inputQueueMutex.lock();
-  m_inputQueue.push(message);
-  m_inputQueueMutex.unlock();
+void MessageHandler::pushSystemMessage(sf::Packet message) {
+  for (Subscriber* subscriber : m_systemSubscriberList) {
+    subscriber->sendMessage(message);
+  }
+}
+
+void MessageHandler::subscribeToInputMessages(Subscriber* newSubscriber) {
+  std::cout << "[MESSAGEHANDLER] New subscriber added to input list" << std::endl;
+  m_inputSubscriberList.push_back(newSubscriber);
+}
+
+void MessageHandler::pushInputMessage(sf::Packet message) {
+  for (Subscriber* subscriber : m_inputSubscriberList) {
+    subscriber->sendMessage(message);
+  }
+}
+
+void MessageHandler::subscribeToSpriteListMessages(Subscriber* newSubscriber) {
+  std::cout << "[MESSAGEHANDLER] New subscriber added to sprite list list" << std::endl;
+  m_spriteListSubscriberList.push_back(newSubscriber);
+}
+
+void MessageHandler::pushSpriteListMessage(sf::Packet message) {
+  for (Subscriber* subscriber : m_spriteListSubscriberList) {
+    subscriber->sendMessage(message);
+  }
 }
 
 sf::Packet MessageHandler::readInputMessage() {
@@ -25,12 +48,6 @@ sf::Packet MessageHandler::readInputMessage() {
   }
   m_inputQueueMutex.unlock();
   return message;
-}
-
-void MessageHandler::publishGraphicsMessage(sf::Packet message) {
-  m_graphicsQueueMutex.lock();
-  m_graphicsQueue.push(message);
-  m_graphicsQueueMutex.unlock();
 }
 
 sf::Packet MessageHandler::readGraphicsMessage() {

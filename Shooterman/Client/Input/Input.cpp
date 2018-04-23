@@ -4,8 +4,7 @@
 
 #include <iostream>
 
-Input::Input(MessageHandler* messageHandler) :
-  m_messageHandler(messageHandler)
+Input::Input()
 {
   std::cout << "Starting Input module..." << std::endl;
   m_inputThread = new std::thread(&Input::readInput, this);
@@ -33,7 +32,7 @@ void Input::readInput() {
     if (keyboardBitmask != 0) {
       sf::Packet inputKeyPacket;
       inputKeyPacket << 0 << keyboardBitmask;
-      m_messageHandler->publishInputMessage(inputKeyPacket);
+      MessageHandler::get().pushInputMessage(inputKeyPacket);
     }
     sf::sleep(sf::milliseconds(10));
   }

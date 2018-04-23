@@ -11,14 +11,13 @@
 
 class Input {
 public:
-	Input(MessageHandler* messageHandler);
+	Input();
 
   void shutDown();
 
 private:
   bool m_running = true;
   std::thread* m_inputThread;
-  MessageHandler* m_messageHandler;
 
   void readInput();
 

@@ -9,14 +9,13 @@
 
 class Gui {
 public:
-  Gui(MessageHandler* messageHandler);
+  Gui();
 
   void shutDown();
 
 private:
   bool m_running = true;
   std::thread* m_guiThread;
-  MessageHandler* m_messageHandler;
   sf::RenderWindow* m_window;
 
   void render();
