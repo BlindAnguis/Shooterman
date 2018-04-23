@@ -4,8 +4,11 @@
 #include <thread>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #include "../MessageHandler/MessageHandler.h"
+#include "Common/Subscriber.h"
+#include "Common/MessageId.h"
 
 class Gui {
 public:
@@ -14,11 +17,13 @@ public:
   void shutDown();
 
 private:
-  bool m_running = true;
   std::thread* m_guiThread;
   sf::RenderWindow* m_window;
+  Subscriber mSystemMessageSubscriber;
+  Subscriber mSpriteListSubscriber;
 
   void render();
+  void handleSystemMessages();
 
 };
 

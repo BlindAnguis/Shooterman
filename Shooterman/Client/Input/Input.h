@@ -5,7 +5,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
-#include "../../Common/KeyBindings.h"
+#include "Common/KeyBindings.h"
+#include "Common/MessageId.h"
 #include "../MessageHandler/MessageHandler.h"
 
 
@@ -16,10 +17,12 @@ public:
   void shutDown();
 
 private:
-  bool m_running = true;
-  std::thread* m_inputThread;
+  bool mRunning = true;
+  std::thread* mInputThread;
+  Subscriber mSystemMessageSubscriber;
 
   void readInput();
+  void handleSystemMessages();
 
 };
 

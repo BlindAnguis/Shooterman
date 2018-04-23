@@ -46,7 +46,7 @@ void GameLoop::gameLoop() {
     }
 
     sf::CircleShape shape(50.f);
-    float velocityX = 0;
+    float velocityX = 1;
     float velocityY = 0;
 
     switch (state) {
