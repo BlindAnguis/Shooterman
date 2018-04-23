@@ -2,7 +2,6 @@
 #include <thread>
 #include "Client/MessageHandler/MessageHandler.h"
 #include "Common/KeyBindings.h"
-#include "Common/Subscriber.h"
 
 class GameLoop {
 public:
@@ -13,6 +12,7 @@ public:
 private: 
   bool mRunning;
   std::thread* mGameLoopThread;
+  Subscriber mInputSubscriber;
   void gameLoop();
 };
 
