@@ -1,4 +1,5 @@
 #include <SFML\System.hpp>
+#include <SFML\Graphics.hpp>
 #include "Server/Main/GameLoop.h"
 #include <iostream>
 #include "Common/KeyBindings.h"
@@ -27,6 +28,7 @@ void GameLoop::gameLoop() {
   MessageHandler::get().subscribeToInputMessages(&mInputSubscriber);
   int input = 0;
   int messageId;
+  sf::Packet movePacket;
 
   while (mRunning) {
     //sf::Packet inputMessage = mMessageHandler->readInputMessage();
@@ -43,6 +45,10 @@ void GameLoop::gameLoop() {
       std::cout << "input: " << input << std::endl;
     }
 
+    sf::CircleShape shape(50.f);
+    float velocityX = 0;
+    float velocityY = 0;
+
     switch (state) {
     case GameLoopState::LOBBY:
       std::cout << "In the lobby" << std::endl;
@@ -54,6 +60,10 @@ void GameLoop::gameLoop() {
 
     case GameLoopState::SETUP_GAME:
       //std::cout << "Setting up the game" << std::endl;
+      shape.setPosition(200, 200);
+      shape.setFillColor(sf::Color::Green);
+      velocityX = 10;
+      velocityY = 5;
       state = GameLoopState::PLAYING;
       //std::cout << "Game setup finished" << std::endl;
       break;
@@ -62,6 +72,30 @@ void GameLoop::gameLoop() {
       std::cout << "Playing the game" << std::endl;
       if (input == D_KEY) {
         state = GameLoopState::GAME_OVER;
+      }
+
+      if (input == A_KEY) {
+        sf::Vector2f oldPos = shape.getPosition();
+        shape.setPosition(oldPos.x - velocityX, oldPos.y);
+
+        sf::Vector2f newPos = shape.getPosition();
+        movePacket << 33 << newPos.x << newPos.y;
+        
+        MessageHandler::get().pushSpriteListMessage(movePacket);
+
+        std::cout << "Send packet for moving circle to the left" << std::endl;
+      }
+
+      if (input == W_KEY) {
+        sf::Vector2f oldPos = shape.getPosition();
+        shape.setPosition(oldPos.x, oldPos.y + velocityY);
+
+        sf::Vector2f newPos = shape.getPosition();
+        movePacket << 33 << newPos.x << newPos.y;
+
+        MessageHandler::get().pushSpriteListMessage(movePacket);
+
+        std::cout << "Send packet for moving circle up" << std::endl;
       }
       break;
 
@@ -80,6 +114,7 @@ void GameLoop::gameLoop() {
     default:
       std::cout << "This state doesn't exist" << std::endl;
     }
+    input = 0;
     sf::sleep(sf::milliseconds(20));
   }  
 }
