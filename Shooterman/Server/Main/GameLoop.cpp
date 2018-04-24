@@ -29,6 +29,10 @@ void GameLoop::gameLoop() {
   int input = 0;
   int messageId;
   sf::Packet movePacket;
+  sf::CircleShape shape(50.f);
+  shape.setPosition(200, 200);
+  float velocityX = 5;
+  float velocityY = 5;
 
   while (mRunning) {
     //sf::Packet inputMessage = mMessageHandler->readInputMessage();
@@ -44,14 +48,10 @@ void GameLoop::gameLoop() {
       inputMessage >> input;
       std::cout << "input: " << input << std::endl;
     }
-
-    sf::CircleShape shape(50.f);
-    float velocityX = 1;
-    float velocityY = 0;
-
+    
     switch (state) {
     case GameLoopState::LOBBY:
-      std::cout << "In the lobby" << std::endl;
+      //std::cout << "In the lobby" << std::endl;
 
       if (input == A_KEY) {
         state = GameLoopState::SETUP_GAME;
@@ -60,42 +60,30 @@ void GameLoop::gameLoop() {
 
     case GameLoopState::SETUP_GAME:
       //std::cout << "Setting up the game" << std::endl;
-      shape.setPosition(200, 200);
       shape.setFillColor(sf::Color::Green);
-      velocityX = 10;
-      velocityY = 5;
+      movePacket << 33 << shape.getPosition().x << shape.getPosition().y;
+      MessageHandler::get().pushSpriteListMessage(movePacket);
+      movePacket.clear();
       state = GameLoopState::PLAYING;
       //std::cout << "Game setup finished" << std::endl;
       break;
 
     case GameLoopState::PLAYING:
-      std::cout << "Playing the game" << std::endl;
+      //std::cout << "Playing the game" << std::endl;
       if (input == D_KEY) {
-        state = GameLoopState::GAME_OVER;
+        moveCircle(shape, velocityX, 0);
       }
 
       if (input == A_KEY) {
-        sf::Vector2f oldPos = shape.getPosition();
-        shape.setPosition(oldPos.x - velocityX, oldPos.y);
-
-        sf::Vector2f newPos = shape.getPosition();
-        movePacket << 33 << newPos.x << newPos.y;
-        
-        MessageHandler::get().pushSpriteListMessage(movePacket);
-
-        std::cout << "Send packet for moving circle to the left" << std::endl;
+        moveCircle(shape, -velocityX, 0);
       }
 
       if (input == W_KEY) {
-        sf::Vector2f oldPos = shape.getPosition();
-        shape.setPosition(oldPos.x, oldPos.y + velocityY);
+        moveCircle(shape, 0, -velocityY);
+      }
 
-        sf::Vector2f newPos = shape.getPosition();
-        movePacket << 33 << newPos.x << newPos.y;
-
-        MessageHandler::get().pushSpriteListMessage(movePacket);
-
-        std::cout << "Send packet for moving circle up" << std::endl;
+      if (input == S_KEY) {
+        moveCircle(shape, 0, velocityY);
       }
       break;
 
@@ -117,4 +105,40 @@ void GameLoop::gameLoop() {
     input = 0;
     sf::sleep(sf::milliseconds(20));
   }  
+}
+
+void GameLoop::moveCircle(sf::CircleShape &circle, float velocityX, float velocityY) {
+  sf::Vector2f position = circle.getPosition();
+  std::cout << "Old x: " << position.x << ", y: " << position.y << std::endl;
+
+  if ((position.x + velocityX) < 0) {
+    position.x = 0;
+  } else if ((position.x + velocityX) > 400) {
+    position.x = 400;
+  } else {
+    position.x += velocityX;
+  }
+
+  if ((position.y + velocityY) < 0) {
+    position.y = 0;
+  }
+  else if ((position.y + velocityY) > 400) {
+    position.y = 400;
+  }
+  else {
+    position.y += velocityY;
+  }
+
+  circle.setPosition(position.x, position.y);
+  sf::Vector2f newPos = circle.getPosition();
+  std::cout << "New x: " << newPos.x << ", y: " << newPos.y << std::endl;
+
+  sf::Packet packet;
+  packet << 33 << newPos.x << newPos.y;
+
+  MessageHandler::get().pushSpriteListMessage(packet);
+
+  std::cout << "Send packet for moving circle to the left" << std::endl;
+  std::cout << "x: " << newPos.x << ", y: " << newPos.y << std::endl;
+  packet.clear();
 }

@@ -14,6 +14,7 @@ private:
   std::thread* mGameLoopThread;
   Subscriber mInputSubscriber;
   void gameLoop();
+  void moveCircle(sf::CircleShape &circle, float velocityX, float velocityY);
 };
 
 enum class GameLoopState { 
