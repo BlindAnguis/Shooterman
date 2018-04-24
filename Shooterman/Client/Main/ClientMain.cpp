@@ -5,6 +5,7 @@ ClientMain::ClientMain() {
   Input input = Input();
   Gui gui = Gui();
   GameLoop server = GameLoop();
+
   bool serverStarted = false;
 
   while (mRunning)
@@ -25,6 +26,7 @@ ClientMain::ClientMain() {
         serverStarted = false;
       }
     }
+    sf::sleep(sf::milliseconds(20));
     handleSystemMessages();
   }
   input.shutDown();

@@ -27,8 +27,8 @@ public:
 private:
   MessageHandler() {}
 
-  std::list<Subscriber*> m_systemSubscriberList;
-  std::list<Subscriber*> m_inputSubscriberList;
-  std::list<Subscriber*> m_spriteListSubscriberList;
+  std::list<Subscriber*> mSystemSubscriberList;
+  std::list<Subscriber*> mInputSubscriberList;
+  std::list<Subscriber*> mSpriteListSubscriberList;
 };
 #endif // ifndef MESSAGE_HANDLER_H

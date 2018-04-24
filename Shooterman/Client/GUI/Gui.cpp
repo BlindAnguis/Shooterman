@@ -3,33 +3,31 @@
 
 Gui::Gui() {
   std::cout << "[GUI] Starting module..." << std::endl;
-  m_guiThread = new std::thread(&Gui::render, this);
-  std::cout << "[GUI]´Starting module done" << std::endl;
+  mGuiThread = new std::thread(&Gui::render, this);
+  std::cout << "[GUI] Starting module done" << std::endl;
 }
 
 void Gui::render()  {
   MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
 
-  m_window = new sf::RenderWindow(sf::VideoMode(500, 500), "SFML works!");
+  mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "SFML works!");
 
   sf::CircleShape shape(50.f);
   shape.setPosition(200, 200);
   shape.setFillColor(sf::Color::Green);
 
-  while (m_window->isOpen()) {
+  while (mWindow->isOpen()) {
 
     sf::Event event;
-    while (m_window->pollEvent(event))
+    while (mWindow->pollEvent(event))
     {
       if (event.type == sf::Event::Closed) {
         sf::Packet shutdownMessage;
         shutdownMessage << SHUT_DOWN;
         MessageHandler::get().pushSystemMessage(shutdownMessage);
-        m_window->close();
       }
     }
-
     std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
     sf::Packet spriteMessage;
     while (!spriteMessageQueue.empty()) {
@@ -42,9 +40,9 @@ void Gui::render()  {
       shape.setPosition(pos);
     }
 
-    m_window->clear();
-    m_window->draw(shape);
-    m_window->display();
+    mWindow->clear();
+    mWindow->draw(shape);
+    mWindow->display();
     sf::sleep(sf::milliseconds(20));
     handleSystemMessages();
   }
@@ -61,17 +59,20 @@ void Gui::handleSystemMessages() {
     systemMessage >> messageId;
     if (messageId == SHUT_DOWN) {
       std::cout << "[GUI] Preparing to shut down" << std::endl;
-      m_window->close();
+      mWindow->close();
     } else {
-        std::cout << "[GUI] Unknown system message: " << messageId << std::endl;
+      std::cout << "[GUI] Unknown system message: " << messageId << std::endl;
     }
   }
 }
 
 void Gui::shutDown() {
   std::cout << "[GUI] Shutdown of module requested..." << std::endl;
-  delete m_window;
-  m_guiThread->join();
-  delete m_guiThread;
+  while (mWindow->isOpen()) {
+    // Wait for GUI to close window
+  }
+  delete mWindow;
+  mGuiThread->join();
+  delete mGuiThread;
   std::cout << "[GUI] Shutdown of module done" << std::endl;
 }

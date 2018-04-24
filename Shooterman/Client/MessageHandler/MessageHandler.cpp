@@ -4,33 +4,33 @@
 
 void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::cout << "[MESSAGEHANDLER] New subscriber added to system list" << std::endl;
-  m_systemSubscriberList.push_back(newSubscriber);
+  mSystemSubscriberList.push_back(newSubscriber);
 }
 
 void MessageHandler::pushSystemMessage(sf::Packet message) {
-  for (Subscriber* subscriber : m_systemSubscriberList) {
+  for (Subscriber* subscriber : mSystemSubscriberList) {
     subscriber->sendMessage(message);
   }
 }
 
 void MessageHandler::subscribeToInputMessages(Subscriber* newSubscriber) {
   std::cout << "[MESSAGEHANDLER] New subscriber added to input list" << std::endl;
-  m_inputSubscriberList.push_back(newSubscriber);
+  mInputSubscriberList.push_back(newSubscriber);
 }
 
 void MessageHandler::pushInputMessage(sf::Packet message) {
-  for (Subscriber* subscriber : m_inputSubscriberList) {
+  for (Subscriber* subscriber : mInputSubscriberList) {
     subscriber->sendMessage(message);
   }
 }
 
 void MessageHandler::subscribeToSpriteListMessages(Subscriber* newSubscriber) {
   std::cout << "[MESSAGEHANDLER] New subscriber added to sprite list list" << std::endl;
-  m_spriteListSubscriberList.push_back(newSubscriber);
+  mSpriteListSubscriberList.push_back(newSubscriber);
 }
 
 void MessageHandler::pushSpriteListMessage(sf::Packet message) {
-  for (Subscriber* subscriber : m_spriteListSubscriberList) {
+  for (Subscriber* subscriber : mSpriteListSubscriberList) {
     subscriber->sendMessage(message);
   }
 }

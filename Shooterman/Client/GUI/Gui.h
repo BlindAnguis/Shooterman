@@ -17,8 +17,8 @@ public:
   void shutDown();
 
 private:
-  std::thread* m_guiThread;
-  sf::RenderWindow* m_window;
+  std::thread* mGuiThread;
+  sf::RenderWindow* mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mSpriteListSubscriber;
 
