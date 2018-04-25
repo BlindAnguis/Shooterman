@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <list>
+#include <mutex>
 
 #include <SFML/Network.hpp>
 
@@ -16,17 +17,29 @@ public:
   }
 
   void subscribeToSystemMessages(Subscriber* newSubscriber);
+  void unSubscribeToSystemMessages(Subscriber* newSubscriber);
   void pushSystemMessage(sf::Packet message);
 
   void subscribeToInputMessages(Subscriber* newSubscriber);
+  void unSubscribeToInputMessages(Subscriber* newSubscriber);
   void pushInputMessage(sf::Packet message);
 
   void subscribeToSpriteListMessages(Subscriber* newSubscriber);
+  void unSubscribeToSpriteListMessages(Subscriber* newSubscriber);
   void pushSpriteListMessage(sf::Packet message);
 
-private:
-  MessageHandler() {}
+  void unsubscribeAll(Subscriber* subscriber);
 
+private:
+  MessageHandler() : mCurrentId(0) {}
+
+  void tryToGiveId(Subscriber* subscriber);
+
+  int mCurrentId;
+  std::mutex mIdGeneratorLock;
+  std::mutex mSystemSubscriberLock;
+  std::mutex mInputSubscriberLock;
+  std::mutex mSpriteListSubscriberLock;
   std::list<Subscriber*> mSystemSubscriberList;
   std::list<Subscriber*> mInputSubscriberList;
   std::list<Subscriber*> mSpriteListSubscriberList;
