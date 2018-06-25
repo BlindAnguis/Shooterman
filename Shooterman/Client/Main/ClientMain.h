@@ -10,6 +10,7 @@
 #include "../MessageHandler/MessageHandler.h"
 #include "../GUI/Gui.h"
 #include "../../Server/Main/GameLoop.h"
+#include "../Sound/Sound.h"
 
 class ClientMain
 {

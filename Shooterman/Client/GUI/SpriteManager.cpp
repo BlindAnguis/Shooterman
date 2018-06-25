@@ -13,8 +13,8 @@ SpriteManager::~SpriteManager() {
 
 void SpriteManager::loadSprites() {
   sf::Texture* playerTexture = new sf::Texture();
-  if (!playerTexture->loadFromFile("C:\\Users\\konratob\\source\\repos\\Shooterman\\Shooterman\\Client\\Resources\\Player.png")) {
-    std::cout << "ERROR could not load file Client/Resources/Player.png" << std::endl;
+  if (!playerTexture->loadFromFile("Client/Resources/Sprites/Player.png")) {
+    std::cout << "ERROR could not load file Client/Resources/Sprites/Player.png" << std::endl;
   }
   sf::Sprite sprite;
   sprite.setTexture(*playerTexture);

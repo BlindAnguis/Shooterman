@@ -1,12 +1,11 @@
 #include "ClientMain.h"
-#include "../Sound/Sound.h"
 
 ClientMain::ClientMain() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   Input input = Input();
   Gui gui = Gui();
   GameLoop server = GameLoop();
-  //Sound sound = Sound();
+  Sound sound = Sound();
   
   bool serverStarted = false;
 
