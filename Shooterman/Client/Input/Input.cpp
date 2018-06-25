@@ -45,7 +45,7 @@ void Input::readInput() {
       inputKeyPacket << INPUT_KEYS << keyboardBitmask;
       MessageHandler::get().pushInputMessage(inputKeyPacket);
     }
-    sf::sleep(sf::milliseconds(20));
+    sf::sleep(sf::milliseconds(10));
     handleSystemMessages();
   }
 }

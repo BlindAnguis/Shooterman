@@ -7,6 +7,7 @@
 #include <SFML/Network.hpp>
 
 #include "../MessageHandler/MessageHandler.h"
+#include "SpriteManager.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"
 
@@ -21,10 +22,12 @@ private:
   sf::RenderWindow* mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mSpriteListSubscriber;
+  SpriteManager* mSpriteManager;
+  sf::Sprite mSprite;
 
+  void init();
   void render();
   void handleSystemMessages();
-
 };
 
 #endif // GUI_H

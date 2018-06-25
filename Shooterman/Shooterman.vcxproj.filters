@@ -36,6 +36,9 @@
     <ClCompile Include="Client\Sound\Sound.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Client\GUI\SpriteManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Client\Sound\Sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Client\GUI\SpriteManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

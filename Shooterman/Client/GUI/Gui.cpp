@@ -3,47 +3,57 @@
 
 Gui::Gui() {
   std::cout << "[GUI] Starting module..." << std::endl;
-  mGuiThread = new std::thread(&Gui::render, this);
+  mGuiThread = new std::thread(&Gui::init, this);
   std::cout << "[GUI] Starting module done" << std::endl;
 }
 
-void Gui::render()  {
+void Gui::init() {
   MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
 
   mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "SFML works!");
 
-  sf::CircleShape shape(50.f);
-  shape.setPosition(200, 200);
-  shape.setFillColor(sf::Color::Green);
+  mSpriteManager = new SpriteManager();
+  mSpriteManager->loadSprites();
 
+  render();
+}
+
+void Gui::render() {
   while (mWindow->isOpen()) {
 
     sf::Event event;
-    while (mWindow->pollEvent(event))
-    {
+    while (mWindow->pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         sf::Packet shutdownMessage;
         shutdownMessage << SHUT_DOWN;
         MessageHandler::get().pushSystemMessage(shutdownMessage);
       }
     }
+    bool render = false;
     std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
     sf::Packet spriteMessage;
+    if (!spriteMessageQueue.empty()) {
+      mWindow->clear(sf::Color::White);
+      std::cout << spriteMessageQueue.size() << std::endl;
+      render = true;
+    }
     while (!spriteMessageQueue.empty()) {
       spriteMessage = spriteMessageQueue.front();
       spriteMessageQueue.pop();
       int id;
       sf::Vector2f pos;
       spriteMessage >> id >> pos.x >> pos.y;
-      std::cout << "ID: " << id << " Pos: " << pos.x << ":" << pos.y << std::endl;
-      shape.setPosition(pos);
+      //std::cout << "ID: " << id << " Pos: " << pos.x << ":" << pos.y << std::endl;
+      sf::Sprite sprite = mSpriteManager->get(id);
+      sprite.setPosition(pos);
+      mWindow->draw(sprite);
     }
 
-    mWindow->clear();
-    mWindow->draw(shape);
-    mWindow->display();
-    sf::sleep(sf::milliseconds(20));
+    if (render) {
+      mWindow->display();
+    }
+    sf::sleep(sf::milliseconds(10));
     handleSystemMessages();
   }
 }
@@ -68,6 +78,7 @@ void Gui::handleSystemMessages() {
 
 void Gui::shutDown() {
   std::cout << "[GUI] Shutdown of module requested..." << std::endl;
+  delete mSpriteManager;
   while (mWindow->isOpen()) {
     // Wait for GUI to close window
   }
