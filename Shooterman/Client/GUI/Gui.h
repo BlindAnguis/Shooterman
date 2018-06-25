@@ -6,8 +6,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
-#include "../MessageHandler/MessageHandler.h"
 #include "SpriteManager.h"
+#include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"
 

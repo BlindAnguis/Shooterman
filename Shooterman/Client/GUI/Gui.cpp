@@ -42,11 +42,11 @@ void Gui::render() {
       spriteMessage = spriteMessageQueue.front();
       spriteMessageQueue.pop();
       int id;
-      sf::Vector2f pos;
-      spriteMessage >> id >> pos.x >> pos.y;
-      //std::cout << "ID: " << id << " Pos: " << pos.x << ":" << pos.y << std::endl;
+      sf::Vector2f position;
+      spriteMessage >> id >> position.x >> position.y;
+      //std::cout << "ID: " << id << " Pos: " << position.x << ":" << position.y << std::endl;
       sf::Sprite sprite = mSpriteManager->get(id);
-      sprite.setPosition(pos);
+      sprite.setPosition(position);
       mWindow->draw(sprite);
     }
 
@@ -78,10 +78,10 @@ void Gui::handleSystemMessages() {
 
 void Gui::shutDown() {
   std::cout << "[GUI] Shutdown of module requested..." << std::endl;
-  delete mSpriteManager;
   while (mWindow->isOpen()) {
     // Wait for GUI to close window
   }
+  delete mSpriteManager;
   delete mWindow;
   mGuiThread->join();
   delete mGuiThread;

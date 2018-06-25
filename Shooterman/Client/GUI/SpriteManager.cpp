@@ -12,11 +12,16 @@ SpriteManager::~SpriteManager() {
 }
 
 void SpriteManager::loadSprites() {
-  sf::Texture* playerTexture = new sf::Texture();
-  if (!playerTexture->loadFromFile("Client/Resources/Sprites/Player.png")) {
-    std::cout << "ERROR could not load file Client/Resources/Sprites/Player.png" << std::endl;
-  }
+  sf::Texture* texture = loadTexture("Player.png");
   sf::Sprite sprite;
-  sprite.setTexture(*playerTexture);
-  mSpriteMap[33] = std::make_pair(sprite, playerTexture);
+  sprite.setTexture(*texture);
+  mSpriteMap[33] = std::make_pair(sprite, texture);
+}
+
+sf::Texture* SpriteManager::loadTexture(std::string fileName) {
+  sf::Texture* playerTexture = new sf::Texture();
+  if (!playerTexture->loadFromFile(SPRITE_FILE_PATH + fileName)) {
+    std::cout << "[GUI] ERROR could not load file " << SPRITE_FILE_PATH << fileName << std::endl;
+  }
+  return playerTexture;
 }

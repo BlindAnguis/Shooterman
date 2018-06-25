@@ -5,34 +5,28 @@ ClientMain::ClientMain() {
   Input input = Input();
   Gui gui = Gui();
   GameLoop server = GameLoop();
-  Sound sound = Sound();
+  //Sound sound = Sound();
   
   bool serverStarted = false;
 
-  while (mRunning)
-  {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-	  {
-	  // Start server
-	  if (!serverStarted)
-	  {
-	    server.start();
-		serverStarted = true;
+  while (mRunning) {
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
+	    // Start server
+	    if (!serverStarted) {
+	      server.start();
+		  serverStarted = true;
+	    }
 	  }
-	}
-	if(sf::Keyboard::isKeyPressed(sf::Keyboard::F10)) 
-	{
-	  // Stop Server
-	  if(serverStarted) 
-	  {
-        server.stop();
-        serverStarted = false;
+	  if(sf::Keyboard::isKeyPressed(sf::Keyboard::F10)) {
+	    // Stop Server
+	    if(serverStarted) {
+          server.stop();
+          serverStarted = false;
       }
     }
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-	{
-		std::cout << "CLIENT: escape pressed" << std::endl;
-	}
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+		  std::cout << "CLIENT: escape pressed" << std::endl;
+	  }
     sf::sleep(sf::milliseconds(20));
     handleSystemMessages();
   }

@@ -176,6 +176,9 @@
     <ClInclude Include="Common\Subscriber.h" />
     <ClInclude Include="Server\Main\GameLoop.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Client\Resources\Sprites\Player.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
