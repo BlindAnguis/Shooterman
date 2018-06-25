@@ -7,8 +7,8 @@
 #include <SFML/Network.hpp>
 
 #include "../MessageHandler/MessageHandler.h"
-#include "Common/Subscriber.h"
-#include "Common/MessageId.h"
+#include "../../Common/Subscriber.h"
+#include "../../Common/MessageId.h"
 
 class Gui {
 public:

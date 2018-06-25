@@ -29,11 +29,16 @@ void Input::readInput() {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
       keyboardBitmask += S_KEY;
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
       sf::Packet shutDownMessage;
       shutDownMessage << SHUT_DOWN;
       MessageHandler::get().pushSystemMessage(shutDownMessage);
     }
+	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+	//	sf::Packet shutDownMessage;
+	//	shutDownMessage << SHUT_DOWN;
+	//	MessageHandler::get().pushSystemMessage(shutDownMessage);
+	//}
 
     if (keyboardBitmask != 0) {
       sf::Packet inputKeyPacket;

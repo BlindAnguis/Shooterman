@@ -7,7 +7,7 @@
 
 #include <SFML/Network.hpp>
 
-#include "Common/Subscriber.h"
+#include "../../Common/Subscriber.h"
 
 class MessageHandler {
 public:

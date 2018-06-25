@@ -4,9 +4,10 @@
 #include <thread>
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
+#include <SFML/Window.hpp>
 
-#include "Common/KeyBindings.h"
-#include "Common/MessageId.h"
+#include "../../Common/KeyBindings.h"
+#include "../../Common/MessageId.h"
 #include "../MessageHandler/MessageHandler.h"
 
 

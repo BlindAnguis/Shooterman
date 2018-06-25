@@ -1,5 +1,5 @@
 #include "ClientMain.h"
-#include "Client/Sound/Sound.cpp"
+#include "../Sound/Sound.h"
 
 ClientMain::ClientMain() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
@@ -30,6 +30,10 @@ ClientMain::ClientMain() {
         serverStarted = false;
       }
     }
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+	{
+		std::cout << "CLIENT: escape pressed" << std::endl;
+	}
     sf::sleep(sf::milliseconds(20));
     handleSystemMessages();
   }

@@ -1,8 +1,8 @@
 #include <SFML\System.hpp>
 #include <SFML\Graphics.hpp>
-#include "Server/Main/GameLoop.h"
+#include "GameLoop.h"
 #include <iostream>
-#include "Common/KeyBindings.h"
+#include "../../Common/KeyBindings.h"
 
 GameLoop::GameLoop() {
 }

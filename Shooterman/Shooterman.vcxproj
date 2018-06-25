@@ -155,7 +155,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Client\GUI\Gui.cpp" />
+    <ClCompile Include="Client\Input\Input.cpp" />
+    <ClCompile Include="Client\Main\ClientMain.cpp" />
+    <ClCompile Include="Client\MessageHandler\MessageHandler.cpp" />
+    <ClCompile Include="Client\Sound\Sound.cpp" />
+    <ClCompile Include="Server\Main\GameLoop.cpp" />
     <ClCompile Include="Shooterman.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Client\GUI\Gui.h" />
+    <ClInclude Include="Client\Input\Input.h" />
+    <ClInclude Include="Client\Main\ClientMain.h" />
+    <ClInclude Include="Client\MessageHandler\MessageHandler.h" />
+    <ClInclude Include="Client\Sound\Sound.h" />
+    <ClInclude Include="Common\KeyBindings.h" />
+    <ClInclude Include="Common\MessageId.h" />
+    <ClInclude Include="Common\Subscriber.h" />
+    <ClInclude Include="Server\Main\GameLoop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

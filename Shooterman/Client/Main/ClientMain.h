@@ -6,10 +6,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "Client/Input/Input.cpp"
-#include "Client/MessageHandler/MessageHandler.cpp"
-#include "Client/GUI/Gui.cpp"
-#include "Server/Main/GameLoop.cpp"
+#include "../Input/Input.h"
+#include "../MessageHandler/MessageHandler.h"
+#include "../GUI/Gui.h"
+#include "../../Server/Main/GameLoop.h"
 
 class ClientMain
 {

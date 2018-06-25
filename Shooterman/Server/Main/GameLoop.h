@@ -1,7 +1,7 @@
 #pragma once
 #include <thread>
-#include "Client/MessageHandler/MessageHandler.h"
-#include "Common/KeyBindings.h"
+#include "../../Client/MessageHandler/MessageHandler.h"
+#include "../../Common/KeyBindings.h"
 
 class GameLoop {
 public:
