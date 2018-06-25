@@ -6,24 +6,26 @@ ClientMain::ClientMain() {
   Input input = Input();
   Gui gui = Gui();
   GameLoop server = GameLoop();
-  Sound sound = Sound();
-
+  //Sound sound = Sound();
+  
   bool serverStarted = false;
 
   while (mRunning)
   {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
-    {
-      // Start server
-      if (!serverStarted) {
-        server.start();
-        serverStarted = true;
-      }
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-      // Stop Server
-      if (serverStarted) {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+	  {
+	  // Start server
+	  if (!serverStarted)
+	  {
+	    server.start();
+		serverStarted = true;
+	  }
+	}
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::F10)) 
+	{
+	  // Stop Server
+	  if(serverStarted) 
+	  {
         server.stop();
         serverStarted = false;
       }

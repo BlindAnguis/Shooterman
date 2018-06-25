@@ -85,6 +85,23 @@ void GameLoop::gameLoop() {
       if (input == S_KEY) {
         moveCircle(shape, 0, velocityY);
       }
+
+	  if (input == A_S_KEY) {
+		  moveCircle(shape, -velocityX, velocityY);
+	  }
+
+	  if (input == A_W_KEY) {
+		  moveCircle(shape, -velocityX, -velocityY);
+	  }
+
+	  if (input == D_S_KEY) {
+		  moveCircle(shape, velocityX, velocityY);
+	  }
+
+	  if (input == D_W_KEY) {
+		  moveCircle(shape, velocityX, -velocityY);
+	  }
+
       break;
 
     case GameLoopState::GAME_OVER:
