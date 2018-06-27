@@ -1,12 +1,10 @@
 #include "MessageHandler.h"
 
-#include <iostream>
-
 void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSystemSubscriberLock);
   tryToGiveId(newSubscriber);
   mSystemSubscriberList.push_back(newSubscriber);
-  std::cout << "[MESSAGEHANDLER] New subscriber (" << newSubscriber->getId() << ") added to system list" << std::endl;
+  TRACE_INFO(STR("New subscriber (" << newSubscriber->getId() << ") added to system list"));
 }
 
 void MessageHandler::unSubscribeToSystemMessages(Subscriber* newSubscriber) {
@@ -15,7 +13,7 @@ void MessageHandler::unSubscribeToSystemMessages(Subscriber* newSubscriber) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mSystemSubscriberList.erase(it);
       it--;
-      std::cout << "[MESSAGEHANDLER] Removed subscriber (" << newSubscriber->getId() << ") from to system list" << std::endl;
+      TRACE_INFO(STR("Removed subscriber (" << newSubscriber->getId() << ") from to system list"));
     }
   }
 }
@@ -32,7 +30,7 @@ void MessageHandler::subscribeToInputMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mInputSubscriberLock);
   tryToGiveId(newSubscriber);
   mInputSubscriberList.push_back(newSubscriber);
-  std::cout << "[MESSAGEHANDLER] New subscriber (" << newSubscriber->getId() << ") added to input list" << std::endl;
+  TRACE_INFO(STR("New subscriber (" << newSubscriber->getId() << ") added to input list"));
 }
 
 void MessageHandler::unSubscribeToInputMessages(Subscriber* newSubscriber) {
@@ -41,7 +39,7 @@ void MessageHandler::unSubscribeToInputMessages(Subscriber* newSubscriber) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mInputSubscriberList.erase(it);
       it--;
-      std::cout << "[MESSAGEHANDLER] Removed subscriber (" << newSubscriber->getId() << ") from to input list" << std::endl;
+      TRACE_INFO(STR("Removed subscriber (" << newSubscriber->getId() << ") from to input list"));
     }
   }
 }
@@ -58,7 +56,7 @@ void MessageHandler::subscribeToSpriteListMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSpriteListSubscriberLock);
   tryToGiveId(newSubscriber);
   mSpriteListSubscriberList.push_back(newSubscriber);
-  std::cout << "[MESSAGEHANDLER] New subscriber (" << newSubscriber->getId() << ") added to sprite list list" << std::endl;
+  TRACE_INFO(STR("New subscriber (" << newSubscriber->getId() << ") added to sprite list"));
 }
 
 void MessageHandler::unSubscribeToSpriteListMessages(Subscriber* newSubscriber) {
@@ -67,7 +65,7 @@ void MessageHandler::unSubscribeToSpriteListMessages(Subscriber* newSubscriber) 
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mSpriteListSubscriberList.erase(it);
       it--;
-      std::cout << "[MESSAGEHANDLER] Removed subscriber (" << newSubscriber->getId() << ") from to sprite list" << std::endl;
+      TRACE_INFO(STR("Removed subscriber (" << newSubscriber->getId() << ") from to sprite list"));
     }
   }
 }

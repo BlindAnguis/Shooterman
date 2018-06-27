@@ -2,13 +2,14 @@
 
 #include <cstdint>
 
-#include <iostream>
+#include "../../Common/Trace.h"
 
 Input::Input()
 {
-  std::cout << "[INPUT] Starting module..." << std::endl;
+  mName = "INPUT";
+  TRACE_INFO("Starting module...");
   mInputThread = new std::thread(&Input::readInput, this);
-  std::cout << "[INPUT] Starting module done" << std::endl;
+  TRACE_INFO("Starting module done");
 }
 
 void Input::readInput() {
@@ -34,18 +35,13 @@ void Input::readInput() {
       shutDownMessage << SHUT_DOWN;
       MessageHandler::get().pushSystemMessage(shutDownMessage);
     }
-	//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-	//	sf::Packet shutDownMessage;
-	//	shutDownMessage << SHUT_DOWN;
-	//	MessageHandler::get().pushSystemMessage(shutDownMessage);
-	//}
 
     if (keyboardBitmask != 0) {
       sf::Packet inputKeyPacket;
       inputKeyPacket << INPUT_KEYS << keyboardBitmask;
       MessageHandler::get().pushInputMessage(inputKeyPacket);
     }
-    sf::sleep(sf::milliseconds(10));
+    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleSystemMessages();
   }
 }
@@ -61,17 +57,17 @@ void Input::handleSystemMessages() {
     systemMessage >> messageId;
     if (messageId == SHUT_DOWN) {
       mRunning = false;
-      std::cout << "[INPUT] Preparing to shut down" << std::endl;
+      TRACE_INFO("Preparing to shut down");
     } else {
-      std::cout << "[INPUT] Unknown system message: " << messageId << std::endl;
+      TRACE_WARNING(STR("Unknown system message : " << messageId));
     }
   }
 }
 
 void Input::shutDown() {
-  std::cout << "[INPUT] Shutdown of module requested..." << std::endl;
+  TRACE_INFO("Shutdown of module requested...");
   mRunning = false;
   mInputThread->join();
   delete mInputThread;
-  std::cout << "[INPUT] Shutdown of module done" << std::endl;
+  TRACE_INFO("Shutdown of module done");
 }

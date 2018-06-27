@@ -1,5 +1,4 @@
-#ifndef INPUT_H
-#define INPUT_H
+#pragma once
 
 #include <thread>
 #include <SFML/System.hpp>
@@ -8,10 +7,11 @@
 
 #include "../../Common/KeyBindings.h"
 #include "../../Common/MessageId.h"
+#include "../../Common/Constants.h"
 #include "../MessageHandler/MessageHandler.h"
 
 
-class Input {
+class Input : Trace {
 public:
 	Input();
 
@@ -26,5 +26,3 @@ private:
   void handleSystemMessages();
 
 };
-
-#endif // INPUT_H

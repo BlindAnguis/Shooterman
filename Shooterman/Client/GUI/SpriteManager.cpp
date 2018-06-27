@@ -1,9 +1,6 @@
 #include "SpriteManager.h"
-#include <iostream>
 
-SpriteManager::SpriteManager() {
-
-}
+SpriteManager::SpriteManager() { mName = "GUI"; }
 
 SpriteManager::~SpriteManager() {
   for (auto it = mSpriteMap.begin(); it != mSpriteMap.end(); it++) {
@@ -21,7 +18,7 @@ void SpriteManager::loadSprites() {
 sf::Texture* SpriteManager::loadTexture(std::string fileName) {
   sf::Texture* playerTexture = new sf::Texture();
   if (!playerTexture->loadFromFile(SPRITE_FILE_PATH + fileName)) {
-    std::cout << "[GUI] ERROR could not load file " << SPRITE_FILE_PATH << fileName << std::endl;
+    TRACE_ERROR(STR("could not load file " << SPRITE_FILE_PATH << fileName));
   }
   return playerTexture;
 }

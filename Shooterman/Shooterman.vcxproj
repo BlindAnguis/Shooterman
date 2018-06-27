@@ -171,9 +171,11 @@
     <ClInclude Include="Client\Main\ClientMain.h" />
     <ClInclude Include="Client\MessageHandler\MessageHandler.h" />
     <ClInclude Include="Client\Sound\Sound.h" />
+    <ClInclude Include="Common\Constants.h" />
     <ClInclude Include="Common\KeyBindings.h" />
     <ClInclude Include="Common\MessageId.h" />
     <ClInclude Include="Common\Subscriber.h" />
+    <ClInclude Include="Common\Trace.h" />
     <ClInclude Include="Server\Main\GameLoop.h" />
   </ItemGroup>
   <ItemGroup>

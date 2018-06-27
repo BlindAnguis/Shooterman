@@ -1,6 +1,7 @@
 #include "ClientMain.h"
 
 ClientMain::ClientMain() {
+  mName = "CLIENTMAIN";
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   Input input = Input();
   Gui gui = Gui();
@@ -17,7 +18,7 @@ ClientMain::ClientMain() {
 		  serverStarted = true;
 	    }
 	  }
-	  if(sf::Keyboard::isKeyPressed(sf::Keyboard::F10)) {
+	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::F10)) {
 	    // Stop Server
 	    if(serverStarted) {
           server.stop();
@@ -25,7 +26,7 @@ ClientMain::ClientMain() {
       }
     }
 	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-		  std::cout << "CLIENT: escape pressed" << std::endl;
+      TRACE_DEBUG("Escape pressed");
 	  }
     sf::sleep(sf::milliseconds(20));
     handleSystemMessages();
@@ -44,11 +45,10 @@ void ClientMain::handleSystemMessages() {
     auto messageId = 0;
     systemMessage >> messageId;
     if (messageId == SHUT_DOWN) {
-      std::cout << "[ClientMain] Preparing to shut down" << std::endl;
+      TRACE_INFO("Preparing to shut down");
       mRunning = false;
-    }
-    else {
-      std::cout << "[ClientMain] Unknown system message: " << messageId << std::endl;
+    } else {
+      TRACE_WARNING(STR("Unknown system message: " << messageId));
     }
   }
 }

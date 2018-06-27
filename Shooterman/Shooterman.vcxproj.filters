@@ -71,6 +71,12 @@
     <ClInclude Include="Client\GUI\SpriteManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Common\Trace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png">

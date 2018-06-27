@@ -1,22 +1,24 @@
 #include "Gui.h"
-#include <iostream>
 
 Gui::Gui() {
-  std::cout << "[GUI] Starting module..." << std::endl;
+  mName = "GUI";
+  TRACE_INFO("Starting module...");
   mGuiThread = new std::thread(&Gui::init, this);
-  std::cout << "[GUI] Starting module done" << std::endl;
+  TRACE_INFO("Starting module done");
 }
 
 void Gui::init() {
   MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
 
-  mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "SFML works!");
+  mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "Shooterman");
 
   mSpriteManager = new SpriteManager();
   mSpriteManager->loadSprites();
 
   render();
+
+  delete mSpriteManager;
 }
 
 void Gui::render() {
@@ -35,7 +37,7 @@ void Gui::render() {
     sf::Packet spriteMessage;
     if (!spriteMessageQueue.empty()) {
       mWindow->clear(sf::Color::White);
-      std::cout << spriteMessageQueue.size() << std::endl;
+      //TRACE_DEBUG(spriteMessageQueue.size());
       render = true;
     }
     while (!spriteMessageQueue.empty()) {
@@ -44,7 +46,7 @@ void Gui::render() {
       int id;
       sf::Vector2f position;
       spriteMessage >> id >> position.x >> position.y;
-      //std::cout << "ID: " << id << " Pos: " << position.x << ":" << position.y << std::endl;
+      //TRACE_DEBUG("ID: " << id << " Pos: " << position.x << ":" << position.y);
       sf::Sprite sprite = mSpriteManager->get(id);
       sprite.setPosition(position);
       mWindow->draw(sprite);
@@ -53,7 +55,7 @@ void Gui::render() {
     if (render) {
       mWindow->display();
     }
-    sf::sleep(sf::milliseconds(10));
+    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleSystemMessages();
   }
 }
@@ -68,22 +70,21 @@ void Gui::handleSystemMessages() {
     auto messageId = 0;
     systemMessage >> messageId;
     if (messageId == SHUT_DOWN) {
-      std::cout << "[GUI] Preparing to shut down" << std::endl;
+      TRACE_INFO("Closing GUI window");
       mWindow->close();
     } else {
-      std::cout << "[GUI] Unknown system message: " << messageId << std::endl;
+      TRACE_WARNING(STR("Unknown system message : " << messageId));
     }
   }
 }
 
 void Gui::shutDown() {
-  std::cout << "[GUI] Shutdown of module requested..." << std::endl;
+  TRACE_INFO("Shutdown of module requested...");
   while (mWindow->isOpen()) {
     // Wait for GUI to close window
   }
-  delete mSpriteManager;
   delete mWindow;
   mGuiThread->join();
   delete mGuiThread;
-  std::cout << "[GUI] Shutdown of module done" << std::endl;
+  TRACE_INFO("Shutdown of module done");
 }

@@ -1,5 +1,4 @@
-#ifndef GUI_H
-#define GUI_H
+#pragma once
 
 #include <thread>
 
@@ -10,14 +9,17 @@
 #include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"
+#include "../../Common/Trace.h"
+#include "../../Common/Constants.h"
 
-class Gui {
+class Gui : Trace {
 public:
   Gui();
 
   void shutDown();
 
 private:
+  bool mDebugEnabled = true;
   std::thread* mGuiThread;
   sf::RenderWindow* mWindow;
   Subscriber mSystemMessageSubscriber;
@@ -29,5 +31,3 @@ private:
   void render();
   void handleSystemMessages();
 };
-
-#endif // GUI_H

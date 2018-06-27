@@ -1,13 +1,13 @@
-#ifndef SPRITE_MANAGER_H
-#define SPRITE_MANAGER_H
-
+#pragma once
 #include <map>
 
 #include <SFML/Graphics.hpp>
 
+#include "../../Common/Trace.h"
+
 #define SPRITE_FILE_PATH "Client/Resources/Sprites/"
 
-class SpriteManager {
+class SpriteManager : Trace {
 public:
   SpriteManager();
   ~SpriteManager();
@@ -19,5 +19,3 @@ public:
 private:
   std::map<int, std::pair<sf::Sprite, sf::Texture*>> mSpriteMap;
 };
-
-#endif // SPRITE_MANAGER_H

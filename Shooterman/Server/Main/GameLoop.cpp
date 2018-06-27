@@ -1,30 +1,30 @@
 #include <SFML\System.hpp>
 #include <SFML\Graphics.hpp>
 #include "GameLoop.h"
-#include <iostream>
 #include "../../Common/KeyBindings.h"
 
 GameLoop::GameLoop() {
+  mName = "GAMELOOP";
 }
 
 void GameLoop::start() {
-  std::cout << "Start Server" << std::endl;
+  TRACE_INFO("Start Server");
   mGameLoopThread = new std::thread(&GameLoop::gameLoop, this);
 }
 
 void GameLoop::stop() {
-  std::cout << "Exit server" << std::endl;
+  TRACE_INFO("Exit Server");
   mRunning = false;
   mGameLoopThread->join();
   delete mGameLoopThread;
   // mInputSubscriber.unsubscribe;
-  std::cout << "Server finished" << std::endl;
+  TRACE_INFO("Server finished");
 }
 
 void GameLoop::gameLoop() {
   GameLoopState state = GameLoopState::LOBBY;
   mRunning = true;
-  std::cout << "Gameloop started" << std::endl;
+  TRACE_INFO("Gameloop started");
   MessageHandler::get().subscribeToInputMessages(&mInputSubscriber);
   int input = 0;
   int messageId;
@@ -43,10 +43,10 @@ void GameLoop::gameLoop() {
       inputMessagesQueue.pop();
 
       inputMessage >> messageId;
-      std::cout << "Message id: " << messageId << std::endl;
+      TRACE_DEBUG(STR("Message id: " << messageId));
       
       inputMessage >> input;
-      std::cout << "input: " << input << std::endl;
+      TRACE_DEBUG(STR("input: " << input));
     }
     
     switch (state) {
@@ -117,16 +117,16 @@ void GameLoop::gameLoop() {
       break;
 
     default:
-      std::cout << "This state doesn't exist" << std::endl;
+      TRACE_ERROR("This state doesn't exist");
     }
     input = 0;
-    sf::sleep(sf::milliseconds(20));
+    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }  
 }
 
 void GameLoop::moveCircle(sf::CircleShape &circle, float velocityX, float velocityY) {
   sf::Vector2f position = circle.getPosition();
-  std::cout << "Old x: " << position.x << ", y: " << position.y << std::endl;
+  TRACE_DEBUG(STR("Old x: " << position.x << ", y: " << position.y));
 
   if ((position.x + velocityX) < 0) {
     position.x = 0;
@@ -148,14 +148,14 @@ void GameLoop::moveCircle(sf::CircleShape &circle, float velocityX, float veloci
 
   circle.setPosition(position.x, position.y);
   sf::Vector2f newPos = circle.getPosition();
-  std::cout << "New x: " << newPos.x << ", y: " << newPos.y << std::endl;
+  TRACE_DEBUG(STR("New x: " << newPos.x << ", y: " << newPos.y));
 
   sf::Packet packet;
   packet << 33 << newPos.x << newPos.y;
 
   MessageHandler::get().pushSpriteListMessage(packet);
 
-  std::cout << "Send packet for moving circle to the left" << std::endl;
-  std::cout << "x: " << newPos.x << ", y: " << newPos.y << std::endl;
+  TRACE_DEBUG("Send packet for moving circle to the left");
+  TRACE_DEBUG(STR("x: " << newPos.x << ", y: " << newPos.y));
   packet.clear();
 }

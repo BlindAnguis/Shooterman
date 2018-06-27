@@ -1,5 +1,4 @@
-#ifndef CLIENT_MAIN_H
-#define CLIENT_MAIN_H
+#pragma once
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -9,11 +8,11 @@
 #include "../Input/Input.h"
 #include "../MessageHandler/MessageHandler.h"
 #include "../GUI/Gui.h"
-#include "../../Server/Main/GameLoop.h"
 #include "../Sound/Sound.h"
+#include "../../Common/Trace.h"
+#include "../../Server/Main/GameLoop.h"
 
-class ClientMain
-{
+class ClientMain : Trace {
 public:
 	ClientMain();
 
@@ -23,5 +22,3 @@ private:
 
   void handleSystemMessages();
 };
-
-#endif // ifndef CLIENT_MAIN_H

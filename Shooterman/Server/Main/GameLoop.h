@@ -2,14 +2,16 @@
 #include <thread>
 #include "../../Client/MessageHandler/MessageHandler.h"
 #include "../../Common/KeyBindings.h"
+#include "../../Common/Trace.h"
+#include "../../Common/Constants.h"
 
-class GameLoop {
+class GameLoop : Trace {
 public:
   GameLoop();
   void start();
   void stop();
 
-private: 
+private:
   bool mRunning;
   std::thread* mGameLoopThread;
   Subscriber mInputSubscriber;

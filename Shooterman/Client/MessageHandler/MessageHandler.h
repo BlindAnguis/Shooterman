@@ -1,5 +1,4 @@
-#ifndef MESSAGE_HANDLER_H
-#define MESSAGE_HANDLER_H
+#pragma once
 
 #include <queue>
 #include <list>
@@ -8,8 +7,9 @@
 #include <SFML/Network.hpp>
 
 #include "../../Common/Subscriber.h"
+#include "../../Common/Trace.h"
 
-class MessageHandler {
+class MessageHandler : Trace {
 public:
   static MessageHandler& get() {
     static MessageHandler instance;
@@ -31,7 +31,7 @@ public:
   void unsubscribeAll(Subscriber* subscriber);
 
 private:
-  MessageHandler() : mCurrentId(0) {}
+  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; }
 
   void tryToGiveId(Subscriber* subscriber);
 
@@ -44,4 +44,3 @@ private:
   std::list<Subscriber*> mInputSubscriberList;
   std::list<Subscriber*> mSpriteListSubscriberList;
 };
-#endif // ifndef MESSAGE_HANDLER_H
