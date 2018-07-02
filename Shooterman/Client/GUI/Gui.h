@@ -11,6 +11,7 @@
 #include "../../Common/MessageId.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Constants.h"
+#include "../../Common/Messages/SpriteMessage.h"
 
 class Gui : Trace {
 public:

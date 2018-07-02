@@ -48,7 +48,7 @@ void ClientMain::handleSystemMessages() {
       TRACE_INFO("Preparing to shut down");
       mRunning = false;
     } else {
-      TRACE_WARNING(STR("Unknown system message: " << messageId));
+      TRACE_WARNING("Unknown system message: " << messageId);
     }
   }
 }

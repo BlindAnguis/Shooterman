@@ -59,7 +59,7 @@ void Input::handleSystemMessages() {
       mRunning = false;
       TRACE_INFO("Preparing to shut down");
     } else {
-      TRACE_WARNING(STR("Unknown system message : " << messageId));
+      TRACE_WARNING("Unknown system message : " << messageId);
     }
   }
 }

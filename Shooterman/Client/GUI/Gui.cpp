@@ -42,14 +42,21 @@ void Gui::render() {
     }
     while (!spriteMessageQueue.empty()) {
       spriteMessage = spriteMessageQueue.front();
-      spriteMessageQueue.pop();
-      int id;
-      sf::Vector2f position;
-      spriteMessage >> id >> position.x >> position.y;
-      //TRACE_DEBUG("ID: " << id << " Pos: " << position.x << ":" << position.y);
-      sf::Sprite sprite = mSpriteManager->get(id);
-      sprite.setPosition(position);
-      mWindow->draw(sprite);
+      int messageID;
+      spriteMessage >> messageID;
+      if (messageID == SPRITE_LIST) {
+        spriteMessageQueue.pop();
+        SpriteMessage sm;
+        sm.unpack(spriteMessage);
+        std::pair<int, sf::Vector2f> spriteData = sm.getSpriteData();
+        while (spriteData.first != -1) {
+          //TRACE_DEBUG(spriteData.first);
+          sf::Sprite sprite = mSpriteManager->get(spriteData.first);
+          sprite.setPosition(spriteData.second);
+          mWindow->draw(sprite);
+          spriteData = sm.getSpriteData();
+        }
+      }
     }
 
     if (render) {
@@ -73,7 +80,7 @@ void Gui::handleSystemMessages() {
       TRACE_INFO("Closing GUI window");
       mWindow->close();
     } else {
-      TRACE_WARNING(STR("Unknown system message : " << messageId));
+      TRACE_WARNING("Unknown system message : " << messageId);
     }
   }
 }

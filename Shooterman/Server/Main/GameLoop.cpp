@@ -2,9 +2,11 @@
 #include <SFML\Graphics.hpp>
 #include "GameLoop.h"
 #include "../../Common/KeyBindings.h"
+#include "../../Common/Messages/SpriteMessage.h"
 
 GameLoop::GameLoop() {
   mName = "GAMELOOP";
+  mDebugEnabled = false;
 }
 
 void GameLoop::start() {
@@ -43,12 +45,13 @@ void GameLoop::gameLoop() {
       inputMessagesQueue.pop();
 
       inputMessage >> messageId;
-      TRACE_DEBUG(STR("Message id: " << messageId));
+      TRACE_DEBUG("Message id: " << messageId);
       
       inputMessage >> input;
-      TRACE_DEBUG(STR("input: " << input));
+      TRACE_DEBUG("input: " << input);
     }
-    
+
+    SpriteMessage sm;
     switch (state) {
     case GameLoopState::LOBBY:
       //std::cout << "In the lobby" << std::endl;
@@ -61,7 +64,8 @@ void GameLoop::gameLoop() {
     case GameLoopState::SETUP_GAME:
       //std::cout << "Setting up the game" << std::endl;
       shape.setFillColor(sf::Color::Green);
-      movePacket << 33 << shape.getPosition().x << shape.getPosition().y;
+      sm.addSpriteData(33, shape.getPosition());
+      movePacket = sm.pack();
       MessageHandler::get().pushSpriteListMessage(movePacket);
       movePacket.clear();
       state = GameLoopState::PLAYING;
@@ -126,7 +130,7 @@ void GameLoop::gameLoop() {
 
 void GameLoop::moveCircle(sf::CircleShape &circle, float velocityX, float velocityY) {
   sf::Vector2f position = circle.getPosition();
-  TRACE_DEBUG(STR("Old x: " << position.x << ", y: " << position.y));
+  TRACE_DEBUG("Old x: " << position.x << ", y: " << position.y);
 
   if ((position.x + velocityX) < 0) {
     position.x = 0;
@@ -148,14 +152,16 @@ void GameLoop::moveCircle(sf::CircleShape &circle, float velocityX, float veloci
 
   circle.setPosition(position.x, position.y);
   sf::Vector2f newPos = circle.getPosition();
-  TRACE_DEBUG(STR("New x: " << newPos.x << ", y: " << newPos.y));
+  TRACE_DEBUG("New x: " << newPos.x << ", y: " << newPos.y);
 
   sf::Packet packet;
-  packet << 33 << newPos.x << newPos.y;
-
+  //packet << 33 << newPos.x << newPos.y;
+  SpriteMessage sm;
+  sm.addSpriteData(33, newPos);
+  packet = sm.pack();
   MessageHandler::get().pushSpriteListMessage(packet);
 
   TRACE_DEBUG("Send packet for moving circle to the left");
-  TRACE_DEBUG(STR("x: " << newPos.x << ", y: " << newPos.y));
+  TRACE_DEBUG("x: " << newPos.x << ", y: " << newPos.y);
   packet.clear();
 }
