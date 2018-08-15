@@ -36,7 +36,7 @@ void Gui::render() {
     std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
     sf::Packet spriteMessage;
     if (!spriteMessageQueue.empty()) {
-      mWindow->clear(sf::Color::White);
+      mWindow->clear(sf::Color::Green);
       //TRACE_DEBUG(spriteMessageQueue.size());
       render = true;
     }

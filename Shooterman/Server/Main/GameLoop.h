@@ -14,7 +14,6 @@ public:
 private:
   bool mRunning;
   std::thread* mGameLoopThread;
-  Subscriber mInputSubscriber;
   void gameLoop();
   void moveCircle(sf::CircleShape &circle, float velocityX, float velocityY);
 };
