@@ -161,7 +161,15 @@
     <ClCompile Include="Client\Main\ClientMain.cpp" />
     <ClCompile Include="Client\MessageHandler\MessageHandler.cpp" />
     <ClCompile Include="Client\Sound\Sound.cpp" />
+    <ClCompile Include="Server\Engine\Engine.cpp" />
+    <ClCompile Include="Server\EntityManager\EntityManager.cpp" />
     <ClCompile Include="Server\Main\GameLoop.cpp" />
+    <ClCompile Include="Server\Systems\CollisionSystem\Collision.cpp" />
+    <ClCompile Include="Server\Systems\CollisionSystem\CollisionSystem.cpp" />
+    <ClCompile Include="Server\Systems\InputSystem\InputSystem.cpp" />
+    <ClCompile Include="Server\Systems\MovementSystem\MovementSystem.cpp" />
+    <ClCompile Include="Server\Systems\ObservableIf.cpp" />
+    <ClCompile Include="Server\Systems\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Shooterman.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +182,19 @@
     <ClInclude Include="Common\KeyBindings.h" />
     <ClInclude Include="Common\MessageId.h" />
     <ClInclude Include="Common\Subscriber.h" />
+    <ClInclude Include="Server\Components\ComponentManager.h" />
+    <ClInclude Include="Server\Components\Components.h" />
+    <ClInclude Include="Server\Engine\Engine.h" />
+    <ClInclude Include="Server\EntityManager\EntityManager.h" />
     <ClInclude Include="Server\Main\GameLoop.h" />
+    <ClInclude Include="Server\Systems\CollisionSystem\Collision.h" />
+    <ClInclude Include="Server\Systems\CollisionSystem\CollisionSystem.h" />
+    <ClInclude Include="Server\Systems\InputSystem\InputSystem.h" />
+    <ClInclude Include="Server\Systems\MovementSystem\MovementSystem.h" />
+    <ClInclude Include="Server\Systems\ObservableIf.h" />
+    <ClInclude Include="Server\Systems\ObserverIf.h" />
+    <ClInclude Include="Server\Systems\RenderSystem\RenderSystem.h" />
+    <ClInclude Include="Server\Systems\System.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
