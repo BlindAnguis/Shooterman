@@ -15,7 +15,6 @@ private:
   bool mRunning;
   std::thread* mGameLoopThread;
   void gameLoop();
-  void moveCircle(sf::CircleShape &circle, float velocityX, float velocityY);
 };
 
 enum class GameLoopState { 
