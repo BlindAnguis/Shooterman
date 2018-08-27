@@ -14,18 +14,19 @@ Input::Input()
 
 void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  mCurrentGameState = GAME_STATE::STATE_MAIN_MENU;
+  MessageHandler::get().subscribeToGameStateMessages(&mSystemMessageSubscriber);
+  mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   std::uint32_t keyboardBitmask;
   while (mRunning) {
     switch (mCurrentGameState) {
-    case GAME_STATE::STATE_MAIN_MENU:
+    case GAME_STATE::MAIN_MENU:
       // Do nothing
       break;
-    case GAME_STATE::STATE_LOBBY:
+    case GAME_STATE::LOBBY:
       // Do nothing
       break;
-    case GAME_STATE::STATE_PLAYING:
+    case GAME_STATE::PLAYING:
       keyboardBitmask = 0;
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         keyboardBitmask += A_KEY;
@@ -47,7 +48,7 @@ void Input::readInput() {
       }
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        GameStateMessage gsm(GAME_STATE::STATE_MAIN_MENU);
+        GameStateMessage gsm(GAME_STATE::MAIN_MENU);
         MessageHandler::get().pushSystemMessage(gsm.pack());
       }
 

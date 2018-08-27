@@ -1,5 +1,32 @@
 #include "MessageHandler.h"
 
+// GAME STATE
+void MessageHandler::subscribeToGameStateMessages(Subscriber* newSubscriber) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  tryToGiveId(newSubscriber);
+  mGameStateSubscriberList.push_back(newSubscriber);
+  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to game state list");
+}
+
+void MessageHandler::unSubscribeToGameStateMessages(Subscriber* newSubscriber) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  for (auto it = mGameStateSubscriberList.begin(); it != mGameStateSubscriberList.end(); ++it) {
+    if ((*it)->getId() == newSubscriber->getId()) {
+      it = mGameStateSubscriberList.erase(it);
+      it--;
+      TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to game state list");
+    }
+  }
+}
+
+void MessageHandler::pushGameStateMessage(sf::Packet message) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  for (Subscriber* subscriber : mGameStateSubscriberList) {
+    subscriber->sendMessage(message);
+  }
+}
+
+// SYSTEM
 void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSystemSubscriberLock);
   tryToGiveId(newSubscriber);
@@ -25,7 +52,7 @@ void MessageHandler::pushSystemMessage(sf::Packet message) {
   }
 }
 
-
+// INPUT
 void MessageHandler::subscribeToInputMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mInputSubscriberLock);
   tryToGiveId(newSubscriber);
@@ -51,7 +78,7 @@ void MessageHandler::pushInputMessage(sf::Packet message) {
   }
 }
 
-
+// SPRITE LIST
 void MessageHandler::subscribeToSpriteListMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSpriteListSubscriberLock);
   tryToGiveId(newSubscriber);
@@ -79,6 +106,7 @@ void MessageHandler::pushSpriteListMessage(sf::Packet message) {
 
 
 void MessageHandler::unsubscribeAll(Subscriber* subscriber) {
+  unSubscribeToGameStateMessages(subscriber);
   unSubscribeToSystemMessages(subscriber);
   unSubscribeToInputMessages(subscriber);
   unSubscribeToSpriteListMessages(subscriber);

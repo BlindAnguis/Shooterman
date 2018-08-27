@@ -4,6 +4,7 @@
 InputSystem::InputSystem() {
   std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
   MessageHandler::get().subscribeToInputMessages(&mInputSubscriber);
+  MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
 }
 
 InputSystem::~InputSystem() {

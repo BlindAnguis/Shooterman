@@ -16,6 +16,10 @@ public:
     return instance;
   }
 
+  void subscribeToGameStateMessages(Subscriber* newSubscriber);
+  void unSubscribeToGameStateMessages(Subscriber* newSubscriber);
+  void pushGameStateMessage(sf::Packet message);
+
   void subscribeToSystemMessages(Subscriber* newSubscriber);
   void unSubscribeToSystemMessages(Subscriber* newSubscriber);
   void pushSystemMessage(sf::Packet message);
@@ -40,7 +44,9 @@ private:
   std::mutex mSystemSubscriberLock;
   std::mutex mInputSubscriberLock;
   std::mutex mSpriteListSubscriberLock;
+  std::mutex mGameStateSubscriberLock;
   std::list<Subscriber*> mSystemSubscriberList;
   std::list<Subscriber*> mInputSubscriberList;
   std::list<Subscriber*> mSpriteListSubscriberList;
+  std::list<Subscriber*> mGameStateSubscriberList;
 };

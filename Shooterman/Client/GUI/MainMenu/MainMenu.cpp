@@ -13,7 +13,7 @@ MainMenu::MainMenu() {
 
   mButtonList.push_back(new GUIButton("Shooterman", mFont, textColor, textColor, 72, 250, 36, NO_ACTION));
 
-  mButtonList.push_back(new GUIButton("Host Game", mFont, textColor, textHighlightColor, 56, 250, 200, LOBBY));
+  mButtonList.push_back(new GUIButton("Host Game", mFont, textColor, textHighlightColor, 56, 250, 200, B_LOBBY));
   mButtonList.push_back(new GUIButton("Join Game", mFont, textColor, textHighlightColor, 56, 250, 260, NO_ACTION));
   mButtonList.push_back(new GUIButton("Options", mFont, textColor, textHighlightColor, 56, 250, 320, NO_ACTION));
   mButtonList.push_back(new GUIButton("Exit Game", mFont, textColor, textHighlightColor, 56, 250, 380, QUIT));

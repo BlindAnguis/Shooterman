@@ -10,13 +10,14 @@ Gui::Gui() {
 void Gui::init() {
   MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().subscribeToGameStateMessages(&mSystemMessageSubscriber);
 
   mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "Shooterman");
 
   mSpriteManager = new SpriteManager();
   mSpriteManager->loadSprites();
 
-  mCurrentGameState = GAME_STATE::STATE_MAIN_MENU;
+  mCurrentGameState = GAME_STATE::MAIN_MENU;
   mLeftButtonAlreadyPressed = false;
 
   render();
@@ -51,13 +52,13 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
   mRenderNeeded = false;
 
   switch (gameState) {
-  case GAME_STATE::STATE_MAIN_MENU:
+  case GAME_STATE::MAIN_MENU:
     mainMenu();
     break;
-  case GAME_STATE::STATE_LOBBY:
+  case GAME_STATE::LOBBY:
     lobbyMenu();
     break;
-  case GAME_STATE::STATE_PLAYING:
+  case GAME_STATE::PLAYING:
     playing();
     break;
   default:
@@ -112,10 +113,10 @@ void Gui::mainMenu() {
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
     if (!mLeftButtonAlreadyPressed) {
       switch (buttonPressed) {
-      case BUTTON_PRESSED::LOBBY: {
+      case BUTTON_PRESSED::B_LOBBY: {
         // Start the game loop
-        GameStateMessage gsm(GAME_STATE::STATE_LOBBY);
-        MessageHandler::get().pushSystemMessage(gsm.pack());
+        GameStateMessage gsm(GAME_STATE::LOBBY);
+        MessageHandler::get().pushGameStateMessage(gsm.pack());
         break; }
       case BUTTON_PRESSED::QUIT: {
         sf::Packet shutdownMessage;
@@ -143,12 +144,12 @@ void Gui::lobbyMenu() {
     if (!mLeftButtonAlreadyPressed) {
       switch (buttonPressed) {
       case BUTTON_PRESSED::START: {
-        GameStateMessage gsm(GAME_STATE::STATE_PLAYING);
-        MessageHandler::get().pushSystemMessage(gsm.pack());
+        GameStateMessage gsm(GAME_STATE::PLAYING);
+        MessageHandler::get().pushGameStateMessage(gsm.pack());
         break; }
       case BUTTON_PRESSED::BACK: {
-        GameStateMessage gsm(GAME_STATE::STATE_MAIN_MENU);
-        MessageHandler::get().pushSystemMessage(gsm.pack());
+        GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+        MessageHandler::get().pushGameStateMessage(gsm.pack());
         break; }
       case BUTTON_PRESSED::NO_ACTION:
       default:

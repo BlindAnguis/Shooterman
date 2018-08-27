@@ -6,7 +6,7 @@
 #include "../EntityManager/EntityManager.h"
 #include "../Engine/Engine.h"
 #include "../Systems/InputSystem/InputSystem.h"
-#include ".././../../Common/Messages/GameStateMessage.h"
+#include "../../Common/Messages/GameStateMessage.h"
 
 GameLoop::GameLoop() {
   mName = "GAMELOOP";
@@ -43,36 +43,40 @@ void GameLoop::gameLoop() {
 
   while (mRunning) {
     state = world.getInputSystem()->getLatestGameStateMessage();
-    switch (state) {
-    case GameLoopState::LOBBY:
-      input = world.getInputSystem()->getLatestInput();
-      //if (input == A_KEY) {
-        TRACE_INFO("[SERVER: GAME_LOOP] Setting GameLoopState to SETUP_GAME");
-        state = GameLoopState::SETUP_GAME;
-      //}
-      break;
-
-    case GameLoopState::SETUP_GAME:
-      TRACE_INFO("[SERVER: GAME_LOOP] Setting GameLoopState to PLAYING");
-      state = GameLoopState::PLAYING;
-      //std::cout << "Game setup finished" << std::endl;
-      break;
-
-    case GameLoopState::PLAYING:
-      world.update();
-      break;
-
-    case GameLoopState::GAME_OVER:
-      state = GameLoopState::EXIT;
-      break;
-
-    case GameLoopState::EXIT:
-      state = GameLoopState::LOBBY;
-      break;
-
-    default:
-      TRACE_ERROR("[SERVER: GAME_LOOP] This state doesn't exist");
+    if (state == GAME_STATE::MAIN_MENU) {
+      state = GAME_STATE::PLAYING;
     }
+    switch (state) {
+      case GAME_STATE::LOBBY:
+        input = world.getInputSystem()->getLatestInput();
+        //if (input == A_KEY) {
+        TRACE_INFO("[SERVER: GAME_LOOP] Setting GameLoopState to SETUP_GAME");
+        state = GAME_STATE::SETUP_GAME;
+        //}
+        break;
+
+      case GAME_STATE::SETUP_GAME:
+        TRACE_INFO("[SERVER: GAME_LOOP] Setting GameLoopState to PLAYING");
+        state = GAME_STATE::PLAYING;
+        //std::cout << "Game setup finished" << std::endl;
+        break;
+
+      case GAME_STATE::PLAYING:
+        world.update();
+        break;
+
+      case GAME_STATE::GAME_OVER:
+        state = GAME_STATE::EXIT;
+        break;
+
+      case GAME_STATE::EXIT:
+        state = GAME_STATE::LOBBY;
+        break;
+
+      default:
+        TRACE_ERROR("[SERVER: GAME_LOOP] This state doesn't exist " << state);
+    }
+    
     input = -1;
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }  
