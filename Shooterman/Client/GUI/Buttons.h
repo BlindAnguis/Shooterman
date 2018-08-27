@@ -1,0 +1,3 @@
+#pragma once
+
+enum GUI_BUTTONS { NO_ACTION, MAIN_MENU, LOBBY, BACK, QUIT };

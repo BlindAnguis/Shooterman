@@ -6,9 +6,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
+#include "Message.h"
 #include "../MessageId.h"
 
-class SpriteMessage {
+class SpriteMessage : Message {
 public:
   SpriteMessage() {}
   ~SpriteMessage() {}

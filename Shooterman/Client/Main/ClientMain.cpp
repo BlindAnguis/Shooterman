@@ -7,28 +7,33 @@ ClientMain::ClientMain() {
   Gui gui = Gui();
   GameLoop server = GameLoop();
   //Sound sound = Sound();
-  
-  bool serverStarted = false;
+
+  mServerStarted = false;
+  mCurrentGameState = GAME_STATE::STATE_MAIN_MENU;
 
   while (mRunning) {
-	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Return)) {
-	    // Start server
-	    if (!serverStarted) {
-	      server.start();
-		  serverStarted = true;
-	    }
-	  }
-	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::F10)) {
-	    // Stop Server
-	    if(serverStarted) {
-          server.stop();
-          serverStarted = false;
+    switch (mCurrentGameState) {
+    case GAME_STATE::STATE_MAIN_MENU: {
+      // Stop Server
+      if (mServerStarted) {
+        server.stop();
+        mServerStarted = false;
       }
+      break; }
+    case GAME_STATE::STATE_LOBBY:
+      // In the lobby
+      break;
+    case GAME_STATE::STATE_PLAYING: {
+      // Start server
+      if (!mServerStarted) {
+        server.start();
+        mServerStarted = true;
+      }
+      break; }
+    default:
+      TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
-	  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-      TRACE_DEBUG("Escape pressed");
-	  }
-    sf::sleep(sf::milliseconds(20));
+    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleSystemMessages();
   }
   input.shutDown();
@@ -44,10 +49,17 @@ void ClientMain::handleSystemMessages() {
 
     auto messageId = 0;
     systemMessage >> messageId;
-    if (messageId == SHUT_DOWN) {
+    switch (messageId) {
+    case SHUT_DOWN:
       TRACE_INFO("Preparing to shut down");
       mRunning = false;
-    } else {
+      break;
+    case CHANGE_GAME_STATE: {
+      GameStateMessage gsm;
+      gsm.unpack(systemMessage);
+      mCurrentGameState = gsm.getGameState();
+      break; }
+    default:
       TRACE_WARNING("Unknown system message: " << messageId);
     }
   }

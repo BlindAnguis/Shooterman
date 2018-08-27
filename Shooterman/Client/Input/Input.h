@@ -9,6 +9,7 @@
 #include "../../Common/MessageId.h"
 #include "../../Common/Constants.h"
 #include "../MessageHandler/MessageHandler.h"
+#include "../../Common/Messages/GameStateMessage.h"
 
 
 class Input : Trace {
@@ -21,8 +22,8 @@ private:
   bool mRunning = true;
   std::thread* mInputThread;
   Subscriber mSystemMessageSubscriber;
+  GAME_STATE mCurrentGameState;
 
   void readInput();
   void handleSystemMessages();
-
 };

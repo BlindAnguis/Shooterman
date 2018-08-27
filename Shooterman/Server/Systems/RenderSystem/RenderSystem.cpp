@@ -1,6 +1,6 @@
 #include "RenderSystem.h"
 #include "../../../Client/MessageHandler/MessageHandler.h"
-#include "../../Common/Messages/SpriteMessage.h"
+#include "../../../Common/Messages/SpriteMessage.h"
 
 RenderSystem::RenderSystem() {}
 
