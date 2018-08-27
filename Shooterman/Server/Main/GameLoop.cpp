@@ -6,6 +6,7 @@
 #include "../EntityManager/EntityManager.h"
 #include "../Engine/Engine.h"
 #include "../Systems/InputSystem/InputSystem.h"
+#include ".././../../Common/Messages/GameStateMessage.h"
 
 GameLoop::GameLoop() {
   mName = "GAMELOOP";
@@ -26,7 +27,7 @@ void GameLoop::stop() {
 }
 
 void GameLoop::gameLoop() {
-  GameLoopState state = GameLoopState::LOBBY;
+  GAME_STATE state;
   mRunning = true;
   TRACE_INFO("[SERVER: GAME_LOOP] Gameloop started");
   sf::Packet movePacket;
@@ -41,6 +42,7 @@ void GameLoop::gameLoop() {
   int input = -1;
 
   while (mRunning) {
+    state = world.getInputSystem()->getLatestGameStateMessage();
     switch (state) {
     case GameLoopState::LOBBY:
       input = world.getInputSystem()->getLatestInput();

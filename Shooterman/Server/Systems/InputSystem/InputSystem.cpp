@@ -29,6 +29,19 @@ int InputSystem::getLatestInput() {
   return input;
 }
 
+GAME_STATE InputSystem::getLatestGameStateMessage() {
+  GameStateMessage gsm;
+  std::queue<sf::Packet> gameStateMessagesQueue = mGameStateSubscriber.getMessageQueue();
+  sf::Packet inputMessage;
+
+  if (!gameStateMessagesQueue.empty()) {
+    gsm.unpack(gameStateMessagesQueue.front());
+    gameStateMessagesQueue.pop();
+  }
+
+  return gsm.getGameState();
+}
+
 void InputSystem::handleInput() {
   int input = 0;
   int messageId;
