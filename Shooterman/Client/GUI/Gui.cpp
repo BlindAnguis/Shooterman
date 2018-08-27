@@ -13,6 +13,7 @@ void Gui::init() {
   MessageHandler::get().subscribeToGameStateMessages(&mSystemMessageSubscriber);
 
   mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "Shooterman");
+  mWindowOpen = true;
 
   mSpriteManager = new SpriteManager();
   mSpriteManager->loadSprites();
@@ -22,6 +23,7 @@ void Gui::init() {
 
   render();
 
+  delete mWindow;
   delete mSpriteManager;
 }
 
@@ -34,6 +36,7 @@ void Gui::render() {
 
     handleSystemMessages();
   }
+  mWindowOpen = false;
 }
 
 void Gui::handleWindowEvents(sf::RenderWindow* window) {
@@ -69,7 +72,6 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
   if (mRenderNeeded) {
     window->display();
   }
-
 }
 
 void Gui::handleSystemMessages() {
@@ -98,10 +100,9 @@ void Gui::handleSystemMessages() {
 
 void Gui::shutDown() {
   TRACE_INFO("Shutdown of module requested...");
-  while (mWindow->isOpen()) {
+  while (mWindowOpen) {
     // Wait for GUI to close window
   }
-  delete mWindow;
   mGuiThread->join();
   delete mGuiThread;
   TRACE_INFO("Shutdown of module done");

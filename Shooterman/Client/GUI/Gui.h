@@ -24,6 +24,7 @@ public:
 
 private:
   bool mDebugEnabled = true;
+  bool mWindowOpen;
   std::thread* mGuiThread;
   sf::RenderWindow* mWindow;
   Subscriber mSystemMessageSubscriber;
