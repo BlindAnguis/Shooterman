@@ -8,6 +8,8 @@ InputSystem::InputSystem() {
 }
 
 InputSystem::~InputSystem() {
+  MessageHandler::get().unsubscribeAll(&mInputSubscriber);
+  MessageHandler::get().unsubscribeAll(&mGameStateSubscriber);
 }
 
 int InputSystem::getLatestInput() {

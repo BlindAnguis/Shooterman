@@ -39,6 +39,7 @@ ClientMain::ClientMain() {
   }
   input.shutDown();
   gui.shutDown();
+  MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }
 
 void ClientMain::handleSystemMessages() {

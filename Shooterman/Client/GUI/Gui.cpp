@@ -25,6 +25,9 @@ void Gui::init() {
 
   delete mWindow;
   delete mSpriteManager;
+
+  MessageHandler::get().unsubscribeAll(&mSpriteListSubscriber);
+  MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }
 
 void Gui::render() {

@@ -60,6 +60,8 @@ void Input::readInput() {
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleSystemMessages();
   }
+
+  MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }
 
 void Input::handleSystemMessages() {

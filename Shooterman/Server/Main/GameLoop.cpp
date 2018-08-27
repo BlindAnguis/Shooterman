@@ -80,4 +80,5 @@ void GameLoop::gameLoop() {
     input = -1;
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }  
+
 }
