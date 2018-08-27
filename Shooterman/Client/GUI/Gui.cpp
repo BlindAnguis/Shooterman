@@ -36,32 +36,6 @@ void Gui::render() {
         MessageHandler::get().pushSystemMessage(shutdownMessage);
       }
     }
-    bool render = false;
-    std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
-    sf::Packet spriteMessage;
-    if (!spriteMessageQueue.empty()) {
-      mWindow->clear(sf::Color::White);
-      //TRACE_DEBUG(spriteMessageQueue.size());
-      render = true;
-    }
-    while (!spriteMessageQueue.empty()) {
-      spriteMessage = spriteMessageQueue.front();
-      int messageID;
-      spriteMessage >> messageID;
-      if (messageID == SPRITE_LIST) {
-        spriteMessageQueue.pop();
-        SpriteMessage sm;
-        sm.unpack(spriteMessage);
-        std::pair<int, sf::Vector2f> spriteData = sm.getSpriteData();
-        while (spriteData.first != -1) {
-          //TRACE_DEBUG(spriteData.first);
-          sf::Sprite sprite = mSpriteManager->get(spriteData.first);
-          sprite.setPosition(spriteData.second);
-          mWindow->draw(sprite);
-          spriteData = sm.getSpriteData();
-        }
-      }
-    }
 
     switch (mCurrentGameState) {
     case GAME_STATE::STATE_MAIN_MENU:
@@ -77,7 +51,7 @@ void Gui::render() {
       TRACE_ERROR("GAME_STATE: " << mCurrentGameState << " is not implemented");
       break;
     }
-    if (mRenderNeeded || true) {
+    if (mRenderNeeded) {
       mWindow->display();
     }
     

@@ -44,10 +44,10 @@ void GameLoop::gameLoop() {
     switch (state) {
     case GameLoopState::LOBBY:
       input = world.getInputSystem()->getLatestInput();
-      if (input == A_KEY) {
+      //if (input == A_KEY) {
         TRACE_INFO("[SERVER: GAME_LOOP] Setting GameLoopState to SETUP_GAME");
         state = GameLoopState::SETUP_GAME;
-      }
+      //}
       break;
 
     case GameLoopState::SETUP_GAME:
