@@ -7,23 +7,14 @@ enum GAME_STATE { STATE_MAIN_MENU, STATE_LOBBY, STATE_PLAYING };
 
 class GameStateMessage : Message {
 public:
-  GameStateMessage() : mGameState(GAME_STATE::STATE_MAIN_MENU) { }
-  GameStateMessage(GAME_STATE newGameState) : mGameState(newGameState) { }
+	GameStateMessage();
+  GameStateMessage(GAME_STATE newGameState);
 
-  sf::Packet pack() {
-    sf::Packet packet;
-    packet << CHANGE_GAME_STATE;
-    packet << mGameState;
-    return packet;
-  }
+  sf::Packet pack();
 
-  void unpack(sf::Packet packet) {
-    int gameState;
-    packet >> gameState;
-    mGameState = (GAME_STATE)gameState;
-  }
+  void unpack(sf::Packet packet);
 
-  GAME_STATE getGameState() { return mGameState; }
+  GAME_STATE getGameState();
 
 private:
   GAME_STATE mGameState;
