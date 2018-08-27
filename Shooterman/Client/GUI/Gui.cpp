@@ -26,38 +26,49 @@ void Gui::init() {
 
 void Gui::render() {
   while (mWindow != nullptr && mWindow->isOpen()) {
-    mRenderNeeded = false;
+    handleWindowEvents(mWindow);
 
-    sf::Event event;
-    while (mWindow->pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        sf::Packet shutdownMessage;
-        shutdownMessage << SHUT_DOWN;
-        MessageHandler::get().pushSystemMessage(shutdownMessage);
-      }
-    }
-
-    switch (mCurrentGameState) {
-    case GAME_STATE::STATE_MAIN_MENU:
-      mainMenu();
-      break;
-    case GAME_STATE::STATE_LOBBY:
-      lobbyMenu();
-      break;
-    case GAME_STATE::STATE_PLAYING:
-      playing();
-      break;
-    default:
-      TRACE_ERROR("GAME_STATE: " << mCurrentGameState << " is not implemented");
-      break;
-    }
-    if (mRenderNeeded) {
-      mWindow->display();
-    }
-    
+    renderGameState(mWindow, mCurrentGameState);
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+
     handleSystemMessages();
   }
+}
+
+void Gui::handleWindowEvents(sf::RenderWindow* window) {
+  sf::Event event;
+  
+  while (window->pollEvent(event)) {
+    if (event.type == sf::Event::Closed) {
+      sf::Packet shutdownMessage;
+      shutdownMessage << SHUT_DOWN;
+      MessageHandler::get().pushSystemMessage(shutdownMessage);
+    }
+  }
+}
+
+void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
+  mRenderNeeded = false;
+
+  switch (gameState) {
+  case GAME_STATE::STATE_MAIN_MENU:
+    mainMenu();
+    break;
+  case GAME_STATE::STATE_LOBBY:
+    lobbyMenu();
+    break;
+  case GAME_STATE::STATE_PLAYING:
+    playing();
+    break;
+  default:
+    TRACE_ERROR("GAME_STATE: " << gameState << " is not implemented");
+    break;
+  }
+
+  if (mRenderNeeded) {
+    window->display();
+  }
+
 }
 
 void Gui::handleSystemMessages() {

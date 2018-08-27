@@ -37,6 +37,8 @@ private:
 
   void init();
   void render();
+  void handleWindowEvents(sf::RenderWindow* window);
+  void renderGameState(sf::RenderWindow* window, GAME_STATE gameState);
   void handleSystemMessages();
   void mainMenu();
   void lobbyMenu();
