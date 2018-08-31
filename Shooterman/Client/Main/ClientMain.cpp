@@ -3,7 +3,7 @@
 ClientMain::ClientMain() {
   mName = "CLIENTMAIN";
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
   Input input = Input();
   Gui gui = Gui();
   GameLoop server = GameLoop();
@@ -35,6 +35,7 @@ ClientMain::ClientMain() {
       TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+    handleGameStateMessages();
     handleSystemMessages();
   }
   input.shutDown();
@@ -56,13 +57,21 @@ void ClientMain::handleSystemMessages() {
       TRACE_INFO("Preparing to shut down");
       mRunning = false;
       break;
-    case CHANGE_GAME_STATE: {
-      GameStateMessage gsm;
-      gsm.unpack(systemMessage);
-      mCurrentGameState = gsm.getGameState();
-      break; }
     default:
       TRACE_WARNING("Unknown system message: " << messageId);
     }
+  }
+}
+
+void ClientMain::handleGameStateMessages() {
+  std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
+  sf::Packet gameStateMessage;
+  while (!gameStateMessageQueue.empty()) {
+    gameStateMessage = gameStateMessageQueue.front();
+    gameStateMessageQueue.pop();
+
+    GameStateMessage gsm;
+    gsm.unpack(gameStateMessage);
+    mCurrentGameState = gsm.getGameState();
   }
 }

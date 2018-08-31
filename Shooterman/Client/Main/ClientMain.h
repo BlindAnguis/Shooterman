@@ -20,8 +20,10 @@ public:
 private:
   bool mRunning = true;
   Subscriber mSystemMessageSubscriber;
+  Subscriber mGameStateMessageSubscriber;
   bool mServerStarted;
   GAME_STATE mCurrentGameState;
 
   void handleSystemMessages();
+  void handleGameStateMessages();
 };

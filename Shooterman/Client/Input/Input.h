@@ -22,8 +22,10 @@ private:
   bool mRunning = true;
   std::thread* mInputThread;
   Subscriber mSystemMessageSubscriber;
+  Subscriber mGameStateMessageSubscriber;
   GAME_STATE mCurrentGameState;
 
   void readInput();
   void handleSystemMessages();
+  void handleGameStateMessages();
 };

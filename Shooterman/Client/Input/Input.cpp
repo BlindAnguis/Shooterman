@@ -14,7 +14,7 @@ Input::Input()
 
 void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   std::uint32_t keyboardBitmask;
@@ -49,7 +49,7 @@ void Input::readInput() {
 
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-        MessageHandler::get().pushSystemMessage(gsm.pack());
+        MessageHandler::get().pushGameStateMessage(gsm.pack());
       }
 
       break;
@@ -58,6 +58,7 @@ void Input::readInput() {
     }
 
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+    handleGameStateMessages();
     handleSystemMessages();
   }
 
@@ -78,14 +79,24 @@ void Input::handleSystemMessages() {
       mRunning = false;
       TRACE_INFO("Preparing to shut down");
       break;
-    case CHANGE_GAME_STATE: {
-      GameStateMessage gsm;
-      gsm.unpack(systemMessage);
-      mCurrentGameState = gsm.getGameState();
-      break; }
     default:
       TRACE_WARNING("Unknown system message : " << messageId);
     }
+  }
+}
+
+void Input::handleGameStateMessages() {
+  std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
+  sf::Packet gameStateMessage;
+  while (!gameStateMessageQueue.empty()) {
+    gameStateMessage = gameStateMessageQueue.front();
+    gameStateMessageQueue.pop();
+
+    int messageId = 0;
+    gameStateMessage >> messageId;
+    GameStateMessage gsm;
+    gsm.unpack(gameStateMessage);
+    mCurrentGameState = gsm.getGameState();
   }
 }
 

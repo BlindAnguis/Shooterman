@@ -10,7 +10,7 @@ Gui::Gui() {
 void Gui::init() {
   MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
 
   mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "Shooterman");
   mWindowOpen = true;
@@ -37,6 +37,7 @@ void Gui::render() {
     renderGameState(mWindow, mCurrentGameState);
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
 
+    handleGameStateMessages();
     handleSystemMessages();
   }
   mWindowOpen = false;
@@ -77,6 +78,21 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
   }
 }
 
+void Gui::handleGameStateMessages() {
+  std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
+  sf::Packet gameStateMessage;
+  while (!gameStateMessageQueue.empty()) {
+    gameStateMessage = gameStateMessageQueue.front();
+    gameStateMessageQueue.pop();
+
+    auto messageId = 0;
+    gameStateMessage >> messageId;
+    GameStateMessage gsm;
+    gsm.unpack(gameStateMessage);
+    mCurrentGameState = gsm.getGameState();
+  }
+}
+
 void Gui::handleSystemMessages() {
   std::queue<sf::Packet> systemMessageQueue = mSystemMessageSubscriber.getMessageQueue();
   sf::Packet systemMessage;
@@ -90,11 +106,7 @@ void Gui::handleSystemMessages() {
     case SHUT_DOWN:
       TRACE_INFO("Closing GUI window");
       mWindow->close();
-    case CHANGE_GAME_STATE: {
-      GameStateMessage gsm;
-      gsm.unpack(systemMessage);
-      mCurrentGameState = gsm.getGameState();
-      break; }
+      break;
     default:
       TRACE_WARNING("Unknown system message : " << messageId);
     }

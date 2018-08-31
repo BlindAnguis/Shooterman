@@ -28,6 +28,7 @@ private:
   std::thread* mGuiThread;
   sf::RenderWindow* mWindow;
   Subscriber mSystemMessageSubscriber;
+  Subscriber mGameStateMessageSubscriber;
   Subscriber mSpriteListSubscriber;
   SpriteManager* mSpriteManager;
   GAME_STATE mCurrentGameState;
@@ -41,6 +42,7 @@ private:
   void handleWindowEvents(sf::RenderWindow* window);
   void renderGameState(sf::RenderWindow* window, GAME_STATE gameState);
   void handleSystemMessages();
+  void handleGameStateMessages();
   void mainMenu();
   void lobbyMenu();
   void playing();
