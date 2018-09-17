@@ -85,8 +85,8 @@ void Gui::handleGameStateMessages() {
     gameStateMessage = gameStateMessageQueue.front();
     gameStateMessageQueue.pop();
 
-    auto messageId = 0;
-    gameStateMessage >> messageId;
+    //auto messageId = 0;
+    //gameStateMessage >> messageId;
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
     mCurrentGameState = gsm.getGameState();

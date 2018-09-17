@@ -92,8 +92,6 @@ void Input::handleGameStateMessages() {
     gameStateMessage = gameStateMessageQueue.front();
     gameStateMessageQueue.pop();
 
-    int messageId = 0;
-    gameStateMessage >> messageId;
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
     mCurrentGameState = gsm.getGameState();
