@@ -15,6 +15,7 @@ Input::Input()
 void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
+  MessageHandler::get().subscribeToMouseMessages(&mMouseMessageSubscriber);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   std::uint32_t keyboardBitmask;
@@ -43,6 +44,8 @@ void Input::readInput() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
           keyboardBitmask += S_KEY;
         }
+
+        getLatestMousePosition();
 
         if (keyboardBitmask != 0) {
           sf::Packet inputKeyPacket;
@@ -99,6 +102,22 @@ void Input::handleGameStateMessages() {
     gsm.unpack(gameStateMessage);
     mCurrentGameState = gsm.getGameState();
   }
+}
+
+void Input::getLatestMousePosition() {
+  std::queue<sf::Packet> mouseMessageQueue = mMouseMessageSubscriber.getMessageQueue();
+  sf::Packet mouseMessage;
+
+  while (!mouseMessageQueue.empty()) {
+    mouseMessage = mouseMessageQueue.front();
+    mouseMessageQueue.pop();
+
+    MouseMessage mm;
+    mm.unpack(mouseMessage);
+    if (mm.getPosition() != sf::Vector2i()) {
+      mLastMousePosition = mm.getPosition();
+    }
+  }  
 }
 
 void Input::shutDown() {

@@ -56,6 +56,7 @@
     <ClInclude Include="Server\Systems\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Server\Systems\System.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
+    <ClInclude Include="Common\Messages\MouseMessage.h" />
     <ClInclude Include="Server\Network\HostListener.h" />
   </ItemGroup>
   <ItemGroup>

@@ -52,6 +52,10 @@ void Gui::handleWindowEvents(sf::RenderWindow* window) {
       shutdownMessage << SHUT_DOWN;
       MessageHandler::get().pushSystemMessage(shutdownMessage);
     }
+    if (event.type == sf::Event::MouseMoved) {
+      MouseMessage mm(sf::Mouse::getPosition(*window));
+      MessageHandler::get().pushMouseMessage(mm.pack());
+    }
   }
 }
 
@@ -196,6 +200,7 @@ void Gui::playing() {
   if (!spriteMessageQueue.empty()) {
     mWindow->clear(sf::Color::White);
   }
+
   while (!spriteMessageQueue.empty()) {
     spriteMessage = spriteMessageQueue.front();
     int messageID;

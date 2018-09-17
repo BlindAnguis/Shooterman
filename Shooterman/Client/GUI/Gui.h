@@ -15,6 +15,7 @@
 #include "../../Common/Constants.h"
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/GameStateMessage.h"
+#include "../../Common/Messages/MouseMessage.h"
 
 class Gui : Trace {
 public:

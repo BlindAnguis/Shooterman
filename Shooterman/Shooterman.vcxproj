@@ -193,6 +193,7 @@
     <ClInclude Include="Common\KeyBindings.h" />
     <ClInclude Include="Common\MessageId.h" />
     <ClInclude Include="Common\Messages\GameStateMessage.h" />
+    <ClInclude Include="Common\Messages\MouseMessage.h" />
     <ClInclude Include="Common\Messages\Message.h" />
     <ClInclude Include="Common\Messages\SpriteMessage.h" />
     <ClInclude Include="Common\Subscriber.h" />

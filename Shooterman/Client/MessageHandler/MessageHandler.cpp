@@ -108,11 +108,39 @@ void MessageHandler::pushSpriteListMessage(sf::Packet message) {
   }
 }
 
+// MOUSE LIST
+void MessageHandler::subscribeToMouseMessages(Subscriber* newSubscriber) {
+  std::lock_guard<std::mutex> lockGuard(mMouseSubscriberLock);
+  tryToGiveId(newSubscriber);
+  mMouseSubscriberList.push_back(newSubscriber);
+  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to mouse list");
+}
+
+void MessageHandler::unSubscribeToMouseMessages(Subscriber* newSubscriber) {
+  std::lock_guard<std::mutex> lockGuard(mMouseSubscriberLock);
+  for (auto it = mMouseSubscriberList.begin(); it != mMouseSubscriberList.end(); /**/) {
+    if ((*it)->getId() == newSubscriber->getId()) {
+      it = mMouseSubscriberList.erase(it);
+      TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to mouse list");
+    } else {
+      ++it;
+    }
+  }
+}
+
+void MessageHandler::pushMouseMessage(sf::Packet message) {
+  std::lock_guard<std::mutex> lockGuard(mMouseSubscriberLock);
+  for (Subscriber* subscriber : mMouseSubscriberList) {
+    subscriber->sendMessage(message);
+  }
+}
+
 void MessageHandler::unsubscribeAll(Subscriber* subscriber) {
   unSubscribeToGameStateMessages(subscriber);
   unSubscribeToSystemMessages(subscriber);
   unSubscribeToInputMessages(subscriber);
   unSubscribeToSpriteListMessages(subscriber);
+  unSubscribeToMouseMessages(subscriber);
 }
 
 void MessageHandler::tryToGiveId(Subscriber* subscriber) {

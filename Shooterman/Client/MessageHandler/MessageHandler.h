@@ -32,6 +32,10 @@ public:
   void unSubscribeToSpriteListMessages(Subscriber* newSubscriber);
   void pushSpriteListMessage(sf::Packet message);
 
+  void subscribeToMouseMessages(Subscriber* newSubscriber);
+  void unSubscribeToMouseMessages(Subscriber* newSubscriber);
+  void pushMouseMessage(sf::Packet message);
+
   void unsubscribeAll(Subscriber* subscriber);
 
 private:
@@ -45,8 +49,10 @@ private:
   std::mutex mInputSubscriberLock;
   std::mutex mSpriteListSubscriberLock;
   std::mutex mGameStateSubscriberLock;
+  std::mutex mMouseSubscriberLock;
   std::list<Subscriber*> mSystemSubscriberList;
   std::list<Subscriber*> mInputSubscriberList;
   std::list<Subscriber*> mSpriteListSubscriberList;
   std::list<Subscriber*> mGameStateSubscriberList;
+  std::list<Subscriber*> mMouseSubscriberList;
 };
