@@ -65,6 +65,8 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
   case GAME_STATE::LOBBY:
     lobbyMenu();
     break;
+  case GAME_STATE::JOIN:
+    break;
   case GAME_STATE::PLAYING:
     playing();
     break;
@@ -133,12 +135,19 @@ void Gui::mainMenu() {
         // Start the game loop
         GameStateMessage gsm(GAME_STATE::LOBBY);
         MessageHandler::get().pushGameStateMessage(gsm.pack());
-        break; }
-      case BUTTON_PRESSED::QUIT: {
+        break; 
+      }
+      case BUTTON_PRESSED::B_JOIN: {
+        GameStateMessage gsm(GAME_STATE::JOIN);
+        MessageHandler::get().pushGameStateMessage(gsm.pack());
+        break;
+      }
+      case BUTTON_PRESSED::B_QUIT: {
         sf::Packet shutdownMessage;
         shutdownMessage << SHUT_DOWN;
         MessageHandler::get().pushSystemMessage(shutdownMessage);
-        break; }
+        break; 
+      }
       case BUTTON_PRESSED::NO_ACTION:
       default:
         // Do nothing;
@@ -159,11 +168,11 @@ void Gui::lobbyMenu() {
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
     if (!mLeftButtonAlreadyPressed) {
       switch (buttonPressed) {
-      case BUTTON_PRESSED::START: {
+      case BUTTON_PRESSED::B_START: {
         GameStateMessage gsm(GAME_STATE::PLAYING);
         MessageHandler::get().pushGameStateMessage(gsm.pack());
         break; }
-      case BUTTON_PRESSED::BACK: {
+      case BUTTON_PRESSED::B_BACK: {
         GameStateMessage gsm(GAME_STATE::MAIN_MENU);
         MessageHandler::get().pushGameStateMessage(gsm.pack());
         break; }

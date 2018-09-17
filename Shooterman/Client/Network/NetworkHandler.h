@@ -10,12 +10,11 @@
 #include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
 
-
 class NetworkHandler : Trace {
 public:
   NetworkHandler();
 
-  void startup();
+  void start();
   void shutDown();
 
 private:
@@ -23,4 +22,6 @@ private:
   std::thread* mNetworkHandlerThread;
   Subscriber mMessageSubscriber;
   sf::TcpSocket mSocket;
+
+  void startup();
 };

@@ -7,32 +7,47 @@ ClientMain::ClientMain() {
   Input input = Input();
   Gui gui = Gui();
   GameLoop server = GameLoop();
+  NetworkHandler networkHandler;
   //Sound sound = Sound();
 
   mServerStarted = false;
+  bool networkHandlerStarted = false;
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   while (mRunning) {
     switch (mCurrentGameState) {
-    case GAME_STATE::MAIN_MENU: {
-      // Stop Server
-      if (mServerStarted) {
-        server.stop();
-        mServerStarted = false;
+      case GAME_STATE::MAIN_MENU: {
+        // Stop Server
+        if (mServerStarted) {
+          server.stop();
+          mServerStarted = false;
+        }
+        if (networkHandlerStarted) {
+          networkHandler.shutDown();
+          networkHandlerStarted = false;
+        }
+        break; 
       }
-      break; }
-    case GAME_STATE::LOBBY: {
-      // In the lobby
-      if (!mServerStarted) {
-        server.start();
-        mServerStarted = true;
+      case GAME_STATE::LOBBY: {
+        // In the lobby
+        if (!mServerStarted) {
+          server.start();
+          mServerStarted = true;
+        }
+        break; 
       }
-      break; }
-    case GAME_STATE::PLAYING: {
-      // Start server
-      break; }
-    default:
-      TRACE_ERROR("Unknown game state: " << mCurrentGameState);
+      case GAME_STATE::JOIN:
+        if (!networkHandlerStarted) {
+          networkHandler.start();
+          networkHandlerStarted = true;
+        }
+          break;
+      case GAME_STATE::PLAYING: {
+        // Start server
+        break;
+      }
+      default:
+        TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleGameStateMessages();

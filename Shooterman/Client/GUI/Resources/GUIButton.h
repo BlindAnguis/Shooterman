@@ -4,7 +4,7 @@
 
 #include "../../../Common/Trace.h"
 
-enum BUTTON_PRESSED { NO_ACTION, B_MAIN_MENU, B_LOBBY, START, BACK, QUIT };
+enum BUTTON_PRESSED { NO_ACTION, B_MAIN_MENU, B_LOBBY, B_START, B_JOIN, B_BACK, B_QUIT };
 
 class GUIButton : Trace {
 public:

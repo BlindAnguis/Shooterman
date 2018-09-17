@@ -13,8 +13,8 @@ LobbyMenu::LobbyMenu() {
 
   mButtonList.push_back(new GUIButton("Lobby", mFont, textColor, textColor, 72, 250, 36, NO_ACTION));
 
-  mButtonList.push_back(new GUIButton("Start Game", mFont, textColor, textHighlightColor, 56, 250, 200, START));
-  mButtonList.push_back(new GUIButton("Back", mFont, textColor, textHighlightColor, 56, 250, 380, BACK));
+  mButtonList.push_back(new GUIButton("Start Game", mFont, textColor, textHighlightColor, 56, 250, 200, B_START));
+  mButtonList.push_back(new GUIButton("Back", mFont, textColor, textHighlightColor, 56, 250, 380, B_BACK));
 }
 
 LobbyMenu::~LobbyMenu() {

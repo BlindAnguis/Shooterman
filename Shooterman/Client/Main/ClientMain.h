@@ -9,6 +9,7 @@
 #include "../MessageHandler/MessageHandler.h"
 #include "../GUI/Gui.h"
 #include "../Sound/Sound.h"
+#include "../Network/NetworkHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Trace.h"
 #include "../../Server/Main/GameLoop.h"

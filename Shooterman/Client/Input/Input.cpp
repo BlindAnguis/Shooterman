@@ -20,41 +20,44 @@ void Input::readInput() {
   std::uint32_t keyboardBitmask;
   while (mRunning) {
     switch (mCurrentGameState) {
-    case GAME_STATE::MAIN_MENU:
-      // Do nothing
-      break;
-    case GAME_STATE::LOBBY:
-      // Do nothing
-      break;
-    case GAME_STATE::PLAYING:
-      keyboardBitmask = 0;
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        keyboardBitmask += A_KEY;
-      }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        keyboardBitmask += D_KEY;
-      }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        keyboardBitmask += W_KEY;
-      }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-        keyboardBitmask += S_KEY;
-      }
+      case GAME_STATE::MAIN_MENU:
+        // Do nothing
+        break;
+      case GAME_STATE::LOBBY:
+        // Do nothing
+        break;
+      case GAME_STATE::JOIN:
+        // Do nothing
+        break;
+      case GAME_STATE::PLAYING:
+        keyboardBitmask = 0;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+          keyboardBitmask += A_KEY;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+          keyboardBitmask += D_KEY;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+          keyboardBitmask += W_KEY;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+          keyboardBitmask += S_KEY;
+        }
 
-      if (keyboardBitmask != 0) {
-        sf::Packet inputKeyPacket;
-        inputKeyPacket << INPUT_KEYS << keyboardBitmask;
-        MessageHandler::get().pushInputMessage(inputKeyPacket);
-      }
+        if (keyboardBitmask != 0) {
+          sf::Packet inputKeyPacket;
+          inputKeyPacket << INPUT_KEYS << keyboardBitmask;
+          MessageHandler::get().pushInputMessage(inputKeyPacket);
+        }
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-        GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-        MessageHandler::get().pushGameStateMessage(gsm.pack());
-      }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+          GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+          MessageHandler::get().pushGameStateMessage(gsm.pack());
+        }
 
-      break;
-    default:
-      TRACE_ERROR("Unknown game state: " << mCurrentGameState);
+        break;
+      default:
+        TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
 
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
