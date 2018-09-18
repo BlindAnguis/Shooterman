@@ -1,11 +1,13 @@
 #pragma once
 
 #include <thread>
+#include <map>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
 #include "SpriteManager.h"
+#include "Resources/MenuBase.h"
 #include "MainMenu/MainMenu.h"
 #include "LobbyMenu/LobbyMenu.h"
 #include "../MessageHandler/MessageHandler.h"
@@ -35,16 +37,13 @@ private:
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
-  MainMenu mMainMenu;
-  LobbyMenu mLobbyMenu;
+  std::map<GAME_STATE, MenuBase*> mMenuMap;
 
   void init();
   void render();
-  void handleWindowEvents(sf::RenderWindow* window);
+  void handleWindowEvents();
   void renderGameState(sf::RenderWindow* window, GAME_STATE gameState);
   void handleSystemMessages();
   void handleGameStateMessages();
-  void mainMenu();
-  void lobbyMenu();
   void playing();
 };

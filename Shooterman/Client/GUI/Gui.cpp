@@ -12,6 +12,9 @@ void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
 
+  mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
+  mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());
+
   mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "Shooterman");
   mWindowOpen = true;
 
@@ -32,7 +35,7 @@ void Gui::init() {
 
 void Gui::render() {
   while (mWindow != nullptr && mWindow->isOpen()) {
-    handleWindowEvents(mWindow);
+    handleWindowEvents();
 
     renderGameState(mWindow, mCurrentGameState);
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
@@ -43,18 +46,22 @@ void Gui::render() {
   mWindowOpen = false;
 }
 
-void Gui::handleWindowEvents(sf::RenderWindow* window) {
+void Gui::handleWindowEvents() {
   sf::Event event;
   
-  while (window->pollEvent(event)) {
+  while (mWindow->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       sf::Packet shutdownMessage;
       shutdownMessage << SHUT_DOWN;
       MessageHandler::get().pushSystemMessage(shutdownMessage);
     }
     if (event.type == sf::Event::MouseMoved) {
-      MouseMessage mm(sf::Mouse::getPosition(*window));
+      MouseMessage mm(sf::Mouse::getPosition(*mWindow));
       MessageHandler::get().pushMouseMessage(mm.pack());
+    }
+    if (event.type == sf::Event::Resized) {
+      sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);
+      mWindow->setView(sf::View(visibleArea));
     }
   }
 }
@@ -64,11 +71,22 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
 
   switch (gameState) {
   case GAME_STATE::MAIN_MENU:
-    mainMenu();
+  case GAME_STATE::LOBBY: {
+    mWindow->clear(sf::Color::White);
+    sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+      if (!mLeftButtonAlreadyPressed) {
+        mMenuMap.at(gameState)->checkMouse(mousePosition);
+      }
+      mLeftButtonAlreadyPressed = true;
+    }
+    else {
+      mLeftButtonAlreadyPressed = false;
+    }
+    mMenuMap.at(gameState)->render(mWindow, mousePosition);
+    mRenderNeeded = true;
     break;
-  case GAME_STATE::LOBBY:
-    lobbyMenu();
-    break;
+  }
   case GAME_STATE::JOIN:
     break;
   case GAME_STATE::PLAYING:
@@ -127,71 +145,6 @@ void Gui::shutDown() {
   mGuiThread->join();
   delete mGuiThread;
   TRACE_INFO("Shutdown of module done");
-}
-
-void Gui::mainMenu() {
-  mWindow->clear(sf::Color::White);
-  BUTTON_PRESSED buttonPressed = mMainMenu.checkMouse(mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow)));
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-    if (!mLeftButtonAlreadyPressed) {
-      switch (buttonPressed) {
-      case BUTTON_PRESSED::B_LOBBY: {
-        // Start the game loop
-        GameStateMessage gsm(GAME_STATE::LOBBY);
-        MessageHandler::get().pushGameStateMessage(gsm.pack());
-        break; 
-      }
-      case BUTTON_PRESSED::B_JOIN: {
-        GameStateMessage gsm(GAME_STATE::JOIN);
-        MessageHandler::get().pushGameStateMessage(gsm.pack());
-        break;
-      }
-      case BUTTON_PRESSED::B_QUIT: {
-        sf::Packet shutdownMessage;
-        shutdownMessage << SHUT_DOWN;
-        MessageHandler::get().pushSystemMessage(shutdownMessage);
-        break; 
-      }
-      case BUTTON_PRESSED::NO_ACTION:
-      default:
-        // Do nothing;
-        break;
-      }
-    }
-    mLeftButtonAlreadyPressed = true;
-  } else {
-    mLeftButtonAlreadyPressed = false;
-  }
-  mMainMenu.render(mWindow);
-  mRenderNeeded = true;
-}
-
-void Gui::lobbyMenu() {
-  mWindow->clear(sf::Color::White);
-  BUTTON_PRESSED buttonPressed = mLobbyMenu.checkMouse(mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow)));
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-    if (!mLeftButtonAlreadyPressed) {
-      switch (buttonPressed) {
-      case BUTTON_PRESSED::B_START: {
-        GameStateMessage gsm(GAME_STATE::PLAYING);
-        MessageHandler::get().pushGameStateMessage(gsm.pack());
-        break; }
-      case BUTTON_PRESSED::B_BACK: {
-        GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-        MessageHandler::get().pushGameStateMessage(gsm.pack());
-        break; }
-      case BUTTON_PRESSED::NO_ACTION:
-      default:
-        // Do nothing;
-        break;
-      }
-    }
-    mLeftButtonAlreadyPressed = true;
-  } else {
-    mLeftButtonAlreadyPressed = false;
-  }
-  mLobbyMenu.render(mWindow);
-  mRenderNeeded = true;
 }
 
 void Gui::playing() {

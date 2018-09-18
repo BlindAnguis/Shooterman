@@ -23,6 +23,7 @@
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Server\Network\HostListener.cpp" />
+    <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -57,7 +58,6 @@
     <ClInclude Include="Server\Systems\System.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
     <ClInclude Include="Common\Messages\MouseMessage.h" />
-    <ClInclude Include="Server\Network\HostListener.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

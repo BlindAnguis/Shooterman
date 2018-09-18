@@ -1,7 +1,7 @@
 #include "GUIButton.h"
 
-GUIButton::GUIButton(std::string textString, sf::Font& textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, BUTTON_PRESSED buttonPressedAction)
-  : mTextColor(textColor), mTextHighlightColor(textHighlightColor), mButtonPressedAction(buttonPressedAction) {
+GUIButton::GUIButton(std::string textString, sf::Font& textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)> callback)
+  : mTextColor(textColor), mTextHighlightColor(textHighlightColor), mCallback(callback) {
   mButtonText = new sf::Text();
   mButtonText->setString(textString);
   mButtonText->setFont(textFont);
@@ -16,16 +16,27 @@ GUIButton::GUIButton(std::string textString, sf::Font& textFont, sf::Color textC
   mBounds.setFillColor(sf::Color::Red);
 }
 
-BUTTON_PRESSED GUIButton::checkMouse(sf::Vector2f mousePosition) {
+bool GUIButton::checkMouse(sf::Vector2f mousePosition) {
   if (mBounds.getGlobalBounds().contains(mousePosition)) {
-    mButtonText->setFillColor(mTextHighlightColor);
-    return mButtonPressedAction;
+    return true;
   }
-  mButtonText->setFillColor(mTextColor);
-  return NO_ACTION;
+  return false;
 }
 
-void GUIButton::render(sf::RenderWindow* window) {
+bool GUIButton::isPressed(sf::Vector2f mousePosition) {
+  if (checkMouse(mousePosition)) {
+    mCallback();
+    return true;
+  }
+  return false;
+}
+
+void GUIButton::render(sf::RenderWindow* window, sf::Vector2f mousePosition) {
   //window->draw(mBounds);
+  if (checkMouse(mousePosition)) {
+    mButtonText->setFillColor(mTextHighlightColor);
+  } else {
+    mButtonText->setFillColor(mTextColor);
+  }
   window->draw(*mButtonText);
 }
