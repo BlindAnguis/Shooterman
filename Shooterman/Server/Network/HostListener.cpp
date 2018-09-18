@@ -1,11 +1,13 @@
 #include "HostListener.h"
 
 HostListener::HostListener() {
-  mName = "[SERVER: HOST_LISTENER]";
+  mName = "SERVER: HOST_LISTENER";
   TRACE_INFO("Created a HostListener");
+  mListener = new sf::TcpListener;
 }
 
 HostListener::~HostListener() {
+  delete mListener;
 }
 
 void HostListener::startListening() {
@@ -16,30 +18,39 @@ void HostListener::startListening() {
 void HostListener::stopListening() {
   TRACE_INFO("Start to stop listening");
   mRunning = false;
+  mListener->close();
   mHostListenerThread->join();
-  delete mHostListenerThread;
   TRACE_INFO("Stopped listening");
+  delete mHostListenerThread;
+}
+
+bool HostListener::isListening() {
+  return mRunning;
 }
 
 void HostListener::listen() {
   TRACE_INFO("Start to listen");
-  sf::TcpListener listener;
-  if (!listener.listen(1337))
-  {
-    TRACE_ERROR("Couldn't start listening to port 1337");
+  //sf::TcpListener listener;
+  //sf::Socket::Status status = listener.listen(1337, sf::IpAddress::getLocalAddress());
+  sf::Socket::Status status = mListener->listen(1337, "localhost");
+  if (status != sf::Socket::Status::Done) {
+    //TRACE_ERROR("Couldn't start listening to port 1337 on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
+    TRACE_ERROR("Couldn't start listening to port 1337 on IP: localhost, status: " << status);
     return;
   }
+
+  //TRACE_INFO("Started listening to port: 1337 and IP: " << sf::IpAddress::getLocalAddress());
+  TRACE_INFO("Started listening to port: 1337 and IP: localhost");
   mRunning = true;
   while (mRunning) {
     sf::TcpSocket client;
-    client.setBlocking(false);
+    //listener.setBlocking(false);
     TRACE_INFO("Searching for client");
-    if (listener.accept(client) == sf::Socket::Done)
-    {
+    if (mListener->accept(client) == sf::Socket::Status::Done) {
       // A new client just connected!
       std::cout << "New connection received from " << client.getRemoteAddress() << std::endl;
       //doSomethingWith(client);
+      // TODO: Add client to a list of clients?
     }
   }
-  TRACE_INFO("Stopped listening");
 }

@@ -11,9 +11,11 @@ public:
   ~HostListener();
   void startListening();
   void stopListening();
+  bool isListening();
 private:
   void listen();
   std::thread* mHostListenerThread;
   bool mRunning = false;
+  sf::TcpListener* mListener;
 };
 

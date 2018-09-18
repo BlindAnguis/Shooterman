@@ -17,16 +17,16 @@ void NetworkHandler::start() {
 void NetworkHandler::startup() {
   std::string ip = "localhost";
   TRACE_INFO("Connecting socket to " << ip);
-  mSocket.setBlocking(false);
+  //mSocket.setBlocking(false);
   sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
-  sf::Socket::Status status = mSocket.connect(ipAddress, 1337);
-  TRACE_INFO("Socket connected");
+  sf::Socket::Status status = mSocket.connect(ip, 1337);
 
   if (status != sf::Socket::Done) {
-    TRACE_ERROR("Could not connect to server");
+    TRACE_ERROR("Could not connect to server with address: " << sf::IpAddress::getLocalAddress());
     mRunning = false;
     return;
   } else {
+    TRACE_INFO("Socket connected");
     mRunning = true;
   }
 
@@ -47,9 +47,12 @@ void NetworkHandler::startup() {
       mSocket.send(packet);
     }
 
+    /*
     while (mSocket.receive(packet) != sf::Socket::NotReady) {
       TRACE_INFO("RECEVIED PACKAGE");
+      // TODO: This is spamming!!
     }
+    */
 
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }

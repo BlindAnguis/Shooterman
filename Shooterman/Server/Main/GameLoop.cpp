@@ -65,6 +65,9 @@ void GameLoop::gameLoop() {
         break;
 
       case GAME_STATE::PLAYING:
+        if (hostListener.isListening()) {
+          hostListener.stopListening();
+        }
         world.update();
         break;
 
@@ -74,6 +77,12 @@ void GameLoop::gameLoop() {
 
       case GAME_STATE::EXIT:
         state = GAME_STATE::LOBBY;
+        break;
+
+      case GAME_STATE::MAIN_MENU:
+        if (hostListener.isListening()) {
+          hostListener.stopListening();
+        }
         break;
 
       default:
