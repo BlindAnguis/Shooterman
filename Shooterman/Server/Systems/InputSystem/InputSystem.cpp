@@ -5,6 +5,8 @@ InputSystem::InputSystem() {
   std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
   MessageHandler::get().subscribeToInputMessages(&mInputSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
+  mCurrentGameState = GAME_STATE::LOBBY;
+  mName = "Server: INPUT_SYSTEM";
 }
 
 InputSystem::~InputSystem() {
@@ -35,14 +37,18 @@ int InputSystem::getLatestInput() {
 GAME_STATE InputSystem::getLatestGameStateMessage() {
   GameStateMessage gsm;
   std::queue<sf::Packet> gameStateMessagesQueue = mGameStateSubscriber.getMessageQueue();
-  sf::Packet inputMessage;
 
   if (!gameStateMessagesQueue.empty()) {
     gsm.unpack(gameStateMessagesQueue.front());
     gameStateMessagesQueue.pop();
   }
 
-  return gsm.getGameState();
+  GAME_STATE gameState = gsm.getGameState();
+  if (gameState != GAME_STATE::NO_STATE) {
+    TRACE_INFO("Changing current game state from: " <<mCurrentGameState << " to: " << gameState);
+    mCurrentGameState = gameState;
+  }
+  return mCurrentGameState;
 }
 
 void InputSystem::handleInput() {

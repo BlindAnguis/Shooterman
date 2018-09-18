@@ -166,6 +166,7 @@
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Client\Sound\Sound.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
+    <ClCompile Include="Server\Network\HostListener.cpp" />
     <ClCompile Include="Server\Engine\Engine.cpp" />
     <ClCompile Include="Server\EntityManager\EntityManager.cpp" />
     <ClCompile Include="Server\Main\GameLoop.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Common\Messages\SpriteMessage.h" />
     <ClInclude Include="Common\Subscriber.h" />
     <ClInclude Include="Common\Trace.h" />
+    <ClInclude Include="Server\Network\HostListener.h" />
     <ClInclude Include="Server\Components\ComponentManager.h" />
     <ClInclude Include="Server\Components\Components.h" />
     <ClInclude Include="Server\Engine\Engine.h" />

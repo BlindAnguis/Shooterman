@@ -4,11 +4,12 @@
 #include "../../../Client/MessageHandler/MessageHandler.h"
 #include ".././../../Common/Messages/GameStateMessage.h"
 
-class InputSystem : public ObservableIf
+class InputSystem : public ObservableIf, Trace
 {
 private:
   Subscriber mInputSubscriber;
   Subscriber mGameStateSubscriber;
+  GAME_STATE mCurrentGameState;
 public:
   /*
   static InputSystem& get() {

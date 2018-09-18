@@ -18,7 +18,8 @@ void NetworkHandler::startup() {
   std::string ip = "localhost";
   TRACE_INFO("Connecting socket to " << ip);
   mSocket.setBlocking(false);
-  sf::Socket::Status status = mSocket.connect(ip, 1337);
+  sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
+  sf::Socket::Status status = mSocket.connect(ipAddress, 1337);
   TRACE_INFO("Socket connected");
 
   if (status != sf::Socket::Done) {

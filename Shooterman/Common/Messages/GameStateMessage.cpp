@@ -1,7 +1,7 @@
 #include "GameStateMessage.h"
 
 GameStateMessage::GameStateMessage() :
-  mGameState(GAME_STATE::MAIN_MENU) { }
+  mGameState(GAME_STATE::NO_STATE) { }
 
 GameStateMessage::GameStateMessage(GAME_STATE newGameState) :
   mGameState(newGameState) { }
