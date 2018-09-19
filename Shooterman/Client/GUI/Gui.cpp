@@ -3,7 +3,7 @@
 Gui::Gui() {
   mName = "GUI";
   TRACE_INFO("Starting module...");
-  mGuiThread = new std::thread(&Gui::init, this);
+  mGuiThread = std::make_unique<std::thread>(&Gui::init, this);
   TRACE_INFO("Starting module done");
 }
 
@@ -15,7 +15,7 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
   mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());
 
-  mWindow = new sf::RenderWindow(sf::VideoMode(500, 500), "Shooterman");
+  mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(500, 500), "Shooterman");
   mWindowOpen = true;
 
   mSpriteManager = new SpriteManager();
@@ -26,7 +26,6 @@ void Gui::init() {
 
   render();
 
-  delete mWindow;
   delete mSpriteManager;
 
   MessageHandler::get().unsubscribeAll(&mSpriteListSubscriber);
@@ -37,7 +36,7 @@ void Gui::render() {
   while (mWindow != nullptr && mWindow->isOpen()) {
     handleWindowEvents();
 
-    renderGameState(mWindow, mCurrentGameState);
+    renderGameState(mCurrentGameState);
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
 
     handleGameStateMessages();
@@ -66,7 +65,7 @@ void Gui::handleWindowEvents() {
   }
 }
 
-void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
+void Gui::renderGameState(GAME_STATE gameState) {
   mRenderNeeded = false;
 
   switch (gameState) {
@@ -79,8 +78,7 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
         mMenuMap.at(gameState)->checkMouse(mousePosition);
       }
       mLeftButtonAlreadyPressed = true;
-    }
-    else {
+    } else {
       mLeftButtonAlreadyPressed = false;
     }
     mMenuMap.at(gameState)->render(mWindow, mousePosition);
@@ -98,7 +96,7 @@ void Gui::renderGameState(sf::RenderWindow* window, GAME_STATE gameState) {
   }
 
   if (mRenderNeeded) {
-    window->display();
+    mWindow->display();
   }
 }
 
@@ -143,7 +141,6 @@ void Gui::shutDown() {
     // Wait for GUI to close window
   }
   mGuiThread->join();
-  delete mGuiThread;
   TRACE_INFO("Shutdown of module done");
 }
 
@@ -152,6 +149,7 @@ void Gui::playing() {
   sf::Packet spriteMessage;
   if (!spriteMessageQueue.empty()) {
     mWindow->clear(sf::Color::White);
+    mRenderNeeded = true;
   }
 
   while (!spriteMessageQueue.empty()) {
@@ -169,7 +167,6 @@ void Gui::playing() {
         sprite.setPosition(spriteData.second);
         mWindow->draw(sprite);
         spriteData = sm.getSpriteData();
-        mRenderNeeded = true;
       }
     }
   }

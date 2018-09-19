@@ -28,8 +28,8 @@ public:
 private:
   bool mDebugEnabled = true;
   bool mWindowOpen;
-  std::thread* mGuiThread;
-  sf::RenderWindow* mWindow;
+  std::unique_ptr<std::thread> mGuiThread;
+  std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Subscriber mSpriteListSubscriber;
@@ -42,7 +42,7 @@ private:
   void init();
   void render();
   void handleWindowEvents();
-  void renderGameState(sf::RenderWindow* window, GAME_STATE gameState);
+  void renderGameState(GAME_STATE gameState);
   void handleSystemMessages();
   void handleGameStateMessages();
   void playing();

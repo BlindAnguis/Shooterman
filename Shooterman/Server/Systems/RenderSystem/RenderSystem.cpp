@@ -14,6 +14,6 @@ void RenderSystem::render() {
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
     sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
     sm.addSpriteData(33, currentPosition);
-    MessageHandler::get().pushSpriteListMessage(sm.pack());
   }
+  MessageHandler::get().pushSpriteListMessage(sm.pack());
 }

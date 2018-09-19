@@ -8,7 +8,7 @@ Input::Input()
 {
   mName = "INPUT";
   TRACE_INFO("Starting module...");
-  mInputThread = new std::thread(&Input::readInput, this);
+  mInputThread = std::make_unique<std::thread>(&Input::readInput, this);
   TRACE_INFO("Starting module done");
 }
 
@@ -124,6 +124,5 @@ void Input::shutDown() {
   TRACE_INFO("Shutdown of module requested...");
   mRunning = false;
   mInputThread->join();
-  delete mInputThread;
   TRACE_INFO("Shutdown of module done");
 }

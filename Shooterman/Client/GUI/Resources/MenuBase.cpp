@@ -2,7 +2,7 @@
 
 
 bool MenuBase::checkMouse(sf::Vector2f mousePosition) {
-  for (GUIButton* button : mButtonList) {
+  for (auto button : mButtonList) {
     if (button->isPressed(mousePosition)) {
       return true;
     }
@@ -10,8 +10,8 @@ bool MenuBase::checkMouse(sf::Vector2f mousePosition) {
   return false;
 }
 
-void MenuBase::render(sf::RenderWindow* window, sf::Vector2f mousePosition) {
-  for (GUIButton* button : mButtonList) {
+void MenuBase::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
+  for (auto button : mButtonList) {
     button->render(window, mousePosition);
   }
 }

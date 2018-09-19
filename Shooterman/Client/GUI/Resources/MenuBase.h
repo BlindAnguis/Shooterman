@@ -14,11 +14,11 @@
 class MenuBase : public Trace {
 public:
   bool checkMouse(sf::Vector2f mousePosition);
-  void render(sf::RenderWindow* window, sf::Vector2f mousePosition);
+  void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
   
 protected:
   sf::Font mFont;
-  std::list<GUIButton*> mButtonList;
+  std::list<std::shared_ptr<GUIButton>> mButtonList;
 
   void loadFont(std::string fontName);
 };

@@ -13,7 +13,7 @@ public:
   ~SpriteManager();
 
   void loadSprites();
-  sf::Texture* loadTexture(std::string fileName);
+  std::shared_ptr<sf::Texture> loadTexture(std::string fileName);
   sf::Sprite get(int id) { 
     auto sprite = mSpriteMap.find(id);
     if (sprite == mSpriteMap.end()) {
@@ -22,5 +22,5 @@ public:
     return sprite->second.first; }
 
 private:
-  std::map<int, std::pair<sf::Sprite, sf::Texture*>> mSpriteMap;
+  std::map<int, std::pair<sf::Sprite, std::shared_ptr<sf::Texture>>> mSpriteMap;
 };

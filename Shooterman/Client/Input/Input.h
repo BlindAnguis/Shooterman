@@ -22,7 +22,7 @@ public:
 
 private:
   bool mRunning = true;
-  std::thread* mInputThread;
+  std::unique_ptr<std::thread> mInputThread;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Subscriber mMouseMessageSubscriber;

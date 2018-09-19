@@ -9,17 +9,13 @@ LobbyMenu::LobbyMenu() {
   sf::Color textColor = sf::Color::Black;
   sf::Color textHighlightColor = sf::Color(0, 120, 0);
 
-  mButtonList.push_back(new GUIButton("Lobby", mFont, textColor, textColor, 72, 250, 36));
+  mButtonList.push_back(std::make_shared<GUIButton>("Lobby", mFont, textColor, textColor, 72, 250, 36));
 
-  mButtonList.push_back(new GUIButton("Start Game", mFont, textColor, textHighlightColor, 56, 250, 200, &changeGameStateToPlaying));
-  mButtonList.push_back(new GUIButton("Back", mFont, textColor, textHighlightColor, 56, 250, 380, &changeGameStateToMainMenu));
+  mButtonList.push_back(std::make_shared<GUIButton>("Start Game", mFont, textColor, textHighlightColor, 56, 250, 200, &changeGameStateToPlaying));
+  mButtonList.push_back(std::make_shared<GUIButton>("Back", mFont, textColor, textHighlightColor, 56, 250, 380, &changeGameStateToMainMenu));
 }
 
-LobbyMenu::~LobbyMenu() {
-  for (GUIButton* button : mButtonList) {
-    delete button;
-  }
-}
+LobbyMenu::~LobbyMenu() { }
 
 void LobbyMenu::changeGameStateToPlaying() {
   GameStateMessage gsm(GAME_STATE::PLAYING);
