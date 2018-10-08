@@ -74,9 +74,9 @@ void GameLoop::gameLoop() {
 
       case GAME_STATE::PLAYING:
         if (hostListener.isListening()) {
-          clients = hostListener.stopListening();
+          world.setConnectedClients(hostListener.stopListening());
           TRACE_INFO("Clients connected:")
-          for (auto client : clients) {
+          for (auto client : world.getConnectedClients()) {
             TRACE_INFO("Client: " << client->getRemoteAddress());
           }
         }

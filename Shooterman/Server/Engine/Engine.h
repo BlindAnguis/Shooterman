@@ -8,6 +8,7 @@
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
 #include <vector>
+#include <SFML\Network.hpp>
 
 class Engine
 {
@@ -21,6 +22,8 @@ public:
   // EntityFactory entityFactory;
   Entity* createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth);
   Entity* createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity);
+  void setConnectedClients(std::list<sf::TcpSocket*> connectedClients) { mConnectedClients = connectedClients; }
+  std::list<sf::TcpSocket*> getConnectedClients() { return mConnectedClients; }
 private:
   // Systems
   MovementSystem mMovementSystem;
@@ -34,6 +37,8 @@ private:
   ComponentManager<RenderComponent> mRenderComponentManager;
   ComponentManager<VelocityComponent> mVelocityComponentManager;
   ComponentManager<SolidComponent> mSolidComponentManager;
+
   Subscriber mInputSubscriber;
+  std::list<sf::TcpSocket*> mConnectedClients;
 };
 

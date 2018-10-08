@@ -20,7 +20,7 @@ void Engine::update() {
   mInputSystem.handleInput();
   mMovementSystem.ownUpdate();
 
-  mRenderSystem.render();
+  mRenderSystem.render(mConnectedClients);
 }
 
 InputSystem* Engine::getInputSystem() {
