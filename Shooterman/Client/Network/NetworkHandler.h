@@ -23,7 +23,7 @@ private:
   bool mRunning = true;
   std::unique_ptr<std::thread> mNetworkHandlerThread;
   Subscriber mMessageSubscriber;
-  sf::TcpSocket mSocket;
+  sf::UdpSocket mSocket;
 
   void startup();
 };

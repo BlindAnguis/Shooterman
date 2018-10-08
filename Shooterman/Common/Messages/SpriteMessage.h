@@ -18,7 +18,7 @@ public:
     mSpriteData.push_back(std::make_pair(ID, position));
   }
 
-  std::pair<int, sf::Vector2f> getSpriteData(int position) {
+  std::pair<int, sf::Vector2f> getSpriteData(unsigned int position) {
     if (position >= mSpriteData.size() || position < 0) {
       return std::make_pair(-1, sf::Vector2f());
     }

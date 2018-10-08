@@ -16,10 +16,11 @@ void NetworkHandler::start() {
 
 void NetworkHandler::startup() {
   std::string ip = "10.41.4.19";
+  unsigned short port = 1337;
   TRACE_INFO("Connecting socket to " << ip);
   //mSocket.setBlocking(false);
-  sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
-  sf::Socket::Status status = mSocket.connect(ip, 1337);
+  sf::IpAddress ipAddress = sf::IpAddress(ip);
+  sf::Socket::Status status = mSocket.bind(port);// connect(ip, 1337);
 
   TRACE_INFO("Socket status is: " << status);
   if (status != sf::Socket::Done) {
@@ -31,27 +32,24 @@ void NetworkHandler::startup() {
     mRunning = true;
   }
 
-  sf::SocketSelector selector;
-  selector.add(mSocket);
-
   GameStateMessage gsm(GAME_STATE::PLAYING);
   MessageHandler::get().pushGameStateMessage(gsm.pack());
   MessageHandler::get().subscribeToSystemMessages(&mMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mMessageSubscriber);
   MessageHandler::get().subscribeToInputMessages(&mMessageSubscriber);
 
-  TRACE_INFO("Listening to socket");
 
   while (mRunning) {
+    TRACE_INFO("Listening to socket");
     std::queue<sf::Packet> systemMessageQueue = mMessageSubscriber.getMessageQueue();
     sf::Packet packet;
     while (!systemMessageQueue.empty()) {
       packet = systemMessageQueue.front();
       systemMessageQueue.pop();
-      mSocket.send(packet);
+      //mSocket.send(packet);
     }
 
-    while (mSocket.receive(packet) != sf::Socket::NotReady) {
+    while (mSocket.receive(packet, ipAddress, port) == sf::Socket::Done) {
       int id = -1;
       packet >> id;
       if (id == SPRITE_LIST) {
@@ -68,6 +66,7 @@ void NetworkHandler::startup() {
     
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }
+  MessageHandler::get().unsubscribeAll(&mMessageSubscriber);
 }
 
 void NetworkHandler::shutDown() {
