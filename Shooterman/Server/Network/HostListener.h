@@ -1,6 +1,7 @@
 #pragma once
 
 #include <thread>
+#include <list>
 #include <SFML\Network.hpp>
 #include "../../Common/Trace.h"
 
@@ -10,12 +11,13 @@ public:
   HostListener();
   ~HostListener();
   void startListening();
-  void stopListening();
+  std::list<sf::TcpSocket*> stopListening();
   bool isListening();
 private:
   void listen();
   std::thread* mHostListenerThread;
   bool mRunning = false;
   sf::TcpListener* mListener;
+  std::list<sf::TcpSocket*> mConnectedClients;
 };
 

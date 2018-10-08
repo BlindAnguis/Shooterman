@@ -19,7 +19,7 @@ void NetworkHandler::startup() {
   TRACE_INFO("Connecting socket to " << ip);
   //mSocket.setBlocking(false);
   sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
-  sf::Socket::Status status = mSocket.connect(ip, 1337);
+  sf::Socket::Status status = mSocket.connect(ipAddress, 1337);
 
   if (status != sf::Socket::Done) {
     TRACE_ERROR("Could not connect to server with address: " << sf::IpAddress::getLocalAddress());

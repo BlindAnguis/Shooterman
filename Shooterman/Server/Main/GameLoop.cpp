@@ -1,5 +1,6 @@
 #include <SFML\System.hpp>
 #include <SFML\Graphics.hpp>
+#include <list>
 #include "GameLoop.h"
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Messages/SpriteMessage.h"
@@ -42,8 +43,9 @@ void GameLoop::gameLoop() {
   Entity* ball1 = world.createBall(100, 100, 1, 1);
   int input = -1;
   HostListener hostListener = HostListener();
+  std::list<sf::TcpSocket*> clients;
   hostListener.startListening();
-
+ 
   while (mRunning) {
     state = world.getInputSystem()->getLatestGameStateMessage();
 
@@ -61,12 +63,22 @@ void GameLoop::gameLoop() {
         TRACE_INFO("Setting GameLoopState to PLAYING");
         state = GAME_STATE::PLAYING;
         //std::cout << "Game setup finished" << std::endl;
-        hostListener.stopListening();
+        /*
+        clients = hostListener.stopListening();
+        TRACE_INFO("Clients connected:")
+        for (auto client : clients) {
+          TRACE_INFO("Client: " << client->getLocalPort());
+        }
+        */
         break;
 
       case GAME_STATE::PLAYING:
         if (hostListener.isListening()) {
-          hostListener.stopListening();
+          clients = hostListener.stopListening();
+          TRACE_INFO("Clients connected:")
+          for (auto client : clients) {
+            TRACE_INFO("Client: " << client->getRemoteAddress());
+          }
         }
         world.update();
         break;
