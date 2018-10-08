@@ -156,7 +156,7 @@ void MessageHandler::unSubscribeToSoundMessages(Subscriber* newSubscriber) {
   }
 }
 
-void MessageHandler::pushMouseMessage(sf::Packet message) {
+void MessageHandler::pushSoundMessage(sf::Packet message) {
   std::lock_guard<std::mutex> lockGuard(mSoundSubscriberLock);
   for (Subscriber* subscriber : mSoundSubscriberList) {
     subscriber->sendMessage(message);
