@@ -24,6 +24,8 @@
     <ClCompile Include="Server\Systems\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Shooterman.cpp" />
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
+    <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
+    <ClCompile Include="Client\GUI\JoinMenu\JoinMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -60,6 +62,8 @@
     <ClInclude Include="Server\Systems\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Server\Systems\System.h" />
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
+    <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
+    <ClInclude Include="Client\GUI\JoinMenu\JoinMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

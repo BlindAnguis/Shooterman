@@ -1,7 +1,7 @@
 #include "LobbyMenu.h"
 
 LobbyMenu::LobbyMenu() {
-  mName = "GUI";
+  mName = "LOBBY_MENU";
   mDebugEnabled = true;
 
   loadFont("RobbieRocketpants.ttf");

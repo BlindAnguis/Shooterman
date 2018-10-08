@@ -10,6 +10,7 @@
 #include "Resources/MenuBase.h"
 #include "MainMenu/MainMenu.h"
 #include "LobbyMenu/LobbyMenu.h"
+#include "JoinMenu/JoinMenu.h"
 #include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"

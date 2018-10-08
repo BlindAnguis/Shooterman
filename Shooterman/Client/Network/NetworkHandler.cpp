@@ -15,14 +15,15 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
-  std::string ip = "localhost";
+  std::string ip = "10.41.4.19";
   TRACE_INFO("Connecting socket to " << ip);
   //mSocket.setBlocking(false);
   sf::IpAddress ipAddress = sf::IpAddress::getLocalAddress();
-  sf::Socket::Status status = mSocket.connect(ipAddress, 1337);
+  sf::Socket::Status status = mSocket.connect(ip, 1337);
 
+  TRACE_INFO("Socket status is: " << status);
   if (status != sf::Socket::Done) {
-    TRACE_ERROR("Could not connect to server with address: " << sf::IpAddress::getLocalAddress());
+    TRACE_ERROR("Could not connect to server with address: " << ip);
     mRunning = false;
     return;
   } else {
@@ -50,13 +51,21 @@ void NetworkHandler::startup() {
       mSocket.send(packet);
     }
 
-    /*
     while (mSocket.receive(packet) != sf::Socket::NotReady) {
-      TRACE_INFO("RECEVIED PACKAGE");
-      // TODO: This is spamming!!
+      int id = -1;
+      packet >> id;
+      if (id == SPRITE_LIST) {
+        SpriteMessage sm;
+        sm.unpack(packet);
+        TRACE_DEBUG("Receveid sprite package");
+        MessageHandler::get().pushSpriteListMessage(sm.pack());
+      } else {
+        TRACE_WARNING("Packet not known: " << id);
+        mRunning = false;
+        break;
+      }
     }
-    */
-
+    
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }
 }

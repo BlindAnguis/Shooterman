@@ -1,14 +1,16 @@
 #pragma once
 
 #include <thread>
+
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
+#include "../MessageHandler/MessageHandler.h"
 #include "../../Common/KeyBindings.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Constants.h"
-#include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
+#include "../../Common/Messages/SpriteMessage.h"
 
 class NetworkHandler : Trace {
 public:

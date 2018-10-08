@@ -14,6 +14,7 @@ void Gui::init() {
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
   mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());
+  mMenuMap.emplace(GAME_STATE::JOIN, new JoinMenu());
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(500, 500), "Shooterman");
   mWindowOpen = true;
@@ -70,6 +71,7 @@ void Gui::renderGameState(GAME_STATE gameState) {
 
   switch (gameState) {
   case GAME_STATE::MAIN_MENU:
+  case GAME_STATE::JOIN:
   case GAME_STATE::LOBBY: {
     mWindow->clear(sf::Color::White);
     sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
@@ -85,8 +87,6 @@ void Gui::renderGameState(GAME_STATE gameState) {
     mRenderNeeded = true;
     break;
   }
-  case GAME_STATE::JOIN:
-    break;
   case GAME_STATE::PLAYING:
     playing();
     break;
@@ -160,14 +160,21 @@ void Gui::playing() {
       spriteMessageQueue.pop();
       SpriteMessage sm;
       sm.unpack(spriteMessage);
-      std::pair<int, sf::Vector2f> spriteData = sm.getSpriteData();
+      int position = sm.getSize() - 1;
+      std::pair<int, sf::Vector2f> spriteData = sm.getSpriteData(position);
+      TRACE_DEBUG("SpriteID: " << spriteData.first);
       while (spriteData.first != -1) {
-        //TRACE_DEBUG(spriteData.first);
+        TRACE_DEBUG(spriteData.first);
         sf::Sprite sprite = mSpriteManager->get(spriteData.first);
         sprite.setPosition(spriteData.second);
         mWindow->draw(sprite);
-        spriteData = sm.getSpriteData();
+        position--;
+        spriteData = sm.getSpriteData(position);
       }
+    }
+    else {
+
+      TRACE_DEBUG("Found no message");
     }
   }
 }

@@ -1,7 +1,7 @@
 #include "MainMenu.h"
 
 MainMenu::MainMenu() {
-  mName = "GUI";
+  mName = "MAIN_MENU";
   mDebugEnabled = true;
 
   loadFont("RobbieRocketpants.ttf");

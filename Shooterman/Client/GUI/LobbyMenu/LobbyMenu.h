@@ -10,7 +10,7 @@ class LobbyMenu : public MenuBase {
 public:
   LobbyMenu();
   ~LobbyMenu();
-  
-  static void changeGameStateToMainMenu();
+
   static void changeGameStateToPlaying();
+  static void changeGameStateToMainMenu();
 };

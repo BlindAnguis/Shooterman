@@ -156,7 +156,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client\GUI\Gui.cpp" />
+    <ClCompile Include="Client\GUI\JoinMenu\JoinMenu.cpp" />
     <ClCompile Include="Client\GUI\LobbyMenu\LobbyMenu.cpp" />
+    <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\Resources\GUIButton.cpp" />
     <ClCompile Include="Client\GUI\MainMenu\MainMenu.cpp" />
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
@@ -181,7 +183,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
+    <ClInclude Include="Client\GUI\JoinMenu\JoinMenu.h" />
     <ClInclude Include="Client\GUI\LobbyMenu\LobbyMenu.h" />
+    <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\Resources\GUIButton.h" />
     <ClInclude Include="Client\GUI\MainMenu\MainMenu.h" />
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
