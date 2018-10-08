@@ -10,7 +10,7 @@ NetworkHandler::NetworkHandler() {
 
 void NetworkHandler::start() {
   TRACE_INFO("Starting module...");
-  mNetworkHandlerThread = new std::thread(&NetworkHandler::startup, this);
+  mNetworkHandlerThread = std::make_unique<std::thread>(&NetworkHandler::startup, this);
   TRACE_INFO("Starting module done");
 }
 
@@ -29,6 +29,9 @@ void NetworkHandler::startup() {
     TRACE_INFO("Socket connected");
     mRunning = true;
   }
+
+  sf::SocketSelector selector;
+  selector.add(mSocket);
 
   GameStateMessage gsm(GAME_STATE::PLAYING);
   MessageHandler::get().pushGameStateMessage(gsm.pack());
@@ -62,6 +65,5 @@ void NetworkHandler::shutDown() {
   TRACE_INFO("Shutdown of module requested...");
   mRunning = false;
   mNetworkHandlerThread->join();
-  delete mNetworkHandlerThread;
   TRACE_INFO("Shutdown of module done");
 }
