@@ -169,6 +169,9 @@
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Client\Sound\Sound.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
+    <ClCompile Include="Common\Socket\Socket.cpp" />
+    <ClCompile Include="Common\Socket\Tcp.cpp" />
+    <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Server\Network\HostListener.cpp" />
     <ClCompile Include="Server\Engine\Engine.cpp" />
@@ -195,6 +198,9 @@
     <ClInclude Include="Client\Main\ClientMain.h" />
     <ClInclude Include="Client\MessageHandler\MessageHandler.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
+    <ClInclude Include="Common\Socket\Socket.h" />
+    <ClInclude Include="Common\Socket\Tcp.h" />
+    <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\Sound\Sound.h" />
     <ClInclude Include="Common\Constants.h" />
     <ClInclude Include="Common\KeyBindings.h" />

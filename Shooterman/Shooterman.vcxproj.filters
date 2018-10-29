@@ -26,6 +26,9 @@
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
     <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\JoinMenu\JoinMenu.cpp" />
+    <ClCompile Include="Common\Socket\Socket.cpp" />
+    <ClCompile Include="Common\Socket\Udp.cpp" />
+    <ClCompile Include="Common\Socket\Tcp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +68,9 @@
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
     <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\JoinMenu\JoinMenu.h" />
+    <ClInclude Include="Common\Socket\Socket.h" />
+    <ClInclude Include="Common\Socket\Tcp.h" />
+    <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
   </ItemGroup>
   <ItemGroup>

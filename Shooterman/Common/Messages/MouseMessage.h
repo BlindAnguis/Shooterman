@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Message.h"
 #include "../MessageId.h"
 

@@ -11,6 +11,8 @@
 #include "../../Common/Constants.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/SpriteMessage.h"
+#include "../../Common/Socket/Tcp.h"
+#include "../../Common/Socket/Udp.h"
 
 class NetworkHandler : Trace {
 public:
@@ -23,7 +25,12 @@ private:
   bool mRunning = true;
   std::unique_ptr<std::thread> mNetworkHandlerThread;
   Subscriber mMessageSubscriber;
-  sf::UdpSocket mSocket;
+  UdpSocket mUdp;
+  TcpSocket mTcp;
 
   void startup();
+
+  void readTcp();
+  void readUdp();
+
 };
