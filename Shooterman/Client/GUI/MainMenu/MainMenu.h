@@ -15,5 +15,6 @@ public:
   // Button callbacks
   static void changeGameStateToLobby();
   static void changeGameStateToJoin();
+  static void changeGameStateToOptions();
   static void exit();
 };

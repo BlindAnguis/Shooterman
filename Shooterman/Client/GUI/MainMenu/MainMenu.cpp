@@ -13,7 +13,7 @@ MainMenu::MainMenu() {
 
   mButtonList.push_back(std::make_shared<GUIButton>("Host Game", mFont, textColor, textHighlightColor, 56, 250, 200, &changeGameStateToLobby));
   mButtonList.push_back(std::make_shared<GUIButton>("Join Game", mFont, textColor, textHighlightColor, 56, 250, 260, &changeGameStateToJoin));
-  mButtonList.push_back(std::make_shared<GUIButton>("Options", mFont, textColor, textHighlightColor, 56, 250, 320));
+  mButtonList.push_back(std::make_shared<GUIButton>("Options", mFont, textColor, textHighlightColor, 56, 250, 320, &changeGameStateToOptions));
   mButtonList.push_back(std::make_shared<GUIButton>("Exit Game", mFont, textColor, textHighlightColor, 56, 250, 380, &exit));
 }
 
@@ -27,6 +27,11 @@ void MainMenu::changeGameStateToLobby() {
 void MainMenu::changeGameStateToJoin() {
   GameStateMessage gsm(GAME_STATE::JOIN);
   MessageHandler::get().pushGameStateMessage(gsm.pack());
+}
+
+void MainMenu::changeGameStateToOptions() {
+	GameStateMessage gsm(GAME_STATE::OPTIONS);
+	MessageHandler::get().pushGameStateMessage(gsm.pack());
 }
 
 void MainMenu::exit() {

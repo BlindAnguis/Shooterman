@@ -26,6 +26,7 @@
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
     <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\JoinMenu\JoinMenu.cpp" />
+    <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
     <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\JoinMenu\JoinMenu.h" />
+    <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

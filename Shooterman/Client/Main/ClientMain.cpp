@@ -41,11 +41,15 @@ ClientMain::ClientMain() {
           networkHandler.start();
           networkHandlerStarted = true;
         }
-          break;
-      case GAME_STATE::PLAYING: {
-        // Start server
         break;
-      }
+	    case GAME_STATE::PLAYING: {
+		    // Start server
+		  break;
+	    }
+      case GAME_STATE::OPTIONS: {
+        //TRACE_INFO("Setting GAME_STATE to GAME_STATE::OPTIONS");
+		  break;
+	    }
       default:
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }

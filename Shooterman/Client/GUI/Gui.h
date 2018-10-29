@@ -12,6 +12,8 @@
 #include "LobbyMenu/LobbyMenu.h"
 #include "JoinMenu/JoinMenu.h"
 #include "PlayWindow/PlayWindow.h"
+#include "OptionsMenu\OptionsMenu.h" 
+
 #include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"

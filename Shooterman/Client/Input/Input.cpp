@@ -59,6 +59,8 @@ void Input::readInput() {
         }
 
         break;
+      case GAME_STATE::OPTIONS:
+        break;
       default:
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }

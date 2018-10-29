@@ -60,3 +60,8 @@ protected:
   std::ostringstream ss; \
   ss << "[" << mName << "] ERROR: " << msg << "\n"; \
   std::cout << ss.str(); }
+
+#define TRACE_ERROR_LONG(msg, file, line) { \
+  std::ostringstream ss; \
+  ss << "[" << mName << "] ERROR: " << msg << ", " << file << ":" << line << "\n"; \
+  std::cout << ss.str(); }

@@ -3,7 +3,7 @@
 #include "Message.h"
 #include "../MessageId.h"
 
-enum GAME_STATE { NO_STATE, MAIN_MENU, LOBBY, PLAYING, SETUP_GAME, GAME_OVER, JOIN, EXIT };
+enum GAME_STATE { NO_STATE, MAIN_MENU, LOBBY, PLAYING, SETUP_GAME, GAME_OVER, JOIN, EXIT, OPTIONS };
 
 class GameStateMessage : Message {
 public:

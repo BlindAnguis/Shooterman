@@ -97,6 +97,9 @@ void GameLoop::gameLoop() {
         }
         break;
 
+      case GAME_STATE::OPTIONS:
+        // TODO: add handling for options if in game
+		    break;
       default:
         TRACE_ERROR("This state doesn't exist " << state);
     }
