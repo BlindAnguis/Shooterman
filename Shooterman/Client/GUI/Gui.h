@@ -11,6 +11,7 @@
 #include "MainMenu/MainMenu.h"
 #include "LobbyMenu/LobbyMenu.h"
 #include "JoinMenu/JoinMenu.h"
+#include "PlayWindow/PlayWindow.h"
 #include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"
@@ -33,8 +34,6 @@ private:
   std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
-  Subscriber mSpriteListSubscriber;
-  SpriteManager* mSpriteManager;
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
@@ -46,5 +45,4 @@ private:
   void renderGameState(GAME_STATE gameState);
   void handleSystemMessages();
   void handleGameStateMessages();
-  void playing();
 };

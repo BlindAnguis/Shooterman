@@ -10,10 +10,11 @@ bool MenuBase::checkMouse(sf::Vector2f mousePosition) {
   return false;
 }
 
-void MenuBase::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
+bool MenuBase::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   for (auto button : mButtonList) {
     button->render(window, mousePosition);
   }
+  return true;
 }
 
 void MenuBase::loadFont(std::string fontName) {

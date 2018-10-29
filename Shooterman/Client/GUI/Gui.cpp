@@ -8,29 +8,24 @@ Gui::Gui() {
 }
 
 void Gui::init() {
-  MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
   mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());
   mMenuMap.emplace(GAME_STATE::JOIN, new JoinMenu());
+  mMenuMap.emplace(GAME_STATE::PLAYING, new PlayWindow());
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(500, 500), "Shooterman");
   mWindowOpen = true;
-
-  mSpriteManager = new SpriteManager();
-  mSpriteManager->loadSprites();
 
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   mLeftButtonAlreadyPressed = false;
 
   render();
 
-  delete mSpriteManager;
-
-  MessageHandler::get().unsubscribeAll(&mSpriteListSubscriber);
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+  MessageHandler::get().unsubscribeAll(&mGameStateMessageSubscriber);
 }
 
 void Gui::render() {
@@ -69,35 +64,29 @@ void Gui::handleWindowEvents() {
 void Gui::renderGameState(GAME_STATE gameState) {
   mRenderNeeded = false;
 
-  switch (gameState) {
-  case GAME_STATE::MAIN_MENU:
-  case GAME_STATE::JOIN:
-  case GAME_STATE::LOBBY: {
-    mWindow->clear(sf::Color::White);
-    sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-      if (!mLeftButtonAlreadyPressed) {
-        mMenuMap.at(gameState)->checkMouse(mousePosition);
-      }
-      mLeftButtonAlreadyPressed = true;
-    } else {
-      mLeftButtonAlreadyPressed = false;
-    }
-    mMenuMap.at(gameState)->render(mWindow, mousePosition);
-    mRenderNeeded = true;
-    break;
-  }
-  case GAME_STATE::PLAYING:
-    playing();
-    break;
-  default:
+  auto it = mMenuMap.find(gameState);
+
+  if (it == mMenuMap.end()) {
     TRACE_ERROR("GAME_STATE: " << gameState << " is not implemented");
-    break;
+    return;
   }
+
+  mWindow->clear(sf::Color::White);
+  sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    if (!mLeftButtonAlreadyPressed) {
+      mMenuMap.at(gameState)->checkMouse(mousePosition);
+    }
+    mLeftButtonAlreadyPressed = true;
+  }
+  else {
+    mLeftButtonAlreadyPressed = false;
+  }
+  mRenderNeeded = mMenuMap.at(gameState)->render(mWindow, mousePosition);
 
   if (mRenderNeeded) {
     mWindow->display();
-  }
+  }    
 }
 
 void Gui::handleGameStateMessages() {
@@ -107,8 +96,6 @@ void Gui::handleGameStateMessages() {
     gameStateMessage = gameStateMessageQueue.front();
     gameStateMessageQueue.pop();
 
-    //auto messageId = 0;
-    //gameStateMessage >> messageId;
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
     mCurrentGameState = gsm.getGameState();
@@ -142,39 +129,4 @@ void Gui::shutDown() {
   }
   mGuiThread->join();
   TRACE_INFO("Shutdown of module done");
-}
-
-void Gui::playing() {
-  std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
-  sf::Packet spriteMessage;
-  if (!spriteMessageQueue.empty()) {
-    mWindow->clear(sf::Color::White);
-    mRenderNeeded = true;
-  }
-
-  while (!spriteMessageQueue.empty()) {
-    spriteMessage = spriteMessageQueue.front();
-    int messageID;
-    spriteMessage >> messageID;
-    if (messageID == SPRITE_LIST) {
-      spriteMessageQueue.pop();
-      SpriteMessage sm;
-      sm.unpack(spriteMessage);
-      int position = sm.getSize() - 1;
-      std::pair<int, sf::Vector2f> spriteData = sm.getSpriteData(position);
-      TRACE_DEBUG("SpriteID: " << spriteData.first);
-      while (spriteData.first != -1) {
-        TRACE_DEBUG(spriteData.first);
-        sf::Sprite sprite = mSpriteManager->get(spriteData.first);
-        sprite.setPosition(spriteData.second);
-        mWindow->draw(sprite);
-        position--;
-        spriteData = sm.getSpriteData(position);
-      }
-    }
-    else {
-
-      TRACE_DEBUG("Found no message");
-    }
-  }
 }
