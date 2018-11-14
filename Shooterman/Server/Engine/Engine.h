@@ -20,10 +20,15 @@ public:
   MovementSystem* getMovementSystem();
   EntityManager* getEntityManager();
   // EntityFactory entityFactory;
+  void createPlayers();
   Entity* createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth);
   Entity* createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity);
-  void setConnectedClients(std::list<sf::TcpSocket*> connectedClients) { mConnectedClients = connectedClients; }
-  std::list<sf::TcpSocket*> getConnectedClients() { return mConnectedClients; }
+  void setConnectedClients(std::map<int, std::pair<sf::TcpSocket*, Entity*>> connectedClients) {
+    mConnectedClients = connectedClients; 
+    mInputSystem.setPlayers(mConnectedClients); 
+    mMovementSystem.setPlayers(mConnectedClients);
+  }
+  std::map<int, std::pair<sf::TcpSocket*, Entity*>> getConnectedClients() { return mConnectedClients; }
 private:
   // Systems
   MovementSystem mMovementSystem;
@@ -39,6 +44,6 @@ private:
   ComponentManager<SolidComponent> mSolidComponentManager;
 
   Subscriber mInputSubscriber;
-  std::list<sf::TcpSocket*> mConnectedClients;
+  std::map<int, std::pair<sf::TcpSocket*, Entity*>> mConnectedClients;
 };
 

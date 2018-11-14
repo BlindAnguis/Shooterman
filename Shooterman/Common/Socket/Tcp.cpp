@@ -1,6 +1,8 @@
 #include "Tcp.h"
 
-TcpSocket::TcpSocket() {}
+TcpSocket::TcpSocket() {
+  mName = "TCP";
+}
 
 bool TcpSocket::connect(std::string ip, unsigned short port) {
   sf::Socket::Status status = mTcpSocket.connect(ip, port);
@@ -10,15 +12,14 @@ bool TcpSocket::connect(std::string ip, unsigned short port) {
   if (status != sf::Socket::Done) {
     TRACE_ERROR("Could not connect to server with address: " << ip);
     return false;
-  }
-  else {
+  } else {
     TRACE_INFO("Socket connected");
   }
   return true;
 }
 
 void TcpSocket::disconnect() {
-
+  mTcpSocket.disconnect();
 }
 
 std::vector<sf::Packet> TcpSocket::read() {

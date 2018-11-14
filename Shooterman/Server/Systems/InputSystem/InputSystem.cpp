@@ -67,7 +67,7 @@ void InputSystem::handleInput() {
     inputMessage >> input;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
     if (input > 0) {
-      notify(input);
+      notify(input, 1);
     }
   }
   /*

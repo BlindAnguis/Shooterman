@@ -21,7 +21,7 @@ bool UdpSocket::connect(std::string ip, unsigned short port) {
 }
 
 void UdpSocket::disconnect() {
-
+  mUdpSocket.unbind();
 }
 
 std::vector<sf::Packet> UdpSocket::read() {

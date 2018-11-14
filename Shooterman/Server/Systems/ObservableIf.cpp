@@ -10,8 +10,8 @@ void ObservableIf::detach(ObserverIf* subscriber) {
   // TODO: Remove subscriper from vector.
 }
 
-void ObservableIf::notify(int message) {
+void ObservableIf::notify(int message, int ID) {
   for (auto subscriber : mObservers) {
-    subscriber->update(message);
+    subscriber->update(message, ID);
   }
 }

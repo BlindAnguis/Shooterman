@@ -35,7 +35,15 @@ EntityManager* Engine::getEntityManager() {
   return &mEntityManager;
 }
 
+void Engine::createPlayers() {
+  for (auto client : mConnectedClients) {
+    auto player = mConnectedClients.at(client.first);
+    player.second = createPlayer(0, 0, 5, 5, 100);
+  }
+}
+
 Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth) {
+  std::cout << "[SERVER: ENGINE] CREATED PLAYER \n\n\n                                  !!!!!!!!!!!!!!" << std::endl;
   Entity* player = mEntityManager.createEntity();
   VelocityComponent* vc = mVelocityComponentManager.addComponent(player->id);
   vc->currentVelocity.x = 0;

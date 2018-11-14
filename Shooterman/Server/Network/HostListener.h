@@ -4,6 +4,7 @@
 #include <list>
 #include <SFML\Network.hpp>
 #include "../../Common/Trace.h"
+#include "../EntityManager/EntityManager.h"
 
 class HostListener : Trace
 {
@@ -11,13 +12,17 @@ public:
   HostListener();
   ~HostListener();
   void startListening();
-  std::list<sf::TcpSocket*> stopListening();
+  std::map<int, std::pair<sf::TcpSocket*, Entity*>> stopListening();
   bool isListening();
 private:
   void listen();
+  int getNextID() {
+    return ++lastID;
+  }
+  int lastID = 0;
   std::thread* mHostListenerThread;
   bool mRunning = false;
   sf::TcpListener* mListener;
-  std::list<sf::TcpSocket*> mConnectedClients;
+  std::map<int, std::pair<sf::TcpSocket*, Entity*>> mConnectedClients;
 };
 
