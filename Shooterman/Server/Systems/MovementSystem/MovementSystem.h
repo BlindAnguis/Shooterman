@@ -19,7 +19,7 @@ public:
   ~MovementSystem();
   void update(int input, int ID);
   void ownUpdate();
-  void setPlayers(std::map<int, std::pair<sf::TcpSocket*, Entity*>> playersMap) { mPlayersMap = playersMap; }
+  void setPlayers(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> playersMap) { mPlayersMap = playersMap; }
 
 private:
   //void move(PositionComponent* position, VelocityComponent* velocity);
@@ -28,6 +28,6 @@ private:
   ComponentManager<RenderComponent>* mRenderComponentManager;
   CollisionSystem* mCollisionSystem;
   EntityManager* mEntityManager;
-  std::map<int, std::pair<sf::TcpSocket*, Entity*>> mPlayersMap;
+  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mPlayersMap;
 };
 

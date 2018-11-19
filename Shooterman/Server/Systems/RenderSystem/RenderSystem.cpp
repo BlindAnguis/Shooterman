@@ -11,14 +11,14 @@ RenderSystem::RenderSystem(ComponentManager<RenderComponent>* renderComponentMan
 
 RenderSystem::~RenderSystem() {}
 
-void RenderSystem::render(std::map<int, std::pair<sf::TcpSocket*, Entity*>> connectedClients) {
+void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients) {
   SpriteMessage sm;
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
     sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
     sm.addSpriteData(33, currentPosition);
   }
   MessageHandler::get().pushSpriteListMessage(sm.pack()); // Send to host
-  for (auto client : connectedClients) {
+  for (auto client : *connectedClients) {
     if (client.second.first) {
       sf::Packet tempPacket = sm.pack();
       int id;

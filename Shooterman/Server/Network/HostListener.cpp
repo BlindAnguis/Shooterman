@@ -15,7 +15,7 @@ void HostListener::startListening() {
   mHostListenerThread = new std::thread(&HostListener::listen, this);
 }
 
-std::map<int, std::pair<sf::TcpSocket*, Entity*>> HostListener::stopListening() {
+std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> HostListener::stopListening() {
   TRACE_INFO("Start to stop listening");
   mRunning = false;
   mListener->close();
@@ -30,6 +30,7 @@ bool HostListener::isListening() {
 }
 
 void HostListener::listen() {
+  mConnectedClients = std::make_shared<std::map<int, std::pair<sf::TcpSocket*, Entity*>>>();
   TRACE_INFO("Start to listen");
   //sf::TcpListener listener;
   sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
@@ -51,7 +52,7 @@ void HostListener::listen() {
       // A new client just connected!
       std::cout << "New connection received from " << client->getRemoteAddress() << std::endl;
       std::pair<sf::TcpSocket*, Entity*> tmp(client, nullptr);
-      mConnectedClients.emplace(getNextID(), tmp);
+      mConnectedClients->emplace(getNextID(), tmp);
       //doSomethingWith(client);
       // TODO: Add client to a list of clients?
     }

@@ -12,7 +12,7 @@ public:
   RenderSystem();
   RenderSystem(ComponentManager<RenderComponent>* renderComponentManager);
   ~RenderSystem();
-  void render(std::map<int, std::pair<sf::TcpSocket*, Entity*>> connectedClients);
+  void render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients);
 
 private:
   ComponentManager<RenderComponent>* mRenderComponentManager;

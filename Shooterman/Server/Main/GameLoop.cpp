@@ -75,10 +75,10 @@ void GameLoop::gameLoop() {
       case GAME_STATE::PLAYING:
         if (hostListener.isListening()) {
           auto tempMap = hostListener.stopListening();
-          tempMap.emplace(0, std::make_pair<sf::TcpSocket*, Entity*>(nullptr, nullptr));
+          tempMap->emplace(1, std::make_pair<sf::TcpSocket*, Entity*>(nullptr, nullptr));
           world.setConnectedClients(tempMap);
           TRACE_INFO("Clients connected:")
-          for (auto client : world.getConnectedClients()) {
+          for (auto client : *world.getConnectedClients()) {
             if (client.second.first) {
               TRACE_INFO("Client: " << client.second.first->getRemoteAddress());
             }

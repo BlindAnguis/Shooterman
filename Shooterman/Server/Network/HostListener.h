@@ -12,7 +12,7 @@ public:
   HostListener();
   ~HostListener();
   void startListening();
-  std::map<int, std::pair<sf::TcpSocket*, Entity*>> stopListening();
+  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> stopListening();
   bool isListening();
 private:
   void listen();
@@ -23,6 +23,6 @@ private:
   std::thread* mHostListenerThread;
   bool mRunning = false;
   sf::TcpListener* mListener;
-  std::map<int, std::pair<sf::TcpSocket*, Entity*>> mConnectedClients;
+  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;
 };
 

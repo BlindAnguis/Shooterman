@@ -27,9 +27,9 @@ void MovementSystem::update(int input, int ID)
   if (input == D_KEY || input == A_KEY || input == S_KEY || input == W_KEY ||
     input == A_S_KEY || input == A_W_KEY || input == D_W_KEY || input == D_S_KEY) {
     //for (auto entityWithPosition : mPositionComponentManager->getAllEntitiesWithPosition())
-
-    Entity* e = mPlayersMap.at(ID).second;
-    if (mRenderComponentManager->hasComponent(e->id)) {
+    
+    Entity* e = mPlayersMap->at(ID).second;
+    if (e && mRenderComponentManager->hasComponent(e->id)) {
       VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
       if (velocity) {
         if (input == D_KEY) {

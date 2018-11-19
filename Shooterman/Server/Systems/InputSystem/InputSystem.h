@@ -10,7 +10,7 @@ private:
   Subscriber mInputSubscriber;
   Subscriber mGameStateSubscriber;
   GAME_STATE mCurrentGameState;
-  std::map<int, std::pair<sf::TcpSocket*, Entity*>> mPlayersMap;
+  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mPlayersMap;
 public:
   /*
   static InputSystem& get() {
@@ -22,6 +22,6 @@ public:
   ~InputSystem();
 	void handleInput();
   int getLatestInput();
-  void setPlayers(std::map<int, std::pair<sf::TcpSocket*, Entity*>> playersMap) { mPlayersMap = playersMap; }
+  void setPlayers(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> playersMap) { mPlayersMap = playersMap; }
   GAME_STATE getLatestGameStateMessage();
 };

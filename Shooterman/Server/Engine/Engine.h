@@ -23,12 +23,12 @@ public:
   void createPlayers();
   Entity* createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth);
   Entity* createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity);
-  void setConnectedClients(std::map<int, std::pair<sf::TcpSocket*, Entity*>> connectedClients) {
+  void setConnectedClients(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients) {
     mConnectedClients = connectedClients; 
     mInputSystem.setPlayers(mConnectedClients); 
     mMovementSystem.setPlayers(mConnectedClients);
   }
-  std::map<int, std::pair<sf::TcpSocket*, Entity*>> getConnectedClients() { return mConnectedClients; }
+  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> getConnectedClients() { return mConnectedClients; }
 private:
   // Systems
   MovementSystem mMovementSystem;
@@ -44,6 +44,6 @@ private:
   ComponentManager<SolidComponent> mSolidComponentManager;
 
   Subscriber mInputSubscriber;
-  std::map<int, std::pair<sf::TcpSocket*, Entity*>> mConnectedClients;
+  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;
 };
 
