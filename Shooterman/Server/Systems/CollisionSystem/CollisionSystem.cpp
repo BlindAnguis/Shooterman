@@ -18,7 +18,7 @@ CollisionSystem::~CollisionSystem() {}
 /**
  * TODO: 
  * Do an update method instead where I go through the list with all entities that have both solid and render component. 
- * Check if first entity collides with something. If it does broadcast the event to every subscriber.
+ * Check if first entity collides with something. If it does broadcast the event to every mSubscriber.
  * Check next in the list and so on. For each entity check from the index after itself. Cause the indexes before have already checked against the current entity.
  *
  * It feels like this is going to be so much slower than I'm currently making it. Right now I first check only the things that want to move. 

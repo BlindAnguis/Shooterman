@@ -2,6 +2,7 @@
 
 ClientMain::ClientMain() {
   mName = "CLIENTMAIN";
+
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
   Input input = Input();
@@ -9,6 +10,7 @@ ClientMain::ClientMain() {
   GameLoop server = GameLoop();
   NetworkHandler networkHandler;
   //Sound sound = Sound();
+
 
   mServerStarted = false;
   bool networkHandlerStarted = false;
@@ -40,6 +42,7 @@ ClientMain::ClientMain() {
         if (!networkHandlerStarted) {
           networkHandler.start();
           networkHandlerStarted = true;
+          mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("10.41.4.122", 1337));
         }
         break;
 	    case GAME_STATE::PLAYING: {
@@ -54,8 +57,10 @@ ClientMain::ClientMain() {
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+    mExecutor.execute();
     handleGameStateMessages();
     handleSystemMessages();
+
   }
   input.shutDown();
   gui.shutDown();

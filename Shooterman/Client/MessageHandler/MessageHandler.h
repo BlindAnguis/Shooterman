@@ -3,11 +3,15 @@
 #include <queue>
 #include <list>
 #include <mutex>
+#include <map>
 
 #include <SFML/Network.hpp>
 
+#include "../../Client/MessageHandler/PrivateCommunication.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/Trace.h"
+
+class PrivateCommunication;
 
 class MessageHandler : Trace {
 public:
@@ -41,12 +45,37 @@ public:
   void pushSoundMessage(sf::Packet message);
 
   void unsubscribeAll(Subscriber* subscriber);
+  void tryToGiveId(Subscriber* subscriber);
+
+  void publishComm(std::string name, PrivateCommunication* pc) {
+    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+    mPublishedComms.emplace(name, pc);
+  }
+
+  void unpublishComm(std::string name) {
+    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+    mPublishedComms.erase(name);
+  }
+
+  bool subscribeTo(std::string name, Subscriber* s) {
+    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+    auto it = mPublishedComms.find(name);
+    if (it != mPublishedComms.end()) {
+      it->second->subscribe(s);
+      return true;
+    }
+    return false;
+  }
+
+  void unsubscribeTo(std::string name, Subscriber* s) {
+    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+    auto it = mPublishedComms.find(name);
+    it->second->unsubscribe(s);
+  }
 
 private:
   MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; }
-
-  void tryToGiveId(Subscriber* subscriber);
-
+  
   int mCurrentId;
   std::mutex mIdGeneratorLock;
   std::mutex mSystemSubscriberLock;
@@ -61,4 +90,6 @@ private:
   std::list<Subscriber*> mGameStateSubscriberList;
   std::list<Subscriber*> mMouseSubscriberList;
   std::list<Subscriber*> mSoundSubscriberList;
+
+  std::map<std::string, PrivateCommunication*> mPublishedComms;
 };

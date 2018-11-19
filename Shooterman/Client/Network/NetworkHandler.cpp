@@ -16,15 +16,36 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
-  std::string ip = "10.41.4.122";
-  unsigned short port = 1337;
-  TRACE_INFO("Connecting socket to " << ip);
+  // Setup a connection with clientMain
+  PrivateCommunication nhToMainCommunication;
+  MessageHandler::get().publishComm("nhToMainCommunication", &nhToMainCommunication);
+  Subscriber subscriber;
 
+  while (!MessageHandler::get().subscribeTo("mainToNhCommunication", &subscriber)) {
+    sf::sleep(sf::milliseconds(1));
+  }
+
+  // Wait for IP and Port from clientMain
+  auto m = subscriber.getMessageQueue();
+  while (m.size() == 0) {
+    m = subscriber.getMessageQueue();
+  }
+  SetupSocketConnectionData sscd;
+  auto tmp = m.front();
+  int id;
+  tmp >> id; // TODO: Handle id
+  sscd.unpack(m.front());
+  std::string ip = sscd.getIP();
+  unsigned short port = sscd.getPort();
+  TRACE_INFO("Connecting socket to " << ip);
   bool connected = mTcp.connect(ip, port);
 
+  // Failed to connect to server
   if (!connected) {
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     MessageHandler::get().pushGameStateMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("nhToMainCommunication", &subscriber);
+    MessageHandler::get().unpublishComm("nhToMainCommunication");
     return;
   }
 
@@ -34,8 +55,11 @@ void NetworkHandler::startup() {
   MessageHandler::get().subscribeToGameStateMessages(&mMessageSubscriber);
   MessageHandler::get().subscribeToInputMessages(&mMessageSubscriber);
 
-
   while (mRunning) {
+    // 1. Receive new port for UDP from server
+    // 2. Send port to clientMain
+    // 3. Setup connection over UDP
+
     TRACE_INFO("Listening to socket");
     std::queue<sf::Packet> systemMessageQueue = mMessageSubscriber.getMessageQueue();
     sf::Packet packet;
@@ -50,6 +74,7 @@ void NetworkHandler::startup() {
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }
   MessageHandler::get().unsubscribeAll(&mMessageSubscriber);
+  MessageHandler::get().unpublishComm("nhToMainCommunication");
 }
 
 void NetworkHandler::shutDown() {

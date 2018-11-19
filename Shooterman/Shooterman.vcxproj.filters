@@ -30,6 +30,8 @@
     <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Common\Socket\Tcp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
+    <ClCompile Include="Client\Main\Executor.cpp" />
+    <ClCompile Include="Client\MessageHandler\PrivateCommunication.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -72,6 +74,13 @@
     <ClInclude Include="Common\Socket\Tcp.h" />
     <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
+    <ClInclude Include="Client\MessageHandler\PrivateCommunication.h" />
+    <ClInclude Include="Client\Main\Executor.h" />
+    <ClInclude Include="Client\Main\Tasks\Task.h" />
+    <ClInclude Include="Client\Main\Tasks\DoneTask.h" />
+    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
+    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
+    <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

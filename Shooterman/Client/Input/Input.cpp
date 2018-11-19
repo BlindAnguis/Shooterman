@@ -4,8 +4,7 @@
 
 #include "../../Common/Trace.h"
 
-Input::Input()
-{
+Input::Input() {
   mName = "INPUT";
   TRACE_INFO("Starting module...");
   mInputThread = std::make_unique<std::thread>(&Input::readInput, this);
@@ -16,6 +15,8 @@ void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
   MessageHandler::get().subscribeToMouseMessages(&mMouseMessageSubscriber);
+  //Subscriber s;
+  //MessageHandler::get().subscribeTo("ClientMain", &s);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   std::uint32_t keyboardBitmask;
@@ -57,6 +58,8 @@ void Input::readInput() {
           GameStateMessage gsm(GAME_STATE::MAIN_MENU);
           MessageHandler::get().pushGameStateMessage(gsm.pack());
         }
+
+        //TRACE_INFO("Received data: " << s.getMessageQueue().size());
 
         break;
       case GAME_STATE::OPTIONS:

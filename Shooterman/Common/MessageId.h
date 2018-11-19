@@ -11,4 +11,8 @@
 // Sprite list messages
 #define SPRITE_LIST       200
 
+
+// Internal Client messages
+// clientMain-NetworkHandler
+#define SETUP_SOCKET_CONNECTION_DATA 1000;
 #endif /* MESSAGEID_H_ */
