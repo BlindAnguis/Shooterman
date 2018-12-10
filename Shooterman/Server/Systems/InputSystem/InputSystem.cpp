@@ -52,29 +52,22 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
 }
 
 void InputSystem::handleInput() {
-  int input = 0;
-  int messageId;
+  std::uint32_t input = 0;
+  int clientId;
   std::queue<sf::Packet> inputMessagesQueue = mInputSubscriber.getMessageQueue();
   sf::Packet inputMessage;
 
-  if (!inputMessagesQueue.empty()) {
+  while (!inputMessagesQueue.empty()) {
     inputMessage = inputMessagesQueue.front();
     inputMessagesQueue.pop();
 
-    inputMessage >> messageId;
-    //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
-
     inputMessage >> input;
+    inputMessage >> clientId;
+    //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
     if (input > 0) {
-      notify(input, 1);
+      notify(input, clientId);
     }
   }
-  /*
-  int input = getLatestInput();
-  if (input > 0) {
-    notify(input);
-  }
-  */
 }
 

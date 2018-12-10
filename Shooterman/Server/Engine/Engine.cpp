@@ -37,7 +37,8 @@ EntityManager* Engine::getEntityManager() {
 
 void Engine::createPlayers() {
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    it->second.second = createPlayer(0, 0, 5, 5, 100);
+    it->second.second = createPlayer(x, 0, 5, 5, 100);
+    x = 100;
   }
 }
 

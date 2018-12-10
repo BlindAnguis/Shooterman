@@ -3,21 +3,21 @@
 
 #include <queue>
 #include <mutex>
-#include <iostream>
+#include <string>
 
 #include <SFML/Network.hpp>
 
-//#include "Client/MessageHandler/MessageHandler.cpp"
+#include "Trace.h"
 
-class Subscriber {
+class Subscriber : Trace {
 public:
   Subscriber() : mId(-1) {
+    mName = "Subscriber without ID";
     mQueueLock = new std::mutex();
   }
 
   ~Subscriber() {
     delete mQueueLock;
-    //MessageHandler::get().unsubscribeAll(this);
   }
 
   void sendMessage(sf::Packet message) {
@@ -37,9 +37,10 @@ public:
 
   void setId(int id) {
     if (mId == -1) {
+      mName = "SUBSCRIBER " + std::to_string(id);
       mId = id;
     } else {
-      std::cout << "[SUBSCRIBER] WARNING! Subscriber already have id " << mId << " cannot set it again to " << id << std::endl;
+      TRACE_WARNING("Subscriber already have id " << mId << " cannot set it again to " << id);
     }
   }
 

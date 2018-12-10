@@ -30,8 +30,4 @@ private:
   TcpSocket mTcp;
 
   void startup();
-
-  void readTcp();
-  void readUdp();
-
 };

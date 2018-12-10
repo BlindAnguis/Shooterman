@@ -45,5 +45,7 @@ private:
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;
+
+  int x = 0;
 };
 

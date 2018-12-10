@@ -4,6 +4,8 @@
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Constants.h"
+#include "../Systems/NetworkSystem/NetworkSystem.h"
+#include "../../Common/Socket/Tcp.h"
 
 class GameLoop : Trace {
 public:
@@ -14,6 +16,8 @@ public:
 private:
   bool mRunning;
   std::thread* mGameLoopThread;
+  NetworkSystem mNetworkSystem;
+
   void gameLoop();
 };
 

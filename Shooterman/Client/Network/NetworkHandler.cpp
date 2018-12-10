@@ -5,7 +5,7 @@
 #include "../../Common/Trace.h"
 
 NetworkHandler::NetworkHandler() {
-  mName = "NETWORK_HANDLER";
+  mName = "CLIENT: NETWORK_HANDLER";
   mDebugEnabled = true;
 }
 
@@ -16,65 +16,54 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
-  // Setup a connection with clientMain
-  PrivateCommunication nhToMainCommunication;
-  MessageHandler::get().publishComm("nhToMainCommunication", &nhToMainCommunication);
-  Subscriber subscriber;
+  std::string ip = "10.41.4.93";
 
-  while (!MessageHandler::get().subscribeTo("mainToNhCommunication", &subscriber)) {
-    sf::sleep(sf::milliseconds(1));
-  }
-
-  // Wait for IP and Port from clientMain
-  auto m = subscriber.getMessageQueue();
-  while (m.size() == 0) {
-    m = subscriber.getMessageQueue();
-  }
-  SetupSocketConnectionData sscd;
-  auto tmp = m.front();
-  int id;
-  tmp >> id; // TODO: Handle id
-  sscd.unpack(m.front());
-  std::string ip = sscd.getIP();
-  unsigned short port = sscd.getPort();
+  unsigned short port = 1337;
   TRACE_INFO("Connecting socket to " << ip);
-  bool connected = mTcp.connect(ip, port);
+  //mTcp = TcpSocket(ip, port);
+  //bool connected = mTcp.connect();
+  sf::TcpSocket soc;// = sf::TcpSocket();
+  auto connected = soc.connect(ip, port);
 
   // Failed to connect to server
-  if (!connected) {
+  if (connected != sf::Socket::Status::Done) {
+    TRACE_INFO("Connection failed! " << connected);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     MessageHandler::get().pushGameStateMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("nhToMainCommunication", &subscriber);
-    MessageHandler::get().unpublishComm("nhToMainCommunication");
     return;
   }
-
-  GameStateMessage gsm(GAME_STATE::PLAYING);
-  MessageHandler::get().pushGameStateMessage(gsm.pack());
-  MessageHandler::get().subscribeToSystemMessages(&mMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mMessageSubscriber);
-  MessageHandler::get().subscribeToInputMessages(&mMessageSubscriber);
+  TRACE_INFO("Connected!");
+  MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
 
   while (mRunning) {
     // 1. Receive new port for UDP from server
     // 2. Send port to clientMain
     // 3. Setup connection over UDP
 
-    TRACE_INFO("Listening to socket");
     std::queue<sf::Packet> systemMessageQueue = mMessageSubscriber.getMessageQueue();
-    sf::Packet packet;
     while (!systemMessageQueue.empty()) {
-      packet = systemMessageQueue.front();
+      sf::Packet packet = systemMessageQueue.front();
       systemMessageQueue.pop();
-      //mUdpSocket.send(packet);
+      soc.send(packet);
     }
 
-    readTcp();
+    sf::Packet packet;
+    soc.receive(packet);
+    int id = -1;
+    packet >> id;
+    if (id == SPRITE_LIST) {
+      SpriteMessage sm;
+      sm.unpack(packet);
+      //TRACE_DEBUG("Receveid sprite package");
+      MessageHandler::get().pushSpriteListMessage(sm.pack());
+    } else {
+      TRACE_WARNING("Packet not known: " << id);
+      break;
+    }
     
-    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+    sf::sleep(sf::milliseconds(1));
   }
   MessageHandler::get().unsubscribeAll(&mMessageSubscriber);
-  MessageHandler::get().unpublishComm("nhToMainCommunication");
 }
 
 void NetworkHandler::shutDown() {
@@ -82,40 +71,4 @@ void NetworkHandler::shutDown() {
   mRunning = false;
   mNetworkHandlerThread->join();
   TRACE_INFO("Shutdown of module done");
-}
-
-void NetworkHandler::readTcp() {
-  std::vector<sf::Packet> packets = mTcp.read();
-  for (auto packet : packets) {
-    int id = -1;
-    packet >> id;
-    if (id == SPRITE_LIST) {
-      SpriteMessage sm;
-      sm.unpack(packet);
-      TRACE_DEBUG("Receveid sprite package");
-      MessageHandler::get().pushSpriteListMessage(sm.pack());
-    }
-    else {
-      TRACE_WARNING("Packet not known: " << id);
-      break;
-    }
-  }
-}
-
-void NetworkHandler::readUdp() {
-  std::vector<sf::Packet> packets = mUdp.read();
-  for (auto packet : packets) {
-    int id = -1;
-    packet >> id;
-    if (id == SPRITE_LIST) {
-      SpriteMessage sm;
-      sm.unpack(packet);
-      TRACE_DEBUG("Receveid sprite package");
-      MessageHandler::get().pushSpriteListMessage(sm.pack());
-    }
-    else {
-      TRACE_WARNING("Packet not known: " << id);
-      break;
-    }
-  }
 }

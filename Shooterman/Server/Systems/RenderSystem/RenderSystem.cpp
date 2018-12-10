@@ -29,10 +29,10 @@ void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*
       tempPacket >> spriteId;
       tempPacket >> currentPos.x;
       tempPacket >> currentPos.y;
-      TRACE_INFO("Sending packet with id:" << id << ", spriteId: " << spriteId << ", x: " << currentPos.x << ", y: " << currentPos.y);
+      //TRACE_INFO("Sending packet with id:" << id << ", spriteId: " << spriteId << ", x: " << currentPos.x << ", y: " << currentPos.y);
 
       client.second.first->send(tempPacket);
-      TRACE_INFO("Packet sent to client: " << client.second.first->getRemoteAddress());
+      //TRACE_INFO("Packet sent to client: " << client.second.first->getRemoteAddress());
    
       tempPacket.clear();
     } else {

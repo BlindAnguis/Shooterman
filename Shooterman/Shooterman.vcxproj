@@ -183,6 +183,7 @@
     <ClCompile Include="Server\Systems\CollisionSystem\CollisionSystem.cpp" />
     <ClCompile Include="Server\Systems\InputSystem\InputSystem.cpp" />
     <ClCompile Include="Server\Systems\MovementSystem\MovementSystem.cpp" />
+    <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
     <ClCompile Include="Server\Systems\ObservableIf.cpp" />
     <ClCompile Include="Server\Systems\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Shooterman.cpp" />
@@ -207,6 +208,7 @@
     <ClInclude Include="Client\MessageHandler\PrivateCommunication.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
+    <ClInclude Include="Common\Messages\InputMessage.h" />
     <ClInclude Include="Common\Socket\Socket.h" />
     <ClInclude Include="Common\Socket\Tcp.h" />
     <ClInclude Include="Common\Socket\Udp.h" />
@@ -227,6 +229,7 @@
     <ClInclude Include="Server\Engine\Engine.h" />
     <ClInclude Include="Server\EntityManager\EntityManager.h" />
     <ClInclude Include="Server\Main\GameLoop.h" />
+    <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
     <ClInclude Include="Server\Systems\CollisionSystem\Collision.h" />
     <ClInclude Include="Server\Systems\CollisionSystem\CollisionSystem.h" />
     <ClInclude Include="Server\Systems\InputSystem\InputSystem.h" />

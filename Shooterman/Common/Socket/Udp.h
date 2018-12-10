@@ -6,9 +6,11 @@
 
 class UdpSocket : public Socket {
 public:
-  UdpSocket();
+  UdpSocket(std::string ip, unsigned short port);
+  UdpSocket() {}
+  ~UdpSocket();
 
-  bool connect(std::string ip, unsigned short port) override;
+  bool connect() override;
 
   void disconnect() override;
 
@@ -17,8 +19,6 @@ public:
   void send(sf::Packet packet) override;
 
 private:
-  sf::UdpSocket mUdpSocket;
-  sf::IpAddress mUdpIpAddress;
-  unsigned short mUdpPort;
+  sf::UdpSocket* mUdpSocket;
 
 };

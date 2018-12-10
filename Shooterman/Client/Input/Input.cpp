@@ -17,6 +17,8 @@ void Input::readInput() {
   MessageHandler::get().subscribeToMouseMessages(&mMouseMessageSubscriber);
   //Subscriber s;
   //MessageHandler::get().subscribeTo("ClientMain", &s);
+  PrivateCommunication* pc = new PrivateCommunication();
+  MessageHandler::get().publishComm("ClientInputList", pc);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   std::uint32_t keyboardBitmask;
@@ -51,7 +53,8 @@ void Input::readInput() {
         if (keyboardBitmask != 0) {
           sf::Packet inputKeyPacket;
           inputKeyPacket << INPUT_KEYS << keyboardBitmask;
-          MessageHandler::get().pushInputMessage(inputKeyPacket);
+          pc->pushMessage(inputKeyPacket);
+          //MessageHandler::get().pushInputMessage(inputKeyPacket);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -73,6 +76,8 @@ void Input::readInput() {
     handleSystemMessages();
   }
 
+  MessageHandler::get().unpublishComm("ClientInputList");
+  delete pc;
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }
 

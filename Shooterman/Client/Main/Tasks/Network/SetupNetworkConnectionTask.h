@@ -21,7 +21,7 @@ public:
   Task* execute() {
     SetupSocketConnectionData sscd(mIP, mPort);
     mMainToNhCommunication->pushMessage(sscd.pack());
-
+    // TODO: Clean up mMainToNhCommunication
     return new DoneTask();
   }
 

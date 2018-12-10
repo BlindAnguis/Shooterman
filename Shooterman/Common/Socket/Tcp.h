@@ -6,9 +6,13 @@
 
 class TcpSocket : public Socket {
 public:
-  TcpSocket();
+  TcpSocket(std::string ip, unsigned short port);
+  TcpSocket(sf::TcpSocket* socket);
+  TcpSocket() {}
 
-  bool connect(std::string ip, unsigned short port) override;
+  ~TcpSocket();
+
+  bool connect() override;
 
   void disconnect() override;
 
@@ -17,5 +21,5 @@ public:
   void send(sf::Packet packet) override;
 
 private:
-  sf::TcpSocket mTcpSocket;
+  sf::TcpSocket* mTcpSocket;
 };

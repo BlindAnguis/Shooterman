@@ -32,6 +32,7 @@
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Client\Main\Executor.cpp" />
     <ClCompile Include="Client\MessageHandler\PrivateCommunication.cpp" />
+    <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -81,6 +82,8 @@
     <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
     <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
+    <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
+    <ClInclude Include="Common\Messages\InputMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

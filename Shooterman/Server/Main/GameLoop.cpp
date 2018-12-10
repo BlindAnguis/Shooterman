@@ -45,7 +45,8 @@ void GameLoop::gameLoop() {
   HostListener hostListener = HostListener();
   std::list<sf::TcpSocket*> clients;
   hostListener.startListening();
- 
+
+  mNetworkSystem.start();
   while (mRunning) {
     state = world.getInputSystem()->getLatestGameStateMessage();
 
@@ -81,6 +82,7 @@ void GameLoop::gameLoop() {
           for (auto client : *world.getConnectedClients()) {
             if (client.second.first) {
               TRACE_INFO("Client: " << client.second.first->getRemoteAddress());
+              mNetworkSystem.addNewClientSocket(client.second.first, client.first);
             }
           }
           world.createPlayers();

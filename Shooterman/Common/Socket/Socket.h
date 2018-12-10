@@ -9,7 +9,7 @@
 class Socket : public Trace {
 public:
 
-  virtual bool connect(std::string ip, unsigned short port) = 0;
+  virtual bool connect() = 0;
 
   virtual void disconnect() = 0;
 
@@ -18,4 +18,8 @@ public:
   void send(std::vector<sf::Packet> packets);
 
   virtual void send(sf::Packet packet) = 0;
+
+protected:
+  sf::IpAddress mIp;
+  unsigned short mPort;
 };

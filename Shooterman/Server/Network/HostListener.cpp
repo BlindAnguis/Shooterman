@@ -50,7 +50,7 @@ void HostListener::listen() {
     TRACE_INFO("Searching for client");
     if (mListener->accept(*client) == sf::Socket::Status::Done) {
       // A new client just connected!
-      std::cout << "New connection received from " << client->getRemoteAddress() << std::endl;
+      TRACE_INFO("New connection received from " << client->getRemoteAddress());
       std::pair<sf::TcpSocket*, Entity*> tmp(client, nullptr);
       mConnectedClients->emplace(getNextID(), tmp);
       //doSomethingWith(client);

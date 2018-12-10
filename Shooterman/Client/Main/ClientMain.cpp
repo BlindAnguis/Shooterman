@@ -1,13 +1,13 @@
 #include "ClientMain.h"
 
 ClientMain::ClientMain() {
-  mName = "CLIENTMAIN";
+  mName = "CLIENT: CLIENT_MAIN";
 
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
   Input input = Input();
   Gui gui = Gui();
-  GameLoop server = GameLoop();
+  GameLoop server;
   NetworkHandler networkHandler;
   //Sound sound = Sound();
 
@@ -36,19 +36,28 @@ ClientMain::ClientMain() {
           server.start();
           mServerStarted = true;
         }
+        if (!networkHandlerStarted) {
+
+          sf::sleep(sf::milliseconds(1000));
+          networkHandler.start();
+          networkHandlerStarted = true;
+          mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("localhost", 1337));
+        }
+
         break; 
       }
       case GAME_STATE::JOIN:
         if (!networkHandlerStarted) {
           networkHandler.start();
           networkHandlerStarted = true;
-          mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("10.41.4.122", 1337));
+          mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("localhost", 1337));
+          GameStateMessage gsm(GAME_STATE::PLAYING);
+          MessageHandler::get().pushGameStateMessage(gsm.pack());
         }
         break;
 	    case GAME_STATE::PLAYING: {
-		    // Start server
-		  break;
-	    }
+		    break;
+	      }
       case GAME_STATE::OPTIONS: {
         //TRACE_INFO("Setting GAME_STATE to GAME_STATE::OPTIONS");
 		  break;
@@ -57,7 +66,7 @@ ClientMain::ClientMain() {
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
-    mExecutor.execute();
+    //mExecutor.execute();
     handleGameStateMessages();
     handleSystemMessages();
 
