@@ -18,6 +18,9 @@ void NetworkSystem::start() {
 }
 
 void NetworkSystem::startup() {
+  mRunning = true;
+  mClientsSockets.clear();
+  mNewClientsSockets.clear();
   while (mRunning) {
     updateInternalMap();
     for (auto client : mClientsSockets) {
@@ -49,6 +52,11 @@ void NetworkSystem::startup() {
     }
 
     //sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+  }
+
+  for (auto client : mClientsSockets) {
+    client.second->disconnect();
+    delete client.second;
   }
 }
 

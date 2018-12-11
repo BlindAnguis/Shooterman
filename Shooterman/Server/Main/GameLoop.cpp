@@ -22,12 +22,12 @@ void GameLoop::start() {
 
 void GameLoop::stop() {
   TRACE_INFO("Exit Server");
+  mNetworkSystem.shutDown();
   mRunning = false;
   mGameLoopThread->join();
   delete mGameLoopThread;
   TRACE_INFO("Server finished");
 
-  mNetworkSystem.shutDown();
 }
 
 void GameLoop::gameLoop() {

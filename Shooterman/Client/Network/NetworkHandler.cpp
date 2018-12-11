@@ -16,7 +16,7 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
-  std::string ip = "10.41.4.26";
+  std::string ip = sf::IpAddress::getLocalAddress().toString();
 
   unsigned short port = 1337;
   TRACE_INFO("Connecting socket to " << ip);
@@ -46,6 +46,7 @@ void NetworkHandler::startup() {
       sf::Packet packet = systemMessageQueue.front();
       systemMessageQueue.pop();
       soc.send(packet);
+      //TRACE_DEBUG("SENDING MESAGE");
     }
 
     sf::Packet packet;
@@ -57,8 +58,7 @@ void NetworkHandler::startup() {
         sm.unpack(packet);
         //TRACE_DEBUG("Receveid sprite package with id: " << id);
         MessageHandler::get().pushSpriteListMessage(sm.pack());
-      }
-      else {
+      } else {
         TRACE_WARNING("Packet not known: " << id);
         break;
       }
