@@ -49,6 +49,7 @@ public:
 
   void publishComm(std::string name, PrivateCommunication* pc) {
     std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+    pc->setMName(name);
     mPublishedComms.emplace(name, pc);
   }
 

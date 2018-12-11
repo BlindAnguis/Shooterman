@@ -34,3 +34,7 @@ void PrivateCommunication::pushMessage(sf::Packet message) {
     subscriber->sendMessage(message);
   }
 }
+
+void PrivateCommunication::setMName(std::string newName) {
+  mName = newName;
+}

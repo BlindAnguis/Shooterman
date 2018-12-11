@@ -1,6 +1,7 @@
 #include "PlayWindow.h"
 
 PlayWindow::PlayWindow() {
+  mName = "CLIENT: PLAY_WINDOW";
   mSpriteManager = new SpriteManager();
   mSpriteManager->loadSprites();
 

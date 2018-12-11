@@ -4,7 +4,7 @@
 
 OptionsMenu::OptionsMenu()
 {
-  mName = "OPTIONS_MENU";
+  mName = "CLIENT: OPTIONS_MENU";
   mDebugEnabled = true;
 
   loadFont("RobbieRocketpants.ttf");

@@ -1,6 +1,6 @@
 #include "SpriteManager.h"
 
-SpriteManager::SpriteManager() { mName = "GUI"; }
+SpriteManager::SpriteManager() { mName = "CLIENT: SPRITE_MANAGER"; }
 
 SpriteManager::~SpriteManager() { }
 

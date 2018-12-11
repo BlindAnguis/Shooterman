@@ -1,7 +1,7 @@
 #include "Gui.h"
 
 Gui::Gui() {
-  mName = "GUI";
+  mName = "CLIENT: GUI";
   TRACE_INFO("Starting module...");
   mGuiThread = std::make_unique<std::thread>(&Gui::init, this);
   TRACE_INFO("Starting module done");

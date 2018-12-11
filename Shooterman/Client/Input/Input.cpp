@@ -5,7 +5,7 @@
 #include "../../Common/Trace.h"
 
 Input::Input() {
-  mName = "INPUT";
+  mName = "CLIENT: INPUT";
   TRACE_INFO("Starting module...");
   mInputThread = std::make_unique<std::thread>(&Input::readInput, this);
   TRACE_INFO("Starting module done");

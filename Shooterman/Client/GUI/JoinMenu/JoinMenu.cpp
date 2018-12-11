@@ -1,7 +1,7 @@
 #include "JoinMenu.h"
 
 JoinMenu::JoinMenu() {
-  mName = "JOIN_MENU";
+  mName = "CLIENT: JOIN_MENU";
 
   loadFont("RobbieRocketpants.ttf");
 

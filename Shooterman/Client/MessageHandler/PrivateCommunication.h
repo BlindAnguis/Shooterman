@@ -17,6 +17,8 @@ public:
 
   void pushMessage(sf::Packet message);
 
+  void setMName(std::string newName);
+
 private:
   std::mutex mSubscriberLock;
   std::list<Subscriber*> mSubscriberList;
