@@ -16,7 +16,7 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
-  std::string ip = "10.41.4.93";
+  std::string ip = "10.41.4.26";
 
   unsigned short port = 1337;
   TRACE_INFO("Connecting socket to " << ip);
@@ -34,7 +34,8 @@ void NetworkHandler::startup() {
   }
   TRACE_INFO("Connected!");
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
-
+  soc.setBlocking(false);
+  mRunning = true;
   while (mRunning) {
     // 1. Receive new port for UDP from server
     // 2. Send port to clientMain
@@ -48,21 +49,24 @@ void NetworkHandler::startup() {
     }
 
     sf::Packet packet;
-    soc.receive(packet);
-    int id = -1;
-    packet >> id;
-    if (id == SPRITE_LIST) {
-      SpriteMessage sm;
-      sm.unpack(packet);
-      //TRACE_DEBUG("Receveid sprite package");
-      MessageHandler::get().pushSpriteListMessage(sm.pack());
-    } else {
-      TRACE_WARNING("Packet not known: " << id);
-      break;
+    if (soc.receive(packet) == sf::Socket::Done) {
+      int id = -1;
+      packet >> id;
+      if (id == SPRITE_LIST) {
+        SpriteMessage sm;
+        sm.unpack(packet);
+        //TRACE_DEBUG("Receveid sprite package with id: " << id);
+        MessageHandler::get().pushSpriteListMessage(sm.pack());
+      }
+      else {
+        TRACE_WARNING("Packet not known: " << id);
+        break;
+      }
     }
-    
     sf::sleep(sf::milliseconds(1));
   }
+  TRACE_INFO("Not running any more");
+  soc.disconnect();
   MessageHandler::get().unsubscribeAll(&mMessageSubscriber);
 }
 

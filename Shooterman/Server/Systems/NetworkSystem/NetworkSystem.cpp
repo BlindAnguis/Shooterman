@@ -21,10 +21,11 @@ void NetworkSystem::startup() {
   while (mRunning) {
     updateInternalMap();
     for (auto client : mClientsSockets) {
+      client.second->setBlocking(false);
       sf::Packet packet;
       if (client.second->receive(packet) != sf::Socket::Done) {
-        TRACE_ERROR("Could not read socket data");
-        removeClientSocket(client.first);
+        //TRACE_ERROR("Could not read socket data");
+        //removeClientSocket(client.first);
       } else {
         int packetId = -1;
         packet >> packetId;

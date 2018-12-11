@@ -26,6 +26,8 @@ void GameLoop::stop() {
   mGameLoopThread->join();
   delete mGameLoopThread;
   TRACE_INFO("Server finished");
+
+  mNetworkSystem.shutDown();
 }
 
 void GameLoop::gameLoop() {
@@ -40,7 +42,7 @@ void GameLoop::gameLoop() {
   Engine world = Engine();
   /*Entity* player1 = world.createPlayer(50, 50, 5, 5, 100);
   Entity* player2 = world.createPlayer(200, 200, -2, -2, 100);*/
-  Entity* ball1 = world.createBall(100, 100, 1, 1);
+  //Entity* ball1 = world.createBall(100, 100, 1, 1);
   int input = -1;
   HostListener hostListener = HostListener();
   std::list<sf::TcpSocket*> clients;
