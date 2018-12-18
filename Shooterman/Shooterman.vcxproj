@@ -221,6 +221,7 @@
     <ClInclude Include="Common\Messages\Message.h" />
     <ClInclude Include="Common\Messages\SpriteMessage.h" />
     <ClInclude Include="Common\Subscriber.h" />
+    <ClInclude Include="Common\Textures.h" />
     <ClInclude Include="Common\Trace.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
     <ClInclude Include="Server\Network\HostListener.h" />

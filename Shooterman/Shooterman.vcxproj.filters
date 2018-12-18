@@ -84,6 +84,7 @@
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />
+    <ClInclude Include="Common\Textures.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

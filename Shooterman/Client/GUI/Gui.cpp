@@ -17,7 +17,7 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::PLAYING, new PlayWindow());
   mMenuMap.emplace(GAME_STATE::OPTIONS, new OptionsMenu());
 
-  mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(500, 500), "Shooterman");
+  mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(512, 512), "Shooterman");
   mWindowOpen = true;
 
   mCurrentGameState = GAME_STATE::MAIN_MENU;

@@ -9,11 +9,14 @@
 #include "../Components/Components.h"
 #include <vector>
 #include <SFML\Network.hpp>
+#include <array>
+#include <map>
 
 class Engine
 {
 public:
   Engine();
+  Engine(std::array<std::array<int, 16>, 16> gameMap);
   ~Engine();
   void update();
   InputSystem* getInputSystem();
@@ -23,6 +26,9 @@ public:
   void createPlayers();
   Entity* createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth);
   Entity* createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity);
+  Entity* createHorizontalWall(float xPos, float yPos);
+  Entity* createVerticalWall(float xPos, float yPos);
+  void createMap();
   void setConnectedClients(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients) {
     mConnectedClients = connectedClients; 
     mInputSystem.setPlayers(mConnectedClients); 
@@ -45,7 +51,10 @@ private:
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;
+  std::array<std::array<int, 16>, 16> mGameMap;
+  std::array<sf::Texture*, 3> mTextures;
 
-  int x = 0;
+  sf::Texture* loadTexture(std::string fileName);
+  int x = 60;
 };
 

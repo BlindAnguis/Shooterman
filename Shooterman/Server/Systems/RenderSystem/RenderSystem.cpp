@@ -15,7 +15,8 @@ void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*
   SpriteMessage sm;
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
     sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
-    sm.addSpriteData(33, currentPosition);
+    sm.addSpriteData(entityWithRender.second->textureId, currentPosition);
+
   }
   MessageHandler::get().pushSpriteListMessage(sm.pack()); // Send to host
   for (auto client : *connectedClients) {
