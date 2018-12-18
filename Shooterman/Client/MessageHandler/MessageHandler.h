@@ -47,13 +47,13 @@ public:
   void unsubscribeAll(Subscriber* subscriber);
   void tryToGiveId(Subscriber* subscriber);
 
-  void publishComm(std::string name, PrivateCommunication* pc) {
+  void publishInterface(std::string name, PrivateCommunication* pc) {
     std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
     pc->setMName(name);
     mPublishedComms.emplace(name, pc);
   }
 
-  void unpublishComm(std::string name) {
+  void unpublishInterface(std::string name) {
     std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
     mPublishedComms.erase(name);
   }
@@ -71,7 +71,11 @@ public:
   void unsubscribeTo(std::string name, Subscriber* s) {
     std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
     auto it = mPublishedComms.find(name);
-    it->second->unsubscribe(s);
+    if (it != mPublishedComms.end()) {
+      it->second->unsubscribe(s);
+    } else {
+      TRACE_INFO("Could not find " << name);
+    }
   }
 
 private:

@@ -50,9 +50,9 @@ ClientMain::ClientMain() {
         if (!networkHandlerStarted) {
           networkHandler.start();
           networkHandlerStarted = true;
-          mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("localhost", 1337));
-          GameStateMessage gsm(GAME_STATE::PLAYING);
-          MessageHandler::get().pushGameStateMessage(gsm.pack());
+          //mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("localhost", 1337));
+          //GameStateMessage gsm(GAME_STATE::PLAYING);
+          //MessageHandler::get().pushGameStateMessage(gsm.pack());
         }
         break;
 	    case GAME_STATE::PLAYING: {

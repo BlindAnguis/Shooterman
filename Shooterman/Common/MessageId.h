@@ -13,6 +13,5 @@
 
 
 // Internal Client messages
-// clientMain-NetworkHandler
-#define SETUP_SOCKET_CONNECTION_DATA 1000;
+#define IP_MESSAGE        1000
 #endif /* MESSAGEID_H_ */

@@ -1,9 +1,5 @@
 #include "NetworkHandler.h"
 
-#include <cstdint>
-
-#include "../../Common/Trace.h"
-
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
   mDebugEnabled = true;
@@ -16,14 +12,40 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
-  std::string ip = sf::IpAddress::getLocalAddress().toString();
+  mMessageSubscriber.setId(666);
+  while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  TRACE_DEBUG("Subscribed to ClientIpList");
 
-  unsigned short port = 1337;
-  TRACE_INFO("Connecting socket to " << ip);
-  //mTcp = TcpSocket(ip, port);
-  //bool connected = mTcp.connect();
-  sf::TcpSocket soc;// = sf::TcpSocket();
-  auto connected = soc.connect(ip, port);
+  std::queue<sf::Packet> messages;
+  while (messages.size() == 0) {
+    messages = mMessageSubscriber.getMessageQueue();
+    sf::sleep(sf::milliseconds(5));
+  }
+  TRACE_DEBUG("Got IP message");
+
+  MessageHandler::get().unsubscribeTo("ClientIpList", &mMessageSubscriber);
+  TRACE_DEBUG("Unsubscribed to ClientIpList");
+
+  int ID = -1;
+  auto ipMessage = messages.front();
+  ipMessage >> ID;
+  if (ID != IP_MESSAGE) {
+    TRACE_ERROR("Received unexpected message with ID: " << ID);
+    GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+    MessageHandler::get().pushGameStateMessage(gsm.pack());
+    return;
+  }
+
+  TRACE_DEBUG("Unpacking message");
+
+  IpMessage ipm(ipMessage);
+
+  //std::string ip = sf::IpAddress::getLocalAddress().toString();
+  TRACE_INFO("Connecting socket to " << ipm.getIp());
+  sf::TcpSocket soc;
+  auto connected = soc.connect(sf::IpAddress(ipm.getIp()), ipm.getPort());
 
   // Failed to connect to server
   if (connected != sf::Socket::Status::Done) {
@@ -32,7 +54,10 @@ void NetworkHandler::startup() {
     MessageHandler::get().pushGameStateMessage(gsm.pack());
     return;
   }
+
   TRACE_INFO("Connected!");
+  PrivateCommunication pc;
+  MessageHandler::get().publishInterface("ClientSpriteList", &pc);
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
   soc.setBlocking(false);
   mRunning = true;
@@ -67,6 +92,7 @@ void NetworkHandler::startup() {
   }
   TRACE_INFO("Not running any more");
   soc.disconnect();
+  MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unsubscribeAll(&mMessageSubscriber);
 }
 

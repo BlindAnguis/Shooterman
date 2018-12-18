@@ -208,6 +208,7 @@
     <ClInclude Include="Client\MessageHandler\MessageHandler.h" />
     <ClInclude Include="Client\MessageHandler\PrivateCommunication.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
+    <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
     <ClInclude Include="Common\Animations.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />

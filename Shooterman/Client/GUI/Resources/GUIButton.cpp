@@ -39,3 +39,11 @@ void GUIButton::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   }
   window->draw(mButtonText);
 }
+
+void GUIButton::setCallback(std::function<void()>& callback) {
+  mCallback = callback;
+}
+
+std::string GUIButton::getText() {
+  return mButtonText.getString();
+}

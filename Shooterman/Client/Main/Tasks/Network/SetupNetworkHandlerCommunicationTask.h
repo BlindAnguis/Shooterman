@@ -12,7 +12,7 @@ public:
     mIP = ip;
     mPort = port;
     mMainToNhCommunication = new PrivateCommunication();
-    MessageHandler::get().publishComm("mainToNhCommunication", mMainToNhCommunication);
+    MessageHandler::get().publishInterface("mainToNhCommunication", mMainToNhCommunication);
   }
 
   ~SetupNetworkHandlerCommunicationTask() { }
@@ -26,7 +26,7 @@ public:
 
     if (retries < 0) {
       TRACE_INFO("Connection with Network Handler timeout, stop retrying");
-      MessageHandler::get().unpublishComm("mainToNhCommunication");
+      MessageHandler::get().unpublishInterface("mainToNhCommunication");
       return new DoneTask();
     }
 

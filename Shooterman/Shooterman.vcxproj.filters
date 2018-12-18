@@ -85,6 +85,7 @@
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />
+    <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
     <ClInclude Include="Common\Textures.h" />
     <ClInclude Include="Common\Animations.h" />
     <ClInclude Include="Server\Systems\AnimationSystem\AnimationSystem.h" />

@@ -10,7 +10,7 @@ public:
 
   sf::Packet pack() {
     sf::Packet packet;
-    packet << SETUP_SOCKET_CONNECTION_DATA;
+    //packet << SETUP_SOCKET_CONNECTION_DATA;
     packet << mIP;
     packet << mPort;
     return packet;

@@ -18,7 +18,7 @@ void Input::readInput() {
   //Subscriber s;
   //MessageHandler::get().subscribeTo("ClientMain", &s);
   PrivateCommunication* pc = new PrivateCommunication();
-  MessageHandler::get().publishComm("ClientInputList", pc);
+  MessageHandler::get().publishInterface("ClientInputList", pc);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 
   std::uint32_t keyboardBitmask;
@@ -76,7 +76,7 @@ void Input::readInput() {
     handleSystemMessages();
   }
 
-  MessageHandler::get().unpublishComm("ClientInputList");
+  MessageHandler::get().unpublishInterface("ClientInputList");
   delete pc;
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }

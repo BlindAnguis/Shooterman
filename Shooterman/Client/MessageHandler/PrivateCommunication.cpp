@@ -13,7 +13,7 @@ void PrivateCommunication::subscribe(Subscriber* newSubscriber) {
   srand(time(NULL));
   newSubscriber->setId(rand() % 10);
   mSubscriberList.push_back(newSubscriber);
-  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to list");
+  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to " << mName);
 }
 
 void PrivateCommunication::unsubscribe(Subscriber* subscriber) {
@@ -21,7 +21,7 @@ void PrivateCommunication::unsubscribe(Subscriber* subscriber) {
   for (auto it = mSubscriberList.begin(); it != mSubscriberList.end(); /**/) {
     if ((*it)->getId() == subscriber->getId()) {
       it = mSubscriberList.erase(it);
-      TRACE_INFO("Removed subscriber (" << subscriber->getId() << ") from to list");
+      TRACE_INFO("Removed subscriber (" << subscriber->getId() << ") from " << mName);
     } else {
       ++it;
     }
@@ -36,5 +36,11 @@ void PrivateCommunication::pushMessage(sf::Packet message) {
 }
 
 void PrivateCommunication::setMName(std::string newName) {
+  std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   mName = newName;
+}
+
+unsigned int PrivateCommunication::getNumberOfSubscribers() {
+  std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
+  return mSubscriberList.size();
 }

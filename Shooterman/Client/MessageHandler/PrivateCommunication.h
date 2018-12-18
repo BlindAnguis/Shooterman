@@ -19,6 +19,8 @@ public:
 
   void setMName(std::string newName);
 
+  unsigned int getNumberOfSubscribers();
+
 private:
   std::mutex mSubscriberLock;
   std::list<Subscriber*> mSubscriberList;

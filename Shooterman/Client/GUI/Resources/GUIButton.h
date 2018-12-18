@@ -15,6 +15,8 @@ public:
 
   bool isPressed(sf::Vector2f mousePosition);
   void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
+  void setCallback(std::function<void()>& callback);
+  std::string getText();
 
 private:
   sf::Text mButtonText;
