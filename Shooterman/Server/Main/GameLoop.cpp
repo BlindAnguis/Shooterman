@@ -39,6 +39,7 @@ void GameLoop::gameLoop() {
   shape.setPosition(200, 200);
   float velocityX = 5;
   float velocityY = 5;
+
   Engine world = Engine();
   /*Entity* player1 = world.createPlayer(50, 50, 5, 5, 100);
   Entity* player2 = world.createPlayer(200, 200, -2, -2, 100);*/
@@ -78,7 +79,6 @@ void GameLoop::gameLoop() {
       case GAME_STATE::PLAYING:
         if (hostListener.isListening()) {
           auto tempMap = hostListener.stopListening();
-          tempMap->emplace(1, std::make_pair<sf::TcpSocket*, Entity*>(nullptr, nullptr));
           world.setConnectedClients(tempMap);
           TRACE_INFO("Clients connected:")
           for (auto client : *world.getConnectedClients()) {

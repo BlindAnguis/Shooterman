@@ -19,7 +19,7 @@ private:
   int getNextID() {
     return ++lastID;
   }
-  int lastID = 0;
+  int lastID = 1;
   std::thread* mHostListenerThread;
   bool mRunning = false;
   sf::TcpListener* mListener;
