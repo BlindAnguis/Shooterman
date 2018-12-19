@@ -1,9 +1,12 @@
-#include "GUIButton.h"
+#include "GUIComponentBuilder.h"
 
-GUIButton::GUIButton(std::string textString, sf::Font& textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)> callback)
+GUIComponent::GUIComponent(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback)
   : mTextColor(textColor), mTextHighlightColor(textHighlightColor), mCallback(callback) {
+  if (!mFont.loadFromFile("Client/Resources/Fonts/" + textFont)) {
+    TRACE_ERROR("Could not load file " << textFont);
+  }
   mButtonText.setString(textString);
-  mButtonText.setFont(textFont);
+  mButtonText.setFont(mFont);
   mButtonText.setFillColor(textColor);
   mButtonText.setCharacterSize(textSize);
   float centeredXPosition = xPosition - mButtonText.getLocalBounds().width / 2;
@@ -15,22 +18,24 @@ GUIButton::GUIButton(std::string textString, sf::Font& textFont, sf::Color textC
   mBounds.setFillColor(sf::Color::Red);
 }
 
-bool GUIButton::checkMouse(sf::Vector2f mousePosition) {
+bool GUIComponent::checkMouse(sf::Vector2f mousePosition) {
   if (mBounds.getGlobalBounds().contains(mousePosition)) {
     return true;
   }
   return false;
 }
 
-bool GUIButton::isPressed(sf::Vector2f mousePosition) {
+bool GUIComponent::isPressed(sf::Vector2f mousePosition) {
   if (checkMouse(mousePosition)) {
-    mCallback();
+    if (mCallback) {
+      mCallback();
+    }
     return true;
   }
   return false;
 }
 
-void GUIButton::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
+void GUIComponent::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   //window->draw(mBounds);
   if (checkMouse(mousePosition)) {
     mButtonText.setFillColor(mTextHighlightColor);
@@ -40,10 +45,6 @@ void GUIButton::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   window->draw(mButtonText);
 }
 
-void GUIButton::setCallback(std::function<void()>& callback) {
-  mCallback = callback;
-}
-
-std::string GUIButton::getText() {
+std::string GUIComponent::getText() {
   return mButtonText.getString();
 }

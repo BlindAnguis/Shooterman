@@ -10,9 +10,6 @@ public:
   JoinMenu();
   ~JoinMenu();
 
-  static void changeGameStateToLobbyMenu();
-  static void changeGameStateToMainMenu();
-
 private:
   PrivateCommunication mPc;
 };

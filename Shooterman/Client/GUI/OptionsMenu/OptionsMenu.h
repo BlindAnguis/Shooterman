@@ -6,7 +6,5 @@ class OptionsMenu : public MenuBase
 public:
   OptionsMenu();
   ~OptionsMenu();
-
-  static void changeGameStateToMainMenu();
 };
 
