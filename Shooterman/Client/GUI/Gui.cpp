@@ -59,6 +59,12 @@ void Gui::handleWindowEvents() {
       sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);
       mWindow->setView(sf::View(visibleArea));
     }
+    if (event.type == sf::Event::TextEntered) {
+      auto it = mMenuMap.find(mCurrentGameState);
+      if (it != mMenuMap.end()) {
+        it->second->handleNewText(event.text.unicode);
+      }
+    }
   }
 }
 

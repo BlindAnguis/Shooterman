@@ -16,9 +16,10 @@ public:
   bool isPressed(sf::Vector2f mousePosition);
   void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
   std::string getText();
+  void setText(std::string newText);
 
 private:
-  sf::Text mButtonText;
+  sf::Text mComponentText;
   sf::Font mFont;
   sf::RectangleShape mBounds;
   sf::Color mTextColor;

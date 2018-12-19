@@ -2,15 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Client\GUI\Gui.cpp" />
+    <ClCompile Include="Client\GUI\JoinMenu\JoinMenu.cpp" />
     <ClCompile Include="Client\GUI\LobbyMenu\LobbyMenu.cpp" />
+    <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\MainMenu\MainMenu.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GUIComponentBuilder.cpp" />
+    <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
     <ClCompile Include="Client\GUI\SpriteManager.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
+    <ClCompile Include="Client\Main\Executor.cpp" />
     <ClCompile Include="Client\MessageHandler\MessageHandler.cpp" />
+    <ClCompile Include="Client\MessageHandler\PrivateCommunication.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Client\Sound\Sound.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
+    <ClCompile Include="Common\Socket\Socket.cpp" />
+    <ClCompile Include="Common\Socket\Tcp.cpp" />
+    <ClCompile Include="Common\Socket\Udp.cpp" />
+    <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Server\Network\HostListener.cpp" />
     <ClCompile Include="Server\Engine\Engine.cpp" />
     <ClCompile Include="Server\EntityManager\EntityManager.cpp" />
@@ -19,6 +29,7 @@
     <ClCompile Include="Server\Systems\CollisionSystem\CollisionSystem.cpp" />
     <ClCompile Include="Server\Systems\InputSystem\InputSystem.cpp" />
     <ClCompile Include="Server\Systems\MovementSystem\MovementSystem.cpp" />
+    <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
     <ClCompile Include="Server\Systems\ObservableIf.cpp" />
     <ClCompile Include="Server\Systems\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Shooterman.cpp" />
@@ -37,13 +48,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
+    <ClInclude Include="Client\GUI\JoinMenu\JoinMenu.h" />
     <ClInclude Include="Client\GUI\LobbyMenu\LobbyMenu.h" />
+    <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\MainMenu\MainMenu.h" />
+    <ClInclude Include="Client\GUI\Resources\GUIComponentBuilder.h" />
+    <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
     <ClInclude Include="Client\GUI\SpriteManager.h" />
     <ClInclude Include="Client\Input\Input.h" />
     <ClInclude Include="Client\Main\ClientMain.h" />
+    <ClInclude Include="Client\Main\Executor.h" />
+    <ClInclude Include="Client\Main\Tasks\DoneTask.h" />
+    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
+    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
+    <ClInclude Include="Client\Main\Tasks\Task.h" />
     <ClInclude Include="Client\MessageHandler\MessageHandler.h" />
+    <ClInclude Include="Client\MessageHandler\PrivateCommunication.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
+    <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
+    <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
+    <ClInclude Include="Common\Messages\InputMessage.h" />
+    <ClInclude Include="Common\Socket\Socket.h" />
+    <ClInclude Include="Common\Socket\Tcp.h" />
+    <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\Sound\Sound.h" />
     <ClInclude Include="Common\Constants.h" />
     <ClInclude Include="Common\KeyBindings.h" />
@@ -53,13 +80,16 @@
     <ClInclude Include="Common\Messages\Message.h" />
     <ClInclude Include="Common\Messages\SpriteMessage.h" />
     <ClInclude Include="Common\Subscriber.h" />
+    <ClInclude Include="Common\Textures.h" />
     <ClInclude Include="Common\Trace.h" />
+    <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
     <ClInclude Include="Server\Network\HostListener.h" />
     <ClInclude Include="Server\Components\ComponentManager.h" />
     <ClInclude Include="Server\Components\Components.h" />
     <ClInclude Include="Server\Engine\Engine.h" />
     <ClInclude Include="Server\EntityManager\EntityManager.h" />
     <ClInclude Include="Server\Main\GameLoop.h" />
+    <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
     <ClInclude Include="Server\Systems\CollisionSystem\Collision.h" />
     <ClInclude Include="Server\Systems\CollisionSystem\CollisionSystem.h" />
     <ClInclude Include="Server\Systems\InputSystem\InputSystem.h" />

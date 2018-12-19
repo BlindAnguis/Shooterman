@@ -5,16 +5,16 @@ GUIComponent::GUIComponent(std::string textString, std::string textFont, sf::Col
   if (!mFont.loadFromFile("Client/Resources/Fonts/" + textFont)) {
     TRACE_ERROR("Could not load file " << textFont);
   }
-  mButtonText.setString(textString);
-  mButtonText.setFont(mFont);
-  mButtonText.setFillColor(textColor);
-  mButtonText.setCharacterSize(textSize);
-  float centeredXPosition = xPosition - mButtonText.getLocalBounds().width / 2;
-  float centeredYPosition = yPosition - mButtonText.getLocalBounds().height / 2;
-  mButtonText.setPosition(float(int(centeredXPosition)), float(int(centeredYPosition)));
+  mComponentText.setString(textString);
+  mComponentText.setFont(mFont);
+  mComponentText.setFillColor(textColor);
+  mComponentText.setCharacterSize(textSize);
+  float centeredXPosition = xPosition - mComponentText.getLocalBounds().width / 2;
+  float centeredYPosition = yPosition - mComponentText.getLocalBounds().height / 2;
+  mComponentText.setPosition(float(int(centeredXPosition)), float(int(centeredYPosition)));
 
-  mBounds.setPosition(mButtonText.getPosition() + sf::Vector2f(0, mButtonText.getLocalBounds().height / 3));
-  mBounds.setSize(sf::Vector2f(mButtonText.getLocalBounds().width, mButtonText.getLocalBounds().height));
+  mBounds.setPosition(mComponentText.getPosition() + sf::Vector2f(0, mComponentText.getLocalBounds().height / 3));
+  mBounds.setSize(sf::Vector2f(mComponentText.getLocalBounds().width, mComponentText.getLocalBounds().height));
   mBounds.setFillColor(sf::Color::Red);
 }
 
@@ -38,13 +38,17 @@ bool GUIComponent::isPressed(sf::Vector2f mousePosition) {
 void GUIComponent::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   //window->draw(mBounds);
   if (checkMouse(mousePosition)) {
-    mButtonText.setFillColor(mTextHighlightColor);
+    mComponentText.setFillColor(mTextHighlightColor);
   } else {
-    mButtonText.setFillColor(mTextColor);
+    mComponentText.setFillColor(mTextColor);
   }
-  window->draw(mButtonText);
+  window->draw(mComponentText);
 }
 
 std::string GUIComponent::getText() {
-  return mButtonText.getString();
+  return mComponentText.getString();
+}
+
+void GUIComponent::setText(std::string newText) {
+  mComponentText.setString(newText);
 }

@@ -10,6 +10,10 @@ public:
   JoinMenu();
   ~JoinMenu();
 
+  void handleNewText(sf::Uint32 newChar) override;
+
 private:
+  std::string mIpString;
+  std::shared_ptr<GUIComponent> mIPInputText;
   PrivateCommunication mPc;
 };

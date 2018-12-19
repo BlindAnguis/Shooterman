@@ -15,3 +15,5 @@ bool MenuBase::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mou
   }
   return true;
 }
+
+void MenuBase::handleNewText(sf::Uint32 newChar) { }

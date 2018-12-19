@@ -15,6 +15,7 @@ class MenuBase : public Trace {
 public:
   bool checkMouse(sf::Vector2f mousePosition);
   virtual bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
+  virtual void handleNewText(sf::Uint32 newChar);
   
 protected:
   std::list<std::shared_ptr<GUIComponent>> mComponentList;
