@@ -36,7 +36,7 @@ public:
     mTextFont = "RobbieRocketpants.ttf";
     mTextColor = sf::Color::Black;
     mTextHighlightColor = sf::Color::Black;
-    mTextSize = 56;
+    mTextSize = 36;
     mXPosition = 0;
     mYPosition = 0;
     mCallback = nullptr;
@@ -93,7 +93,7 @@ public:
 
   static std::shared_ptr<GUIComponent> createText(std::string textString, int xPosition, int yPosition) {
     GUIComponentBuilder builder;
-    return builder.setText(textString)->setXPosition(xPosition)->setYPosition(yPosition)->setTextSize(36)->build();
+    return builder.setText(textString)->setXPosition(xPosition)->setYPosition(yPosition)->build();
   }
 
   static std::shared_ptr<GUIComponent> createCustomActionButton(std::string textString, int xPosition, int yPosition, const std::function<void(void)>& callback) {

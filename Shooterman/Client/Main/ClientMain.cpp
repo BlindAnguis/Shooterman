@@ -15,6 +15,8 @@ ClientMain::ClientMain() {
   mServerStarted = false;
   bool networkHandlerStarted = false;
   mCurrentGameState = GAME_STATE::MAIN_MENU;
+  PrivateCommunication pc;
+  bool sentIpMessage = false;
 
   while (mRunning) {
     switch (mCurrentGameState) {
@@ -28,6 +30,7 @@ ClientMain::ClientMain() {
           networkHandler.shutDown();
           networkHandlerStarted = false;
         }
+        sentIpMessage = false;
         break; 
       }
       case GAME_STATE::LOBBY: {
@@ -37,11 +40,16 @@ ClientMain::ClientMain() {
           mServerStarted = true;
         }
         if (!networkHandlerStarted) {
-
           sf::sleep(sf::milliseconds(1000));
+          MessageHandler::get().publishInterface("ClientIpList", &pc);
           networkHandler.start();
           networkHandlerStarted = true;
-          mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("localhost", 1337));
+        }
+        if (!sentIpMessage && pc.getNumberOfSubscribers() > 0) {
+          IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), 1337);
+          pc.pushMessage(ipm.pack());
+          MessageHandler::get().unpublishInterface("ClientIpList");
+          sentIpMessage = true;
         }
 
         break; 
@@ -50,9 +58,6 @@ ClientMain::ClientMain() {
         if (!networkHandlerStarted) {
           networkHandler.start();
           networkHandlerStarted = true;
-          //mExecutor.addTask(new SetupNetworkHandlerCommunicationTask("localhost", 1337));
-          //GameStateMessage gsm(GAME_STATE::PLAYING);
-          //MessageHandler::get().pushGameStateMessage(gsm.pack());
         }
         break;
 	    case GAME_STATE::PLAYING: {

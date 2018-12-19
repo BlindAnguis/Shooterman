@@ -10,6 +10,8 @@ public:
   JoinMenu();
   ~JoinMenu();
 
+  void init() override;
+
   void handleNewText(sf::Uint32 newChar) override;
 
 private:

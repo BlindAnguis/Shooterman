@@ -49,8 +49,13 @@ public:
 
   void publishInterface(std::string name, PrivateCommunication* pc) {
     std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-    pc->setMName(name);
-    mPublishedComms.emplace(name, pc);
+    auto it = mPublishedComms.find(name);
+    if (it == mPublishedComms.end()) {
+      pc->setMName(name);
+      mPublishedComms.emplace(name, pc);
+    } else {
+      TRACE_DEBUG("Interface: " << name << " is already published");
+    }
   }
 
   void unpublishInterface(std::string name) {

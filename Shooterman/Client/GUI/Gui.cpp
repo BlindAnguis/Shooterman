@@ -106,6 +106,10 @@ void Gui::handleGameStateMessages() {
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
     mCurrentGameState = gsm.getGameState();
+    auto it = mMenuMap.find(mCurrentGameState);
+    if (it != mMenuMap.end()) {
+      it->second->init();
+    }
   }
 }
 

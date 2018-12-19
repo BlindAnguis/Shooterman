@@ -3,7 +3,6 @@
 JoinMenu::JoinMenu() {
   mName = "CLIENT: JOIN_MENU";
 
-  MessageHandler::get().publishInterface("ClientIpList", &mPc);
 
   mComponentList.push_back(GUIComponentBuilder::createTitle("Join Host", 250, 36));
   mIPInputText = GUIComponentBuilder::createText("Enter IP", 100, 200);
@@ -25,6 +24,10 @@ JoinMenu::JoinMenu() {
 }
 
 JoinMenu::~JoinMenu() { }
+
+void JoinMenu::init() {
+  MessageHandler::get().publishInterface("ClientIpList", &mPc);
+}
 
 void JoinMenu::handleNewText(sf::Uint32 newChar) {
   if (newChar == 8) {
