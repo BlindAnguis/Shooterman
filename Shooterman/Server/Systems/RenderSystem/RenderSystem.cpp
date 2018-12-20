@@ -15,22 +15,28 @@ void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*
   SpriteMessage sm;
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
     sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
-    sm.addSpriteData(entityWithRender.second->textureId, currentPosition);
 
+    SpriteData data;
+    data.textureId = entityWithRender.second->textureId;
+    data.position = entityWithRender.second->sprite.getPosition();
+    data.texturePosition = entityWithRender.second->sprite.getTextureRect();
+
+    sm.addSpriteData(data);
   }
   MessageHandler::get().pushSpriteListMessage(sm.pack()); // Send to host
   for (auto client : *connectedClients) {
     if (client.second.first) {
       sf::Packet tempPacket = sm.pack();
       int id;
-      int spriteId;
+      int textureId;
       sf::Vector2f currentPos;
+      sf::IntRect currentTexturePos;
     
       tempPacket >> id;
-      tempPacket >> spriteId;
-      tempPacket >> currentPos.x;
-      tempPacket >> currentPos.y;
-      //TRACE_INFO("Sending packet with id:" << id << ", spriteId: " << spriteId << ", x: " << currentPos.x << ", y: " << currentPos.y);
+      tempPacket >> textureId;
+      tempPacket >> currentPos.x >> currentPos.y;
+      tempPacket >> currentTexturePos.left >> currentTexturePos.top >> currentTexturePos.width >> currentTexturePos.height;
+      //TRACE_INFO("Sending packet with id:" << id << ", textureId: " << textureId << ", x: " << currentPos.x << ", y: " << currentPos.y << "left: " << currentTexturePos.left << "top: " << currentTexturePos.top << "width: " << currentTexturePos.width << "height: " << currentTexturePos.height);
 
       client.second.first->send(tempPacket);
       //TRACE_INFO("Packet sent to client: " << client.second.first->getRemoteAddress());

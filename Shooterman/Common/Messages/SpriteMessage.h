@@ -8,19 +8,28 @@
 
 #include "Message.h"
 #include "../MessageId.h"
+#include "../../Common/Textures.h"
+
+typedef struct {
+  Textures textureId;
+  sf::Vector2f position;
+  sf::IntRect texturePosition;
+} SpriteData;
 
 class SpriteMessage : Message {
 public:
   SpriteMessage() {}
   ~SpriteMessage() {}
 
-  void addSpriteData(int ID, sf::Vector2f position) {
-    mSpriteData.push_back(std::make_pair(ID, position));
+  void addSpriteData(SpriteData data) {
+    mSpriteData.push_back(data);
   }
 
-  std::pair<int, sf::Vector2f> getSpriteData(unsigned int position) {
+  SpriteData getSpriteData(unsigned int position) {
     if (position >= mSpriteData.size() || position < 0) {
-      return std::make_pair(-1, sf::Vector2f());
+      SpriteData data;
+      data.textureId = Textures::Unknown;
+      return data;
     }
     return mSpriteData[position];
   }
@@ -29,9 +38,12 @@ public:
     sf::Packet packet;
     packet << SPRITE_LIST;
     packet << mSpriteData.size();
-    for (std::pair<int, sf::Vector2f> sprite : mSpriteData) {
+
+    for (SpriteData data : mSpriteData) {
       //std::cout << "TMP: " << SPRITE_LIST << " Size: " << mSpriteData.size() << " ID: " << mSpriteData.front().first << std::endl;
-      packet << sprite.first << sprite.second.x << sprite.second.y;;
+      packet << static_cast<int>(data.textureId);
+      packet << data.position.x << data.position.y;
+      packet << data.texturePosition.left << data.texturePosition.top << data.texturePosition.width << data.texturePosition.height;
     }
     return packet;
   }
@@ -39,10 +51,13 @@ public:
   void unpack(sf::Packet packet) {
     packet >> mSize;
     for (int i = 0; i < mSize; i++) {
-      int ID;
-      sf::Vector2f position;
-      packet >> ID >> position.x >> position.y;
-      mSpriteData.push_back(std::make_pair(ID, position));
+      int textureId;
+      SpriteData data;
+      packet >> textureId;
+      data.textureId = static_cast<Textures>(textureId);
+      packet >> data.position.x >> data.position.y;
+      packet >> data.texturePosition.left >> data.texturePosition.top >> data.texturePosition.width >> data.texturePosition.height;
+      mSpriteData.push_back(data);
     }
   }
 
@@ -53,5 +68,5 @@ public:
 private:
   int mSize;
   std::string mName = "TRACE";
-  std::vector<std::pair<int, sf::Vector2f>> mSpriteData;
+  std::vector<SpriteData> mSpriteData;
 };

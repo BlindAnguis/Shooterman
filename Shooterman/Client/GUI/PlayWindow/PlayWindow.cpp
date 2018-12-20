@@ -31,12 +31,13 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
       SpriteMessage sm;
       sm.unpack(spriteMessage);
       int position = sm.getSize() - 1;
-      std::pair<int, sf::Vector2f> spriteData = sm.getSpriteData(position);
-      TRACE_DEBUG("SpriteID: " << spriteData.first);
-      while (spriteData.first != -1) {
-        TRACE_DEBUG(spriteData.first);
-        sf::Sprite sprite = mSpriteManager->get(spriteData.first);
-        sprite.setPosition(spriteData.second);
+      SpriteData spriteData = sm.getSpriteData(position);
+      TRACE_DEBUG("SpriteID: " << static_cast<int>(spriteData.textureId));
+      while (spriteData.textureId != Textures::Unknown) {
+        TRACE_DEBUG(static_cast<int>(spriteData.textureId));
+        sf::Sprite sprite = mSpriteManager->get(spriteData.textureId);
+        sprite.setPosition(spriteData.position);
+        sprite.setTextureRect(spriteData.texturePosition);
         window->draw(sprite);
         position--;
         spriteData = sm.getSpriteData(position);

@@ -33,6 +33,7 @@
     <ClCompile Include="Client\Main\Executor.cpp" />
     <ClCompile Include="Client\MessageHandler\PrivateCommunication.cpp" />
     <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
+    <ClCompile Include="Server\Systems\AnimationSystem\AnimationSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -85,6 +86,8 @@
     <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />
     <ClInclude Include="Common\Textures.h" />
+    <ClInclude Include="Common\Animations.h" />
+    <ClInclude Include="Server\Systems\AnimationSystem\AnimationSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

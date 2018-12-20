@@ -1,26 +1,28 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
+#include "../../Common/Animations.h"
+#include "../../Common/Textures.h"
 
 enum class ComponentType {
   Position,
   Render,
   Velocity,
   Collision,
-  Solid
+  Solid,
+  Animated,
 };
 
-// TODO: Correct these components and start using these together with the general ComponentManager everywhere!
-// TODO: Do I have a use for ComponentType?
 struct PositionComponent {
   sf::Vector2f position;
 };
 
 struct RenderComponent {
   sf::Texture texture;
-  sf::Int16 textureId;
+  Textures textureId;
   sf::Sprite sprite;
   bool visible;
+  bool isPlayer;
 };
 
 struct VelocityComponent {
@@ -35,4 +37,9 @@ struct CollisionComponent {
 
 struct SolidComponent {
   bool solid;
+};
+
+struct AnimationComponent {
+  Animations animation;
+  sf::Int16 animationFrame;
 };

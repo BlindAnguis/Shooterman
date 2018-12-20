@@ -26,9 +26,9 @@ Engine::Engine(std::array<std::array<int, 16>, 16> gameMap) :
   mGameMap(gameMap)
 {
   mInputSystem.attach(&mMovementSystem);
-  mTextures[0] = loadTexture("Player.png");
-  mTextures[1] = loadTexture("wall1.png");
-  mTextures[2] = loadTexture("verticalWall1.png");
+  mTextures[static_cast<int>(Textures::Player1)] = loadTexture("Player.png");
+  mTextures[static_cast<int>(Textures::HorizontalWall1)] = loadTexture("wall1.png");
+  mTextures[static_cast<int>(Textures::VerticalWall1)] = loadTexture("verticalWall1.png");
 }
 
 Engine::~Engine() {
@@ -72,14 +72,12 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   mSolidComponentManager.addComponent(player->id);
 
   RenderComponent* rc = mRenderComponentManager.addComponent(player->id);
-  rc->texture = sf::Texture();
-  if (!Collision::CreateTextureAndBitmask(rc->texture, "Client/Resources/Sprites/Player.png")) {
-    std::cout << "[SERVER: ENGINE] ERROR could not load file " << "Client/Resources/Sprites/Player.png" << std::endl;
-  }
+  rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
   rc->visible = true;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(10, 0, 80, 100));
   rc->sprite.setPosition(xStartPos, yStartPos);
-  rc->sprite.setTexture(rc->texture);
-  rc->textureId = static_cast<sf::Int16>(Textures::Player1);
+  rc->textureId = Textures::Player1;
+
   return player;
 }
 
@@ -95,14 +93,12 @@ Entity* Engine::createBall(float xStartPos, float yStartPos, float xMaxVelocity,
   mSolidComponentManager.addComponent(ball->id);
 
   RenderComponent* rc = mRenderComponentManager.addComponent(ball->id);
-  rc->texture = sf::Texture();
-  if (!Collision::CreateTextureAndBitmask(rc->texture, "Client/Resources/Sprites/Player.png")) {
-    std::cout << "[SERVER: ENGINE] ERROR could not load file " << "Client/Resources/Sprites/Player.png" << std::endl;
-  }
+  rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
   rc->visible = true;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 200, 200));
   rc->sprite.setPosition(xStartPos, yStartPos);
-  rc->sprite.setTexture(rc->texture);
-  rc->textureId = static_cast<sf::Int16>(Textures::Player1);
+  rc->sprite.setScale(0.25, 0.25);
+  rc->textureId = Textures::Player1;
   return ball;
 }
 
@@ -128,17 +124,11 @@ Entity* Engine::createHorizontalWall(float xPos, float yPos) {
   Entity* horizontalWall = mEntityManager.createEntity();
   mSolidComponentManager.addComponent(horizontalWall->id);
   RenderComponent* rc = mRenderComponentManager.addComponent(horizontalWall->id);
-  /*
-  rc->texture = sf::Texture();
-  if (!Collision::CreateTextureAndBitmask(rc->texture, "Client/Resources/Sprites/Player.png")) {
-  std::cout << "[SERVER: ENGINE] ERROR could not load file " << "Client/Resources/Sprites/Player.png" << std::endl;
-  }
-  */
   rc->texture = *mTextures[static_cast<int>(Textures::HorizontalWall1)];
   rc->visible = true;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
   rc->sprite.setPosition(xPos, yPos);
-  rc->sprite.setTexture(rc->texture);
-  rc->textureId = static_cast<sf::Int16>(Textures::HorizontalWall1);
+  rc->textureId = Textures::HorizontalWall1;
   //rc->isPlayer = false;
   return horizontalWall;
 }
@@ -146,19 +136,12 @@ Entity* Engine::createHorizontalWall(float xPos, float yPos) {
 Entity* Engine::createVerticalWall(float xPos, float yPos) {
   Entity* verticalWall = mEntityManager.createEntity();
   mSolidComponentManager.addComponent(verticalWall->id);
-
   RenderComponent* rc = mRenderComponentManager.addComponent(verticalWall->id);
-  /*
-  rc->texture = sf::Texture();
-  if (!Collision::CreateTextureAndBitmask(rc->texture, "Client/Resources/Sprites/Player.png")) {
-  std::cout << "[SERVER: ENGINE] ERROR could not load file " << "Client/Resources/Sprites/Player.png" << std::endl;
-  }
-  */
   rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
   rc->visible = true;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
   rc->sprite.setPosition(xPos, yPos);
-  rc->sprite.setTexture(rc->texture);
-  rc->textureId = static_cast<sf::Int16>(Textures::VerticalWall1);
+  rc->textureId = Textures::VerticalWall1;
   //rc->isPlayer = false;
   return verticalWall;
 }

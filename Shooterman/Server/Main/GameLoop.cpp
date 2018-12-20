@@ -86,7 +86,7 @@ void GameLoop::gameLoop() {
   };
 
   std::array<std::array<int, 16>, 16> gameMap3 = {};
-  Engine world = Engine(gameMap3);
+  Engine world = Engine(gameMap1);
   world.createMap();
   /*Entity* player1 = world.createPlayer(50, 50, 5, 5, 100);
   Entity* player2 = world.createPlayer(200, 200, -2, -2, 100);*/
