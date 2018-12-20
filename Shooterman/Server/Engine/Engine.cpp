@@ -106,15 +106,15 @@ void Engine::createMap() {
   auto verticalWallTexture = mTextures[static_cast<int>(Textures::VerticalWall1)];
   auto horizontalWallTexture = mTextures[static_cast<int>(Textures::HorizontalWall1)];
   int tileIndex = 0;
-  for (int i = 0; i < mGameMap.size(); i++) {
+  for (unsigned int i = 0; i < mGameMap.size(); i++) {
     auto row = mGameMap[i];
-    for (int j = 0; j < row.size(); j++) {
+    for (unsigned int j = 0; j < row.size(); j++) {
       int tile = row[j];
       if (tile == 1 || tile == 2) {
-        createHorizontalWall(j * horizontalWallTexture->getSize().x, i * horizontalWallTexture->getSize().y);
+        createHorizontalWall((float)(j * horizontalWallTexture->getSize().x), (float)(i * horizontalWallTexture->getSize().y));
       }
       else if (tile == 3) {
-        createVerticalWall(j * verticalWallTexture->getSize().x, i * verticalWallTexture->getSize().y);
+        createVerticalWall((float)(j * verticalWallTexture->getSize().x), (float)(i * verticalWallTexture->getSize().y));
       }
     }
   }

@@ -10,7 +10,7 @@ PrivateCommunication::~PrivateCommunication() {}
 void PrivateCommunication::subscribe(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   //MessageHandler::get().tryToGiveId(newSubscriber);
-  srand(time(NULL));
+  srand((unsigned int)(time(NULL)));
   newSubscriber->setId(rand() % 10);
   mSubscriberList.push_back(newSubscriber);
   TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to " << mName);

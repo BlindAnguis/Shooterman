@@ -55,6 +55,6 @@ private:
   std::array<sf::Texture*, 3> mTextures;
 
   sf::Texture* loadTexture(std::string fileName);
-  int x = 60;
+  float x = 60;
 };
 
