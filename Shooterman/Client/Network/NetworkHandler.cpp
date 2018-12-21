@@ -13,6 +13,7 @@ void NetworkHandler::start() {
 
 void NetworkHandler::startup() {
   mMessageSubscriber.setId(666);
+  TRACE_DEBUG("Trying to subscribe to ClientIpList");
   while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }

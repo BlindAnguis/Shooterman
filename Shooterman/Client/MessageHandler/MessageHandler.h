@@ -53,14 +53,21 @@ public:
     if (it == mPublishedComms.end()) {
       pc->setMName(name);
       mPublishedComms.emplace(name, pc);
+      TRACE_DEBUG("Interface: " << name << " published");
     } else {
-      TRACE_DEBUG("Interface: " << name << " is already published");
+      TRACE_WARNING("Interface: " << name << " is already published");
     }
   }
 
   void unpublishInterface(std::string name) {
     std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-    mPublishedComms.erase(name);
+    auto interface = mPublishedComms.find(name);
+    if (interface != mPublishedComms.end()) {
+      while (interface->second->getSubscribers().size() > 0) {
+        interface->second->unsubscribe(interface->second->getSubscribers().front());
+      }
+      mPublishedComms.erase(interface);
+    }
   }
 
   bool subscribeTo(std::string name, Subscriber* s) {
@@ -84,7 +91,7 @@ public:
   }
 
 private:
-  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; }
+  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled = true; }
   
   int mCurrentId;
   std::mutex mIdGeneratorLock;

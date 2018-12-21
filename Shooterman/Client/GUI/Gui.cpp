@@ -59,7 +59,7 @@ void Gui::handleWindowEvents() {
       sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);
       mWindow->setView(sf::View(visibleArea));
     }
-    if (event.type == sf::Event::TextEntered) {
+    if (event.type == sf::Event::TextEntered && mWindow->hasFocus()) {
       auto it = mMenuMap.find(mCurrentGameState);
       if (it != mMenuMap.end()) {
         it->second->handleNewText(event.text.unicode);
@@ -80,7 +80,7 @@ void Gui::renderGameState(GAME_STATE gameState) {
 
   mWindow->clear(sf::Color::White);
   sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mWindow->hasFocus()) {
     if (!mLeftButtonAlreadyPressed) {
       mMenuMap.at(gameState)->checkMouse(mousePosition);
     }
@@ -105,10 +105,18 @@ void Gui::handleGameStateMessages() {
 
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
-    mCurrentGameState = gsm.getGameState();
-    auto it = mMenuMap.find(mCurrentGameState);
-    if (it != mMenuMap.end()) {
-      it->second->init();
+    if (gsm.getGameState() != mCurrentGameState) {
+      // Changed game state
+      auto previousMenu = mMenuMap.find(mCurrentGameState);
+      if (previousMenu != mMenuMap.end()) {
+        previousMenu->second->uninit();
+      }
+
+      mCurrentGameState = gsm.getGameState();
+      auto newMenu = mMenuMap.find(mCurrentGameState);
+      if (newMenu != mMenuMap.end()) {
+        newMenu->second->init();
+      }
     }
   }
 }

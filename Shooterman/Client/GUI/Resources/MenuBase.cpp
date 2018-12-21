@@ -1,6 +1,7 @@
 #include "MenuBase.h"
 
 void MenuBase::init() { }
+void MenuBase::uninit() { }
 
 bool MenuBase::checkMouse(sf::Vector2f mousePosition) {
   for (auto component : mComponentList) {

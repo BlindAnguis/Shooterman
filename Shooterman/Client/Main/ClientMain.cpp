@@ -40,7 +40,6 @@ ClientMain::ClientMain() {
           mServerStarted = true;
         }
         if (!networkHandlerStarted) {
-          sf::sleep(sf::milliseconds(1000));
           MessageHandler::get().publishInterface("ClientIpList", &pc);
           networkHandler.start();
           networkHandlerStarted = true;

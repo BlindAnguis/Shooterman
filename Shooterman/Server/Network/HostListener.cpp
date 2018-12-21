@@ -34,6 +34,7 @@ void HostListener::listen() {
   TRACE_INFO("Start to listen");
   //sf::TcpListener listener;
   sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
+  mListener->setBlocking(false);
   //sf::Socket::Status status = mListener->listen(1337, "localhost");
   if (status != sf::Socket::Status::Done) {
     TRACE_ERROR("Couldn't start listening to port 1337 on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
@@ -44,10 +45,9 @@ void HostListener::listen() {
   TRACE_INFO("Started listening to port: 1337 and IP: " << sf::IpAddress::getLocalAddress());
   //TRACE_INFO("Started listening to port: 1337 and IP: localhost");
   mRunning = true;
+  TRACE_INFO("Searching for clients");
+  sf::TcpSocket* client = new sf::TcpSocket();
   while (mRunning) {
-    sf::TcpSocket* client = new sf::TcpSocket();
-    //listener.setBlocking(false);
-    TRACE_INFO("Searching for client");
     if (mListener->accept(*client) == sf::Socket::Status::Done) {
       // A new client just connected!
       TRACE_INFO("New connection received from " << client->getRemoteAddress());
@@ -55,6 +55,9 @@ void HostListener::listen() {
       mConnectedClients->emplace(getNextID(), tmp);
       //doSomethingWith(client);
       // TODO: Add client to a list of clients?
+      client = new sf::TcpSocket();
     }
+    sf::sleep(sf::milliseconds(5));
   }
+  delete client; // Delete unused client socket
 }

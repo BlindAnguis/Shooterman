@@ -4,6 +4,7 @@
 
 PrivateCommunication::PrivateCommunication() {
   mName = "";
+  mDebugEnabled = true;
 }
 PrivateCommunication::~PrivateCommunication() {}
 
@@ -43,4 +44,8 @@ void PrivateCommunication::setMName(std::string newName) {
 unsigned int PrivateCommunication::getNumberOfSubscribers() {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   return mSubscriberList.size();
+}
+
+std::list<Subscriber*> PrivateCommunication::getSubscribers() {
+  return mSubscriberList;
 }

@@ -11,6 +11,7 @@ public:
   ~JoinMenu();
 
   void init() override;
+  void uninit() override;
 
   void handleNewText(sf::Uint32 newChar) override;
 

@@ -19,6 +19,7 @@ public:
 
   void setMName(std::string newName);
 
+  std::list<Subscriber*> getSubscribers();
   unsigned int getNumberOfSubscribers();
 
 private:

@@ -17,7 +17,6 @@ JoinMenu::JoinMenu() {
 
     GameStateMessage gsm(GAME_STATE::PLAYING);
     MessageHandler::get().pushGameStateMessage(gsm.pack());
-    MessageHandler::get().unpublishInterface("ClientIpList");
   }));
 
   mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380, GAME_STATE::MAIN_MENU));
@@ -27,6 +26,13 @@ JoinMenu::~JoinMenu() { }
 
 void JoinMenu::init() {
   MessageHandler::get().publishInterface("ClientIpList", &mPc);
+}
+
+void JoinMenu::uninit() {
+  sf::Packet shutdownRequest;
+  shutdownRequest << 0;
+  mPc.pushMessage(shutdownRequest);
+  MessageHandler::get().unpublishInterface("ClientIpList");
 }
 
 void JoinMenu::handleNewText(sf::Uint32 newChar) {
