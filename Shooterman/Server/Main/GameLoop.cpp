@@ -24,6 +24,7 @@ void GameLoop::start() {
 
 void GameLoop::stop() {
   TRACE_INFO("Exit Server");
+  
   mNetworkSystem.shutDown();
   mRunning = false;
   mGameLoopThread->join();
@@ -164,4 +165,7 @@ void GameLoop::gameLoop() {
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
   }  
 
+  if (hostListener.isListening()) {
+    hostListener.stopListening();
+  }
 }

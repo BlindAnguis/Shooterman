@@ -2,7 +2,7 @@
 
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
-#include "../../Common/Trace.h"
+#include "../../../Common/Trace.h"
 
 class AnimationSystem : Trace
 {
