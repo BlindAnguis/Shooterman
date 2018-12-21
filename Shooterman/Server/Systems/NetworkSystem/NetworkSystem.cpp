@@ -51,7 +51,7 @@ void NetworkSystem::startup() {
       }
     }
 
-    //sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+    sf::sleep(sf::milliseconds(1));
   }
 
   for (auto client : mClientsSockets) {
