@@ -4,6 +4,7 @@
 #include "../Systems/RenderSystem/RenderSystem.h"
 #include "../Systems/InputSystem/InputSystem.h"
 #include "../Systems/CollisionSystem/CollisionSystem.h"
+#include "../Systems/AnimationSystem/AnimationSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -41,6 +42,7 @@ private:
   InputSystem mInputSystem;
   RenderSystem mRenderSystem;
   CollisionSystem mCollisionSystem;
+  AnimationSystem mAnimationSystem;
 
   // Managers
   EntityManager mEntityManager;
@@ -48,6 +50,7 @@ private:
   ComponentManager<RenderComponent> mRenderComponentManager;
   ComponentManager<VelocityComponent> mVelocityComponentManager;
   ComponentManager<SolidComponent> mSolidComponentManager;
+  ComponentManager<AnimationComponent> mAnimationComponentManager;
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;

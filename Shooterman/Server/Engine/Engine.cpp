@@ -7,9 +7,11 @@ Engine::Engine() :
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
   mSolidComponentManager(ComponentManager<SolidComponent>()),
+  mAnimationComponentManager(ComponentManager<AnimationComponent>()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager)),
-  mRenderSystem(RenderSystem(&mRenderComponentManager))
+  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
+  mRenderSystem(RenderSystem(&mRenderComponentManager)),
+  mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)
 {
   mInputSystem.attach(&mMovementSystem);
 }
@@ -20,9 +22,11 @@ Engine::Engine(std::array<std::array<int, 16>, 16> gameMap) :
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
   mSolidComponentManager(ComponentManager<SolidComponent>()),
+  mAnimationComponentManager(ComponentManager<AnimationComponent>()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager)),
+  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
+  mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager),
   mGameMap(gameMap)
 {
   mInputSystem.attach(&mMovementSystem);
@@ -35,9 +39,12 @@ Engine::~Engine() {
 }
 
 void Engine::update() {
+  for (auto entity : mAnimationComponentManager.getAllEntitiesWithComponent()) {
+    entity.second->animation = Animations::Idle;
+  }
   mInputSystem.handleInput();
   mMovementSystem.ownUpdate();
-
+  mAnimationSystem.update();
   mRenderSystem.render(mConnectedClients);
 }
 
@@ -77,6 +84,10 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   rc->sprite = sf::Sprite(rc->texture, sf::IntRect(10, 0, 80, 100));
   rc->sprite.setPosition(xStartPos, yStartPos);
   rc->textureId = Textures::Player1;
+
+  AnimationComponent* ac = mAnimationComponentManager.addComponent(player->id);
+  ac->animation = Animations::Idle;
+  ac->animationFrame = 0;
 
   return player;
 }

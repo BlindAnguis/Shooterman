@@ -8,12 +8,14 @@ MovementSystem::MovementSystem(
   ComponentManager<VelocityComponent>* velocityComponentManager,
   ComponentManager<RenderComponent>* renderComponentManager,
   CollisionSystem* collisionSystem,
-  EntityManager* entityManager
+  EntityManager* entityManager,
+  ComponentManager<AnimationComponent>* animationComponentManager
 ) :
   mVelocityComponentManager(velocityComponentManager),
   mRenderComponentManager(renderComponentManager),
   mCollisionSystem(collisionSystem),
-  mEntityManager(entityManager) 
+  mEntityManager(entityManager),
+  mAnimationComponentManager(animationComponentManager)
 {}
 
 MovementSystem::~MovementSystem() {}
@@ -26,34 +28,43 @@ void MovementSystem::update(int input, int ID)
     Entity* e = mPlayersMap->at(ID).second;
     if (e && mRenderComponentManager->hasComponent(e->id)) {
       VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
+      AnimationComponent* animation = mAnimationComponentManager->getComponent(e->id);
       if (velocity) {
         if (input == D_KEY) {
           velocity->currentVelocity.x = velocity->maxVelocity.x;
+          animation->animation = Animations::RunningRight;
         }
         else if (input == A_KEY) {
           velocity->currentVelocity.x = -velocity->maxVelocity.x;
+          animation->animation = Animations::RunningLeft;
         }
         else if (input == W_KEY) {
           velocity->currentVelocity.y = -velocity->maxVelocity.y;
+          animation->animation = Animations::RunningUp;
         }
         else if (input == S_KEY) {
           velocity->currentVelocity.y = velocity->maxVelocity.y;
+          animation->animation = Animations::RunningDown;
         }
         else if (input == A_S_KEY) {
           velocity->currentVelocity.x = -velocity->maxVelocity.x;
           velocity->currentVelocity.y = velocity->maxVelocity.y;
+          animation->animation = Animations::RunningLeft;
         }
         else if (input == A_W_KEY) {
           velocity->currentVelocity.x = -velocity->maxVelocity.x;
           velocity->currentVelocity.y = -velocity->maxVelocity.y;
+          animation->animation = Animations::RunningLeft;
         }
         else if (input == D_W_KEY) {
           velocity->currentVelocity.x = velocity->maxVelocity.x;
           velocity->currentVelocity.y = -velocity->maxVelocity.y;
+          animation->animation = Animations::RunningRight;
         }
         else if (input == D_S_KEY) {
           velocity->currentVelocity.x = velocity->maxVelocity.x;
           velocity->currentVelocity.y = velocity->maxVelocity.y;
+          animation->animation = Animations::RunningRight;
         }
       }
     }

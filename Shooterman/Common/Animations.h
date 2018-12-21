@@ -3,7 +3,10 @@
 enum class Animations {
   Idle,
   Walking,
-  Running,
+  RunningRight,
+  RunningLeft,
+  RunningUp,
+  RunningDown,
   Attacking,
   Death,
   Victory,

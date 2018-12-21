@@ -14,7 +14,8 @@ public:
     ComponentManager<VelocityComponent>* velocityComponentManager,
     ComponentManager<RenderComponent>* renderComponentManager,
     CollisionSystem* collisionSystem,
-    EntityManager* entityManager
+    EntityManager* entityManager,
+    ComponentManager<AnimationComponent>* animationComponentManager
   );
   ~MovementSystem();
   void update(int input, int ID);
@@ -26,6 +27,7 @@ private:
   void move(RenderComponent* position, VelocityComponent* velocity);
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<RenderComponent>* mRenderComponentManager;
+  ComponentManager<AnimationComponent>* mAnimationComponentManager;
   CollisionSystem* mCollisionSystem;
   EntityManager* mEntityManager;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mPlayersMap;
