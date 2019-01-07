@@ -18,7 +18,7 @@ public:
     ComponentManager<AnimationComponent>* animationComponentManager
   );
   ~MovementSystem();
-  void update(int input, int ID);
+  void update(InputMessage inputMessage, int ID);
   void ownUpdate();
   void setPlayers(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> playersMap) { mPlayersMap = playersMap; }
 

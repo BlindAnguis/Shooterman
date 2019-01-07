@@ -3,6 +3,7 @@
 #include "../ObservableIf.h"
 #include "../../../Client/MessageHandler/MessageHandler.h"
 #include ".././../../Common/Messages/GameStateMessage.h"
+#include ".././../../Common/Messages/InputMessage.h"
 
 class InputSystem : public ObservableIf, Trace
 {
@@ -21,7 +22,7 @@ public:
   InputSystem();
   ~InputSystem();
 	void handleInput();
-  int getLatestInput();
+  InputMessage getLatestInput();
   void setPlayers(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> playersMap) { mPlayersMap = playersMap; }
   GAME_STATE getLatestGameStateMessage();
 };

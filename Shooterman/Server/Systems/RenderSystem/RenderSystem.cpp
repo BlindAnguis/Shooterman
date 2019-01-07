@@ -20,6 +20,7 @@ void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*
     data.textureId = entityWithRender.second->textureId;
     data.position = entityWithRender.second->sprite.getPosition();
     data.texturePosition = entityWithRender.second->sprite.getTextureRect();
+    data.rotation = entityWithRender.second->sprite.getRotation();
 
     sm.addSpriteData(data);
   }

@@ -49,11 +49,10 @@ void Input::readInput() {
         }
 
         getLatestMousePosition();
-
-        if (keyboardBitmask != 0) {
-          sf::Packet inputKeyPacket;
-          inputKeyPacket << INPUT_KEYS << keyboardBitmask;
-          pc->pushMessage(inputKeyPacket);
+        {
+        //if (keyboardBitmask != 0 && mLastMousePosition.) {
+          InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
+          pc->pushMessage(im.pack());
           //MessageHandler::get().pushInputMessage(inputKeyPacket);
         }
 

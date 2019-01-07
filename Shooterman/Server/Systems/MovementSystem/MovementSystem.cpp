@@ -20,53 +20,62 @@ MovementSystem::MovementSystem(
 
 MovementSystem::~MovementSystem() {}
 
-void MovementSystem::update(int input, int ID)
+void MovementSystem::update(InputMessage inputMessage, int ID)
 {
+  int input = inputMessage.getKeyboardBitMask();
+  sf::Vector2i mousePos = inputMessage.getMousePosition();
   //std::cout << "[SERVER: MOVEMENT_SYSTEM] update called with input: " << input << std::endl;
-  if (input == D_KEY || input == A_KEY || input == S_KEY || input == W_KEY ||
-    input == A_S_KEY || input == A_W_KEY || input == D_W_KEY || input == D_S_KEY) {
-    Entity* e = mPlayersMap->at(ID).second;
-    if (e && mRenderComponentManager->hasComponent(e->id)) {
-      VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
-      AnimationComponent* animation = mAnimationComponentManager->getComponent(e->id);
-      if (velocity) {
-        if (input == D_KEY) {
-          velocity->currentVelocity.x = velocity->maxVelocity.x;
-          animation->animation = Animations::RunningRight;
-        }
-        else if (input == A_KEY) {
-          velocity->currentVelocity.x = -velocity->maxVelocity.x;
-          animation->animation = Animations::RunningLeft;
-        }
-        else if (input == W_KEY) {
-          velocity->currentVelocity.y = -velocity->maxVelocity.y;
-          animation->animation = Animations::RunningUp;
-        }
-        else if (input == S_KEY) {
-          velocity->currentVelocity.y = velocity->maxVelocity.y;
-          animation->animation = Animations::RunningDown;
-        }
-        else if (input == A_S_KEY) {
-          velocity->currentVelocity.x = -velocity->maxVelocity.x;
-          velocity->currentVelocity.y = velocity->maxVelocity.y;
-          animation->animation = Animations::RunningLeft;
-        }
-        else if (input == A_W_KEY) {
-          velocity->currentVelocity.x = -velocity->maxVelocity.x;
-          velocity->currentVelocity.y = -velocity->maxVelocity.y;
-          animation->animation = Animations::RunningLeft;
-        }
-        else if (input == D_W_KEY) {
-          velocity->currentVelocity.x = velocity->maxVelocity.x;
-          velocity->currentVelocity.y = -velocity->maxVelocity.y;
-          animation->animation = Animations::RunningRight;
-        }
-        else if (input == D_S_KEY) {
-          velocity->currentVelocity.x = velocity->maxVelocity.x;
-          velocity->currentVelocity.y = velocity->maxVelocity.y;
-          animation->animation = Animations::RunningRight;
-        }
+  Entity* e = mPlayersMap->at(inputMessage.getId()).second;
+  if (e && mRenderComponentManager->hasComponent(e->id)) {
+    VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
+    AnimationComponent* animation = mAnimationComponentManager->getComponent(e->id);
+    RenderComponent* spritePosition = mRenderComponentManager->getComponent(e->id);
+
+    // Calculate the angle between the sprite and the mouse
+    float angle = atan2(spritePosition->sprite.getPosition().y - mousePos.y,
+      spritePosition->sprite.getPosition().x - mousePos.x) * (180 / 3.1415) + 90; // Add 90 degrees to compensate for rotation...
+    if (angle < 0) {
+      angle += 360;
+    }
+    spritePosition->sprite.setRotation(angle);
+
+    if (velocity) {
+      if (input == D_KEY) {
+        velocity->currentVelocity.x = velocity->maxVelocity.x;
+        animation->animation = Animations::RunningRight;
       }
+      else if (input == A_KEY) {
+        velocity->currentVelocity.x = -velocity->maxVelocity.x;
+       animation->animation = Animations::RunningLeft;
+      }
+      else if (input == W_KEY) {
+        velocity->currentVelocity.y = -velocity->maxVelocity.y;
+        animation->animation = Animations::RunningDown;
+      }
+      else if (input == S_KEY) {
+        velocity->currentVelocity.y = velocity->maxVelocity.y;
+        animation->animation = Animations::RunningDown;
+      }
+      else if (input == A_S_KEY) {
+        velocity->currentVelocity.x = -velocity->maxVelocity.x;
+        velocity->currentVelocity.y = velocity->maxVelocity.y;
+        animation->animation = Animations::RunningLeft;
+      }
+      else if (input == A_W_KEY) {
+        velocity->currentVelocity.x = -velocity->maxVelocity.x;
+        velocity->currentVelocity.y = -velocity->maxVelocity.y;
+       animation->animation = Animations::RunningLeft;
+      }
+      else if (input == D_W_KEY) {
+        velocity->currentVelocity.x = velocity->maxVelocity.x;
+        velocity->currentVelocity.y = -velocity->maxVelocity.y;
+       animation->animation = Animations::RunningRight;
+      }
+      else if (input == D_S_KEY) {
+        velocity->currentVelocity.x = velocity->maxVelocity.x;
+        velocity->currentVelocity.y = velocity->maxVelocity.y;
+       animation->animation = Animations::RunningRight;
+      }      
     }
   }
 }

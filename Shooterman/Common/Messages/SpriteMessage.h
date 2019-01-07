@@ -14,6 +14,7 @@ typedef struct {
   Textures textureId;
   sf::Vector2f position;
   sf::IntRect texturePosition;
+  float rotation;
 } SpriteData;
 
 class SpriteMessage : Message {
@@ -44,6 +45,7 @@ public:
       packet << static_cast<int>(data.textureId);
       packet << data.position.x << data.position.y;
       packet << data.texturePosition.left << data.texturePosition.top << data.texturePosition.width << data.texturePosition.height;
+      packet << data.rotation;
     }
     return packet;
   }
@@ -57,6 +59,7 @@ public:
       data.textureId = static_cast<Textures>(textureId);
       packet >> data.position.x >> data.position.y;
       packet >> data.texturePosition.left >> data.texturePosition.top >> data.texturePosition.width >> data.texturePosition.height;
+      packet >> data.rotation;
       mSpriteData.push_back(data);
     }
   }

@@ -17,7 +17,7 @@ class Engine
 {
 public:
   Engine();
-  Engine(std::array<std::array<int, 16>, 16> gameMap);
+  Engine(std::array<std::array<int, 32>, 32> gameMap);
   ~Engine();
   void update();
   InputSystem* getInputSystem();
@@ -54,10 +54,10 @@ private:
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;
-  std::array<std::array<int, 16>, 16> mGameMap;
+  std::array<std::array<int, 32>, 32> mGameMap;
   std::array<sf::Texture*, 3> mTextures;
 
   sf::Texture* loadTexture(std::string fileName);
-  float x = 60;
+  float x = 100;
 };
 

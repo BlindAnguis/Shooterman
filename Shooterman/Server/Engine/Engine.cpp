@@ -16,7 +16,7 @@ Engine::Engine() :
   mInputSystem.attach(&mMovementSystem);
 }
 
-Engine::Engine(std::array<std::array<int, 16>, 16> gameMap) :
+Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mInputSystem(InputSystem()),
   mEntityManager(EntityManager()),
   mRenderComponentManager(ComponentManager<RenderComponent>()),
@@ -62,7 +62,7 @@ EntityManager* Engine::getEntityManager() {
 
 void Engine::createPlayers() {
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    it->second.second = createPlayer(x, 60, 5, 5, 100);
+    it->second.second = createPlayer(x, 100, 5, 5, 100);
     x += 100;
   }
 }
@@ -82,6 +82,7 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
   rc->visible = true;
   rc->sprite = sf::Sprite(rc->texture, sf::IntRect(10, 0, 80, 100));
+  rc->sprite.setOrigin(47, 47);
   rc->sprite.setPosition(xStartPos, yStartPos);
   rc->textureId = Textures::Player1;
 
@@ -132,26 +133,30 @@ void Engine::createMap() {
 }
 
 Entity* Engine::createHorizontalWall(float xPos, float yPos) {
+  float size = 32;
   Entity* horizontalWall = mEntityManager.createEntity();
   mSolidComponentManager.addComponent(horizontalWall->id);
   RenderComponent* rc = mRenderComponentManager.addComponent(horizontalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::HorizontalWall1)];
   rc->visible = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
-  rc->sprite.setPosition(xPos, yPos);
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, size, size));
+  rc->sprite.setOrigin(size / 2, size / 2);
+  rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::HorizontalWall1;
   //rc->isPlayer = false;
   return horizontalWall;
 }
 
 Entity* Engine::createVerticalWall(float xPos, float yPos) {
+  float size = 32;
   Entity* verticalWall = mEntityManager.createEntity();
   mSolidComponentManager.addComponent(verticalWall->id);
   RenderComponent* rc = mRenderComponentManager.addComponent(verticalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
   rc->visible = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
-  rc->sprite.setPosition(xPos, yPos);
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, size, size));
+  rc->sprite.setOrigin(size / 2, size / 2);
+  rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::VerticalWall1;
   //rc->isPlayer = false;
   return verticalWall;

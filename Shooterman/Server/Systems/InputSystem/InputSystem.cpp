@@ -14,12 +14,12 @@ InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeAll(&mGameStateSubscriber);
 }
 
-int InputSystem::getLatestInput() {
+InputMessage InputSystem::getLatestInput() {
   int input = 0;
   int messageId;
   std::queue<sf::Packet> inputMessagesQueue = mInputSubscriber.getMessageQueue();
   sf::Packet inputMessage;
-
+  InputMessage im;
   if (!inputMessagesQueue.empty()) {
     inputMessage = inputMessagesQueue.front();
     inputMessagesQueue.pop();
@@ -27,11 +27,13 @@ int InputSystem::getLatestInput() {
     inputMessage >> messageId;
     //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
 
+    im.unpack(inputMessage);
+
     inputMessage >> input;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
   }
 
-  return input;
+  return im;
 }
 
 GAME_STATE InputSystem::getLatestGameStateMessage() {
@@ -58,15 +60,13 @@ void InputSystem::handleInput() {
   sf::Packet inputMessage;
 
   while (!inputMessagesQueue.empty()) {
-    inputMessage = inputMessagesQueue.front();
+    InputMessage im(inputMessagesQueue.front());
     inputMessagesQueue.pop();
 
-    inputMessage >> input;
-    inputMessage >> clientId;
     //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
-    if (input > 0) {
-      notify(input, clientId);
+    if (im.getId() > 0) {
+      notify(im, -1);
     }
   }
 }

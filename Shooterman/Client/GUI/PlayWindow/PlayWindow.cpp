@@ -42,6 +42,8 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
       sf::Sprite sprite = mSpriteManager->get(spriteData.textureId);
       sprite.setPosition(spriteData.position);
       sprite.setTextureRect(spriteData.texturePosition);
+      sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
+      sprite.setRotation(spriteData.rotation);
       window->draw(sprite);
       position--;
       spriteData = sm.getSpriteData(position);

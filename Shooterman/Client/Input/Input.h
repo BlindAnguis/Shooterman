@@ -12,6 +12,7 @@
 #include "../MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/MouseMessage.h"
+#include "../../Common/Messages/InputMessage.h"
 
 
 class Input : Trace {
