@@ -15,6 +15,7 @@
 #include "OptionsMenu\OptionsMenu.h" 
 
 #include "../MessageHandler/MessageHandler.h"
+#include "../MessageHandler/PrivateCommunication.h"
 #include "../../Common/Subscriber.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Trace.h"
@@ -36,6 +37,7 @@ private:
   std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
+  PrivateCommunication* mMousePC;
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;

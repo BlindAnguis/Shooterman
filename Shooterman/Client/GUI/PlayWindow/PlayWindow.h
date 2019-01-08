@@ -14,4 +14,5 @@ public:
 private:
   SpriteManager* mSpriteManager;
   Subscriber mSpriteListSubscriber;
+  bool mIsSubscribed;
 };

@@ -10,6 +10,10 @@ Gui::Gui() {
 void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
+  mMousePC = new PrivateCommunication();
+  MessageHandler::get().publishInterface("MousePosition", mMousePC);
+
+  PrivateCommunication pc;
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
   mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());
@@ -27,6 +31,8 @@ void Gui::init() {
 
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
   MessageHandler::get().unsubscribeAll(&mGameStateMessageSubscriber);
+  MessageHandler::get().unpublishInterface("MousePosition");
+  delete mMousePC;
 }
 
 void Gui::render() {
@@ -53,7 +59,7 @@ void Gui::handleWindowEvents() {
     }
     if (event.type == sf::Event::MouseMoved) {
       MouseMessage mm(sf::Mouse::getPosition(*mWindow));
-      MessageHandler::get().pushMouseMessage(mm.pack());
+      mMousePC->pushMessage(mm.pack());
     }
     if (event.type == sf::Event::Resized) {
       sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);

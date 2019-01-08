@@ -4,17 +4,24 @@ PlayWindow::PlayWindow() {
   mName = "CLIENT: PLAY_WINDOW";
   mSpriteManager = new SpriteManager();
   mSpriteManager->loadSprites();
-
-  MessageHandler::get().subscribeToSpriteListMessages(&mSpriteListSubscriber);
+  mIsSubscribed = false;
 }
 
 PlayWindow::~PlayWindow() {
-  MessageHandler::get().unsubscribeAll(&mSpriteListSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientSpriteList", &mSpriteListSubscriber);
   delete mSpriteManager;
 }
 
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   bool renderNeeded = false;
+
+  if (!mIsSubscribed) {
+    mIsSubscribed = MessageHandler::get().subscribeTo("ClientSpriteList", &mSpriteListSubscriber);
+    if (!mIsSubscribed) {
+      return false;
+    }
+  }
+
   std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
   sf::Packet spriteMessage;
   if (!spriteMessageQueue.empty()) {
@@ -22,13 +29,12 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
     renderNeeded = true;
   }
 
-
-
   while (!spriteMessageQueue.empty()) {
     spriteMessage = spriteMessageQueue.front();
     spriteMessageQueue.pop();
 
   }
+
   int messageID;
   spriteMessage >> messageID;
   if (messageID == SPRITE_LIST) {
@@ -42,14 +48,14 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
       sf::Sprite sprite = mSpriteManager->get(spriteData.textureId);
       sprite.setPosition(spriteData.position);
       sprite.setTextureRect(spriteData.texturePosition);
-      sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
+      sprite.setOrigin((float)(sprite.getTextureRect().width / 2), 
+                       (float)(sprite.getTextureRect().height / 2));
       sprite.setRotation(spriteData.rotation);
       window->draw(sprite);
       position--;
       spriteData = sm.getSpriteData(position);
     }
-  }
-  else {
+  } else {
     TRACE_DEBUG("Found no message");
   }
 

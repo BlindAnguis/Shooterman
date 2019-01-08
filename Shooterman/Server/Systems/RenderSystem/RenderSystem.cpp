@@ -24,7 +24,7 @@ void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*
 
     sm.addSpriteData(data);
   }
-  MessageHandler::get().pushSpriteListMessage(sm.pack()); // Send to host
+
   for (auto client : *connectedClients) {
     if (client.second.first) {
       sf::Packet tempPacket = sm.pack();

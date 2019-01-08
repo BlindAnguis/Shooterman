@@ -14,9 +14,7 @@ Input::Input() {
 void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
-  MessageHandler::get().subscribeToMouseMessages(&mMouseMessageSubscriber);
-  //Subscriber s;
-  //MessageHandler::get().subscribeTo("ClientMain", &s);
+  bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
   PrivateCommunication* pc = new PrivateCommunication();
   MessageHandler::get().publishInterface("ClientInputList", pc);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
@@ -34,36 +32,37 @@ void Input::readInput() {
         // Do nothing
         break;
       case GAME_STATE::PLAYING:
+      {
         keyboardBitmask = 0;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-          keyboardBitmask += A_KEY;
+          keyboardBitmask |= A_KEY;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-          keyboardBitmask += D_KEY;
+          keyboardBitmask |= D_KEY;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-          keyboardBitmask += W_KEY;
+          keyboardBitmask |= W_KEY;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-          keyboardBitmask += S_KEY;
+          keyboardBitmask |= S_KEY;
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+          keyboardBitmask |= LEFT_MOUSE;
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+          keyboardBitmask |= RIGHT_MOUSE;
         }
 
         getLatestMousePosition();
-        {
-        //if (keyboardBitmask != 0 && mLastMousePosition.) {
-          InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
-          pc->pushMessage(im.pack());
-          //MessageHandler::get().pushInputMessage(inputKeyPacket);
-        }
+        InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
+        pc->pushMessage(im.pack());
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::MAIN_MENU);
           MessageHandler::get().pushGameStateMessage(gsm.pack());
         }
-
-        //TRACE_INFO("Received data: " << s.getMessageQueue().size());
-
         break;
+      }
       case GAME_STATE::OPTIONS:
         break;
       default:
@@ -73,6 +72,9 @@ void Input::readInput() {
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleGameStateMessages();
     handleSystemMessages();
+    if (!subscribedToMouse) {
+      subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
+    }
   }
 
   MessageHandler::get().unpublishInterface("ClientInputList");

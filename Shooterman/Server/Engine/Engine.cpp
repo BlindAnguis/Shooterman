@@ -139,7 +139,7 @@ Entity* Engine::createHorizontalWall(float xPos, float yPos) {
   RenderComponent* rc = mRenderComponentManager.addComponent(horizontalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::HorizontalWall1)];
   rc->visible = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, size, size));
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, (int)size, (int)size));
   rc->sprite.setOrigin(size / 2, size / 2);
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::HorizontalWall1;
@@ -154,7 +154,7 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
   RenderComponent* rc = mRenderComponentManager.addComponent(verticalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
   rc->visible = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, size, size));
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, (int)size, (int)size));
   rc->sprite.setOrigin(size / 2, size / 2);
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::VerticalWall1;

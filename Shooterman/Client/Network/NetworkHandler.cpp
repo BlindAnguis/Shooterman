@@ -83,7 +83,7 @@ void NetworkHandler::startup() {
         SpriteMessage sm;
         sm.unpack(packet);
         //TRACE_DEBUG("Receveid sprite package with id: " << id);
-        MessageHandler::get().pushSpriteListMessage(sm.pack());
+        pc.pushMessage(sm.pack());
       } else {
         TRACE_WARNING("Packet not known: " << id);
         break;

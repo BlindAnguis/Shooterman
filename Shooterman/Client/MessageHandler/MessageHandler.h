@@ -32,14 +32,6 @@ public:
   void unSubscribeToInputMessages(Subscriber* newSubscriber);
   void pushInputMessage(sf::Packet message);
 
-  void subscribeToSpriteListMessages(Subscriber* newSubscriber);
-  void unSubscribeToSpriteListMessages(Subscriber* newSubscriber);
-  void pushSpriteListMessage(sf::Packet message);
-
-  void subscribeToMouseMessages(Subscriber* newSubscriber);
-  void unSubscribeToMouseMessages(Subscriber* newSubscriber);
-  void pushMouseMessage(sf::Packet message);
-
   void subscribeToSoundMessages(Subscriber* newSubscriber);
   void unSubscribeToSoundMessages(Subscriber* newSubscriber);
   void pushSoundMessage(sf::Packet message);
@@ -97,15 +89,11 @@ private:
   std::mutex mIdGeneratorLock;
   std::mutex mSystemSubscriberLock;
   std::mutex mInputSubscriberLock;
-  std::mutex mSpriteListSubscriberLock;
   std::mutex mGameStateSubscriberLock;
-  std::mutex mMouseSubscriberLock;
   std::mutex mSoundSubscriberLock;
   std::list<Subscriber*> mSystemSubscriberList;
   std::list<Subscriber*> mInputSubscriberList;
-  std::list<Subscriber*> mSpriteListSubscriberList;
   std::list<Subscriber*> mGameStateSubscriberList;
-  std::list<Subscriber*> mMouseSubscriberList;
   std::list<Subscriber*> mSoundSubscriberList;
 
   std::map<std::string, PrivateCommunication*> mPublishedComms;

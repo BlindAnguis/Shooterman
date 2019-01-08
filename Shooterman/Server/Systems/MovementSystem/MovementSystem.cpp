@@ -33,49 +33,29 @@ void MovementSystem::update(InputMessage inputMessage, int ID)
 
     // Calculate the angle between the sprite and the mouse
     float angle = atan2(spritePosition->sprite.getPosition().y - mousePos.y,
-      spritePosition->sprite.getPosition().x - mousePos.x) * (180 / 3.1415) + 90; // Add 90 degrees to compensate for rotation...
+      spritePosition->sprite.getPosition().x - mousePos.x) * (180 / 3.1415f) + 90; // Add 90 degrees to compensate for rotation...
     if (angle < 0) {
       angle += 360;
     }
     spritePosition->sprite.setRotation(angle);
 
     if (velocity) {
-      if (input == D_KEY) {
-        velocity->currentVelocity.x = velocity->maxVelocity.x;
+      if (input & D_KEY) {
+        velocity->currentVelocity.x += velocity->maxVelocity.x;
         animation->animation = Animations::RunningRight;
       }
-      else if (input == A_KEY) {
-        velocity->currentVelocity.x = -velocity->maxVelocity.x;
+      if (input & A_KEY) {
+        velocity->currentVelocity.x -= velocity->maxVelocity.x;
        animation->animation = Animations::RunningLeft;
       }
-      else if (input == W_KEY) {
-        velocity->currentVelocity.y = -velocity->maxVelocity.y;
+      if (input & W_KEY) {
+        velocity->currentVelocity.y -= velocity->maxVelocity.y;
         animation->animation = Animations::RunningDown;
       }
-      else if (input == S_KEY) {
-        velocity->currentVelocity.y = velocity->maxVelocity.y;
+      if (input & S_KEY) {
+        velocity->currentVelocity.y += velocity->maxVelocity.y;
         animation->animation = Animations::RunningDown;
       }
-      else if (input == A_S_KEY) {
-        velocity->currentVelocity.x = -velocity->maxVelocity.x;
-        velocity->currentVelocity.y = velocity->maxVelocity.y;
-        animation->animation = Animations::RunningLeft;
-      }
-      else if (input == A_W_KEY) {
-        velocity->currentVelocity.x = -velocity->maxVelocity.x;
-        velocity->currentVelocity.y = -velocity->maxVelocity.y;
-       animation->animation = Animations::RunningLeft;
-      }
-      else if (input == D_W_KEY) {
-        velocity->currentVelocity.x = velocity->maxVelocity.x;
-        velocity->currentVelocity.y = -velocity->maxVelocity.y;
-       animation->animation = Animations::RunningRight;
-      }
-      else if (input == D_S_KEY) {
-        velocity->currentVelocity.x = velocity->maxVelocity.x;
-        velocity->currentVelocity.y = velocity->maxVelocity.y;
-       animation->animation = Animations::RunningRight;
-      }      
     }
   }
 }
