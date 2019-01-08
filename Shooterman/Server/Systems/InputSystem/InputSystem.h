@@ -1,7 +1,7 @@
 #pragma once
 #include "../MovementSystem/MovementSystem.h"
 #include "../ObservableIf.h"
-#include "../../../Client/MessageHandler/MessageHandler.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 #include ".././../../Common/Messages/GameStateMessage.h"
 #include ".././../../Common/Messages/InputMessage.h"
 

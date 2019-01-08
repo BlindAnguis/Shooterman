@@ -5,8 +5,8 @@
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
-#include "../MessageHandler/MessageHandler.h"
-#include "../MessageHandler/PrivateCommunication.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/Trace.h"
 #include "../../Common/KeyBindings.h"
 #include "../../Common/MessageId.h"

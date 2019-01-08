@@ -10,10 +10,10 @@ Gui::Gui() {
 void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
-  mMousePC = new PrivateCommunication();
+  mMousePC = new Interface();
   MessageHandler::get().publishInterface("MousePosition", mMousePC);
 
-  PrivateCommunication pc;
+  Interface pc;
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
   mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());

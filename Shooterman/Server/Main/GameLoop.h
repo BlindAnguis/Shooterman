@@ -1,6 +1,6 @@
 #pragma once
 #include <thread>
-#include "../../Client/MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Constants.h"

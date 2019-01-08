@@ -57,7 +57,7 @@ void NetworkHandler::startup() {
   }
 
   TRACE_INFO("Connected!");
-  PrivateCommunication pc;
+  Interface pc;
   MessageHandler::get().publishInterface("ClientSpriteList", &pc);
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
   soc.setBlocking(false);

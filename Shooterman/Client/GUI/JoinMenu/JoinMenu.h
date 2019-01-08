@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Resources/MenuBase.h"
-#include "../../MessageHandler/PrivateCommunication.h"
+#include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/Trace.h"
 #include "../../../Common/Messages/ClientInternal/IpMessage.h"
 
@@ -18,5 +18,5 @@ public:
 private:
   std::string mIpString;
   std::shared_ptr<GUIComponent> mIPInputText;
-  PrivateCommunication mPc;
+  Interface mPc;
 };

@@ -166,8 +166,8 @@
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
     <ClCompile Include="Client\Main\Executor.cpp" />
-    <ClCompile Include="Client\MessageHandler\MessageHandler.cpp" />
-    <ClCompile Include="Client\MessageHandler\PrivateCommunication.cpp" />
+    <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
+    <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Client\Sound\Sound.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
@@ -205,9 +205,10 @@
     <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
     <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
     <ClInclude Include="Client\Main\Tasks\Task.h" />
-    <ClInclude Include="Client\MessageHandler\MessageHandler.h" />
-    <ClInclude Include="Client\MessageHandler\PrivateCommunication.h" />
+    <ClInclude Include="Common\MessageHandler\MessageHandler.h" />
+    <ClInclude Include="Common\MessageHandler\Interface.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
+    <ClInclude Include="Common\MessageHandler\Subscriber.h" />
     <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
     <ClInclude Include="Common\Animations.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
@@ -223,7 +224,6 @@
     <ClInclude Include="Common\Messages\MouseMessage.h" />
     <ClInclude Include="Common\Messages\Message.h" />
     <ClInclude Include="Common\Messages\SpriteMessage.h" />
-    <ClInclude Include="Common\Subscriber.h" />
     <ClInclude Include="Common\Textures.h" />
     <ClInclude Include="Common\Trace.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />

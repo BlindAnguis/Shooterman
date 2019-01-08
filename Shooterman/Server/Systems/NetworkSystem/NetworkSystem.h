@@ -5,7 +5,7 @@
 
 #include <SFML/Network.hpp>
 
-#include "../../../Client/MessageHandler/MessageHandler.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 #include "../../../Common/Constants.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Trace.h"

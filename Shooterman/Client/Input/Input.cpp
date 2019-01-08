@@ -15,7 +15,7 @@ void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
   bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
-  PrivateCommunication* pc = new PrivateCommunication();
+  Interface* pc = new Interface();
   MessageHandler::get().publishInterface("ClientInputList", pc);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
 

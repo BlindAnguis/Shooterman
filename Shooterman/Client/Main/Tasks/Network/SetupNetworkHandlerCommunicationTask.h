@@ -2,8 +2,8 @@
 
 #include "SetupNetworkConnectionTask.h"
 #include "../Task.h"
-#include "../../../MessageHandler/MessageHandler.h"
-#include "../../../MessageHandler/PrivateCommunication.h"
+#include "../../../../Common/MessageHandler/MessageHandler.h"
+#include "../../../../Common/MessageHandler/Interface.h"
 
 class SetupNetworkHandlerCommunicationTask : public Task {
 public:
@@ -11,7 +11,7 @@ public:
     mName = "SetupNetworkHandlerCommunicationTask";
     mIP = ip;
     mPort = port;
-    mMainToNhCommunication = new PrivateCommunication();
+    mMainToNhCommunication = new Interface();
     MessageHandler::get().publishInterface("mainToNhCommunication", mMainToNhCommunication);
   }
 
@@ -38,7 +38,7 @@ public:
 private:
   int retries = 600; // About 10 seconds
   Subscriber mSubscriber;
-  PrivateCommunication* mMainToNhCommunication;
+  Interface* mMainToNhCommunication;
   std::string mIP;
   unsigned short mPort;
 };

@@ -1,5 +1,5 @@
 #include "RenderSystem.h"
-#include "../../../Client/MessageHandler/MessageHandler.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 #include "../../../Common/Messages/SpriteMessage.h"
 #include "../../EntityManager/EntityManager.h"
 

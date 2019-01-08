@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../Resources/GUIComponentBuilder.h"
-#include "../../MessageHandler/MessageHandler.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 #include "../../../Common/Messages/GameStateMessage.h"
 #include "../../../Common/Trace.h"
 

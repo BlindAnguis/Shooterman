@@ -14,9 +14,9 @@
 #include "PlayWindow/PlayWindow.h"
 #include "OptionsMenu\OptionsMenu.h" 
 
-#include "../MessageHandler/MessageHandler.h"
-#include "../MessageHandler/PrivateCommunication.h"
-#include "../../Common/Subscriber.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/Interface.h"
+#include "../../Common/MessageHandler/Subscriber.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Constants.h"
@@ -37,7 +37,7 @@ private:
   std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
-  PrivateCommunication* mMousePC;
+  Interface* mMousePC;
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;

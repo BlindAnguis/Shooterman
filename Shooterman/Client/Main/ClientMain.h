@@ -8,7 +8,7 @@
 #include "Executor.h"
 #include "Tasks/Network/SetupNetworkHandlerCommunicationTask.h"
 #include "../Input/Input.h"
-#include "../MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 #include "../GUI/Gui.h"
 #include "../Sound/Sound.h"
 #include "../Network/NetworkHandler.h"

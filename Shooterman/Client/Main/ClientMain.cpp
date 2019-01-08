@@ -15,7 +15,7 @@ ClientMain::ClientMain() {
   mServerStarted = false;
   bool networkHandlerStarted = false;
   mCurrentGameState = GAME_STATE::MAIN_MENU;
-  PrivateCommunication pc;
+  Interface pc;
   bool sentIpMessage = false;
 
   while (mRunning) {

@@ -5,7 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 
 class Sound {
 public:

@@ -9,7 +9,7 @@
 #include "../../Common/KeyBindings.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Constants.h"
-#include "../MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/MouseMessage.h"
 #include "../../Common/Messages/InputMessage.h"

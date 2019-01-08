@@ -2,13 +2,13 @@
 
 #include "../Task.h"
 #include "../DoneTask.h"
-#include "../../../MessageHandler/MessageHandler.h"
-#include "../../../MessageHandler/PrivateCommunication.h"
+#include "../../../../Common/MessageHandler/MessageHandler.h"
+#include "../../../../Common/MessageHandler/Interface.h"
 #include "../../../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
 
 class SetupNetworkConnectionTask : public Task {
 public:
-  SetupNetworkConnectionTask(PrivateCommunication* mainToNhCommunication, Subscriber* subscriber, std::string ip, unsigned short port) {
+  SetupNetworkConnectionTask(Interface* mainToNhCommunication, Subscriber* subscriber, std::string ip, unsigned short port) {
     mName = "SetupNetworkConnectionTask";
     mMainToNhCommunication = mainToNhCommunication;
     mSubscriber = subscriber;
@@ -27,7 +27,7 @@ public:
 
 private:
   Subscriber* mSubscriber;
-  PrivateCommunication* mMainToNhCommunication;
+  Interface* mMainToNhCommunication;
   std::string mIP;
   unsigned short mPort;
 };
