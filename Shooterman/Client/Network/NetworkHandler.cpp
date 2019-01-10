@@ -94,7 +94,7 @@ void NetworkHandler::startup() {
   TRACE_INFO("Not running any more");
   soc.disconnect();
   MessageHandler::get().unpublishInterface("ClientSpriteList");
-  MessageHandler::get().unsubscribeAll(&mMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
 }
 
 void NetworkHandler::shutDown() {
