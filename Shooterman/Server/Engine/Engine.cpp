@@ -7,12 +7,11 @@ Engine::Engine() :
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
   mCollisionComponentManager(ComponentManager<CollisionComponent>()),
-  mSolidComponentManager(ComponentManager<SolidComponent>()),
   mAnimationComponentManager(ComponentManager<AnimationComponent>()),
   mHealthComponentManager(ComponentManager<HealthComponent>()),
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
+  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
   mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)
@@ -27,12 +26,11 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
   mCollisionComponentManager(ComponentManager<CollisionComponent>()),
-  mSolidComponentManager(ComponentManager<SolidComponent>()),
   mAnimationComponentManager(ComponentManager<AnimationComponent>()),
   mHealthComponentManager(ComponentManager<HealthComponent>()),
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
+  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
   mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager),
@@ -86,7 +84,11 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   vc->maxVelocity.y = yMaxVelocity;
   vc->moveOnce = true;
 
-  mSolidComponentManager.addComponent(player->id);
+  //mSolidComponentManager.addComponent(player->id);
+
+  auto collisionComponent = mCollisionComponentManager.addComponent(player->id);
+  collisionComponent->collided = false;
+  collisionComponent->destroyOnCollision = false;
 
   RenderComponent* rc = mRenderComponentManager.addComponent(player->id);
   rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
@@ -114,7 +116,9 @@ Entity* Engine::createBall(float xStartPos, float yStartPos, float xMaxVelocity,
   vc->maxVelocity.y = yMaxVelocity;
   vc->moveOnce = false;
 
-  mSolidComponentManager.addComponent(ball->id);
+  auto collisionComponent = mCollisionComponentManager.addComponent(ball->id);
+  collisionComponent->collided = false;
+  collisionComponent->destroyOnCollision = false;
 
   RenderComponent* rc = mRenderComponentManager.addComponent(ball->id);
   rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
@@ -147,7 +151,9 @@ void Engine::createMap() {
 Entity* Engine::createHorizontalWall(float xPos, float yPos) {
   float size = 32;
   Entity* horizontalWall = mEntityManager.createEntity();
-  mSolidComponentManager.addComponent(horizontalWall->id);
+  auto collisionComponent = mCollisionComponentManager.addComponent(horizontalWall->id);
+  collisionComponent->collided = false;
+  collisionComponent->destroyOnCollision = false;
   RenderComponent* rc = mRenderComponentManager.addComponent(horizontalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::HorizontalWall1)];
   rc->visible = true;
@@ -162,7 +168,10 @@ Entity* Engine::createHorizontalWall(float xPos, float yPos) {
 Entity* Engine::createVerticalWall(float xPos, float yPos) {
   float size = 32;
   Entity* verticalWall = mEntityManager.createEntity();
-  mSolidComponentManager.addComponent(verticalWall->id);
+  auto collisionComponent = mCollisionComponentManager.addComponent(verticalWall->id);
+  collisionComponent->collided = false;
+  collisionComponent->destroyOnCollision = false;
+
   RenderComponent* rc = mRenderComponentManager.addComponent(verticalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
   rc->visible = true;
@@ -200,7 +209,6 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     originYPos += bulletVelocity.y * 5;
 
     Entity* bullet = mEntityManager.createEntity();
-    mSolidComponentManager.addComponent(bullet->id);
 
     VelocityComponent* vc = mVelocityComponentManager.addComponent(bullet->id);
     vc->currentVelocity.x = bulletVelocity.x;
@@ -226,9 +234,9 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
 
     CollisionComponent* cc = mCollisionComponentManager.addComponent(bullet->id);
     cc->collided = false;
+    cc->destroyOnCollision = true;
 
     return bullet;
-
   }
   return nullptr;
 }

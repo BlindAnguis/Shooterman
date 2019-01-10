@@ -34,10 +34,7 @@ struct VelocityComponent {
 struct CollisionComponent {
   bool collided;
   std::vector<int> collidedList;
-};
-
-struct SolidComponent {
-  bool solid;
+  bool destroyOnCollision;
 };
 
 struct AnimationComponent {

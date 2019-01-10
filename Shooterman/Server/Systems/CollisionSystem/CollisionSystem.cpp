@@ -5,12 +5,10 @@ CollisionSystem::CollisionSystem() {}
 
 CollisionSystem::CollisionSystem(
   ComponentManager<RenderComponent>* renderComponentManager,
-  ComponentManager<SolidComponent>* solidComponentManager,
   ComponentManager<VelocityComponent>* velocityComponentManager,
   ComponentManager<CollisionComponent>* collisionComponentManager)
   :
   mRenderComponentManager(renderComponentManager),
-  mSolidComponentManager(solidComponentManager),
   mVelocityComponentManager(velocityComponentManager),
   mCollisionComponentManager(collisionComponentManager)
 {}
@@ -57,21 +55,20 @@ void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float 
 */
 void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float newYPos) {
   RenderComponent* movingComponent = mRenderComponentManager->getComponent(movingEntity);
-  SolidComponent* movingIsSolid = mSolidComponentManager->getComponent(movingEntity);
   CollisionComponent* collisionComponent = mCollisionComponentManager->getComponent(movingEntity);
-  if (movingIsSolid) {
+  if (collisionComponent) {
     sf::Vector2f oldPosition = movingComponent->sprite.getPosition();
     movingComponent->sprite.setPosition(newXPos, newYPos);
 
-    for (auto stillEntityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
-      SolidComponent* stillIsSolid = mSolidComponentManager->getComponent(stillEntityWithRender.first);
-      if (movingEntity != stillEntityWithRender.first && stillIsSolid && Collision::PixelPerfectTest(movingComponent->sprite, stillEntityWithRender.second->sprite)) {
-        handleCollision(movingEntity, movingComponent, stillEntityWithRender.first, stillEntityWithRender.second);
+    for (auto collidingEntity : mCollisionComponentManager->getAllEntitiesWithComponent()) {
+      auto collidingEntityRender = mRenderComponentManager->getComponent(collidingEntity.first);
+      if (movingEntity != collidingEntity.first && Collision::PixelPerfectTest(movingComponent->sprite, collidingEntityRender->sprite)) {
+        handleCollision(movingEntity, movingComponent, collidingEntity.first, collidingEntityRender);
         movingComponent->sprite.setPosition(oldPosition);
 
         if (collisionComponent) {
           collisionComponent->collided = true;
-          collisionComponent->collidedList.push_back(stillEntityWithRender.first);
+          collisionComponent->collidedList.push_back(collidingEntity.first);
         }
 
         return; // Remove this to allow something to collide with several things at once;

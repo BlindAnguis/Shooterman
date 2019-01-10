@@ -52,7 +52,6 @@ private:
   ComponentManager<RenderComponent> mRenderComponentManager;
   ComponentManager<VelocityComponent> mVelocityComponentManager;
   ComponentManager<CollisionComponent> mCollisionComponentManager;
-  ComponentManager<SolidComponent> mSolidComponentManager;
   ComponentManager<AnimationComponent> mAnimationComponentManager;
   ComponentManager<HealthComponent> mHealthComponentManager;
   ComponentManager<DamageComponent> mDamageComponentManager;

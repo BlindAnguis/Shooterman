@@ -9,7 +9,6 @@ class CollisionSystem
 public:
   CollisionSystem();
   CollisionSystem(ComponentManager<RenderComponent>* renderComponentManager, 
-                  ComponentManager<SolidComponent>* solidComponentManager, 
                   ComponentManager<VelocityComponent>* velocityComponentManager,
                   ComponentManager<CollisionComponent>* collisionComponentManager);
   ~CollisionSystem();
@@ -17,7 +16,6 @@ public:
 private:
   void handleCollision(int movingEntityId, RenderComponent* movingComponent, int stillEntityId, RenderComponent* stillComponent);
   ComponentManager<RenderComponent>* mRenderComponentManager;
-  ComponentManager<SolidComponent>* mSolidComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
 };
