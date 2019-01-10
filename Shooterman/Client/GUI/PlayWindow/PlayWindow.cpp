@@ -9,7 +9,15 @@ PlayWindow::PlayWindow() {
 
 PlayWindow::~PlayWindow() {
   MessageHandler::get().unsubscribeTo("ClientSpriteList", &mSpriteListSubscriber);
+  mIsSubscribed = false;
   delete mSpriteManager;
+}
+
+void PlayWindow::uninit() {
+  MessageHandler::get().unsubscribeTo("ClientSpriteList", &mSpriteListSubscriber);
+  mIsSubscribed = false;
+  // This will clear the queue in case there is crap left over from previous game
+  mSpriteListSubscriber.getMessageQueue();
 }
 
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
@@ -32,7 +40,6 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
   while (!spriteMessageQueue.empty()) {
     spriteMessage = spriteMessageQueue.front();
     spriteMessageQueue.pop();
-
   }
 
   int messageID;

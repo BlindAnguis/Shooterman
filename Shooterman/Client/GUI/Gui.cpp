@@ -123,6 +123,9 @@ void Gui::handleGameStateMessages() {
       if (newMenu != mMenuMap.end()) {
         newMenu->second->init();
       }
+
+      mWindow->clear(sf::Color::White);
+      mWindow->display();
     }
   }
 }
