@@ -6,11 +6,13 @@ CollisionSystem::CollisionSystem() {}
 CollisionSystem::CollisionSystem(
   ComponentManager<RenderComponent>* renderComponentManager,
   ComponentManager<SolidComponent>* solidComponentManager,
-  ComponentManager<VelocityComponent>* velocityComponentManager)
+  ComponentManager<VelocityComponent>* velocityComponentManager,
+  ComponentManager<CollisionComponent>* collisionComponentManager)
   :
   mRenderComponentManager(renderComponentManager),
   mSolidComponentManager(solidComponentManager),
-  mVelocityComponentManager(velocityComponentManager)
+  mVelocityComponentManager(velocityComponentManager),
+  mCollisionComponentManager(collisionComponentManager)
 {}
 
 CollisionSystem::~CollisionSystem() {}
@@ -56,6 +58,7 @@ void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float 
 void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float newYPos) {
   RenderComponent* movingComponent = mRenderComponentManager->getComponent(movingEntity);
   SolidComponent* movingIsSolid = mSolidComponentManager->getComponent(movingEntity);
+  CollisionComponent* collisionComponent = mCollisionComponentManager->getComponent(movingEntity);
   if (movingIsSolid) {
     sf::Vector2f oldPosition = movingComponent->sprite.getPosition();
     movingComponent->sprite.setPosition(newXPos, newYPos);
@@ -65,6 +68,12 @@ void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float 
       if (movingEntity != stillEntityWithRender.first && stillIsSolid && Collision::PixelPerfectTest(movingComponent->sprite, stillEntityWithRender.second->sprite)) {
         handleCollision(movingEntity, movingComponent, stillEntityWithRender.first, stillEntityWithRender.second);
         movingComponent->sprite.setPosition(oldPosition);
+
+        if (collisionComponent) {
+          collisionComponent->collided = true;
+          collisionComponent->collidedList.push_back(stillEntityWithRender.first);
+        }
+
         return; // Remove this to allow something to collide with several things at once;
       }
     }
@@ -77,10 +86,11 @@ void CollisionSystem::handleCollision(int movingEntityId, RenderComponent* movin
   VelocityComponent* movingEntityVelocity = mVelocityComponentManager->getComponent(movingEntityId);
 
   if (!movingEntityVelocity->moveOnce) {
-    movingEntityVelocity->currentVelocity.x = movingEntityVelocity->currentVelocity.x + (-2 * movingEntityVelocity->currentVelocity.x);
-    movingEntityVelocity->currentVelocity.y = movingEntityVelocity->currentVelocity.y + (-2 * movingEntityVelocity->currentVelocity.y);
-  }
-  else {
+    //movingEntityVelocity->currentVelocity.x = movingEntityVelocity->currentVelocity.x + (-2 * movingEntityVelocity->currentVelocity.x);
+    //movingEntityVelocity->currentVelocity.y = movingEntityVelocity->currentVelocity.y + (-2 * movingEntityVelocity->currentVelocity.y);
+    movingEntityVelocity->currentVelocity.x = 0;
+    movingEntityVelocity->currentVelocity.y = 0;
+  } else {
     movingEntityVelocity->currentVelocity.x = 0;
     movingEntityVelocity->currentVelocity.y = 0;
   }

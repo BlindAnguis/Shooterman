@@ -22,7 +22,7 @@ MovementSystem::~MovementSystem() {}
 
 void MovementSystem::update(InputMessage inputMessage, int ID)
 {
-  int input = inputMessage.getKeyboardBitMask();
+  std::uint32_t input = inputMessage.getKeyboardBitMask();
   sf::Vector2i mousePos = inputMessage.getMousePosition();
   //std::cout << "[SERVER: MOVEMENT_SYSTEM] update called with input: " << input << std::endl;
   Entity* e = mPlayersMap->at(inputMessage.getId()).second;

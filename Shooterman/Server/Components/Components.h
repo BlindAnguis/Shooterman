@@ -33,6 +33,7 @@ struct VelocityComponent {
 
 struct CollisionComponent {
   bool collided;
+  std::vector<int> collidedList;
 };
 
 struct SolidComponent {
@@ -42,4 +43,17 @@ struct SolidComponent {
 struct AnimationComponent {
   Animations animation;
   sf::Int16 animationFrame;
+};
+
+struct HealthComponent {
+  bool isAlive;
+  int health;
+};
+
+struct DamageComponent {
+  int damage;
+};
+
+struct ClockComponent {
+  sf::Clock clock;
 };

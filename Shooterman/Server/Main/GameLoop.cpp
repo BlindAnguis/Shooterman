@@ -7,8 +7,8 @@
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../EntityManager/EntityManager.h"
-#include "../Engine/Engine.h"
 #include "../Systems/InputSystem/InputSystem.h"
+#include "../Engine/Engine.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../Network/HostListener.h"
 

@@ -6,14 +6,19 @@ Engine::Engine() :
   mEntityManager(EntityManager()),
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
+  mCollisionComponentManager(ComponentManager<CollisionComponent>()),
   mSolidComponentManager(ComponentManager<SolidComponent>()),
   mAnimationComponentManager(ComponentManager<AnimationComponent>()),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager)),
+  mHealthComponentManager(ComponentManager<HealthComponent>()),
+  mDamageComponentManager(ComponentManager<DamageComponent>()),
+  mClockComponentManager(ComponentManager<ClockComponent>()),
+  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
   mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)
 {
   mInputSystem.attach(&mMovementSystem);
+  mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
 }
 
 Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
@@ -21,15 +26,20 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mEntityManager(EntityManager()),
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
+  mCollisionComponentManager(ComponentManager<CollisionComponent>()),
   mSolidComponentManager(ComponentManager<SolidComponent>()),
   mAnimationComponentManager(ComponentManager<AnimationComponent>()),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager)),
+  mHealthComponentManager(ComponentManager<HealthComponent>()),
+  mDamageComponentManager(ComponentManager<DamageComponent>()),
+  mClockComponentManager(ComponentManager<ClockComponent>()),
+  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mSolidComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
   mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager),
   mGameMap(gameMap)
 {
   mInputSystem.attach(&mMovementSystem);
+  mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
   mTextures[static_cast<int>(Textures::Player1)] = loadTexture("Player.png");
   mTextures[static_cast<int>(Textures::HorizontalWall1)] = loadTexture("wall1.png");
   mTextures[static_cast<int>(Textures::VerticalWall1)] = loadTexture("verticalWall1.png");
@@ -89,6 +99,8 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   AnimationComponent* ac = mAnimationComponentManager.addComponent(player->id);
   ac->animation = Animations::Idle;
   ac->animationFrame = 0;
+
+  ClockComponent* cc = mClockComponentManager.addComponent(player->id);
 
   return player;
 }
@@ -159,7 +171,66 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::VerticalWall1;
   //rc->isPlayer = false;
+
+  HealthComponent* hc = mHealthComponentManager.addComponent(verticalWall->id);
+  hc->health = 100;
+  hc->isAlive = true;
+
   return verticalWall;
+}
+
+Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
+  auto playerShootClockComponent = mClockComponentManager.getComponent(entityId);
+  if (playerShootClockComponent->clock.getElapsedTime() >= sf::milliseconds(500)) {
+    playerShootClockComponent->clock.restart();
+
+    auto playerPositionComponent = mRenderComponentManager.getComponent(entityId);
+    int originXPos = playerPositionComponent->sprite.getPosition().x;
+    int originYPos = playerPositionComponent->sprite.getPosition().y;
+
+    sf::Vector2f bulletVelocity(mousePosition.x - originXPos, mousePosition.y - originYPos);
+
+    // Normalize velocity to avoid huge speeds, and multiply with 10 for extra speed
+    float divider = sqrt(bulletVelocity.x*bulletVelocity.x + bulletVelocity.y*bulletVelocity.y);
+    bulletVelocity.x = (bulletVelocity.x / divider) * 15;
+    bulletVelocity.y = (bulletVelocity.y / divider) * 15;
+
+    // Move origin position to avoid colliding with the player
+    originXPos += bulletVelocity.x * 5;
+    originYPos += bulletVelocity.y * 5;
+
+    Entity* bullet = mEntityManager.createEntity();
+    mSolidComponentManager.addComponent(bullet->id);
+
+    VelocityComponent* vc = mVelocityComponentManager.addComponent(bullet->id);
+    vc->currentVelocity.x = bulletVelocity.x;
+    vc->currentVelocity.y = bulletVelocity.y;
+    vc->maxVelocity.x = 15;
+    vc->maxVelocity.y = 15;
+    vc->moveOnce = false;
+  
+    RenderComponent* rc = mRenderComponentManager.addComponent(bullet->id);
+    rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
+    rc->visible = true;
+    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
+    rc->sprite.setOrigin(16, 16);
+    rc->sprite.setPosition(originXPos, originYPos);
+    rc->textureId = Textures::VerticalWall1;
+
+    DamageComponent* dc = mDamageComponentManager.addComponent(bullet->id);
+    dc->damage = 10;
+
+    HealthComponent* hc = mHealthComponentManager.addComponent(bullet->id);
+    hc->health = 1;
+    hc->isAlive = true;
+
+    CollisionComponent* cc = mCollisionComponentManager.addComponent(bullet->id);
+    cc->collided = false;
+
+    return bullet;
+
+  }
+  return nullptr;
 }
 
 sf::Texture* Engine::loadTexture(std::string fileName) {

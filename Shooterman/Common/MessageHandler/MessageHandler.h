@@ -11,8 +11,6 @@
 #include "../../Common/MessageHandler/Subscriber.h"
 #include "../../Common/Trace.h"
 
-class Interface;
-
 class MessageHandler : Trace {
 public:
   static MessageHandler& get() {

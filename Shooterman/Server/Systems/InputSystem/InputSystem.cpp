@@ -7,6 +7,7 @@ InputSystem::InputSystem() {
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
   mCurrentGameState = GAME_STATE::LOBBY;
   mName = "Server: INPUT_SYSTEM";
+  mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
 }
 
 InputSystem::~InputSystem() {
@@ -62,6 +63,12 @@ void InputSystem::handleInput() {
 
     //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
+
+    if (im.getKeyboardBitMask() & LEFT_MOUSE) {
+      //TRACE_INFO("Pressed Attack!");
+      mAttack(mPlayersMap->at(im.getId()).second->id, im.getKeyboardBitMask(), im.getMousePosition());
+    }
+
     if (im.getId() > 0) {
       notify(im, -1);
     }

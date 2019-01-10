@@ -29,6 +29,7 @@ public:
   Entity* createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity);
   Entity* createHorizontalWall(float xPos, float yPos);
   Entity* createVerticalWall(float xPos, float yPos);
+  Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createMap();
   void setConnectedClients(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients) {
     mConnectedClients = connectedClients; 
@@ -36,6 +37,7 @@ public:
     mMovementSystem.setPlayers(mConnectedClients);
   }
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> getConnectedClients() { return mConnectedClients; }
+
 private:
   // Systems
   MovementSystem mMovementSystem;
@@ -49,8 +51,12 @@ private:
   ComponentManager<PositionComponent> mPositionComponentManager;
   ComponentManager<RenderComponent> mRenderComponentManager;
   ComponentManager<VelocityComponent> mVelocityComponentManager;
+  ComponentManager<CollisionComponent> mCollisionComponentManager;
   ComponentManager<SolidComponent> mSolidComponentManager;
   ComponentManager<AnimationComponent> mAnimationComponentManager;
+  ComponentManager<HealthComponent> mHealthComponentManager;
+  ComponentManager<DamageComponent> mDamageComponentManager;
+  ComponentManager<ClockComponent> mClockComponentManager;
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;

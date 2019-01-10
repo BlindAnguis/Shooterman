@@ -4,7 +4,7 @@
 #include "../Components/Components.h"
 #include "../Components/ComponentManager.h"
 
-#define MAX_NUMBER_OF_ENTITIES 128
+#define MAX_NUMBER_OF_ENTITIES 512
 struct Entity {
   int id;
 };
