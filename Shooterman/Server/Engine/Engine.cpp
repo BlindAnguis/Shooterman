@@ -14,7 +14,8 @@ Engine::Engine() :
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
-  mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)
+  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
+  mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager))
 {
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
@@ -33,7 +34,8 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
-  mAnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager),
+  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
+  mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
   mGameMap(gameMap)
 {
   mInputSystem.attach(&mMovementSystem);
@@ -47,11 +49,16 @@ Engine::~Engine() {
 }
 
 void Engine::update() {
+  // Reset
   for (auto entity : mAnimationComponentManager.getAllEntitiesWithComponent()) {
     entity.second->animation = Animations::Idle;
   }
+  mCollisionSystem.resetCollisionInformation();
+
+  // Update
   mInputSystem.handleInput();
   mMovementSystem.ownUpdate();
+  mHealthSystem.update();
   mAnimationSystem.update();
   mRenderSystem.render(mConnectedClients);
 }
@@ -228,9 +235,11 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     DamageComponent* dc = mDamageComponentManager.addComponent(bullet->id);
     dc->damage = 10;
 
+    /*
     HealthComponent* hc = mHealthComponentManager.addComponent(bullet->id);
     hc->health = 1;
     hc->isAlive = true;
+    */
 
     CollisionComponent* cc = mCollisionComponentManager.addComponent(bullet->id);
     cc->collided = false;

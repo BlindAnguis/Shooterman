@@ -5,6 +5,7 @@
 #include "../Systems/InputSystem/InputSystem.h"
 #include "../Systems/CollisionSystem/CollisionSystem.h"
 #include "../Systems/AnimationSystem/AnimationSystem.h"
+#include "../Systems/HealthSystem/HealthSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -45,6 +46,7 @@ private:
   RenderSystem mRenderSystem;
   CollisionSystem mCollisionSystem;
   AnimationSystem mAnimationSystem;
+  HealthSystem mHealthSystem;
 
   // Managers
   EntityManager mEntityManager;

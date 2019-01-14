@@ -3,8 +3,9 @@
 #include "Collision.h"
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
+#include "../../../Common/Trace.h"
 
-class CollisionSystem
+class CollisionSystem : Trace
 {
 public:
   CollisionSystem();
@@ -12,11 +13,13 @@ public:
                   ComponentManager<VelocityComponent>* velocityComponentManager,
                   ComponentManager<CollisionComponent>* collisionComponentManager);
   ~CollisionSystem();
-  void handleAnyCollision(int movingEntity, float newXPos, float newYPos);
+  void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos);
+  void resetCollisionInformation();
 private:
-  void handleCollision(int movingEntityId, RenderComponent* movingComponent, int stillEntityId, RenderComponent* stillComponent);
+  void handleCollision(int causingColliderEntityId, RenderComponent* causingColliderMovingComponent, int affectedCollideeEntityId, RenderComponent* affectedCollideeMovingComponent);
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
+  std::map<int, int> mCollisions; // First is the causing collider entity and second is the affected colidee entity.
 };
 

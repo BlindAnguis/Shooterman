@@ -39,12 +39,12 @@
     <ClCompile Include="Common\Socket\Tcp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Client\Main\Executor.cpp" />
-    <ClCompile Include="Client\MessageHandler\PrivateCommunication.cpp" />
     <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
     <ClCompile Include="Client\GUI\Resources\GUIComponentBuilder.cpp" />
     <ClCompile Include="Server\Systems\AnimationSystem\AnimationSystem.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
+    <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -102,7 +102,6 @@
     <ClInclude Include="Common\Socket\Tcp.h" />
     <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
-    <ClInclude Include="Client\MessageHandler\PrivateCommunication.h" />
     <ClInclude Include="Client\Main\Executor.h" />
     <ClInclude Include="Client\Main\Tasks\Task.h" />
     <ClInclude Include="Client\Main\Tasks\DoneTask.h" />
@@ -119,6 +118,7 @@
     <ClInclude Include="Common\MessageHandler\Interface.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandler.h" />
     <ClInclude Include="Common\MessageHandler\Subscriber.h" />
+    <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

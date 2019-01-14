@@ -2,7 +2,6 @@
 
 CollisionSystem::CollisionSystem() {}
 
-
 CollisionSystem::CollisionSystem(
   ComponentManager<RenderComponent>* renderComponentManager,
   ComponentManager<VelocityComponent>* velocityComponentManager,
@@ -11,7 +10,9 @@ CollisionSystem::CollisionSystem(
   mRenderComponentManager(renderComponentManager),
   mVelocityComponentManager(velocityComponentManager),
   mCollisionComponentManager(collisionComponentManager)
-{}
+{
+  mName = "ENGINE: COLLISION_SYSTEM";
+}
 
 CollisionSystem::~CollisionSystem() {}
 
@@ -53,35 +54,51 @@ void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float 
   }
 }
 */
-void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float newYPos) {
-  RenderComponent* movingComponent = mRenderComponentManager->getComponent(movingEntity);
-  CollisionComponent* collisionComponent = mCollisionComponentManager->getComponent(movingEntity);
-  if (collisionComponent) {
-    sf::Vector2f oldPosition = movingComponent->sprite.getPosition();
-    movingComponent->sprite.setPosition(newXPos, newYPos);
+void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos) {
+  RenderComponent* causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);
+  CollisionComponent* causingColliderCollisionComponent = mCollisionComponentManager->getComponent(causingColliderEntityId);
+  if (causingColliderCollisionComponent) {
+    sf::Vector2f oldPosition = causingColliderMovingComponent->sprite.getPosition();
+    causingColliderMovingComponent->sprite.setPosition(newXPos, newYPos);
 
-    for (auto collidingEntity : mCollisionComponentManager->getAllEntitiesWithComponent()) {
-      auto collidingEntityRender = mRenderComponentManager->getComponent(collidingEntity.first);
-      if (movingEntity != collidingEntity.first && Collision::PixelPerfectTest(movingComponent->sprite, collidingEntityRender->sprite)) {
-        handleCollision(movingEntity, movingComponent, collidingEntity.first, collidingEntityRender);
-        movingComponent->sprite.setPosition(oldPosition);
+    for (auto affectedCollideeEntity : mCollisionComponentManager->getAllEntitiesWithComponent()) {
+      RenderComponent* affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntity.first);
+      // If collision with another entity
+      if (causingColliderEntityId != affectedCollideeEntity.first && Collision::PixelPerfectTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
+        TRACE_INFO("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntity.first);
 
-        if (collisionComponent) {
-          collisionComponent->collided = true;
-          collisionComponent->collidedList.push_back(collidingEntity.first);
+        handleCollision(causingColliderEntityId, causingColliderMovingComponent, affectedCollideeEntity.first, affectedCollideeMovingComponent);
+        causingColliderMovingComponent->sprite.setPosition(oldPosition); // Reset movement.
+
+        auto collisionList = causingColliderCollisionComponent->collidedList;
+
+        // Add collision if causing collider has not previously collided with affected collidee
+        if (std::find(collisionList.begin(), collisionList.end(), affectedCollideeEntity.first) == collisionList.end()) {
+          mCollisions.emplace(causingColliderEntityId, affectedCollideeEntity.first);
+          causingColliderCollisionComponent->collided = true;
+          causingColliderCollisionComponent->collidedList.push_back(affectedCollideeEntity.first);
+
+          affectedCollideeEntity.second->collided = true;
+          affectedCollideeEntity.second->collidedList.push_back(causingColliderEntityId);
         }
-
+        
         return; // Remove this to allow something to collide with several things at once;
       }
     }
-    movingComponent->sprite.setPosition(oldPosition);
+    causingColliderMovingComponent->sprite.setPosition(oldPosition);
   }
 }
 
-void CollisionSystem::handleCollision(int movingEntityId, RenderComponent* movingComponent, int stillEntityId, RenderComponent* stillComponent) {
+void CollisionSystem::handleCollision(int causingColliderEntityId, RenderComponent* causingColliderMovingComponent, int affectedCollideeEntityId, RenderComponent* affectedCollideeMovingComponent) {
   // TODO: Check if any of the components can deal damage and so on. What should happen when the moving component touches the stillComponent.
-  VelocityComponent* movingEntityVelocity = mVelocityComponentManager->getComponent(movingEntityId);
 
+  VelocityComponent* causingColliderEntityVelocity = mVelocityComponentManager->getComponent(causingColliderEntityId);
+  if (causingColliderEntityVelocity) {
+    causingColliderEntityVelocity->currentVelocity.x = 0;
+    causingColliderEntityVelocity->currentVelocity.y = 0;
+  }
+
+  /*
   if (!movingEntityVelocity->moveOnce) {
     //movingEntityVelocity->currentVelocity.x = movingEntityVelocity->currentVelocity.x + (-2 * movingEntityVelocity->currentVelocity.x);
     //movingEntityVelocity->currentVelocity.y = movingEntityVelocity->currentVelocity.y + (-2 * movingEntityVelocity->currentVelocity.y);
@@ -91,4 +108,25 @@ void CollisionSystem::handleCollision(int movingEntityId, RenderComponent* movin
     movingEntityVelocity->currentVelocity.x = 0;
     movingEntityVelocity->currentVelocity.y = 0;
   }
+  */
+}
+
+void CollisionSystem::resetCollisionInformation() {
+  //TRACE_INFO("Collisions made last update: " << mCollisions.size());
+  for (auto& collision : mCollisions) {
+    CollisionComponent* causingColliderEntity = mCollisionComponentManager->getComponent(collision.first);
+    if (causingColliderEntity) {
+      causingColliderEntity->collided = false;
+      causingColliderEntity->collidedList.clear();
+    }
+
+    CollisionComponent* affectedCollideeEntity = mCollisionComponentManager->getComponent(collision.second);
+    if (affectedCollideeEntity) {
+      affectedCollideeEntity->collided = false;
+      affectedCollideeEntity->collidedList.clear();
+    }
+  }
+
+  mCollisions.clear();
+  //TRACE_INFO("Collisions after reset: " << mCollisions.size());
 }

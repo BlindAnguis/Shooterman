@@ -175,6 +175,7 @@
     <ClCompile Include="Common\Socket\Tcp.cpp" />
     <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
+    <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
     <ClCompile Include="Server\Network\HostListener.cpp" />
     <ClCompile Include="Server\Engine\Engine.cpp" />
     <ClCompile Include="Server\EntityManager\EntityManager.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="Common\Textures.h" />
     <ClInclude Include="Common\Trace.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
+    <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />
     <ClInclude Include="Server\Network\HostListener.h" />
     <ClInclude Include="Server\Components\ComponentManager.h" />
     <ClInclude Include="Server\Components\Components.h" />
