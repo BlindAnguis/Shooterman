@@ -11,12 +11,13 @@
 
 class GUIComponent : Trace {
 public:
-  GUIComponent(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback);
+  GUIComponent(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback, bool toggleCollorOnClick);
 
   bool isPressed(sf::Vector2f mousePosition);
   void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
   std::string getText();
   void setText(std::string newText);
+  void setRenderBounds(bool renderBounds);
 
 private:
   sf::Text mComponentText;
@@ -24,7 +25,11 @@ private:
   sf::RectangleShape mBounds;
   sf::Color mTextColor;
   sf::Color mTextHighlightColor;
+  sf::Color mClickedColor = sf::Color::Blue;
   std::function<void(void)> mCallback;
+  bool mRenderBounds = false;
+  bool mToggleColorOnClick;
+  bool hasBeenClicked = false;
 
   bool checkMouse(sf::Vector2f mousePosition);
 };
@@ -35,11 +40,13 @@ public:
     mText = "";
     mTextFont = "RobbieRocketpants.ttf";
     mTextColor = sf::Color::Black;
-    mTextHighlightColor = sf::Color::Black;
+    mTextHighlightColor = sf::Color::White;
+    mClickedColor = sf::Color::Blue;
     mTextSize = 36;
     mXPosition = 0;
     mYPosition = 0;
     mCallback = nullptr;
+    mToggleColorOnClick = false;
   }
 
   GUIComponentBuilder* setText(std::string text) {
@@ -59,6 +66,11 @@ public:
 
   GUIComponentBuilder* setTextHighlightColor(sf::Color textHighlightColor) {
     mTextHighlightColor = textHighlightColor;
+    return this;
+  }
+
+  GUIComponentBuilder* setCLickedColor(sf::Color clickedColor) {
+    mClickedColor = clickedColor;
     return this;
   }
 
@@ -82,8 +94,13 @@ public:
     return this;
   }
 
+  GUIComponentBuilder* setToggleColorOnClick(bool toggleCollorOnClick) {
+    mToggleColorOnClick = toggleCollorOnClick;
+    return this;
+  }
+
   std::shared_ptr<GUIComponent> build() {
-    return std::make_shared<GUIComponent>(mText, mTextFont, mTextColor, mTextHighlightColor, mTextSize, mXPosition, mYPosition, mCallback);
+    return std::make_shared<GUIComponent>(mText, mTextFont, mTextColor, mTextHighlightColor, mTextSize, mXPosition, mYPosition, mCallback, mToggleColorOnClick);
   }
 
   static std::shared_ptr<GUIComponent> createTitle(std::string textString, int xPosition, int yPosition) {
@@ -101,6 +118,11 @@ public:
     return builder.setText(textString)->setTextHighlightColor(sf::Color(0, 120, 0))->setXPosition(xPosition)->setYPosition(yPosition)->setCallback(callback)->build();
   }
 
+  static std::shared_ptr<GUIComponent> createCustomActionButtonWithColorClick(std::string textString, int xPosition, int yPosition, const std::function<void(void)>& callback) {
+    GUIComponentBuilder builder;
+    return builder.setText(textString)->setTextHighlightColor(sf::Color(0, 120, 0))->setXPosition(xPosition)->setYPosition(yPosition)->setCallback(callback)->setToggleColorOnClick(true)->build();
+  }
+
   static std::shared_ptr<GUIComponent> createGameStateButton(std::string textString, int xPosition, int yPosition, GAME_STATE gameState) {
     GUIComponentBuilder builder;
     auto callback = [gameState]() {
@@ -115,8 +137,10 @@ private:
   std::string mTextFont;
   sf::Color mTextColor;
   sf::Color mTextHighlightColor;
+  sf::Color mClickedColor;
   int mTextSize;
   int mXPosition;
   int mYPosition;
   std::function<void(void)> mCallback;
+  bool mToggleColorOnClick;
 };

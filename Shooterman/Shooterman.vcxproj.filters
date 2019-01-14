@@ -44,6 +44,7 @@
     <ClCompile Include="Server\Systems\AnimationSystem\AnimationSystem.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
+    <ClCompile Include="Client\GUI\DebugMenu\DebugMenu.cpp" />
     <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +119,8 @@
     <ClInclude Include="Common\MessageHandler\Interface.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandler.h" />
     <ClInclude Include="Common\MessageHandler\Subscriber.h" />
+    <ClInclude Include="Client\GUI\DebugMenu\DebugMenu.h" />
+    <ClInclude Include="Common\Messages\AddDebugButtonMessage.h" />
     <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />
   </ItemGroup>
   <ItemGroup>

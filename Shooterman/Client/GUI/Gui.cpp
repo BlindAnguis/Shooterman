@@ -10,8 +10,8 @@ Gui::Gui() {
 void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
-  mMousePC = new Interface();
-  MessageHandler::get().publishInterface("MousePosition", mMousePC);
+  mMouseInterface = new Interface();
+  MessageHandler::get().publishInterface("MousePosition", mMouseInterface);
 
   Interface pc;
 
@@ -20,9 +20,20 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::JOIN, new JoinMenu());
   mMenuMap.emplace(GAME_STATE::PLAYING, new PlayWindow());
   mMenuMap.emplace(GAME_STATE::OPTIONS, new OptionsMenu());
+  mDebugMenu = new DebugMenu;
+
+  // This needs to be after the DebugMenu is created
+  while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "GUI debug traces");
+  mDebugSubscriber.reverseSendMessage(debMess.pack());
+
+
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
   mWindowOpen = true;
+  mShowDebugMenu = false;
 
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   mLeftButtonAlreadyPressed = false;
@@ -31,19 +42,29 @@ void Gui::init() {
 
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
   MessageHandler::get().unsubscribeAll(&mGameStateMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
-  delete mMousePC;
+  delete mMouseInterface;
+  delete mDebugMenu;
+  // TODO: Delete all in mMenuMap
 }
 
 void Gui::render() {
   while (mWindow != nullptr && mWindow->isOpen()) {
     handleWindowEvents();
+    
+    bool renderNeeded = false;
+    renderNeeded = renderGameState(mCurrentGameState);
 
-    renderGameState(mCurrentGameState);
+    if (mRenderNeeded) {
+      mWindow->display();
+    }
+
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
 
     handleGameStateMessages();
     handleSystemMessages();
+    handleDebugMessages();
   }
   mWindowOpen = false;
 }
@@ -59,7 +80,7 @@ void Gui::handleWindowEvents() {
     }
     if (event.type == sf::Event::MouseMoved) {
       MouseMessage mm(sf::Mouse::getPosition(*mWindow));
-      mMousePC->pushMessage(mm.pack());
+      mMouseInterface->pushMessage(mm.pack());
     }
     if (event.type == sf::Event::Resized) {
       sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);
@@ -72,16 +93,25 @@ void Gui::handleWindowEvents() {
       }
     }
   }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
+    if (!mF1KeyAlreadyPressed) {
+      mShowDebugMenu = !mShowDebugMenu;
+      mF1KeyAlreadyPressed = true;
+    }
+  } else {
+    mF1KeyAlreadyPressed = false;
+  }
 }
 
-void Gui::renderGameState(GAME_STATE gameState) {
+bool Gui::renderGameState(GAME_STATE gameState) {
   mRenderNeeded = false;
 
   auto it = mMenuMap.find(gameState);
 
   if (it == mMenuMap.end()) {
     TRACE_ERROR("GAME_STATE: " << gameState << " is not implemented");
-    return;
+    return mRenderNeeded;
   }
 
   mWindow->clear(sf::Color::White);
@@ -89,17 +119,19 @@ void Gui::renderGameState(GAME_STATE gameState) {
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mWindow->hasFocus()) {
     if (!mLeftButtonAlreadyPressed) {
       mMenuMap.at(gameState)->checkMouse(mousePosition);
+      if (mShowDebugMenu) {
+        mDebugMenu->checkMouse(mousePosition);
+      }
     }
     mLeftButtonAlreadyPressed = true;
-  }
-  else {
+  } else {
     mLeftButtonAlreadyPressed = false;
   }
   mRenderNeeded = mMenuMap.at(gameState)->render(mWindow, mousePosition);
-
-  if (mRenderNeeded) {
-    mWindow->display();
-  }    
+  if (mShowDebugMenu) {
+    mDebugMenu->render(mWindow, mousePosition);
+  }
+  return mRenderNeeded;
 }
 
 void Gui::handleGameStateMessages() {
@@ -147,6 +179,18 @@ void Gui::handleSystemMessages() {
     default:
       TRACE_WARNING("Unknown system message : " << messageId);
     }
+  }
+}
+
+void Gui::handleDebugMessages() {
+  std::queue<sf::Packet> debugMessageQueue = mDebugSubscriber.getMessageQueue();
+  sf::Packet debugMessage;
+  while (!debugMessageQueue.empty()) {
+    debugMessage = debugMessageQueue.front();
+    debugMessageQueue.pop();
+    TRACE_DEBUG("Toggle debug traces");
+    mDebugEnabled = !mDebugEnabled;
+    TRACE_DEBUG("Toggle debug traces");
   }
 }
 

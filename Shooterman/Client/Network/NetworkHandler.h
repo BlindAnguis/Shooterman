@@ -17,6 +17,7 @@
 #include "../../Common/Socket/Tcp.h"
 #include "../../Common/Socket/Udp.h"
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
+#include "../../Common/Messages/AddDebugButtonMessage.h"
 
 class NetworkHandler : Trace {
 public:
@@ -29,8 +30,10 @@ private:
   bool mRunning = true;
   std::unique_ptr<std::thread> mNetworkHandlerThread;
   Subscriber mMessageSubscriber;
+  Subscriber mDebugSubscriber;
   UdpSocket mUdp;
   TcpSocket mTcp;
 
   void startup();
+  void handleDebugMessages();
 };

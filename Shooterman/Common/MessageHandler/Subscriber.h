@@ -1,5 +1,4 @@
-#ifndef SUBSCRIBER_H_
-#define SUBSCRIBER_H_
+#pragma once
 
 #include <queue>
 #include <mutex>
@@ -9,7 +8,7 @@
 
 #include "../Trace.h"
 
-class Subscriber : Trace {
+class Subscriber : protected Trace {
 public:
   Subscriber() : mId(-1) {
     mName = "Subscriber without ID";
@@ -45,10 +44,19 @@ public:
     }
   }
 
+  void setCallback(std::function<void(sf::Packet message)> callback) {
+    mCallback = callback;
+  }
+
+  void reverseSendMessage(sf::Packet message) {
+    if (mCallback) {
+      mCallback(message);
+    }
+  }
+
 private:
   int mId;
   std::queue<sf::Packet> mMessageQueue;
   std::mutex* mQueueLock;
+  std::function<void(sf::Packet message)> mCallback = nullptr;
 };
-
-#endif /* SUBSCRIBER_H_ */

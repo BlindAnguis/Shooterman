@@ -70,7 +70,6 @@ ClientMain::ClientMain() {
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
-    //mExecutor.execute();
     handleGameStateMessages();
     handleSystemMessages();
 

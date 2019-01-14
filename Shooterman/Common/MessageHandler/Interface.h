@@ -4,9 +4,9 @@
 #include <mutex>
 
 #include "../../Common/MessageHandler/Subscriber.h"
-#include "../../Common/Trace.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 
-class Interface : Trace {
+class Interface : public Subscriber {
 public:
   Interface();
   ~Interface();
@@ -16,6 +16,8 @@ public:
   void unsubscribe(Subscriber* subscriber);
 
   void pushMessage(sf::Packet message);
+
+  void pushMessageTo(sf::Packet message, int subscriberId);
 
   void setMName(std::string newName);
 

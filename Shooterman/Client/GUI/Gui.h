@@ -12,7 +12,8 @@
 #include "LobbyMenu/LobbyMenu.h"
 #include "JoinMenu/JoinMenu.h"
 #include "PlayWindow/PlayWindow.h"
-#include "OptionsMenu\OptionsMenu.h" 
+#include "OptionsMenu/OptionsMenu.h" 
+#include "DebugMenu/DebugMenu.h"
 
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/MessageHandler/Interface.h"
@@ -23,6 +24,7 @@
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/MouseMessage.h"
+#include "../../Common/Messages/AddDebugButtonMessage.h"
 
 class Gui : Trace {
 public:
@@ -33,20 +35,25 @@ public:
 private:
   bool mDebugEnabled = true;
   bool mWindowOpen;
+  bool mShowDebugMenu;
+  bool mF1KeyAlreadyPressed = false;
   std::unique_ptr<std::thread> mGuiThread;
   std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
-  Interface* mMousePC;
+  Subscriber mDebugSubscriber;
+  Interface* mMouseInterface;
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
   std::map<GAME_STATE, MenuBase*> mMenuMap;
+  MenuBase* mDebugMenu;
 
   void init();
   void render();
   void handleWindowEvents();
-  void renderGameState(GAME_STATE gameState);
+  bool renderGameState(GAME_STATE gameState);
   void handleSystemMessages();
   void handleGameStateMessages();
+  void handleDebugMessages();
 };

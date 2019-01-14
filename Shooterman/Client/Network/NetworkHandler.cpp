@@ -12,6 +12,11 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
+  while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }  
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces");
+  mDebugSubscriber.reverseSendMessage(debMess.pack());
   mMessageSubscriber.setId(666);
   TRACE_DEBUG("Trying to subscribe to ClientIpList");
   while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
@@ -43,7 +48,6 @@ void NetworkHandler::startup() {
 
   IpMessage ipm(ipMessage);
 
-  //std::string ip = sf::IpAddress::getLocalAddress().toString();
   TRACE_INFO("Connecting socket to " << ipm.getIp());
   sf::TcpSocket soc;
   auto connected = soc.connect(sf::IpAddress(ipm.getIp()), ipm.getPort());
@@ -95,6 +99,7 @@ void NetworkHandler::startup() {
   soc.disconnect();
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
 }
 
 void NetworkHandler::shutDown() {
@@ -102,4 +107,14 @@ void NetworkHandler::shutDown() {
   mRunning = false;
   mNetworkHandlerThread->join();
   TRACE_INFO("Shutdown of module done");
+}
+
+void NetworkHandler::handleDebugMessages() {
+  std::queue<sf::Packet> debugMessageQueue = mDebugSubscriber.getMessageQueue();
+  sf::Packet debugMessage;
+  while (!debugMessageQueue.empty()) {
+    debugMessage = debugMessageQueue.front();
+    debugMessageQueue.pop();
+    mDebugEnabled = !mDebugEnabled;
+  }
 }

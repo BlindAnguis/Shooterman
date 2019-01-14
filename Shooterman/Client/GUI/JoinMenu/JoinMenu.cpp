@@ -22,7 +22,7 @@ JoinMenu::JoinMenu() {
   mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380, GAME_STATE::MAIN_MENU));
 }
 
-JoinMenu::~JoinMenu() { }
+JoinMenu::~JoinMenu() { uninit(); }
 
 void JoinMenu::init() {
   MessageHandler::get().publishInterface("ClientIpList", &mPc);

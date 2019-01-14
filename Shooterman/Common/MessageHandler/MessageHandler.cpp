@@ -122,3 +122,47 @@ void MessageHandler::tryToGiveId(Subscriber* subscriber) {
     mCurrentId++;
   }
 }
+
+void MessageHandler::publishInterface(std::string name, Interface* pc) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  auto it = mPublishedComms.find(name);
+  if (it == mPublishedComms.end()) {
+    pc->setMName(name);
+    mPublishedComms.emplace(name, pc);
+    TRACE_DEBUG("Interface: " << name << " published");
+  }
+  else {
+    TRACE_WARNING("Interface: " << name << " is already published");
+  }
+}
+
+void MessageHandler::unpublishInterface(std::string name) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  auto interface = mPublishedComms.find(name);
+  if (interface != mPublishedComms.end()) {
+    while (interface->second->getSubscribers().size() > 0) {
+      interface->second->unsubscribe(interface->second->getSubscribers().front());
+    }
+    mPublishedComms.erase(interface);
+  }
+}
+
+bool MessageHandler::subscribeTo(std::string name, Subscriber* s) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  auto it = mPublishedComms.find(name);
+  if (it != mPublishedComms.end()) {
+    it->second->subscribe(s);
+    return true;
+  }
+  return false;
+}
+
+void MessageHandler::unsubscribeTo(std::string name, Subscriber* s) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  auto it = mPublishedComms.find(name);
+  if (it != mPublishedComms.end()) {
+    it->second->unsubscribe(s);
+  } else {
+    TRACE_INFO("Could not find " << name);
+  }
+}

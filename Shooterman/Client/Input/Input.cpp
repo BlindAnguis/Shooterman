@@ -18,7 +18,11 @@ void Input::readInput() {
   Interface* pc = new Interface();
   MessageHandler::get().publishInterface("ClientInputList", pc);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
-
+  while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "CLient input debug traces");
+  mDebugSubscriber.reverseSendMessage(debMess.pack());
   std::uint32_t keyboardBitmask;
   while (mRunning) {
     switch (mCurrentGameState) {
@@ -72,6 +76,7 @@ void Input::readInput() {
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleGameStateMessages();
     handleSystemMessages();
+    handleDebugMessages();
     if (!subscribedToMouse) {
       subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
     }
@@ -112,6 +117,18 @@ void Input::handleGameStateMessages() {
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
     mCurrentGameState = gsm.getGameState();
+  }
+}
+
+void Input::handleDebugMessages() {
+  std::queue<sf::Packet> debugMessageQueue = mDebugSubscriber.getMessageQueue();
+  sf::Packet debugMessage;
+  while (!debugMessageQueue.empty()) {
+    debugMessage = debugMessageQueue.front();
+    debugMessageQueue.pop();
+    TRACE_DEBUG("Toggle debug traces");
+    mDebugEnabled = !mDebugEnabled;
+    TRACE_DEBUG("Toggle debug traces");
   }
 }
 

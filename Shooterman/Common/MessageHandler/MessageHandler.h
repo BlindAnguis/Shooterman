@@ -11,6 +11,8 @@
 #include "../../Common/MessageHandler/Subscriber.h"
 #include "../../Common/Trace.h"
 
+class Interface;
+
 class MessageHandler : Trace {
 public:
   static MessageHandler& get() {
@@ -37,48 +39,13 @@ public:
   void unsubscribeAll(Subscriber* subscriber);
   void tryToGiveId(Subscriber* subscriber);
 
-  void publishInterface(std::string name, Interface* pc) {
-    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-    auto it = mPublishedComms.find(name);
-    if (it == mPublishedComms.end()) {
-      pc->setMName(name);
-      mPublishedComms.emplace(name, pc);
-      TRACE_DEBUG("Interface: " << name << " published");
-    } else {
-      TRACE_WARNING("Interface: " << name << " is already published");
-    }
-  }
+  void publishInterface(std::string name, Interface* pc);
 
-  void unpublishInterface(std::string name) {
-    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-    auto interface = mPublishedComms.find(name);
-    if (interface != mPublishedComms.end()) {
-      while (interface->second->getSubscribers().size() > 0) {
-        interface->second->unsubscribe(interface->second->getSubscribers().front());
-      }
-      mPublishedComms.erase(interface);
-    }
-  }
+  void unpublishInterface(std::string name);
 
-  bool subscribeTo(std::string name, Subscriber* s) {
-    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-    auto it = mPublishedComms.find(name);
-    if (it != mPublishedComms.end()) {
-      it->second->subscribe(s);
-      return true;
-    }
-    return false;
-  }
+  bool subscribeTo(std::string name, Subscriber* s);
 
-  void unsubscribeTo(std::string name, Subscriber* s) {
-    std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-    auto it = mPublishedComms.find(name);
-    if (it != mPublishedComms.end()) {
-      it->second->unsubscribe(s);
-    } else {
-      TRACE_INFO("Could not find " << name);
-    }
-  }
+  void unsubscribeTo(std::string name, Subscriber* s);
 
 private:
   MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled = true; }

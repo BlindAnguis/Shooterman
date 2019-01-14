@@ -1,13 +1,14 @@
 #include "GUIComponentBuilder.h"
 
-GUIComponent::GUIComponent(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback)
-  : mTextColor(textColor), mTextHighlightColor(textHighlightColor), mCallback(callback) {
+GUIComponent::GUIComponent(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback, bool toggleCollorOnClick)
+  : mTextColor(textColor), mTextHighlightColor(textHighlightColor), mCallback(callback), mToggleColorOnClick(toggleCollorOnClick) {
   if (!mFont.loadFromFile("Client/Resources/Fonts/" + textFont)) {
     TRACE_ERROR("Could not load file " << textFont);
   }
   mComponentText.setString(textString);
   mComponentText.setFont(mFont);
   mComponentText.setFillColor(textColor);
+  mComponentText.setOutlineColor(mTextHighlightColor);
   mComponentText.setCharacterSize(textSize);
   float centeredXPosition = xPosition - mComponentText.getLocalBounds().width / 2;
   float centeredYPosition = yPosition - mComponentText.getLocalBounds().height / 2;
@@ -15,7 +16,7 @@ GUIComponent::GUIComponent(std::string textString, std::string textFont, sf::Col
 
   mBounds.setPosition(mComponentText.getPosition() + sf::Vector2f(0, mComponentText.getLocalBounds().height / 3));
   mBounds.setSize(sf::Vector2f(mComponentText.getLocalBounds().width, mComponentText.getLocalBounds().height));
-  mBounds.setFillColor(sf::Color::Red);
+  mBounds.setFillColor(sf::Color::White);
 }
 
 bool GUIComponent::checkMouse(sf::Vector2f mousePosition) {
@@ -28,6 +29,15 @@ bool GUIComponent::checkMouse(sf::Vector2f mousePosition) {
 bool GUIComponent::isPressed(sf::Vector2f mousePosition) {
   if (checkMouse(mousePosition)) {
     if (mCallback) {
+      if (mToggleColorOnClick) {
+        if (!hasBeenClicked) {
+          mComponentText.setFillColor(mClickedColor);
+          hasBeenClicked = true;
+        } else {
+          mComponentText.setFillColor(mTextColor);
+          hasBeenClicked = false;
+        }
+      }
       mCallback();
     }
     return true;
@@ -36,11 +46,13 @@ bool GUIComponent::isPressed(sf::Vector2f mousePosition) {
 }
 
 void GUIComponent::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  //window->draw(mBounds);
+  if (mRenderBounds) {
+    window->draw(mBounds);
+  }
   if (checkMouse(mousePosition)) {
-    mComponentText.setFillColor(mTextHighlightColor);
+    mComponentText.setOutlineThickness(1);
   } else {
-    mComponentText.setFillColor(mTextColor);
+    mComponentText.setOutlineThickness(0);
   }
   window->draw(mComponentText);
 }
@@ -51,4 +63,8 @@ std::string GUIComponent::getText() {
 
 void GUIComponent::setText(std::string newText) {
   mComponentText.setString(newText);
+}
+
+void GUIComponent::setRenderBounds(bool renderBounds) {
+  mRenderBounds = renderBounds;
 }

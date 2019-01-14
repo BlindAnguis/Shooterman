@@ -13,7 +13,7 @@
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/MouseMessage.h"
 #include "../../Common/Messages/InputMessage.h"
-
+#include "../../Common/Messages/AddDebugButtonMessage.h"
 
 class Input : Trace {
 public:
@@ -27,11 +27,13 @@ private:
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Subscriber mMouseMessageSubscriber;
+  Subscriber mDebugSubscriber;
   GAME_STATE mCurrentGameState;
   sf::Vector2i mLastMousePosition;
 
   void readInput();
   void handleSystemMessages();
   void handleGameStateMessages();
+  void handleDebugMessages();
   void getLatestMousePosition();
 };

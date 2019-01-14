@@ -4,6 +4,7 @@
 // System messages
 #define SHUT_DOWN         1
 #define CHANGE_GAME_STATE 2
+#define ADD_DEBUG_BUTTON  3
 
 // Input messages
 #define INPUT_KEYS        100

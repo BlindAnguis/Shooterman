@@ -1,6 +1,4 @@
 #include "Interface.h"
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
 
 Interface::Interface() {
   mName = "";
@@ -10,10 +8,9 @@ Interface::~Interface() {}
 
 void Interface::subscribe(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
-  //MessageHandler::get().tryToGiveId(newSubscriber);
-  srand((unsigned int)(time(NULL)));
-  newSubscriber->setId(rand() % 10);
+  MessageHandler::get().tryToGiveId(newSubscriber);
   mSubscriberList.push_back(newSubscriber);
+  newSubscriber->setCallback([this](sf::Packet message) { sendMessage(message); });
   TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to " << mName);
 }
 
@@ -33,6 +30,15 @@ void Interface::pushMessage(sf::Packet message) {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   for (Subscriber* subscriber : mSubscriberList) {
     subscriber->sendMessage(message);
+  }
+}
+
+void Interface::pushMessageTo(sf::Packet message, int subscriberId) {
+  std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
+  for (Subscriber* subscriber : mSubscriberList) {
+    if (subscriber->getId() == subscriberId) {
+      subscriber->sendMessage(message);
+    }
   }
 }
 
