@@ -65,6 +65,7 @@ private:
   std::array<sf::Texture*, 3> mTextures;
 
   sf::Texture* loadTexture(std::string fileName);
+  void destroyEntity(int entityId);
   float x = 100;
 };
 

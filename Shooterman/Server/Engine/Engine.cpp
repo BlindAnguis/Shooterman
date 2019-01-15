@@ -65,25 +65,13 @@ void Engine::update() {
   // Remove dead entities
   for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {
     if (entity.second->collided && entity.second->destroyOnCollision) {
-      mRenderComponentManager.removeComponent(entity.first);
-      mCollisionComponentManager.removeComponent(entity.first);
-      mVelocityComponentManager.removeComponent(entity.first);
-      mAnimationComponentManager.removeComponent(entity.first);
-      mHealthComponentManager.removeComponent(entity.first);
-      mDamageComponentManager.removeComponent(entity.first);
-      mClockComponentManager.removeComponent(entity.first);
+      destroyEntity(entity.first);
     }
   }
 
   for (auto entity : mHealthComponentManager.getAllEntitiesWithComponent()) {
     if (!entity.second->isAlive) {
-      mRenderComponentManager.removeComponent(entity.first);
-      mCollisionComponentManager.removeComponent(entity.first);
-      mVelocityComponentManager.removeComponent(entity.first);
-      mAnimationComponentManager.removeComponent(entity.first);
-      mHealthComponentManager.removeComponent(entity.first);
-      mDamageComponentManager.removeComponent(entity.first);
-      mClockComponentManager.removeComponent(entity.first);
+      destroyEntity(entity.first);
     }
   }
 
@@ -282,4 +270,15 @@ sf::Texture* Engine::loadTexture(std::string fileName) {
     std::cout << "[GUI] ERROR could not load file " << "Client/Resources/Sprites/" << fileName << std::endl;
   }
   return texture;
+}
+
+void Engine::destroyEntity(int entityId) {
+  mRenderComponentManager.removeComponent(entityId);
+  mCollisionComponentManager.removeComponent(entityId);
+  mVelocityComponentManager.removeComponent(entityId);
+  mAnimationComponentManager.removeComponent(entityId);
+  mHealthComponentManager.removeComponent(entityId);
+  mDamageComponentManager.removeComponent(entityId);
+  mClockComponentManager.removeComponent(entityId);
+  mEntityManager.destroyEntity(entityId);
 }
