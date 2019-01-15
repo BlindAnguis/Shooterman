@@ -17,7 +17,6 @@ void NetworkHandler::startup() {
   }  
   AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
-  mMessageSubscriber.setId(666);
   TRACE_DEBUG("Trying to subscribe to ClientIpList");
   while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));

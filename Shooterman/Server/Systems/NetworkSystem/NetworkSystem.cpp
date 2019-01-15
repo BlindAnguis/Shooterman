@@ -19,6 +19,8 @@ void NetworkSystem::start() {
 
 void NetworkSystem::startup() {
   mRunning = true;
+  Interface inputListInterface;
+  MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   while (mRunning) {
@@ -37,7 +39,7 @@ void NetworkSystem::startup() {
         case INPUT_KEYS:
         {
           packet << client.first;
-          MessageHandler::get().pushInputMessage(packet);
+          inputListInterface.pushMessage(packet);
           break;
         }
         case SHUT_DOWN:
@@ -54,6 +56,7 @@ void NetworkSystem::startup() {
     sf::sleep(sf::milliseconds(1));
   }
 
+  MessageHandler::get().unpublishInterface("ServerInputList");
   for (auto client : mClientsSockets) {
     client.second->disconnect();
     delete client.second;

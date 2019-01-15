@@ -2,8 +2,7 @@
 #include <stdio.h>
 
 InputSystem::InputSystem() {
-  std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
-  MessageHandler::get().subscribeToInputMessages(&mInputSubscriber);
+  //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
   mCurrentGameState = GAME_STATE::LOBBY;
   mName = "Server: INPUT_SYSTEM";
@@ -11,14 +10,21 @@ InputSystem::InputSystem() {
 }
 
 InputSystem::~InputSystem() {
-  MessageHandler::get().unsubscribeAll(&mInputSubscriber);
+  MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
   MessageHandler::get().unsubscribeAll(&mGameStateSubscriber);
+}
+
+std::queue<sf::Packet> InputSystem::getInput() {
+  if (!mIsSubscribedToInput) {
+    mIsSubscribedToInput = MessageHandler::get().subscribeTo("ServerInputList", &mInputSubscriber);
+  }
+  return mInputSubscriber.getMessageQueue();
 }
 
 InputMessage InputSystem::getLatestInput() {
   int input = 0;
   int messageId;
-  std::queue<sf::Packet> inputMessagesQueue = mInputSubscriber.getMessageQueue();
+  std::queue<sf::Packet> inputMessagesQueue = getInput();
   sf::Packet inputMessage;
   InputMessage im;
   if (!inputMessagesQueue.empty()) {
@@ -55,7 +61,7 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
 }
 
 void InputSystem::handleInput() {
-  std::queue<sf::Packet> inputMessagesQueue = mInputSubscriber.getMessageQueue();
+  std::queue<sf::Packet> inputMessagesQueue = getInput();
 
   while (!inputMessagesQueue.empty()) {
     InputMessage im(inputMessagesQueue.front());

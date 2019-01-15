@@ -54,33 +54,6 @@ void MessageHandler::pushSystemMessage(sf::Packet message) {
   }
 }
 
-// INPUT
-void MessageHandler::subscribeToInputMessages(Subscriber* newSubscriber) {
-  std::lock_guard<std::mutex> lockGuard(mInputSubscriberLock);
-  tryToGiveId(newSubscriber);
-  mInputSubscriberList.push_back(newSubscriber);
-  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to input list");
-}
-
-void MessageHandler::unSubscribeToInputMessages(Subscriber* newSubscriber) {
-  std::lock_guard<std::mutex> lockGuard(mInputSubscriberLock);
-  for (auto it = mInputSubscriberList.begin(); it != mInputSubscriberList.end(); /**/) {
-    if ((*it)->getId() == newSubscriber->getId()) {
-      it = mInputSubscriberList.erase(it);
-      TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to input list");
-    } else {
-      ++it;
-    }
-  }
-}
-
-void MessageHandler::pushInputMessage(sf::Packet message) {
-  std::lock_guard<std::mutex> lockGuard(mInputSubscriberLock);
-  for (Subscriber* subscriber : mInputSubscriberList) {
-    subscriber->sendMessage(message);
-  }
-}
-
 // Sound LIST
 void MessageHandler::subscribeToSoundMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSoundSubscriberLock);
@@ -111,7 +84,6 @@ void MessageHandler::pushSoundMessage(sf::Packet message) {
 void MessageHandler::unsubscribeAll(Subscriber* subscriber) {
   unSubscribeToGameStateMessages(subscriber);
   unSubscribeToSystemMessages(subscriber);
-  unSubscribeToInputMessages(subscriber);
   unSubscribeToSoundMessages(subscriber);
 }
 

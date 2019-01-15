@@ -9,11 +9,15 @@
 class InputSystem : public ObservableIf, Trace
 {
 private:
+  bool mIsSubscribedToInput = false;
   Subscriber mInputSubscriber;
   Subscriber mGameStateSubscriber;
   GAME_STATE mCurrentGameState;
   std::function<void(int entityId, std::uint32_t input, sf::Vector2i mousePosition)> mAttack = nullptr;
   std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mPlayersMap;
+
+  std::queue<sf::Packet> getInput();
+
 public:
   /*
   static InputSystem& get() {

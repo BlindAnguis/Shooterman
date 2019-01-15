@@ -28,10 +28,6 @@ public:
   void unSubscribeToSystemMessages(Subscriber* newSubscriber);
   void pushSystemMessage(sf::Packet message);
 
-  void subscribeToInputMessages(Subscriber* newSubscriber);
-  void unSubscribeToInputMessages(Subscriber* newSubscriber);
-  void pushInputMessage(sf::Packet message);
-
   void subscribeToSoundMessages(Subscriber* newSubscriber);
   void unSubscribeToSoundMessages(Subscriber* newSubscriber);
   void pushSoundMessage(sf::Packet message);
