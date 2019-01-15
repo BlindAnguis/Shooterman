@@ -32,12 +32,12 @@ public:
   Entity* createVerticalWall(float xPos, float yPos);
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createMap();
-  void setConnectedClients(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients) {
+  void setConnectedClients(std::shared_ptr<std::map<int, Player*>> connectedClients) {
     mConnectedClients = connectedClients; 
     mInputSystem.setPlayers(mConnectedClients); 
     mMovementSystem.setPlayers(mConnectedClients);
   }
-  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> getConnectedClients() { return mConnectedClients; }
+  std::shared_ptr<std::map<int, Player*>> getConnectedClients() { return mConnectedClients; }
 
 private:
   // Systems
@@ -60,7 +60,7 @@ private:
   ComponentManager<ClockComponent> mClockComponentManager;
 
   Subscriber mInputSubscriber;
-  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mConnectedClients;
+  std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::array<std::array<int, 32>, 32> mGameMap;
   std::array<sf::Texture*, 3> mTextures;
 

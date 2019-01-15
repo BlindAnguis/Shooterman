@@ -74,7 +74,6 @@ void Engine::update() {
       destroyEntity(entity.first);
     }
   }
-
 }
 
 InputSystem* Engine::getInputSystem() {
@@ -91,7 +90,7 @@ EntityManager* Engine::getEntityManager() {
 
 void Engine::createPlayers() {
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    it->second.second = createPlayer(x, 100, 5, 5, 100);
+    it->second->setEntity(createPlayer(x, 100, 5, 5, 100));
     x += 100;
   }
 }
@@ -124,6 +123,10 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   ac->animationFrame = 0;
 
   ClockComponent* cc = mClockComponentManager.addComponent(player->id);
+
+  HealthComponent* hc = mHealthComponentManager.addComponent(player->id);
+  hc->health = 100;
+  hc->isAlive = true;
 
   return player;
 }
@@ -215,10 +218,10 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     playerShootClockComponent->clock.restart();
 
     auto playerPositionComponent = mRenderComponentManager.getComponent(entityId);
-    int originXPos = playerPositionComponent->sprite.getPosition().x;
-    int originYPos = playerPositionComponent->sprite.getPosition().y;
+    float originXPos = playerPositionComponent->sprite.getPosition().x;
+    float originYPos = playerPositionComponent->sprite.getPosition().y;
 
-    sf::Vector2f bulletVelocity(mousePosition.x - originXPos, mousePosition.y - originYPos);
+    sf::Vector2f bulletVelocity((float)(mousePosition.x - originXPos), (float)(mousePosition.y - originYPos));
 
     // Normalize velocity to avoid huge speeds, and multiply with 10 for extra speed
     float divider = sqrt(bulletVelocity.x*bulletVelocity.x + bulletVelocity.y*bulletVelocity.y);
@@ -280,5 +283,10 @@ void Engine::destroyEntity(int entityId) {
   mHealthComponentManager.removeComponent(entityId);
   mDamageComponentManager.removeComponent(entityId);
   mClockComponentManager.removeComponent(entityId);
+  for (auto client : *mConnectedClients) {
+    if (client.second->getEntity() && client.second->getEntity()->id == entityId) {
+      client.second->setEntity(nullptr);
+    }
+  }
   mEntityManager.destroyEntity(entityId);
 }

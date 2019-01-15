@@ -146,9 +146,9 @@ void GameLoop::gameLoop() {
           world.setConnectedClients(tempMap);
           TRACE_INFO("Clients connected:")
           for (auto client : *world.getConnectedClients()) {
-            if (client.second.first) {
-              TRACE_INFO("Client: " << client.second.first->getRemoteAddress());
-              mNetworkSystem.addNewClientSocket(client.second.first, client.first);
+            if (client.second->getSocket()) {
+              TRACE_INFO("Client: " << client.second->getSocket()->getRemoteAddress());
+              mNetworkSystem.addNewClientSocket(client.second->getSocket(), client.first);
             }
           }
           world.createPlayers();

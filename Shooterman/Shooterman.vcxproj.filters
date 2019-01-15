@@ -46,6 +46,7 @@
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
     <ClCompile Include="Client\GUI\DebugMenu\DebugMenu.cpp" />
     <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
+    <ClCompile Include="Server\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Client\GUI\DebugMenu\DebugMenu.h" />
     <ClInclude Include="Common\Messages\AddDebugButtonMessage.h" />
     <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />
+    <ClInclude Include="Server\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

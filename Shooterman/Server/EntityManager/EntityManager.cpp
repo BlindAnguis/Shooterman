@@ -7,8 +7,7 @@ EntityManager::EntityManager() : mLatestEntityId(0) {
   }
 }
 
-EntityManager::~EntityManager()
-{
+EntityManager::~EntityManager() {
 }
 
 Entity* EntityManager::createEntity() {

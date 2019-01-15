@@ -54,7 +54,7 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
 
   GAME_STATE gameState = gsm.getGameState();
   if (gameState != GAME_STATE::NO_STATE) {
-    TRACE_INFO("Changing current game state from: " <<mCurrentGameState << " to: " << gameState);
+    TRACE_INFO("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
     mCurrentGameState = gameState;
   }
   return mCurrentGameState;
@@ -70,13 +70,20 @@ void InputSystem::handleInput() {
     //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
 
+    Entity* playerEntity = mPlayersMap->at(im.getId())->getEntity();
+
+    // Player is dead
+    if (playerEntity == nullptr) {
+      continue;
+    }
+
     if (im.getKeyboardBitMask() & LEFT_MOUSE) {
       //TRACE_INFO("Pressed Attack!");
-      mAttack(mPlayersMap->at(im.getId()).second->id, im.getKeyboardBitMask(), im.getMousePosition());
+      mAttack(playerEntity->id, im.getKeyboardBitMask(), im.getMousePosition());
     }
 
     if (im.getId() > 0) {
-      notify(im, -1);
+      notify(im);
     }
   }
 }

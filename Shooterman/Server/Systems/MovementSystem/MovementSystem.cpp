@@ -20,12 +20,12 @@ MovementSystem::MovementSystem(
 
 MovementSystem::~MovementSystem() {}
 
-void MovementSystem::update(InputMessage inputMessage, int ID)
+void MovementSystem::update(InputMessage inputMessage)
 {
   std::uint32_t input = inputMessage.getKeyboardBitMask();
   sf::Vector2i mousePos = inputMessage.getMousePosition();
   //std::cout << "[SERVER: MOVEMENT_SYSTEM] update called with input: " << input << std::endl;
-  Entity* e = mPlayersMap->at(inputMessage.getId()).second;
+  Entity* e = mPlayersMap->at(inputMessage.getId())->getEntity();
   if (e && mRenderComponentManager->hasComponent(e->id)) {
     VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
     AnimationComponent* animation = mAnimationComponentManager->getComponent(e->id);

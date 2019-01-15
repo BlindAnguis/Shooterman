@@ -5,6 +5,7 @@
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
 #include <SFML/Network.hpp>
+#include "../../Player.h"
 
 class MovementSystem : public ObserverIf
 {
@@ -18,9 +19,9 @@ public:
     ComponentManager<AnimationComponent>* animationComponentManager
   );
   ~MovementSystem();
-  void update(InputMessage inputMessage, int ID);
+  void update(InputMessage inputMessage);
   void ownUpdate();
-  void setPlayers(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> playersMap) { mPlayersMap = playersMap; }
+  void setPlayers(std::shared_ptr<std::map<int, Player*>> playersMap) { mPlayersMap = playersMap; }
 
 private:
   //void move(PositionComponent* position, VelocityComponent* velocity);
@@ -30,6 +31,6 @@ private:
   ComponentManager<AnimationComponent>* mAnimationComponentManager;
   CollisionSystem* mCollisionSystem;
   EntityManager* mEntityManager;
-  std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> mPlayersMap;
+  std::shared_ptr<std::map<int, Player*>> mPlayersMap;
 };
 

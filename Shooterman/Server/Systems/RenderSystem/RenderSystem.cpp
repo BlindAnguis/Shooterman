@@ -7,11 +7,12 @@ RenderSystem::RenderSystem() {
   mName = "SERVER: RENDER_SYSTEM";
 }
 
-RenderSystem::RenderSystem(ComponentManager<RenderComponent>* renderComponentManager) : mRenderComponentManager(renderComponentManager) {}
+RenderSystem::RenderSystem(ComponentManager<RenderComponent>* renderComponentManager)
+  : mRenderComponentManager(renderComponentManager) {}
 
 RenderSystem::~RenderSystem() {}
 
-void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*, Entity*>>> connectedClients) {
+void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClients) {
   SpriteMessage sm;
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
     sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
@@ -26,22 +27,9 @@ void RenderSystem::render(std::shared_ptr<std::map<int, std::pair<sf::TcpSocket*
   }
 
   for (auto client : *connectedClients) {
-    if (client.second.first) {
+    if (client.second->getSocket()) {
       sf::Packet tempPacket = sm.pack();
-      int id;
-      int textureId;
-      sf::Vector2f currentPos;
-      sf::IntRect currentTexturePos;
-    
-      tempPacket >> id;
-      tempPacket >> textureId;
-      tempPacket >> currentPos.x >> currentPos.y;
-      tempPacket >> currentTexturePos.left >> currentTexturePos.top >> currentTexturePos.width >> currentTexturePos.height;
-      //TRACE_INFO("Sending packet with id:" << id << ", textureId: " << textureId << ", x: " << currentPos.x << ", y: " << currentPos.y << "left: " << currentTexturePos.left << "top: " << currentTexturePos.top << "width: " << currentTexturePos.width << "height: " << currentTexturePos.height);
-
-      client.second.first->send(tempPacket);
-      //TRACE_INFO("Packet sent to client: " << client.second.first->getRemoteAddress());
-   
+      client.second->getSocket()->send(tempPacket);
       tempPacket.clear();
     } else {
       //Host
