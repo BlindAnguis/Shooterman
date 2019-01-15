@@ -61,6 +61,32 @@ void Engine::update() {
   mHealthSystem.update();
   mAnimationSystem.update();
   mRenderSystem.render(mConnectedClients);
+
+  // Remove dead entities
+  for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {
+    if (entity.second->collided && entity.second->destroyOnCollision) {
+      mRenderComponentManager.removeComponent(entity.first);
+      mCollisionComponentManager.removeComponent(entity.first);
+      mVelocityComponentManager.removeComponent(entity.first);
+      mAnimationComponentManager.removeComponent(entity.first);
+      mHealthComponentManager.removeComponent(entity.first);
+      mDamageComponentManager.removeComponent(entity.first);
+      mClockComponentManager.removeComponent(entity.first);
+    }
+  }
+
+  for (auto entity : mHealthComponentManager.getAllEntitiesWithComponent()) {
+    if (!entity.second->isAlive) {
+      mRenderComponentManager.removeComponent(entity.first);
+      mCollisionComponentManager.removeComponent(entity.first);
+      mVelocityComponentManager.removeComponent(entity.first);
+      mAnimationComponentManager.removeComponent(entity.first);
+      mHealthComponentManager.removeComponent(entity.first);
+      mDamageComponentManager.removeComponent(entity.first);
+      mClockComponentManager.removeComponent(entity.first);
+    }
+  }
+
 }
 
 InputSystem* Engine::getInputSystem() {

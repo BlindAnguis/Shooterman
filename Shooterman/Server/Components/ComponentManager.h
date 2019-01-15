@@ -32,6 +32,14 @@ public:
     return newComponent;
   }
 
+  void removeComponent(int entityId) {
+    auto it = mComponents.find(entityId);
+    if (it != mComponents.end()) {
+      delete it->second;
+      mComponents.erase(entityId);
+    }
+  }
+
 private:
   std::map<int, Component*> mComponents;
 };
