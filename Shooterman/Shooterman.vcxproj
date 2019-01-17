@@ -217,6 +217,7 @@
     <ClInclude Include="Common\Animations.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />
+    <ClInclude Include="Common\Messages\SpriteCacheMessage.h" />
     <ClInclude Include="Common\Socket\Socket.h" />
     <ClInclude Include="Common\Socket\Tcp.h" />
     <ClInclude Include="Common\Socket\Udp.h" />

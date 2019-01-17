@@ -13,6 +13,7 @@
 #include "../../Common/Constants.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/SpriteMessage.h"
+#include "../../Common/Messages/SpriteCacheMessage.h"
 #include "../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
 #include "../../Common/Socket/Tcp.h"
 #include "../../Common/Socket/Udp.h"

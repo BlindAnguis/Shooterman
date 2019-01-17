@@ -23,6 +23,7 @@ struct RenderComponent {
   sf::Sprite sprite;
   bool visible;
   bool isPlayer;
+  bool isDynamic = false;
 };
 
 struct VelocityComponent {

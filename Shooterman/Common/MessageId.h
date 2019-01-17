@@ -10,7 +10,8 @@
 #define INPUT_KEYS        100
 
 // Sprite list messages
-#define SPRITE_LIST       200
+#define SPRITE_LIST_CACHE 200
+#define SPRITE_LIST       201
 
 
 // Internal Client messages

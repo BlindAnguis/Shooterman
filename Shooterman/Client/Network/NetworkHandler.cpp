@@ -60,8 +60,8 @@ void NetworkHandler::startup() {
   }
 
   TRACE_INFO("Connected!");
-  Interface pc;
-  MessageHandler::get().publishInterface("ClientSpriteList", &pc);
+  Interface spriteListInterface;
+  MessageHandler::get().publishInterface("ClientSpriteList", &spriteListInterface);
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
   soc.setBlocking(false);
   mRunning = true;
@@ -86,7 +86,11 @@ void NetworkHandler::startup() {
         SpriteMessage sm;
         sm.unpack(packet);
         //TRACE_DEBUG("Receveid sprite package with id: " << id);
-        pc.pushMessage(sm.pack());
+        spriteListInterface.pushMessage(sm.pack());
+      } else if (id == SPRITE_LIST_CACHE) {
+        SpriteCacheMessage scm;
+        scm.unpack(packet);
+        spriteListInterface.pushMessage(scm.pack());
       } else {
         TRACE_WARNING("Packet not known: " << id);
         break;

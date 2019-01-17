@@ -17,6 +17,7 @@ Engine::Engine() :
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager))
 {
+  mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
 }
@@ -38,6 +39,7 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
   mGameMap(gameMap)
 {
+  mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
   mTextures[static_cast<int>(Textures::Player1)] = loadTexture("Player.png");
@@ -49,18 +51,30 @@ Engine::~Engine() {
 }
 
 void Engine::update() {
+  sf::Clock c;
   // Reset
   for (auto entity : mAnimationComponentManager.getAllEntitiesWithComponent()) {
     entity.second->animation = Animations::Idle;
   }
   mCollisionSystem.resetCollisionInformation();
-
+  sf::Int64 resetTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
   // Update
   mInputSystem.handleInput();
+  sf::Int64 inputTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
   mMovementSystem.ownUpdate();
+  sf::Int64 movementTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
   mHealthSystem.update();
+  sf::Int64 healthTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
   mAnimationSystem.update();
+  sf::Int64 animationTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
   mRenderSystem.render(mConnectedClients);
+  sf::Int64 renderTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
 
   // Remove dead entities
   for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {
@@ -74,6 +88,10 @@ void Engine::update() {
       destroyEntity(entity.first);
     }
   }
+  sf::Int64 deleteTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
+
+  TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {
@@ -113,6 +131,7 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   RenderComponent* rc = mRenderComponentManager.addComponent(player->id);
   rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
   rc->visible = true;
+  rc->isDynamic = true;
   rc->sprite = sf::Sprite(rc->texture, sf::IntRect(10, 0, 80, 100));
   rc->sprite.setOrigin(47, 47);
   rc->sprite.setPosition(xStartPos, yStartPos);
@@ -157,15 +176,13 @@ Entity* Engine::createBall(float xStartPos, float yStartPos, float xMaxVelocity,
 void Engine::createMap() {
   auto verticalWallTexture = mTextures[static_cast<int>(Textures::VerticalWall1)];
   auto horizontalWallTexture = mTextures[static_cast<int>(Textures::HorizontalWall1)];
-  int tileIndex = 0;
   for (unsigned int i = 0; i < mGameMap.size(); i++) {
     auto row = mGameMap[i];
     for (unsigned int j = 0; j < row.size(); j++) {
       int tile = row[j];
       if (tile == 1 || tile == 2) {
         createHorizontalWall((float)(j * horizontalWallTexture->getSize().x), (float)(i * horizontalWallTexture->getSize().y));
-      }
-      else if (tile == 3) {
+      } else if (tile == 3) {
         createVerticalWall((float)(j * verticalWallTexture->getSize().x), (float)(i * verticalWallTexture->getSize().y));
       }
     }
@@ -199,6 +216,7 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
   RenderComponent* rc = mRenderComponentManager.addComponent(verticalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
   rc->visible = true;
+  rc->isDynamic = true;
   rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, (int)size, (int)size));
   rc->sprite.setOrigin(size / 2, size / 2);
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
@@ -244,6 +262,7 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     RenderComponent* rc = mRenderComponentManager.addComponent(bullet->id);
     rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
     rc->visible = true;
+    rc->isDynamic = true;
     rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
     rc->sprite.setOrigin(16, 16);
     rc->sprite.setPosition(originXPos, originYPos);

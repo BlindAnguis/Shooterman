@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../Common/Trace.h"
 #include "../Systems/MovementSystem/MovementSystem.h"
 #include "../Systems/RenderSystem/RenderSystem.h"
 #include "../Systems/InputSystem/InputSystem.h"
@@ -14,8 +15,7 @@
 #include <array>
 #include <map>
 
-class Engine
-{
+class Engine : Trace {
 public:
   Engine();
   Engine(std::array<std::array<int, 32>, 32> gameMap);

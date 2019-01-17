@@ -42,29 +42,43 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
     spriteMessageQueue.pop();
   }
 
-  int messageID;
+  int messageID = 0;
   spriteMessage >> messageID;
   if (messageID == SPRITE_LIST) {
+    int cachedSpriteListPosition = mSpriteListCacheMessage.getSize() - 1;
+    SpriteData spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
+    while (spriteData.textureId != Textures::Unknown) {
+      renderSpriteData(window, spriteData);
+      cachedSpriteListPosition--;
+      spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
+    }
+
     SpriteMessage sm;
     sm.unpack(spriteMessage);
     int position = sm.getSize() - 1;
-    SpriteData spriteData = sm.getSpriteData(position);
-    TRACE_DEBUG("SpriteID: " << static_cast<int>(spriteData.textureId));
+    spriteData = sm.getSpriteData(position);
+    //TRACE_DEBUG("SpriteID: " << static_cast<int>(spriteData.textureId));
     while (spriteData.textureId != Textures::Unknown) {
-      TRACE_DEBUG(static_cast<int>(spriteData.textureId));
-      sf::Sprite sprite = mSpriteManager->get(spriteData.textureId);
-      sprite.setPosition(spriteData.position);
-      sprite.setTextureRect(spriteData.texturePosition);
-      sprite.setOrigin((float)(sprite.getTextureRect().width / 2), 
-                       (float)(sprite.getTextureRect().height / 2));
-      sprite.setRotation(spriteData.rotation);
-      window->draw(sprite);
+      renderSpriteData(window, spriteData);
       position--;
       spriteData = sm.getSpriteData(position);
     }
+  } else if (messageID == SPRITE_LIST_CACHE) {
+    mSpriteListCacheMessage.unpack(spriteMessage);
   } else {
     TRACE_DEBUG("Found no message");
   }
 
   return renderNeeded;
+}
+
+void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData) {
+  //TRACE_DEBUG(static_cast<int>(spriteData.textureId));
+  sf::Sprite sprite = mSpriteManager->get(spriteData.textureId);
+  sprite.setPosition(spriteData.position);
+  sprite.setTextureRect(spriteData.texturePosition);
+  sprite.setOrigin((float)(sprite.getTextureRect().width / 2),
+    (float)(sprite.getTextureRect().height / 2));
+  sprite.setRotation(spriteData.rotation);
+  window->draw(sprite);
 }

@@ -124,6 +124,7 @@
     <ClInclude Include="Common\Messages\AddDebugButtonMessage.h" />
     <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />
     <ClInclude Include="Server\Player.h" />
+    <ClInclude Include="Common\Messages\SpriteCacheMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
