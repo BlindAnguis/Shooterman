@@ -51,6 +51,7 @@ public:
   }
 
   void unpack(sf::Packet packet) {
+    mSpriteData.clear();
     packet >> mSize;
     for (int i = 0; i < mSize; i++) {
       int textureId;

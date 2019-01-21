@@ -31,19 +31,25 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
   }
 
   std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
-  sf::Packet spriteMessage;
+
   if (!spriteMessageQueue.empty()) {
     window->clear(sf::Color::White);
     renderNeeded = true;
   }
 
+  sf::Packet spriteMessage;
+  int messageID = 0;
   while (!spriteMessageQueue.empty()) {
     spriteMessage = spriteMessageQueue.front();
     spriteMessageQueue.pop();
+    spriteMessage >> messageID;
+    if (messageID == SPRITE_LIST_CACHE) {
+      mSpriteListCacheMessage.unpack(spriteMessage);
+    } else if (messageID == SPRITE_LIST) {
+      mSpriteListMessage.unpack(spriteMessage);
+    }
   }
 
-  int messageID = 0;
-  spriteMessage >> messageID;
   if (messageID == SPRITE_LIST) {
     int cachedSpriteListPosition = mSpriteListCacheMessage.getSize() - 1;
     SpriteData spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
@@ -53,18 +59,14 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
       spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
     }
 
-    SpriteMessage sm;
-    sm.unpack(spriteMessage);
-    int position = sm.getSize() - 1;
-    spriteData = sm.getSpriteData(position);
+    int position = mSpriteListMessage.getSize() - 1;
+    spriteData = mSpriteListMessage.getSpriteData(position);
     //TRACE_DEBUG("SpriteID: " << static_cast<int>(spriteData.textureId));
     while (spriteData.textureId != Textures::Unknown) {
       renderSpriteData(window, spriteData);
       position--;
-      spriteData = sm.getSpriteData(position);
+      spriteData = mSpriteListMessage.getSpriteData(position);
     }
-  } else if (messageID == SPRITE_LIST_CACHE) {
-    mSpriteListCacheMessage.unpack(spriteMessage);
   } else {
     TRACE_DEBUG("Found no message");
   }

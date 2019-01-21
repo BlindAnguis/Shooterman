@@ -17,7 +17,9 @@ private:
   SpriteManager* mSpriteManager;
   Subscriber mSpriteListSubscriber;
   SpriteCacheMessage mSpriteListCacheMessage;
+  SpriteMessage mSpriteListMessage;
   bool mIsSubscribed;
+  sf::Packet mLatestSpriteMessage;
 
   void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData);
 };
