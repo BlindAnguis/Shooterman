@@ -54,13 +54,13 @@ void CollisionSystem::handleAnyCollision(int movingEntity, float newXPos, float 
   }
 }
 */
-void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos) {
+void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
   RenderComponent* causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);
   CollisionComponent* causingColliderCollisionComponent = mCollisionComponentManager->getComponent(causingColliderEntityId);
   if (causingColliderCollisionComponent) {
     sf::Vector2f oldPosition = causingColliderMovingComponent->sprite.getPosition();
     causingColliderMovingComponent->sprite.setPosition(newXPos, newYPos);
-
+    /*
     for (auto affectedCollideeEntity : mCollisionComponentManager->getAllEntitiesWithComponent()) {
       RenderComponent* affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntity.first);
       // If collision with another entity
@@ -85,6 +85,35 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
         return; // Remove this to allow something to collide with several things at once;
       }
     }
+    */
+
+    for (auto affectedCollideeEntityId : gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition())) {
+      RenderComponent* affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntityId);
+      CollisionComponent* affectedCollideeCollisionComponent = mCollisionComponentManager->getComponent(affectedCollideeEntityId);
+
+      // If collision with another entity
+      if (causingColliderEntityId != affectedCollideeEntityId && Collision::PixelPerfectTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
+        //TRACE_INFO("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntityId);
+
+        handleCollision(causingColliderEntityId, causingColliderMovingComponent, affectedCollideeEntityId, affectedCollideeMovingComponent);
+        causingColliderMovingComponent->sprite.setPosition(oldPosition); // Reset movement.
+
+        auto collisionList = causingColliderCollisionComponent->collidedList;
+
+        // Add collision if causing collider has not previously collided with affected collidee
+        if (std::find(collisionList.begin(), collisionList.end(), affectedCollideeEntityId) == collisionList.end()) {
+          mCollisions.emplace(causingColliderEntityId, affectedCollideeEntityId);
+          causingColliderCollisionComponent->collided = true;
+          causingColliderCollisionComponent->collidedList.push_back(affectedCollideeEntityId);
+
+          affectedCollideeCollisionComponent->collided = true;
+          affectedCollideeCollisionComponent->collidedList.push_back(causingColliderEntityId);
+        }
+
+        return; // Remove this to allow something to collide with several things at once;
+      }
+    }
+
     causingColliderMovingComponent->sprite.setPosition(oldPosition);
   }
 }

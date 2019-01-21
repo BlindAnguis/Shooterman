@@ -7,6 +7,7 @@
 #include "../Systems/CollisionSystem/CollisionSystem.h"
 #include "../Systems/AnimationSystem/AnimationSystem.h"
 #include "../Systems/HealthSystem/HealthSystem.h"
+#include "../Systems/GridSystem/GridSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -47,6 +48,7 @@ private:
   CollisionSystem mCollisionSystem;
   AnimationSystem mAnimationSystem;
   HealthSystem mHealthSystem;
+  GridSystem mGridSystem;
 
   // Managers
   EntityManager mEntityManager;

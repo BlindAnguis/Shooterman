@@ -176,6 +176,7 @@
     <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Client\GUI\DebugMenu\DebugMenu.cpp" />
+    <ClCompile Include="Server\Systems\GridSystem\GridSystem.cpp" />
     <ClCompile Include="Server\Player.cpp" />
     <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
     <ClCompile Include="Server\Network\HostListener.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="Common\Trace.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
     <ClInclude Include="Client\GUI\DebugMenu\DebugMenu.h" />
+    <ClInclude Include="Server\Systems\GridSystem\GridSystem.h" />
     <ClInclude Include="Server\Player.h" />
     <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />
     <ClInclude Include="Server\Network\HostListener.h" />

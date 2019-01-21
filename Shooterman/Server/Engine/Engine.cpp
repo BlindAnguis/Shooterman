@@ -11,8 +11,9 @@ Engine::Engine() :
   mHealthComponentManager(ComponentManager<HealthComponent>()),
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
+  mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
+  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager))
@@ -32,8 +33,9 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mHealthComponentManager(ComponentManager<HealthComponent>()),
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
+  mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mEntityManager, &mAnimationComponentManager)),
+  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
@@ -85,6 +87,12 @@ void Engine::update() {
 
   for (auto entity : mHealthComponentManager.getAllEntitiesWithComponent()) {
     if (!entity.second->isAlive) {
+      destroyEntity(entity.first);
+    }
+  }
+
+  for (auto entity : mRenderComponentManager.getAllEntitiesWithComponent()) {
+    if (mGridSystem.isOutOfBounds((sf::Vector2i)entity.second->sprite.getPosition())) {
       destroyEntity(entity.first);
     }
   }
@@ -147,6 +155,8 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   hc->health = 100;
   hc->isAlive = true;
 
+  mGridSystem.addEntity(player->id, (sf::Vector2i)rc->sprite.getPosition());
+
   return player;
 }
 
@@ -203,6 +213,8 @@ Entity* Engine::createHorizontalWall(float xPos, float yPos) {
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::HorizontalWall1;
   //rc->isPlayer = false;
+
+  mGridSystem.addEntity(horizontalWall->id, (sf::Vector2i)rc->sprite.getPosition());
   return horizontalWall;
 }
 
@@ -227,12 +239,13 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
   hc->health = 100;
   hc->isAlive = true;
 
+  mGridSystem.addEntity(verticalWall->id, (sf::Vector2i)rc->sprite.getPosition());
   return verticalWall;
 }
 
 Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
   auto playerShootClockComponent = mClockComponentManager.getComponent(entityId);
-  if (playerShootClockComponent->clock.getElapsedTime() >= sf::milliseconds(500)) {
+  if (playerShootClockComponent->clock.getElapsedTime() >= sf::milliseconds(100)) {
     playerShootClockComponent->clock.restart();
 
     auto playerPositionComponent = mRenderComponentManager.getComponent(entityId);
@@ -281,6 +294,8 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     cc->collided = false;
     cc->destroyOnCollision = true;
 
+    mGridSystem.addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
+
     return bullet;
   }
   return nullptr;
@@ -295,6 +310,8 @@ sf::Texture* Engine::loadTexture(std::string fileName) {
 }
 
 void Engine::destroyEntity(int entityId) {
+  auto entityRenderComponent = mRenderComponentManager.getComponent(entityId);
+  mGridSystem.removeEntity(entityId, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
   mRenderComponentManager.removeComponent(entityId);
   mCollisionComponentManager.removeComponent(entityId);
   mVelocityComponentManager.removeComponent(entityId);
@@ -308,4 +325,5 @@ void Engine::destroyEntity(int entityId) {
     }
   }
   mEntityManager.destroyEntity(entityId);
+  
 }

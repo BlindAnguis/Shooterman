@@ -8,12 +8,14 @@ MovementSystem::MovementSystem(
   ComponentManager<VelocityComponent>* velocityComponentManager,
   ComponentManager<RenderComponent>* renderComponentManager,
   CollisionSystem* collisionSystem,
+  GridSystem* gridSystem,
   EntityManager* entityManager,
   ComponentManager<AnimationComponent>* animationComponentManager
 ) :
   mVelocityComponentManager(velocityComponentManager),
   mRenderComponentManager(renderComponentManager),
   mCollisionSystem(collisionSystem),
+  mGridSystem(gridSystem),
   mEntityManager(entityManager),
   mAnimationComponentManager(animationComponentManager)
 {}
@@ -66,17 +68,18 @@ void MovementSystem::ownUpdate() {
     VelocityComponent* velocity = mVelocityComponentManager->getComponent(entityWithRender.first);
     if (velocity && ((velocity->currentVelocity.x != 0 && velocity->maxVelocity.x > 0) || (velocity->currentVelocity.y != 0 && velocity->maxVelocity.y > 0))) {
       sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
-      mCollisionSystem->handleAnyCollision(entityWithRender.first, currentPosition.x + velocity->currentVelocity.x, currentPosition.y + velocity->currentVelocity.y);
-      move(entityWithRender.second, velocity);
+      mCollisionSystem->handleAnyCollision(entityWithRender.first, currentPosition.x + velocity->currentVelocity.x, currentPosition.y + velocity->currentVelocity.y, mGridSystem);
+      move(entityWithRender.first, entityWithRender.second, velocity);
     }
   }
 }
 
-void MovementSystem::move(RenderComponent* position, VelocityComponent* velocity) {
+void MovementSystem::move(int entityId, RenderComponent* position, VelocityComponent* velocity) {
   sf::Vector2f pos = position->sprite.getPosition();
   position->sprite.setPosition(pos.x + velocity->currentVelocity.x, pos.y + velocity->currentVelocity.y);
   if (velocity->moveOnce) {
     velocity->currentVelocity.x = 0;
     velocity->currentVelocity.y = 0;
   }
+  mGridSystem->moveEntity(entityId, (sf::Vector2i)pos, (sf::Vector2i)position->sprite.getPosition());
 }
