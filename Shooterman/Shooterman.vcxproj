@@ -255,6 +255,8 @@
     <ClInclude Include="Server\Systems\System.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Client\Resources\Sprites\Bullet.png" />
+    <Image Include="Client\Resources\Sprites\Character.png" />
     <Image Include="Client\Resources\Sprites\Player.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

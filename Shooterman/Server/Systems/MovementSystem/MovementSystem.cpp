@@ -7,6 +7,7 @@ MovementSystem::MovementSystem() {}
 MovementSystem::MovementSystem(
   ComponentManager<VelocityComponent>* velocityComponentManager,
   ComponentManager<RenderComponent>* renderComponentManager,
+  ComponentManager<CollisionComponent>* collisionComponentManager,
   CollisionSystem* collisionSystem,
   GridSystem* gridSystem,
   EntityManager* entityManager,
@@ -14,6 +15,7 @@ MovementSystem::MovementSystem(
 ) :
   mVelocityComponentManager(velocityComponentManager),
   mRenderComponentManager(renderComponentManager),
+  mCollisionComponentManager(collisionComponentManager),
   mCollisionSystem(collisionSystem),
   mGridSystem(gridSystem),
   mEntityManager(entityManager),
@@ -35,41 +37,56 @@ void MovementSystem::update(InputMessage inputMessage)
 
     // Calculate the angle between the sprite and the mouse
     float angle = atan2(spritePosition->sprite.getPosition().y - mousePos.y,
-      spritePosition->sprite.getPosition().x - mousePos.x) * (180 / 3.1415f) + 90; // Add 90 degrees to compensate for rotation...
+      spritePosition->sprite.getPosition().x - mousePos.x) * (180 / 3.1415f) - 90; // Remove 90 degrees to compensate for rotation...
     if (angle < 0) {
       angle += 360;
     }
-    spritePosition->sprite.setRotation(angle);
 
+    if (angle >= 315 || angle < 45) {
+      animation->animation = Animations::RunningUp;
+    } else if (angle >= 45 && angle < 135) {
+      animation->animation = Animations::RunningRight;
+    } else if (angle >= 135 && angle < 225) {
+      animation->animation = Animations::RunningDown;
+    } else if (angle >= 225 && angle < 315) {
+      animation->animation = Animations::RunningLeft;
+    }
+
+    bool velocirtUpdated = false;
     if (velocity) {
       if (input & D_KEY) {
+        velocirtUpdated = true;
         velocity->currentVelocity.x += velocity->maxVelocity.x;
-        animation->animation = Animations::RunningRight;
       }
       if (input & A_KEY) {
+        velocirtUpdated = true;
         velocity->currentVelocity.x -= velocity->maxVelocity.x;
-       animation->animation = Animations::RunningLeft;
       }
       if (input & W_KEY) {
+        velocirtUpdated = true;
         velocity->currentVelocity.y -= velocity->maxVelocity.y;
-        animation->animation = Animations::RunningDown;
       }
       if (input & S_KEY) {
+        velocirtUpdated = true;
         velocity->currentVelocity.y += velocity->maxVelocity.y;
-        animation->animation = Animations::RunningDown;
       }
+    }
+
+    if (!velocirtUpdated) {
+      animation->animationFrame = 0;
     }
   }
 }
 
 void MovementSystem::ownUpdate() {
-  for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent())
+  for (auto entityWithCollision : mCollisionComponentManager->getAllEntitiesWithComponent())
   {
-    VelocityComponent* velocity = mVelocityComponentManager->getComponent(entityWithRender.first);
-    if (velocity && ((velocity->currentVelocity.x != 0 && velocity->maxVelocity.x > 0) || (velocity->currentVelocity.y != 0 && velocity->maxVelocity.y > 0))) {
-      sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
-      mCollisionSystem->handleAnyCollision(entityWithRender.first, currentPosition.x + velocity->currentVelocity.x, currentPosition.y + velocity->currentVelocity.y, mGridSystem);
-      move(entityWithRender.first, entityWithRender.second, velocity);
+    VelocityComponent* velocityComponent = mVelocityComponentManager->getComponent(entityWithCollision.first);
+    if (velocityComponent && ((velocityComponent->currentVelocity.x != 0 && velocityComponent->maxVelocity.x > 0) || (velocityComponent->currentVelocity.y != 0 && velocityComponent->maxVelocity.y > 0))) {
+      RenderComponent* renderComponent = mRenderComponentManager->getComponent(entityWithCollision.first);
+      sf::Vector2f currentPosition = renderComponent->sprite.getPosition();
+      mCollisionSystem->handleAnyCollision(entityWithCollision.first, currentPosition.x + velocityComponent->currentVelocity.x, currentPosition.y + velocityComponent->currentVelocity.y, mGridSystem);
+      move(entityWithCollision.first, renderComponent, velocityComponent);
     }
   }
 }

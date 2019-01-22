@@ -112,9 +112,10 @@ void GameLoop::gameLoop() {
   HostListener hostListener = HostListener();
   std::list<sf::TcpSocket*> clients;
   hostListener.startListening();
-
+  sf::Clock c;
   mNetworkSystem.start();
   while (mRunning) {
+    c.restart();
     state = world.getInputSystem()->getLatestGameStateMessage();
 
     switch (state) {
@@ -178,7 +179,11 @@ void GameLoop::gameLoop() {
     }
     
     input = -1;
-    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
+    int sleepTime = FRAME_LENGTH_IN_MS - c.getElapsedTime().asMilliseconds();
+    if (sleepTime > 0) {
+      sf::sleep(sf::milliseconds(sleepTime));
+    }
+    
   }  
 
   if (hostListener.isListening()) {

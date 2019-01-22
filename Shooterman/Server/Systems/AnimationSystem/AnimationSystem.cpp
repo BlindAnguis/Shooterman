@@ -5,12 +5,13 @@ AnimationSystem::AnimationSystem() {}
 AnimationSystem::AnimationSystem(
   ComponentManager<AnimationComponent>* animationComponentManager,
   ComponentManager<VelocityComponent>* velocityComponentManager,
-  ComponentManager<RenderComponent>* renderComponentManager
+  ComponentManager<RenderComponent>* renderComponentManager,
+  ComponentManager<HealthComponent>* healthComponent
 ) :
   mAnimationComponentManager(animationComponentManager),
   mVelocityComponentManager(velocityComponentManager),
-  mRenderComponentManager(renderComponentManager)
-{
+  mRenderComponentManager(renderComponentManager),
+  mHealthComponent(healthComponent) {
   mName = "SERVER: ANIMATION_SYSTEM";
 }
 
@@ -20,53 +21,63 @@ AnimationSystem::~AnimationSystem() {}
 void AnimationSystem::update()
 {
   for (auto entity : mAnimationComponentManager->getAllEntitiesWithComponent()) {
-    //TRACE_INFO(static_cast<int>(entity.second->animation));
-    if (mRenderComponentManager->hasComponent(entity.first)) {
+    if (mHealthComponent->getComponent(entity.first)->isAlive) {
+      //TRACE_INFO(static_cast<int>(entity.second->animation));
+      if (mRenderComponentManager->hasComponent(entity.first)) {
+        auto render = mRenderComponentManager->getComponent(entity.first);
+        if (entity.second->animation == Animations::RunningRight) {
+          //TRACE_INFO("Running right");
+          sf::IntRect textureRect = render->sprite.getTextureRect();
+          textureRect.left = 64 * entity.second->animationFrame;
+          textureRect.top = 192;
+          textureRect.width = 64;
+          textureRect.height = 64;
+          render->sprite.setTextureRect(textureRect);
+        }
+        else if (entity.second->animation == Animations::RunningLeft) {
+          //TRACE_INFO("Running left");
+          sf::IntRect textureRect = render->sprite.getTextureRect();
+          textureRect.left = 64 * entity.second->animationFrame;
+          textureRect.top = 64;
+          textureRect.width = 64;
+          textureRect.height = 64;
+          render->sprite.setTextureRect(textureRect);
+        }
+        else if (entity.second->animation == Animations::RunningDown) {
+          //TRACE_INFO("Running down");
+          sf::IntRect textureRect = render->sprite.getTextureRect();
+          textureRect.left = 64 * entity.second->animationFrame;
+          textureRect.top = 128;
+          textureRect.width = 64;
+          textureRect.height = 64;
+          render->sprite.setTextureRect(textureRect);
+        }
+        else if (entity.second->animation == Animations::RunningUp) {
+          //TRACE_INFO("Running up");
+          sf::IntRect textureRect = render->sprite.getTextureRect();
+          textureRect.left = 64 * entity.second->animationFrame;
+          textureRect.top = 0;
+          textureRect.width = 64;
+          textureRect.height = 64;
+          render->sprite.setTextureRect(textureRect);
+        }
+        else {
+          sf::IntRect textureRect = render->sprite.getTextureRect();
+          textureRect.left = 0;
+          render->sprite.setTextureRect(textureRect);
+        }
+      }
+      if (animationTime.getElapsedTime().asMilliseconds() > 35) {
+        entity.second->animationFrame == 8 ? entity.second->animationFrame = 1 : entity.second->animationFrame++;
+        animationTime.restart();
+      }
+    } else {
       auto render = mRenderComponentManager->getComponent(entity.first);
-      if (entity.second->animation == Animations::RunningRight) {
-        //TRACE_INFO("Running right");
-        sf::IntRect textureRect = render->sprite.getTextureRect();
-        textureRect.left = 95 * entity.second->animationFrame;
-        textureRect.top = 0;
-        textureRect.width = 95;
-        textureRect.height = 95;
-        render->sprite.setTextureRect(textureRect);
-      }
-      else if (entity.second->animation == Animations::RunningLeft) {
-        //TRACE_INFO("Running left");
-        sf::IntRect textureRect = render->sprite.getTextureRect();
-        textureRect.left = 95 * entity.second->animationFrame;
-        textureRect.top = 0;
-        textureRect.width = 95;
-        textureRect.height = 95;
-        render->sprite.setTextureRect(textureRect);
-      }
-      else if (entity.second->animation == Animations::RunningDown) {
-        //TRACE_INFO("Running down");
-        sf::IntRect textureRect = render->sprite.getTextureRect();
-        textureRect.left = 95 * entity.second->animationFrame;
-        textureRect.top = 0;
-        textureRect.width = 95;
-        textureRect.height = 95;
-        render->sprite.setTextureRect(textureRect);
-      }
-      else if (entity.second->animation == Animations::RunningUp) {
-        //TRACE_INFO("Running up");
-        sf::IntRect textureRect = render->sprite.getTextureRect();
-        textureRect.left = 95 * entity.second->animationFrame;
-        textureRect.top = 0;
-        textureRect.width = 95;
-        textureRect.height = 95;
-        render->sprite.setTextureRect(textureRect);
-      } else {
-        sf::IntRect textureRect = render->sprite.getTextureRect();
-        //textureRect.left = 0 * entity.second->animationFrame;
-        //textureRect.top = 305;
-        //textureRect.width = 95;
-        //textureRect.height = 75;
-        render->sprite.setTextureRect(textureRect);
-      }
+      auto pos = render->sprite.getPosition();
+      render->sprite = sf::Sprite(render->deathTexture, sf::IntRect(0, 0, 64, 64));
+      render->textureId = Textures::Tombstone;
+      render->sprite.setPosition(pos.x, pos.y);
+      render->sprite.setOrigin(32, 32);
     }
-    entity.second->animationFrame == 2 ? entity.second->animationFrame = 0 : entity.second->animationFrame++;
   }
 }

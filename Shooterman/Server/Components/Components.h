@@ -19,6 +19,7 @@ struct PositionComponent {
 
 struct RenderComponent {
   sf::Texture texture;
+  sf::Texture deathTexture;
   Textures textureId;
   sf::Sprite sprite;
   bool visible;

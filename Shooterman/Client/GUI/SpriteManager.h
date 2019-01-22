@@ -15,7 +15,6 @@ public:
   ~SpriteManager();
 
   void loadSprites();
-  std::shared_ptr<sf::Texture> loadTexture(std::string fileName);
   sf::Sprite get(Textures texture) {
     auto sprite = mSpriteMap.find(texture);
     if (sprite == mSpriteMap.end()) {
@@ -26,4 +25,7 @@ public:
 
 private:
   std::map<Textures, std::pair<sf::Sprite, std::shared_ptr<sf::Texture>>> mSpriteMap;
+
+  std::pair<sf::Sprite, std::shared_ptr<sf::Texture>> createSprite(std::string filename);
+  std::shared_ptr<sf::Texture> loadTexture(std::string fileName);
 };

@@ -18,7 +18,7 @@ public:
 private:
   std::vector<std::vector<std::vector<int>>> mGrid;
   sf::Vector2i positionToGridPosition(sf::Vector2i position);
-  int mGridSize = 20;
+  int mGridSize = 32;
   int mGameSize = 1024;
   int mPixelsPerGridBox = mGameSize / mGridSize;
 };

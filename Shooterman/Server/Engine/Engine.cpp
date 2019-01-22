@@ -1,6 +1,9 @@
 #include "Engine.h"
 #include "../../Common/Textures.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 Engine::Engine() :
   mInputSystem(InputSystem()),
   mEntityManager(EntityManager()),
@@ -13,9 +16,9 @@ Engine::Engine() :
   mClockComponentManager(ComponentManager<ClockComponent>()),
   mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
+  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
-  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
+  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager))
 {
   mName = "SERVER: ENGINE";
@@ -35,18 +38,26 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mClockComponentManager(ComponentManager<ClockComponent>()),
   mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
+  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager)),
-  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager)),
+  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
   mGameMap(gameMap)
 {
   mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
-  mTextures[static_cast<int>(Textures::Player1)] = loadTexture("Player.png");
+  mTextures[static_cast<int>(Textures::CharacterBandana)] = loadTexture("CharacterBandana.png");
+  mTextures[static_cast<int>(Textures::CharacterChainHat)] = loadTexture("CharacterChainHat.png");
+  mTextures[static_cast<int>(Textures::CharacterChainHood)] = loadTexture("CharacterChainHood.png");
+  mTextures[static_cast<int>(Textures::CharacterClothHood)] = loadTexture("CharacterClothHood.png");
+  mTextures[static_cast<int>(Textures::CharacterGoldenHelmet)] = loadTexture("CharacterGoldenHelmet.png");
+  mTextures[static_cast<int>(Textures::CharacterLeatherCap)] = loadTexture("CharacterLeatherCap.png");
+  mTextures[static_cast<int>(Textures::CharacterMetalHelmet)] = loadTexture("CharacterMetalHelmet.png");
   mTextures[static_cast<int>(Textures::HorizontalWall1)] = loadTexture("wall1.png");
   mTextures[static_cast<int>(Textures::VerticalWall1)] = loadTexture("verticalWall1.png");
+  mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("Bullet.png");
+  mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
 }
 
 Engine::~Engine() {
@@ -130,20 +141,45 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   vc->maxVelocity.y = yMaxVelocity;
   vc->moveOnce = true;
 
-  //mSolidComponentManager.addComponent(player->id);
-
   auto collisionComponent = mCollisionComponentManager.addComponent(player->id);
   collisionComponent->collided = false;
   collisionComponent->destroyOnCollision = false;
 
+  srand(time(NULL));
+  int id = rand() % 7;
+
   RenderComponent* rc = mRenderComponentManager.addComponent(player->id);
-  rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
+  switch (id)
+  {
+  case 0:
+    rc->textureId = Textures::CharacterBandana;
+    break;
+  case 1:
+    rc->textureId = Textures::CharacterChainHat;
+    break;
+  case 2:
+    rc->textureId = Textures::CharacterChainHood;
+    break;
+  case 3:
+    rc->textureId = Textures::CharacterClothHood;
+    break;
+  case 4:
+    rc->textureId = Textures::CharacterGoldenHelmet;
+    break;
+  case 5:
+    rc->textureId = Textures::CharacterLeatherCap;
+    break;
+  case 6:
+  default:
+    rc->textureId = Textures::CharacterMetalHelmet;
+  }
+  rc->texture = *mTextures[static_cast<int>(rc->textureId)];
   rc->visible = true;
   rc->isDynamic = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(10, 0, 80, 100));
-  rc->sprite.setOrigin(47, 47);
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 64, 64));
+  rc->sprite.setOrigin(32, 32);
   rc->sprite.setPosition(xStartPos, yStartPos);
-  rc->textureId = Textures::Player1;
+  rc->deathTexture = *mTextures[static_cast<int>(Textures::Tombstone)];
 
   AnimationComponent* ac = mAnimationComponentManager.addComponent(player->id);
   ac->animation = Animations::Idle;
@@ -158,29 +194,6 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   mGridSystem.addEntity(player->id, (sf::Vector2i)rc->sprite.getPosition());
 
   return player;
-}
-
-Entity* Engine::createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity) {
-  Entity* ball = mEntityManager.createEntity();
-  VelocityComponent* vc = mVelocityComponentManager.addComponent(ball->id);
-  vc->currentVelocity.x = 0;
-  vc->currentVelocity.y = 0;
-  vc->maxVelocity.x = xMaxVelocity;
-  vc->maxVelocity.y = yMaxVelocity;
-  vc->moveOnce = false;
-
-  auto collisionComponent = mCollisionComponentManager.addComponent(ball->id);
-  collisionComponent->collided = false;
-  collisionComponent->destroyOnCollision = false;
-
-  RenderComponent* rc = mRenderComponentManager.addComponent(ball->id);
-  rc->texture = *mTextures[static_cast<int>(Textures::Player1)];
-  rc->visible = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 200, 200));
-  rc->sprite.setPosition(xStartPos, yStartPos);
-  rc->sprite.setScale(0.25, 0.25);
-  rc->textureId = Textures::Player1;
-  return ball;
 }
 
 void Engine::createMap() {
@@ -212,7 +225,6 @@ Entity* Engine::createHorizontalWall(float xPos, float yPos) {
   rc->sprite.setOrigin(size / 2, size / 2);
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::HorizontalWall1;
-  //rc->isPlayer = false;
 
   mGridSystem.addEntity(horizontalWall->id, (sf::Vector2i)rc->sprite.getPosition());
   return horizontalWall;
@@ -260,8 +272,8 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     bulletVelocity.y = (bulletVelocity.y / divider) * 15;
 
     // Move origin position to avoid colliding with the player
-    originXPos += bulletVelocity.x * 5;
-    originYPos += bulletVelocity.y * 5;
+    originXPos += bulletVelocity.x * 2;
+    originYPos += bulletVelocity.y * 2;
 
     Entity* bullet = mEntityManager.createEntity();
 
@@ -272,23 +284,20 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     vc->maxVelocity.y = 15;
     vc->moveOnce = false;
   
+    float angle = atan2(originYPos - mousePosition.y, originXPos - mousePosition.x) * (180 / 3.1415f) -90; // Remove 90 degrees to compensate for rotation...
+
     RenderComponent* rc = mRenderComponentManager.addComponent(bullet->id);
-    rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
+    rc->texture = *mTextures[static_cast<int>(Textures::Bullet)];
     rc->visible = true;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 32, 32));
-    rc->sprite.setOrigin(16, 16);
+    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 8, 8));
+    rc->sprite.setOrigin(4, 4);
     rc->sprite.setPosition(originXPos, originYPos);
-    rc->textureId = Textures::VerticalWall1;
+    rc->sprite.setRotation(angle);
+    rc->textureId = Textures::Bullet;
 
     DamageComponent* dc = mDamageComponentManager.addComponent(bullet->id);
     dc->damage = 10;
-
-    /*
-    HealthComponent* hc = mHealthComponentManager.addComponent(bullet->id);
-    hc->health = 1;
-    hc->isAlive = true;
-    */
 
     CollisionComponent* cc = mCollisionComponentManager.addComponent(bullet->id);
     cc->collided = false;

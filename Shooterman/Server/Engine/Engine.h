@@ -64,7 +64,7 @@ private:
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::array<std::array<int, 32>, 32> mGameMap;
-  std::array<sf::Texture*, 3> mTextures;
+  std::array<sf::Texture*, 11> mTextures;
 
   sf::Texture* loadTexture(std::string fileName);
   void destroyEntity(int entityId);

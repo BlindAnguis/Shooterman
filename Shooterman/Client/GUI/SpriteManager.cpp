@@ -5,20 +5,28 @@ SpriteManager::SpriteManager() { mName = "CLIENT: SPRITE_MANAGER"; }
 SpriteManager::~SpriteManager() { }
 
 void SpriteManager::loadSprites() {
-  std::shared_ptr<sf::Texture> texture = loadTexture("Player.png");
+
+  mSpriteMap[Textures::CharacterBandana] = createSprite("CharacterBandana.png");
+  mSpriteMap[Textures::CharacterChainHat] = createSprite("CharacterChainHat.png");
+  mSpriteMap[Textures::CharacterChainHood] = createSprite("CharacterChainHood.png");
+  mSpriteMap[Textures::CharacterClothHood] = createSprite("CharacterClothHood.png");
+  mSpriteMap[Textures::CharacterGoldenHelmet] = createSprite("CharacterGoldenHelmet.png");
+  mSpriteMap[Textures::CharacterLeatherCap] = createSprite("CharacterLeatherCap.png");
+  mSpriteMap[Textures::CharacterMetalHelmet] = createSprite("CharacterMetalHelmet.png");
+  
+  mSpriteMap[Textures::HorizontalWall1] = createSprite("wall1.png");
+  mSpriteMap[Textures::VerticalWall1] = createSprite("verticalWall1.png");
+
+  mSpriteMap[Textures::Bullet] = createSprite("Bullet.png");
+
+  mSpriteMap[Textures::Tombstone] = createSprite("Tombstone.png");
+}
+
+std::pair<sf::Sprite, std::shared_ptr<sf::Texture>> SpriteManager::createSprite(std::string filename) {
+  std::shared_ptr<sf::Texture> texture = loadTexture(filename);
   sf::Sprite sprite;
   sprite.setTexture(*texture);
-  mSpriteMap[Textures::Player1] = std::make_pair(sprite, texture);
-  
-  std::shared_ptr<sf::Texture> wall1Texture = loadTexture("wall1.png");
-  sf::Sprite wall1Sprite;
-  wall1Sprite.setTexture(*wall1Texture);
-  mSpriteMap[Textures::HorizontalWall1] = std::make_pair(wall1Sprite, wall1Texture);
-  
-  std::shared_ptr<sf::Texture> wall2Texture = loadTexture("verticalWall1.png");
-  sf::Sprite wall2Sprite;
-  wall2Sprite.setTexture(*wall2Texture);
-  mSpriteMap[Textures::VerticalWall1] = std::make_pair(wall2Sprite, wall2Texture);
+  return std::make_pair(sprite, texture);
 }
 
 std::shared_ptr<sf::Texture> SpriteManager::loadTexture(std::string fileName) {
