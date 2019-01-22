@@ -52,27 +52,27 @@ void MovementSystem::update(InputMessage inputMessage)
       animation->animation = Animations::RunningLeft;
     }
 
-    bool velocirtUpdated = false;
+    bool velocityUpdated = false;
     if (velocity) {
       if (input & D_KEY) {
-        velocirtUpdated = true;
+        velocityUpdated = true;
         velocity->currentVelocity.x += velocity->maxVelocity.x;
       }
       if (input & A_KEY) {
-        velocirtUpdated = true;
+        velocityUpdated = true;
         velocity->currentVelocity.x -= velocity->maxVelocity.x;
       }
       if (input & W_KEY) {
-        velocirtUpdated = true;
+        velocityUpdated = true;
         velocity->currentVelocity.y -= velocity->maxVelocity.y;
       }
       if (input & S_KEY) {
-        velocirtUpdated = true;
+        velocityUpdated = true;
         velocity->currentVelocity.y += velocity->maxVelocity.y;
       }
     }
 
-    if (!velocirtUpdated) {
+    if (!velocityUpdated) {
       animation->animationFrame = 0;
     }
   }

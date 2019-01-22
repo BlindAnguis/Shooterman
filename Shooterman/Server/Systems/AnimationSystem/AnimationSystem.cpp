@@ -28,37 +28,37 @@ void AnimationSystem::update()
         if (entity.second->animation == Animations::RunningRight) {
           //TRACE_INFO("Running right");
           sf::IntRect textureRect = render->sprite.getTextureRect();
-          textureRect.left = 64 * entity.second->animationFrame;
-          textureRect.top = 192;
-          textureRect.width = 64;
-          textureRect.height = 64;
+          textureRect.left = 64 * entity.second->animationFrame + 14;
+          textureRect.top = 206;
+          textureRect.width = 36;
+          textureRect.height = 50;
           render->sprite.setTextureRect(textureRect);
         }
         else if (entity.second->animation == Animations::RunningLeft) {
           //TRACE_INFO("Running left");
           sf::IntRect textureRect = render->sprite.getTextureRect();
-          textureRect.left = 64 * entity.second->animationFrame;
-          textureRect.top = 64;
-          textureRect.width = 64;
-          textureRect.height = 64;
+          textureRect.left = 64 * entity.second->animationFrame + 14;
+          textureRect.top = 78;
+          textureRect.width = 36;
+          textureRect.height = 50;
           render->sprite.setTextureRect(textureRect);
         }
         else if (entity.second->animation == Animations::RunningDown) {
           //TRACE_INFO("Running down");
           sf::IntRect textureRect = render->sprite.getTextureRect();
-          textureRect.left = 64 * entity.second->animationFrame;
-          textureRect.top = 128;
-          textureRect.width = 64;
-          textureRect.height = 64;
+          textureRect.left = 64 * entity.second->animationFrame + 14;
+          textureRect.top = 142;
+          textureRect.width = 36;
+          textureRect.height = 50;
           render->sprite.setTextureRect(textureRect);
         }
         else if (entity.second->animation == Animations::RunningUp) {
           //TRACE_INFO("Running up");
           sf::IntRect textureRect = render->sprite.getTextureRect();
-          textureRect.left = 64 * entity.second->animationFrame;
-          textureRect.top = 0;
-          textureRect.width = 64;
-          textureRect.height = 64;
+          textureRect.left = 64 * entity.second->animationFrame + 14;
+          textureRect.top = 14;
+          textureRect.width = 36;
+          textureRect.height = 50;
           render->sprite.setTextureRect(textureRect);
         }
         else {
@@ -68,7 +68,7 @@ void AnimationSystem::update()
         }
       }
       if (animationTime.getElapsedTime().asMilliseconds() > 35) {
-        entity.second->animationFrame == 8 ? entity.second->animationFrame = 1 : entity.second->animationFrame++;
+        entity.second->animationFrame == 8 ? entity.second->animationFrame = 0 : entity.second->animationFrame++;
         animationTime.restart();
       }
     } else {

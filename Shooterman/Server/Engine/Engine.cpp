@@ -110,7 +110,9 @@ void Engine::update() {
   sf::Int64 deleteTime = c.getElapsedTime().asMicroseconds();
   c.restart();
 
-  TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us");
+  sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
+
+  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {
@@ -127,7 +129,7 @@ EntityManager* Engine::getEntityManager() {
 
 void Engine::createPlayers() {
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    it->second->setEntity(createPlayer(x, 100, 5, 5, 100));
+    it->second->setEntity(createPlayer(x, 100, 6, 6, 100));
     x += 100;
   }
 }
@@ -145,7 +147,7 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   collisionComponent->collided = false;
   collisionComponent->destroyOnCollision = false;
 
-  srand(time(NULL));
+  srand(player->id);
   int id = rand() % 7;
 
   RenderComponent* rc = mRenderComponentManager.addComponent(player->id);
@@ -176,8 +178,8 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   rc->texture = *mTextures[static_cast<int>(rc->textureId)];
   rc->visible = true;
   rc->isDynamic = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 64, 64));
-  rc->sprite.setOrigin(32, 32);
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(14, 14, 36, 50));
+  rc->sprite.setOrigin(18, 25);
   rc->sprite.setPosition(xStartPos, yStartPos);
   rc->deathTexture = *mTextures[static_cast<int>(Textures::Tombstone)];
 
@@ -268,12 +270,19 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
 
     // Normalize velocity to avoid huge speeds, and multiply with 10 for extra speed
     float divider = sqrt(bulletVelocity.x*bulletVelocity.x + bulletVelocity.y*bulletVelocity.y);
-    bulletVelocity.x = (bulletVelocity.x / divider) * 15;
-    bulletVelocity.y = (bulletVelocity.y / divider) * 15;
+    bulletVelocity.x = (bulletVelocity.x / divider) * 10;
+    bulletVelocity.y = (bulletVelocity.y / divider) * 10;
+
+    float angle = atan2(originYPos - mousePosition.y, originXPos - mousePosition.x) * (180 / 3.1415f) - 90; // Remove 90 degrees to compensate for rotation...
 
     // Move origin position to avoid colliding with the player
-    originXPos += bulletVelocity.x * 2;
-    originYPos += bulletVelocity.y * 2;
+    if ((angle <= -125 && angle >= -235) || (angle >= -55 && angle <= 55)) {
+      originXPos += bulletVelocity.x * 5.5f;
+      originYPos += bulletVelocity.y * 5.5f;
+    } else {
+      originXPos += bulletVelocity.x * 4.0f;
+      originYPos += bulletVelocity.y * 4.0f;
+    }
 
     Entity* bullet = mEntityManager.createEntity();
 
@@ -283,8 +292,6 @@ Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mou
     vc->maxVelocity.x = 15;
     vc->maxVelocity.y = 15;
     vc->moveOnce = false;
-  
-    float angle = atan2(originYPos - mousePosition.y, originXPos - mousePosition.x) * (180 / 3.1415f) -90; // Remove 90 degrees to compensate for rotation...
 
     RenderComponent* rc = mRenderComponentManager.addComponent(bullet->id);
     rc->texture = *mTextures[static_cast<int>(Textures::Bullet)];
