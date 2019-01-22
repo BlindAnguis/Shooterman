@@ -35,8 +35,23 @@ void Input::readInput() {
       case GAME_STATE::JOIN:
         // Do nothing
         break;
+      case GAME_STATE::PAUSE:
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && recentlyChangedState) {
+          break;
+        }
+        recentlyChangedState = false;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+          GameStateMessage gsm(GAME_STATE::PLAYING);
+          MessageHandler::get().pushGameStateMessage(gsm.pack());
+          recentlyChangedState = true;
+        }
+        break;
       case GAME_STATE::PLAYING:
       {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && recentlyChangedState) {
+          break;
+        }
+        recentlyChangedState = false;
         keyboardBitmask = 0;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
           keyboardBitmask |= A_KEY;
@@ -62,8 +77,9 @@ void Input::readInput() {
         pc->pushMessage(im.pack());
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-          GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+          GameStateMessage gsm(GAME_STATE::PAUSE);
           MessageHandler::get().pushGameStateMessage(gsm.pack());
+          recentlyChangedState = true;
         }
         break;
       }
@@ -80,6 +96,7 @@ void Input::readInput() {
     if (!subscribedToMouse) {
       subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
     }
+
   }
 
   MessageHandler::get().unpublishInterface("ClientInputList");

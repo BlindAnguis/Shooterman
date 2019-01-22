@@ -14,6 +14,7 @@
 #include "PlayWindow/PlayWindow.h"
 #include "OptionsMenu/OptionsMenu.h" 
 #include "DebugMenu/DebugMenu.h"
+#include "PauseMenu/PauseMenu.h"
 
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/MessageHandler/Interface.h"

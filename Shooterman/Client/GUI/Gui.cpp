@@ -20,6 +20,7 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::JOIN, new JoinMenu());
   mMenuMap.emplace(GAME_STATE::PLAYING, new PlayWindow());
   mMenuMap.emplace(GAME_STATE::OPTIONS, new OptionsMenu());
+  mMenuMap.emplace(GAME_STATE::PAUSE, new PauseMenu());
   mDebugMenu = new DebugMenu;
 
   // This needs to be after the DebugMenu is created

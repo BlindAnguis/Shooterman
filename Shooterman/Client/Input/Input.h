@@ -23,6 +23,7 @@ public:
 
 private:
   bool mRunning = true;
+  bool recentlyChangedState = true;
   std::unique_ptr<std::thread> mInputThread;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;

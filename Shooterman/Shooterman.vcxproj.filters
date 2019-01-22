@@ -48,6 +48,7 @@
     <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
     <ClCompile Include="Server\Player.cpp" />
     <ClCompile Include="Server\Systems\GridSystem\GridSystem.cpp" />
+    <ClCompile Include="Client\GUI\PauseMenu\PauseMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -127,6 +128,7 @@
     <ClInclude Include="Server\Player.h" />
     <ClInclude Include="Common\Messages\SpriteCacheMessage.h" />
     <ClInclude Include="Server\Systems\GridSystem\GridSystem.h" />
+    <ClInclude Include="Client\GUI\PauseMenu\PauseMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

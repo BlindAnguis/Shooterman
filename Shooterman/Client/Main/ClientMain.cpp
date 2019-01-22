@@ -64,8 +64,12 @@ ClientMain::ClientMain() {
 	      }
       case GAME_STATE::OPTIONS: {
         //TRACE_INFO("Setting GAME_STATE to GAME_STATE::OPTIONS");
-		  break;
-	    }
+		    break;
+	      }
+      case GAME_STATE::PAUSE: {
+        
+        break;
+      }
       default:
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }
