@@ -11,13 +11,13 @@ public:
   AnimationSystem(ComponentManager<AnimationComponent>* animationComponentManager, 
                   ComponentManager<VelocityComponent>* velocityComponentManager,
                   ComponentManager<RenderComponent>* renderComponentManager,
-                  ComponentManager<HealthComponent>* healthComponent);
+                  ComponentManager<HealthComponent>* healthComponentManager);
   ~AnimationSystem();
   void update();
 private:
   ComponentManager<AnimationComponent>* mAnimationComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<RenderComponent>* mRenderComponentManager;
-  ComponentManager<HealthComponent>* mHealthComponent;
+  ComponentManager<HealthComponent>* mHealthComponentManager;
   sf::Clock animationTime;
 };

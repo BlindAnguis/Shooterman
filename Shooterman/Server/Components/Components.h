@@ -1,8 +1,11 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "../../Common/Animations.h"
+#include "../../Common/AnimationType.h"
 #include "../../Common/Textures.h"
+#include "../../Common/Animation/Animation.h"
+
+#include <map>
 
 enum class ComponentType {
   Position,
@@ -40,8 +43,8 @@ struct CollisionComponent {
 };
 
 struct AnimationComponent {
-  Animations animation;
-  sf::Int16 animationFrame;
+  AnimationType currentAnimation;
+  std::map<AnimationType, Animation> animations;
 };
 
 struct HealthComponent {

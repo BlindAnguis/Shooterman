@@ -67,7 +67,7 @@ void Engine::update() {
   sf::Clock c;
   // Reset
   for (auto entity : mAnimationComponentManager.getAllEntitiesWithComponent()) {
-    entity.second->animation = Animations::Idle;
+    //entity.second->currentAnimation = AnimationType::IdleUp;
   }
   mCollisionSystem.resetCollisionInformation();
   sf::Int64 resetTime = c.getElapsedTime().asMicroseconds();
@@ -107,6 +107,7 @@ void Engine::update() {
       destroyEntity(entity.first);
     }
   }
+
   sf::Int64 deleteTime = c.getElapsedTime().asMicroseconds();
   c.restart();
 
@@ -184,8 +185,53 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   rc->deathTexture = *mTextures[static_cast<int>(Textures::Tombstone)];
 
   AnimationComponent* ac = mAnimationComponentManager.addComponent(player->id);
-  ac->animation = Animations::Idle;
-  ac->animationFrame = 0;
+  ac->currentAnimation = AnimationType::IdleUp;
+
+  Animation idleUpAnimation(rc->sprite, false, 140);
+  idleUpAnimation.addAnimationFrame(sf::IntRect(14, 14, 36, 50));
+  idleUpAnimation.addAnimationFrame(sf::IntRect(78, 14, 36, 50));
+  Animation idleDownAnimation(rc->sprite, false, 140);
+  idleDownAnimation.addAnimationFrame(sf::IntRect(14, 142, 36, 50));
+  idleDownAnimation.addAnimationFrame(sf::IntRect(78, 142, 36, 50));
+  Animation idleLeftAnimation(rc->sprite, false, 140);
+  idleLeftAnimation.addAnimationFrame(sf::IntRect(270, 78, 36, 50));
+  idleLeftAnimation.addAnimationFrame(sf::IntRect(398, 78, 36, 50));
+  Animation idleRightAnimation(rc->sprite, false, 140);
+  idleRightAnimation.addAnimationFrame(sf::IntRect(270, 206, 36, 50));
+  idleRightAnimation.addAnimationFrame(sf::IntRect(398, 206, 36, 50));
+
+  Animation runningUpAnimation(rc->sprite, false, 35);
+  for (int i = 0; i < 9; i++) {
+    runningUpAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 14, 36, 50));
+  }
+  Animation runningDownAnimation(rc->sprite, false, 35);
+  for (int i = 0; i < 9; i++) {
+    runningDownAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 142, 36, 50));
+  }
+  Animation runningLeftAnimation(rc->sprite, false, 35);
+  for (int i = 0; i < 9; i++) {
+    runningLeftAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 78, 36, 50));
+  }
+  Animation runningRightAnimation(rc->sprite, false, 35);
+  for (int i = 0; i < 9; i++) {
+    runningRightAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 206, 36, 50));
+  }
+
+  Animation deathAnimation(rc->sprite, true, 70);
+  deathAnimation.addAnimationFrame(sf::IntRect(14, 14, 36, 50));
+  deathAnimation.addAnimationFrame(sf::IntRect(14, 206, 36, 50));
+  deathAnimation.addAnimationFrame(sf::IntRect(14, 142, 36, 50));
+  deathAnimation.addAnimationFrame(sf::IntRect(14, 78, 36, 50));
+
+  ac->animations.emplace(AnimationType::IdleUp, idleUpAnimation);
+  ac->animations.emplace(AnimationType::IdleDown, idleDownAnimation);
+  ac->animations.emplace(AnimationType::IdleLeft, idleLeftAnimation);
+  ac->animations.emplace(AnimationType::IdleRight, idleRightAnimation);
+  ac->animations.emplace(AnimationType::RunningUp, runningUpAnimation);
+  ac->animations.emplace(AnimationType::RunningDown, runningDownAnimation);
+  ac->animations.emplace(AnimationType::RunningLeft, runningLeftAnimation);
+  ac->animations.emplace(AnimationType::RunningRight, runningRightAnimation);
+  ac->animations.emplace(AnimationType::Death, deathAnimation);
 
   ClockComponent* cc = mClockComponentManager.addComponent(player->id);
 

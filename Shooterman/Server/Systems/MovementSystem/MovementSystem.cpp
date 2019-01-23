@@ -43,13 +43,13 @@ void MovementSystem::update(InputMessage inputMessage)
     }
 
     if (angle >= 315 || angle < 45) {
-      animation->animation = Animations::RunningUp;
+      animation->currentAnimation = AnimationType::IdleUp;
     } else if (angle >= 45 && angle < 135) {
-      animation->animation = Animations::RunningRight;
+      animation->currentAnimation = AnimationType::IdleRight;
     } else if (angle >= 135 && angle < 225) {
-      animation->animation = Animations::RunningDown;
+      animation->currentAnimation = AnimationType::IdleDown;
     } else if (angle >= 225 && angle < 315) {
-      animation->animation = Animations::RunningLeft;
+      animation->currentAnimation = AnimationType::IdleLeft;
     }
 
     bool velocityUpdated = false;
@@ -72,8 +72,20 @@ void MovementSystem::update(InputMessage inputMessage)
       }
     }
 
-    if (!velocityUpdated) {
-      animation->animationFrame = 0;
+    if (velocityUpdated) {
+      //animation->animationFrame = 0;
+      if (animation->currentAnimation == AnimationType::IdleUp) {
+        animation->currentAnimation = AnimationType::RunningUp;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleDown) {
+        animation->currentAnimation = AnimationType::RunningDown;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleLeft) {
+        animation->currentAnimation = AnimationType::RunningLeft;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleRight) {
+        animation->currentAnimation = AnimationType::RunningRight;
+      }
     }
   }
 }

@@ -1,7 +1,10 @@
 #pragma once
 
-enum class Animations {
-  Idle,
+enum class AnimationType {
+  IdleUp,
+  IdleDown,
+  IdleLeft,
+  IdleRight,
   Walking,
   RunningRight,
   RunningLeft,
