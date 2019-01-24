@@ -5,13 +5,18 @@
 
 #include "../../Common/Trace.h"
 
+struct AnimationFrame {
+  sf::IntRect animationFrame;
+  int frameTime;
+};
+
 class Animation : Trace
 {
 public:
-  Animation(sf::Sprite& sprite, bool playOnce, int timePerAnimationFrame);
+  Animation(sf::Sprite& sprite, bool playOnce);
   ~Animation();
 
-  void addAnimationFrame(sf::IntRect animationFrame);
+  void addAnimationFrame(AnimationFrame animationFrame);
   void play();
   bool hasBeenPlayedOnce() {
     return mHasBeenPlayedOnce;
@@ -19,8 +24,7 @@ public:
 
 private:
   int mCurrentAnimationFrame;
-  int mTimePerAnimationFrame;
-  std::vector<sf::IntRect> mAnimationFrames;
+  std::vector<AnimationFrame> mAnimationFrames;
   bool mPlayOnce;
   bool mHasBeenPlayedOnce;
   sf::Sprite& mSprite;

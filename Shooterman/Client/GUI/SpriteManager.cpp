@@ -6,7 +6,7 @@ SpriteManager::~SpriteManager() { }
 
 void SpriteManager::loadSprites() {
 
-  mSpriteMap[Textures::CharacterBandana] = createSprite("CharacterBandana.png");
+  mSpriteMap[Textures::CharacterBandana] = createSprite("CharacterBandana1.png");
   mSpriteMap[Textures::CharacterChainHat] = createSprite("CharacterChainHat.png");
   mSpriteMap[Textures::CharacterChainHood] = createSprite("CharacterChainHood.png");
   mSpriteMap[Textures::CharacterClothHood] = createSprite("CharacterClothHood.png");

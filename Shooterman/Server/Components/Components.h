@@ -26,7 +26,6 @@ struct RenderComponent {
   Textures textureId;
   sf::Sprite sprite;
   bool visible;
-  bool isPlayer;
   bool isDynamic = false;
 };
 
@@ -58,4 +57,8 @@ struct DamageComponent {
 
 struct ClockComponent {
   sf::Clock clock;
+};
+
+struct PlayerComponent {
+  // TODO: Add player info like currentScore, nrOfKills, noOfDeaths and so on.
 };

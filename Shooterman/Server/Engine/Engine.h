@@ -60,6 +60,7 @@ private:
   ComponentManager<HealthComponent> mHealthComponentManager;
   ComponentManager<DamageComponent> mDamageComponentManager;
   ComponentManager<ClockComponent> mClockComponentManager;
+  ComponentManager<PlayerComponent> mPlayerComponentManager;
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;

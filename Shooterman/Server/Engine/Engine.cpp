@@ -14,6 +14,7 @@ Engine::Engine() :
   mHealthComponentManager(ComponentManager<HealthComponent>()),
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
+  mPlayerComponentManager(ComponentManager<PlayerComponent>()),
   mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
@@ -24,10 +25,10 @@ Engine::Engine() :
   mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
+  srand((int)time(0));
 }
 
 Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
-  mInputSystem(InputSystem()),
   mEntityManager(EntityManager()),
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
@@ -36,6 +37,8 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mHealthComponentManager(ComponentManager<HealthComponent>()),
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
+  mPlayerComponentManager(ComponentManager<PlayerComponent>()),
+  mInputSystem(InputSystem(&mHealthComponentManager)),
   mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
@@ -47,7 +50,7 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { createBullet(entityId, input, mousePosition); });
-  mTextures[static_cast<int>(Textures::CharacterBandana)] = loadTexture("CharacterBandana.png");
+  mTextures[static_cast<int>(Textures::CharacterBandana)] = loadTexture("CharacterBandana1.png");
   mTextures[static_cast<int>(Textures::CharacterChainHat)] = loadTexture("CharacterChainHat.png");
   mTextures[static_cast<int>(Textures::CharacterChainHood)] = loadTexture("CharacterChainHood.png");
   mTextures[static_cast<int>(Textures::CharacterClothHood)] = loadTexture("CharacterClothHood.png");
@@ -58,6 +61,7 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mTextures[static_cast<int>(Textures::VerticalWall1)] = loadTexture("verticalWall1.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("Bullet.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
+  srand((int)time(0));
 }
 
 Engine::~Engine() {
@@ -66,9 +70,6 @@ Engine::~Engine() {
 void Engine::update() {
   sf::Clock c;
   // Reset
-  for (auto entity : mAnimationComponentManager.getAllEntitiesWithComponent()) {
-    //entity.second->currentAnimation = AnimationType::IdleUp;
-  }
   mCollisionSystem.resetCollisionInformation();
   sf::Int64 resetTime = c.getElapsedTime().asMicroseconds();
   c.restart();
@@ -91,13 +92,13 @@ void Engine::update() {
 
   // Remove dead entities
   for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {
-    if (entity.second->collided && entity.second->destroyOnCollision) {
+    if (!mPlayerComponentManager.hasComponent(entity.first) && entity.second->collided && entity.second->destroyOnCollision) {
       destroyEntity(entity.first);
     }
   }
 
   for (auto entity : mHealthComponentManager.getAllEntitiesWithComponent()) {
-    if (!entity.second->isAlive) {
+    if (!mPlayerComponentManager.hasComponent(entity.first) && !entity.second->isAlive) {
       destroyEntity(entity.first);
     }
   }
@@ -107,13 +108,24 @@ void Engine::update() {
       destroyEntity(entity.first);
     }
   }
+ 
+  for (auto entity : mPlayerComponentManager.getAllEntitiesWithComponent()) {
+    if (!mHealthComponentManager.getComponent(entity.first)->isAlive) {
+      auto entityRenderComponent = mRenderComponentManager.getComponent(entity.first);
+      mGridSystem.removeEntity(entity.first, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
+      mCollisionComponentManager.removeComponent(entity.first);
+      mVelocityComponentManager.removeComponent(entity.first);
+      mDamageComponentManager.removeComponent(entity.first);
+      mClockComponentManager.removeComponent(entity.first);
+    }
+  }
 
   sf::Int64 deleteTime = c.getElapsedTime().asMicroseconds();
   c.restart();
 
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
 
-  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
+  TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {
@@ -148,9 +160,8 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   collisionComponent->collided = false;
   collisionComponent->destroyOnCollision = false;
 
-  srand(player->id);
   int id = rand() % 7;
-
+  //id = 0; // For testing the death animation since it only exist on this sprite for now.
   RenderComponent* rc = mRenderComponentManager.addComponent(player->id);
   switch (id)
   {
@@ -187,41 +198,46 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   AnimationComponent* ac = mAnimationComponentManager.addComponent(player->id);
   ac->currentAnimation = AnimationType::IdleUp;
 
-  Animation idleUpAnimation(rc->sprite, false, 140);
-  idleUpAnimation.addAnimationFrame(sf::IntRect(14, 14, 36, 50));
-  idleUpAnimation.addAnimationFrame(sf::IntRect(78, 14, 36, 50));
-  Animation idleDownAnimation(rc->sprite, false, 140);
-  idleDownAnimation.addAnimationFrame(sf::IntRect(14, 142, 36, 50));
-  idleDownAnimation.addAnimationFrame(sf::IntRect(78, 142, 36, 50));
-  Animation idleLeftAnimation(rc->sprite, false, 140);
-  idleLeftAnimation.addAnimationFrame(sf::IntRect(270, 78, 36, 50));
-  idleLeftAnimation.addAnimationFrame(sf::IntRect(398, 78, 36, 50));
-  Animation idleRightAnimation(rc->sprite, false, 140);
-  idleRightAnimation.addAnimationFrame(sf::IntRect(270, 206, 36, 50));
-  idleRightAnimation.addAnimationFrame(sf::IntRect(398, 206, 36, 50));
+  Animation idleUpAnimation(rc->sprite, false);
+  idleUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(14, 14, 36, 50), 140 });
+  idleUpAnimation.addAnimationFrame(AnimationFrame{sf::IntRect(78, 14, 36, 50), 140});
+  Animation idleDownAnimation(rc->sprite, false);
+  idleDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(14, 142, 36, 50), 140 });
+  idleDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(78, 142, 36, 50), 140 });
+  Animation idleLeftAnimation(rc->sprite, false);
+  idleLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(270, 78, 36, 50), 140 });
+  idleLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(398, 78, 36, 50), 140 });
+  Animation idleRightAnimation(rc->sprite, false);
+  idleRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(270, 206, 36, 50), 140 });
+  idleRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(398, 206, 36, 50), 140 });
 
-  Animation runningUpAnimation(rc->sprite, false, 35);
+  Animation runningUpAnimation(rc->sprite, false);
   for (int i = 0; i < 9; i++) {
-    runningUpAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 14, 36, 50));
+    runningUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 14, 36, 50), 35 });
   }
-  Animation runningDownAnimation(rc->sprite, false, 35);
+  Animation runningDownAnimation(rc->sprite, false);
   for (int i = 0; i < 9; i++) {
-    runningDownAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 142, 36, 50));
+    runningDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 142, 36, 50), 35 });
   }
-  Animation runningLeftAnimation(rc->sprite, false, 35);
+  Animation runningLeftAnimation(rc->sprite, false);
   for (int i = 0; i < 9; i++) {
-    runningLeftAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 78, 36, 50));
+    runningLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 78, 36, 50), 35 });
   }
-  Animation runningRightAnimation(rc->sprite, false, 35);
+  Animation runningRightAnimation(rc->sprite, false);
   for (int i = 0; i < 9; i++) {
-    runningRightAnimation.addAnimationFrame(sf::IntRect(i * 64 + 14, 206, 36, 50));
+    runningRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 206, 36, 50), 35 });
   }
-
-  Animation deathAnimation(rc->sprite, true, 70);
-  deathAnimation.addAnimationFrame(sf::IntRect(14, 14, 36, 50));
-  deathAnimation.addAnimationFrame(sf::IntRect(14, 206, 36, 50));
-  deathAnimation.addAnimationFrame(sf::IntRect(14, 142, 36, 50));
-  deathAnimation.addAnimationFrame(sf::IntRect(14, 78, 36, 50));
+  Animation deathAnimation(rc->sprite, true);
+  for (int i = 0; i < 8; i++) {
+    deathAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 270, 36, 50), 140 });
+  }
+  for (int i = 0; i < 8; i++) {
+    deathAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 270, 36, 50), 70 });
+  }
+  for (int i = 0; i < 8; i++) {
+    deathAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64 + 14, 270, 36, 50), 35 });
+  }
+  deathAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(512, 270, 64, 64), 70 });
 
   ac->animations.emplace(AnimationType::IdleUp, idleUpAnimation);
   ac->animations.emplace(AnimationType::IdleDown, idleDownAnimation);
@@ -238,6 +254,8 @@ Entity* Engine::createPlayer(float xStartPos, float yStartPos, float xMaxVelocit
   HealthComponent* hc = mHealthComponentManager.addComponent(player->id);
   hc->health = 100;
   hc->isAlive = true;
+
+  PlayerComponent* pc = mPlayerComponentManager.addComponent(player->id);
 
   mGridSystem.addEntity(player->id, (sf::Vector2i)rc->sprite.getPosition());
 
@@ -293,7 +311,6 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
   rc->sprite.setOrigin(size / 2, size / 2);
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::VerticalWall1;
-  //rc->isPlayer = false;
 
   HealthComponent* hc = mHealthComponentManager.addComponent(verticalWall->id);
   hc->health = 100;
@@ -304,6 +321,7 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
 }
 
 Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
+  //TRACE_INFO("Creating bullet");
   auto playerShootClockComponent = mClockComponentManager.getComponent(entityId);
   if (playerShootClockComponent->clock.getElapsedTime() >= sf::milliseconds(100)) {
     playerShootClockComponent->clock.restart();
@@ -387,5 +405,4 @@ void Engine::destroyEntity(int entityId) {
     }
   }
   mEntityManager.destroyEntity(entityId);
-  
 }

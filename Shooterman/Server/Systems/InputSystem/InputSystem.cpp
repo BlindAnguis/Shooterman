@@ -1,7 +1,9 @@
 #include "InputSystem.h"
 #include <stdio.h>
 
-InputSystem::InputSystem() {
+InputSystem::InputSystem() {}
+
+InputSystem::InputSystem(ComponentManager<HealthComponent>* healthComponentManager) : mHealthComponentManager(healthComponentManager) {
   //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
   mCurrentGameState = GAME_STATE::LOBBY;
@@ -73,7 +75,8 @@ void InputSystem::handleInput() {
     Entity* playerEntity = mPlayersMap->at(im.getId())->getEntity();
 
     // Player is dead
-    if (playerEntity == nullptr) {
+    auto playerHealth = mHealthComponentManager->getComponent(playerEntity->id);
+    if (playerHealth && !playerHealth->isAlive) {
       continue;
     }
 
@@ -87,4 +90,3 @@ void InputSystem::handleInput() {
     }
   }
 }
-
