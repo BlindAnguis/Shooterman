@@ -28,9 +28,11 @@ public:
   // EntityFactory entityFactory;
   void createPlayers();
   Entity* createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth);
-  Entity* createBall(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity);
   Entity* createHorizontalWall(float xPos, float yPos);
   Entity* createVerticalWall(float xPos, float yPos);
+  Entity* createWholeFloor(float xPos, float yPos);
+  Entity* createCrackedFloor(float xPos, float yPos);
+  Entity* createFloorSpikes(float xPos, float yPos);
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createMap();
   void setConnectedClients(std::shared_ptr<std::map<int, Player*>> connectedClients) {
@@ -65,7 +67,7 @@ private:
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::array<std::array<int, 32>, 32> mGameMap;
-  std::array<sf::Texture*, 11> mTextures;
+  std::array<sf::Texture*, 99> mTextures;
 
   sf::Texture* loadTexture(std::string fileName);
   void destroyEntity(int entityId);

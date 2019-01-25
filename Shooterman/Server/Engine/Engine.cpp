@@ -61,6 +61,9 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mTextures[static_cast<int>(Textures::VerticalWall1)] = loadTexture("verticalWall1.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("Bullet.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
+  mTextures[static_cast<int>(Textures::FloorWhole)] = loadTexture("fantasy-tileset.png");
+  mTextures[static_cast<int>(Textures::FloorCracked)] = loadTexture("fantasy-tileset.png");
+  mTextures[static_cast<int>(Textures::FloorSpikes)] = loadTexture("fantasy-tileset.png");
   srand((int)time(0));
 }
 
@@ -273,6 +276,12 @@ void Engine::createMap() {
         createHorizontalWall((float)(j * horizontalWallTexture->getSize().x), (float)(i * horizontalWallTexture->getSize().y));
       } else if (tile == 3) {
         createVerticalWall((float)(j * verticalWallTexture->getSize().x), (float)(i * verticalWallTexture->getSize().y));
+      } else if (tile == 4) {
+        createWholeFloor((float)(j * 32), (float)(i * 32));
+      } else if (tile == 5) {
+        createCrackedFloor((float)(j * 32), (float)(i * 32));
+      } else if (tile == 6) {
+        createFloorSpikes((float)(j * 32), (float)(i * 32));
       }
     }
   }
@@ -318,6 +327,59 @@ Entity* Engine::createVerticalWall(float xPos, float yPos) {
 
   mGridSystem.addEntity(verticalWall->id, (sf::Vector2i)rc->sprite.getPosition());
   return verticalWall;
+}
+
+Entity* Engine::createWholeFloor(float xPos, float yPos) {
+  float size = 32;
+  Entity* wholeFloor = mEntityManager.createEntity();
+  RenderComponent* rc = mRenderComponentManager.addComponent(wholeFloor->id);
+  rc->texture = *mTextures[static_cast<int>(Textures::FloorWhole)];
+  rc->visible = true;
+  rc->isDynamic = false;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(32*2, 32*1, (int)size, (int)size));
+  rc->sprite.setOrigin(size / 2, size / 2);
+  rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
+  rc->textureId = Textures::FloorWhole;
+
+  return wholeFloor;
+}
+
+Entity* Engine::createCrackedFloor(float xPos, float yPos) {
+  float size = 32;
+  Entity* crackedFloor = mEntityManager.createEntity();
+  RenderComponent* rc = mRenderComponentManager.addComponent(crackedFloor->id);
+  rc->texture = *mTextures[static_cast<int>(Textures::FloorWhole)];
+  rc->visible = true;
+  rc->isDynamic = false;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(32 * 3, 32 * 1, (int)size, (int)size));
+  rc->sprite.setOrigin(size / 2, size / 2);
+  rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
+  rc->textureId = Textures::FloorCracked;
+
+  return crackedFloor;
+}
+
+Entity* Engine::createFloorSpikes(float xPos, float yPos) {
+  float size = 32;
+  Entity* floorSpikes = mEntityManager.createEntity();
+  RenderComponent* rc = mRenderComponentManager.addComponent(floorSpikes->id);
+  rc->texture = *mTextures[static_cast<int>(Textures::FloorWhole)];
+  rc->visible = true;
+  rc->isDynamic = false;
+  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(32 * 3, 32 * 3, (int)size, (int)size));
+  rc->sprite.setOrigin(size / 2, size / 2);
+  rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
+  rc->textureId = Textures::FloorSpikes;
+
+  auto collisionComponent = mCollisionComponentManager.addComponent(floorSpikes->id);
+  collisionComponent->collided = false;
+  collisionComponent->destroyOnCollision = false;
+  mGridSystem.addEntity(floorSpikes->id, (sf::Vector2i)rc->sprite.getPosition());
+
+  DamageComponent* dc = mDamageComponentManager.addComponent(floorSpikes->id);
+  dc->damage = 20;
+
+  return floorSpikes;
 }
 
 Entity* Engine::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition) {

@@ -12,5 +12,8 @@ enum class Textures {
   VerticalWall1,
   Bullet,
   Tombstone,
+  FloorWhole,
+  FloorCracked,
+  FloorSpikes,
   Unknown = 99
 };

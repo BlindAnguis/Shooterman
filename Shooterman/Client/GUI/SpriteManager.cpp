@@ -20,6 +20,11 @@ void SpriteManager::loadSprites() {
   mSpriteMap[Textures::Bullet] = createSprite("Bullet.png");
 
   mSpriteMap[Textures::Tombstone] = createSprite("Tombstone.png");
+
+  // Floors
+  mSpriteMap[Textures::FloorWhole] = createSprite("fantasy-tileset.png");
+  mSpriteMap[Textures::FloorCracked] = createSprite("fantasy-tileset.png");
+  mSpriteMap[Textures::FloorSpikes] = createSprite("fantasy-tileset.png");
 }
 
 std::pair<sf::Sprite, std::shared_ptr<sf::Texture>> SpriteManager::createSprite(std::string filename) {

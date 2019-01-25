@@ -5,7 +5,7 @@
 #include "../Components/ComponentManager.h"
 #include "../../Common/Trace.h"
 
-#define MAX_NUMBER_OF_ENTITIES 512
+#define MAX_NUMBER_OF_ENTITIES 2000
 struct Entity {
   int id;
 };
