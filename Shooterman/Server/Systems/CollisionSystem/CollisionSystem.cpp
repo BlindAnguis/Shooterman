@@ -92,7 +92,7 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
       CollisionComponent* affectedCollideeCollisionComponent = mCollisionComponentManager->getComponent(affectedCollideeEntityId);
 
       // If collision with another entity
-      if (causingColliderEntityId != affectedCollideeEntityId && Collision::BoundingBoxTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
+      if (causingColliderEntityId != affectedCollideeEntityId && Collision::PixelPerfectTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
         //TRACE_INFO("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntityId);
 
         handleCollision(causingColliderEntityId, causingColliderMovingComponent, affectedCollideeEntityId, affectedCollideeMovingComponent);

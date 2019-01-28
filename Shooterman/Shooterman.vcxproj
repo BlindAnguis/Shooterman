@@ -178,6 +178,8 @@
     <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Client\GUI\DebugMenu\DebugMenu.cpp" />
+    <ClCompile Include="Server\EntityCreator\EntityCreator.cpp" />
+    <ClCompile Include="Server\MapCreator\MapCreator.cpp" />
     <ClCompile Include="Server\Systems\GridSystem\GridSystem.cpp" />
     <ClCompile Include="Server\Player.cpp" />
     <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
@@ -238,6 +240,8 @@
     <ClInclude Include="Common\Trace.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
     <ClInclude Include="Client\GUI\DebugMenu\DebugMenu.h" />
+    <ClInclude Include="Server\EntityCreator\EntityCreator.h" />
+    <ClInclude Include="Server\MapCreator\MapCreator.h" />
     <ClInclude Include="Server\Systems\GridSystem\GridSystem.h" />
     <ClInclude Include="Server\Player.h" />
     <ClInclude Include="Server\Systems\HealthSystem\HealthSystem.h" />

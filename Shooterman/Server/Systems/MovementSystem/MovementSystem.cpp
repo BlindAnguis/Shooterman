@@ -8,6 +8,7 @@ MovementSystem::MovementSystem(
   ComponentManager<VelocityComponent>* velocityComponentManager,
   ComponentManager<RenderComponent>* renderComponentManager,
   ComponentManager<CollisionComponent>* collisionComponentManager,
+  ComponentManager<PlayerComponent>* playerComponentManager,
   CollisionSystem* collisionSystem,
   GridSystem* gridSystem,
   EntityManager* entityManager,
@@ -19,13 +20,15 @@ MovementSystem::MovementSystem(
   mCollisionSystem(collisionSystem),
   mGridSystem(gridSystem),
   mEntityManager(entityManager),
-  mAnimationComponentManager(animationComponentManager)
+  mAnimationComponentManager(animationComponentManager),
+  mPlayerComponentManager(playerComponentManager)
 {}
 
 MovementSystem::~MovementSystem() {}
 
 void MovementSystem::update(InputMessage inputMessage)
 {
+  //TRACE_INFO("Updating movement");
   std::uint32_t input = inputMessage.getKeyboardBitMask();
   sf::Vector2i mousePos = inputMessage.getMousePosition();
   //std::cout << "[SERVER: MOVEMENT_SYSTEM] update called with input: " << input << std::endl;
@@ -34,6 +37,7 @@ void MovementSystem::update(InputMessage inputMessage)
     VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
     AnimationComponent* animation = mAnimationComponentManager->getComponent(e->id);
     RenderComponent* spritePosition = mRenderComponentManager->getComponent(e->id);
+    auto player = mPlayerComponentManager->getComponent(e->id);
 
     // Calculate the angle between the sprite and the mouse
     float angle = atan2(spritePosition->sprite.getPosition().y - mousePos.y,
@@ -44,16 +48,19 @@ void MovementSystem::update(InputMessage inputMessage)
 
     if (angle >= 315 || angle < 45) {
       animation->currentAnimation = AnimationType::IdleUp;
-    } else if (angle >= 45 && angle < 135) {
+    }
+    else if (angle >= 45 && angle < 135) {
       animation->currentAnimation = AnimationType::IdleRight;
-    } else if (angle >= 135 && angle < 225) {
+    }
+    else if (angle >= 135 && angle < 225) {
       animation->currentAnimation = AnimationType::IdleDown;
-    } else if (angle >= 225 && angle < 315) {
+    }
+    else if (angle >= 225 && angle < 315) {
       animation->currentAnimation = AnimationType::IdleLeft;
     }
 
     bool velocityUpdated = false;
-    if (velocity) {
+    if (velocity && player->state != PlayerState::Attacking) {
       if (input & D_KEY) {
         velocityUpdated = true;
         velocity->currentVelocity.x += velocity->maxVelocity.x;
@@ -85,6 +92,19 @@ void MovementSystem::update(InputMessage inputMessage)
       }
       else if (animation->currentAnimation == AnimationType::IdleRight) {
         animation->currentAnimation = AnimationType::RunningRight;
+      }
+    } else if(player->state == PlayerState::Attacking) {
+      if (animation->currentAnimation == AnimationType::IdleUp) {
+        animation->currentAnimation = AnimationType::AttackingUp;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleDown) {
+        animation->currentAnimation = AnimationType::AttackingDown;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleLeft) {
+        animation->currentAnimation = AnimationType::AttackingLeft;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleRight) {
+        animation->currentAnimation = AnimationType::AttackingRight;
       }
     }
   }

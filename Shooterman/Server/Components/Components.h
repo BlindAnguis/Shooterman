@@ -16,13 +16,26 @@ enum class ComponentType {
   Animated,
 };
 
+enum class PlayerState {
+  Idle,
+  Running,
+  Attacking,
+  Dead
+};
+
+enum class PlayerClass {
+  Mage,
+  Knight,
+  Archer,
+  Spearman
+};
+
 struct PositionComponent {
   sf::Vector2f position;
 };
 
 struct RenderComponent {
   sf::Texture texture;
-  sf::Texture deathTexture;
   Textures textureId;
   sf::Sprite sprite;
   bool visible;
@@ -60,5 +73,11 @@ struct ClockComponent {
 };
 
 struct PlayerComponent {
-  // TODO: Add player info like currentScore, nrOfKills, noOfDeaths and so on.
+  PlayerState state;
+  PlayerClass playerClass;
+  int attackSpeed;
+  sf::Vector2i nextAttackMousePosition;
+  int nrOfKills;
+  int nrOfDeaths;
+  int score;
 };

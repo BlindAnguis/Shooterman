@@ -50,6 +50,8 @@
     <ClCompile Include="Server\Systems\GridSystem\GridSystem.cpp" />
     <ClCompile Include="Client\GUI\PauseMenu\PauseMenu.cpp" />
     <ClCompile Include="Common\Animation\Animation.cpp" />
+    <ClCompile Include="Server\EntityCreator\EntityCreator.cpp" />
+    <ClCompile Include="Server\MapCreator\MapCreator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -131,6 +133,8 @@
     <ClInclude Include="Client\GUI\PauseMenu\PauseMenu.h" />
     <ClInclude Include="Common\Animation\Animation.h" />
     <ClInclude Include="Common\AnimationType.h" />
+    <ClInclude Include="Server\EntityCreator\EntityCreator.h" />
+    <ClInclude Include="Server\MapCreator\MapCreator.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

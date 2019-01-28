@@ -11,6 +11,8 @@
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
+#include "../EntityCreator/EntityCreator.h"
+#include "../MapCreator/MapCreator.h"
 #include <vector>
 #include <SFML\Network.hpp>
 #include <array>
@@ -27,13 +29,6 @@ public:
   EntityManager* getEntityManager();
   // EntityFactory entityFactory;
   void createPlayers();
-  Entity* createPlayer(float xStartPos, float yStartPos, float xMaxVelocity, float yMaxVelocity, float maxHealth);
-  Entity* createHorizontalWall(float xPos, float yPos);
-  Entity* createVerticalWall(float xPos, float yPos);
-  Entity* createWholeFloor(float xPos, float yPos);
-  Entity* createCrackedFloor(float xPos, float yPos);
-  Entity* createFloorSpikes(float xPos, float yPos);
-  Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createMap();
   void setConnectedClients(std::shared_ptr<std::map<int, Player*>> connectedClients) {
     mConnectedClients = connectedClients; 
@@ -69,8 +64,8 @@ private:
   std::array<std::array<int, 32>, 32> mGameMap;
   std::array<sf::Texture*, 99> mTextures;
 
-  sf::Texture* loadTexture(std::string fileName);
   void destroyEntity(int entityId);
-  float x = 100;
+  EntityCreator mEntityCreator;
+  MapCreator mMapCreator;
 };
 

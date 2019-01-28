@@ -16,6 +16,7 @@ public:
     ComponentManager<VelocityComponent>* velocityComponentManager,
     ComponentManager<RenderComponent>* renderComponentManager,
     ComponentManager<CollisionComponent>* collisionComponentManager,
+    ComponentManager<PlayerComponent>* playerComponentManager,
     CollisionSystem* collisionSystem,
     GridSystem* gridSystem,
     EntityManager* entityManager,
@@ -33,6 +34,7 @@ private:
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<AnimationComponent>* mAnimationComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
+  ComponentManager<PlayerComponent>* mPlayerComponentManager;
   CollisionSystem* mCollisionSystem;
   GridSystem* mGridSystem;
   EntityManager* mEntityManager;

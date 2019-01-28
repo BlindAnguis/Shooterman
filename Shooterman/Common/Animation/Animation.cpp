@@ -2,11 +2,13 @@
 
 Animation::Animation(
   sf::Sprite& sprite,
-  bool playOnce
+  bool playOnce,
+  int entityId
 ) :
   mSprite(sprite),
   mPlayOnce(playOnce),
-  mHasBeenPlayedOnce(false)
+  mHasBeenPlayedOnce(false),
+  mEntityId(entityId)
 {
   mName = "COMMON: Animation";
 }
@@ -26,6 +28,10 @@ void Animation::play() {
       //TRACE_INFO("mCurrentAnimationFrameBefore: " << mCurrentAnimationFrame);
       mSprite.setTextureRect(mAnimationFrames.at(mCurrentAnimationFrame).animationFrame);
 
+      if (mAttackCallback != nullptr && mCurrentAnimationFrame == 3) {
+        mAttackCallback(mEntityId);
+      }
+
       if (mCurrentAnimationFrame >= mAnimationFrames.size() - 1) {
         mCurrentAnimationFrame = 0;
         mHasBeenPlayedOnce = true;
@@ -37,5 +43,5 @@ void Animation::play() {
       //TRACE_INFO("mCurrentAnimationFrameAfter: " << mCurrentAnimationFrame);
       mAnimationTime.restart();
     }
-  } 
+  }
 }

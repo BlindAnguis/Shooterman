@@ -3,7 +3,13 @@
 
 InputSystem::InputSystem() {}
 
-InputSystem::InputSystem(ComponentManager<HealthComponent>* healthComponentManager) : mHealthComponentManager(healthComponentManager) {
+InputSystem::InputSystem(
+  ComponentManager<HealthComponent>* healthComponentManager,
+  ComponentManager<PlayerComponent>* playerComponentManager)
+  :
+  mHealthComponentManager(healthComponentManager),
+  mPlayerComponentManager(playerComponentManager)
+{
   //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
   MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
   mCurrentGameState = GAME_STATE::LOBBY;
@@ -56,32 +62,36 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
 
   GAME_STATE gameState = gsm.getGameState();
   if (gameState != GAME_STATE::NO_STATE) {
-    TRACE_INFO("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
+    //TRACE_INFO("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
     mCurrentGameState = gameState;
   }
   return mCurrentGameState;
 }
 
 void InputSystem::handleInput() {
+  //TRACE_INFO("Handle input");
   std::queue<sf::Packet> inputMessagesQueue = getInput();
-
   while (!inputMessagesQueue.empty()) {
     InputMessage im(inputMessagesQueue.front());
     inputMessagesQueue.pop();
-
+    //TRACE_INFO("New input from queue");
     //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
 
     Entity* playerEntity = mPlayersMap->at(im.getId())->getEntity();
 
-    // Player is dead
+    // Ignore input while player is dead or attacking
     auto playerHealth = mHealthComponentManager->getComponent(playerEntity->id);
-    if (playerHealth && !playerHealth->isAlive) {
+    auto player = mPlayerComponentManager->getComponent(playerEntity->id);
+
+    if (playerHealth && !playerHealth->isAlive || player->state == PlayerState::Attacking) {
+      //TRACE_INFO("Player is already attacking - Ignore input");
       continue;
     }
 
     if (im.getKeyboardBitMask() & LEFT_MOUSE) {
-      //TRACE_INFO("Pressed Attack!");
+      //TRACE_INFO("Started a new attack!");
+      player->state = PlayerState::Attacking;
       mAttack(playerEntity->id, im.getKeyboardBitMask(), im.getMousePosition());
     }
 

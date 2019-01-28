@@ -28,7 +28,7 @@ public:
   }
   */
   InputSystem();
-  InputSystem(ComponentManager<HealthComponent>* healthComponentManager);
+  InputSystem(ComponentManager<HealthComponent>* healthComponentManager, ComponentManager<PlayerComponent>* playerComponentManager);
   ~InputSystem();
 	void handleInput();
   InputMessage getLatestInput();
@@ -36,4 +36,5 @@ public:
   void setAttackCallback(const std::function<void(int entityId, std::uint32_t input, sf::Vector2i mousePosition)>& attack) { mAttack = attack; }
   GAME_STATE getLatestGameStateMessage();
   ComponentManager<HealthComponent>* mHealthComponentManager;
+  ComponentManager<PlayerComponent>* mPlayerComponentManager;
 };

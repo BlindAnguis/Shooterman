@@ -6,6 +6,7 @@ SpriteManager::~SpriteManager() { }
 
 void SpriteManager::loadSprites() {
 
+  // Characters
   mSpriteMap[Textures::CharacterBandana] = createSprite("CharacterBandana1.png");
   mSpriteMap[Textures::CharacterChainHat] = createSprite("CharacterChainHat.png");
   mSpriteMap[Textures::CharacterChainHood] = createSprite("CharacterChainHood.png");
@@ -13,18 +14,24 @@ void SpriteManager::loadSprites() {
   mSpriteMap[Textures::CharacterGoldenHelmet] = createSprite("CharacterGoldenHelmet.png");
   mSpriteMap[Textures::CharacterLeatherCap] = createSprite("CharacterLeatherCap.png");
   mSpriteMap[Textures::CharacterMetalHelmet] = createSprite("CharacterMetalHelmet.png");
+  mSpriteMap[Textures::CharacterMage] = createSprite("mage.png");
+  mSpriteMap[Textures::CharacterKnight] = createSprite("knight.png");
+  mSpriteMap[Textures::CharacterSpearman] = createSprite("spearman.png");
   
+  // Walls
   mSpriteMap[Textures::HorizontalWall1] = createSprite("wall1.png");
   mSpriteMap[Textures::VerticalWall1] = createSprite("verticalWall1.png");
 
-  mSpriteMap[Textures::Bullet] = createSprite("Bullet.png");
-
-  mSpriteMap[Textures::Tombstone] = createSprite("Tombstone.png");
+  // Ammo
+  mSpriteMap[Textures::Bullet] = createSprite("waterSpell.png");
 
   // Floors
   mSpriteMap[Textures::FloorWhole] = createSprite("fantasy-tileset.png");
   mSpriteMap[Textures::FloorCracked] = createSprite("fantasy-tileset.png");
   mSpriteMap[Textures::FloorSpikes] = createSprite("fantasy-tileset.png");
+
+  // Other
+  mSpriteMap[Textures::Tombstone] = createSprite("Tombstone.png");
 }
 
 std::pair<sf::Sprite, std::shared_ptr<sf::Texture>> SpriteManager::createSprite(std::string filename) {
