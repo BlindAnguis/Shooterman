@@ -11,7 +11,10 @@ PauseMenu::PauseMenu() {
     mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Leave Game", 250, 260, GAME_STATE::MAIN_MENU));
     mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Options", 250, 320, GAME_STATE::OPTIONS));
     mComponentList.push_back(GUIComponentBuilder::createCustomActionButton("Exit Game", 250, 380, []() {
-        sf::Packet shutdownMessage;
+		GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+		MessageHandler::get().pushGameStateMessage(gsm.pack());
+		sf::sleep(sf::milliseconds(100));
+		sf::Packet shutdownMessage;
         shutdownMessage << SHUT_DOWN;
         MessageHandler::get().pushSystemMessage(shutdownMessage);
     }));
