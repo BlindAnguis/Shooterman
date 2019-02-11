@@ -49,6 +49,7 @@ private:
   bool mLeftButtonAlreadyPressed;
   std::map<GAME_STATE, MenuBase*> mMenuMap;
   MenuBase* mDebugMenu;
+  sf::Clock mRenderClock;
 
   void init();
   void render();

@@ -52,6 +52,7 @@ void Gui::init() {
 
 void Gui::render() {
   while (mWindow != nullptr && mWindow->isOpen()) {
+    mRenderClock.restart();
     handleWindowEvents();
     
     bool renderNeeded = false;
@@ -61,11 +62,16 @@ void Gui::render() {
       mWindow->display();
     }
 
-    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
-
     handleGameStateMessages();
     handleSystemMessages();
     handleDebugMessages();
+
+    auto currentFrameLength = mRenderClock.getElapsedTime().asMilliseconds();
+    if (currentFrameLength < FRAME_LENGTH_IN_MS) {
+      sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS - currentFrameLength));
+    } else {
+      // No need to sleep, frame took to long
+    }
   }
   mWindowOpen = false;
 }

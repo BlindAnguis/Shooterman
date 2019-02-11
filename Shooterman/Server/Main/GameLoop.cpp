@@ -25,7 +25,7 @@ void GameLoop::start() {
 void GameLoop::stop() {
   TRACE_INFO("Exit Server");
   
-  mNetworkSystem.shutDown();
+  mNetworkSystem->shutDown();
   mRunning = false;
   mGameLoopThread->join();
   delete mGameLoopThread;
@@ -34,6 +34,7 @@ void GameLoop::stop() {
 }
 
 void GameLoop::gameLoop() {
+  mNetworkSystem = std::make_shared<NetworkSystem>();
   GAME_STATE state;
   mRunning = true;
   TRACE_INFO("Gameloop started");
@@ -103,7 +104,7 @@ void GameLoop::gameLoop() {
   };
 
   std::array<std::array<int, 16>, 16> gameMap3 = {};
-  Engine world = Engine(gameMap1);
+  Engine world = Engine(gameMap1, mNetworkSystem);
   //world.createMap();
   /*Entity* player1 = world.createPlayer(50, 50, 5, 5, 100);
   Entity* player2 = world.createPlayer(200, 200, -2, -2, 100);*/
@@ -113,7 +114,7 @@ void GameLoop::gameLoop() {
   std::list<sf::TcpSocket*> clients;
   hostListener.startListening();
   sf::Clock c;
-  mNetworkSystem.start();
+  mNetworkSystem->start();
   while (mRunning) {
     c.restart();
     state = world.getInputSystem()->getLatestGameStateMessage();
@@ -149,7 +150,7 @@ void GameLoop::gameLoop() {
           for (auto client : *world.getConnectedClients()) {
             if (client.second->getSocket()) {
               TRACE_INFO("Client: " << client.second->getSocket()->getRemoteAddress());
-              mNetworkSystem.addNewClientSocket(client.second->getSocket(), client.first);
+              mNetworkSystem->addNewClientSocket(client.second->getSocket(), client.first);
             }
           }
           world.createPlayers();

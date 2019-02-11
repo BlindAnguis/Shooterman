@@ -5,10 +5,12 @@ NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
   mDebugEnabled = true;
   mMapLock = new std::mutex();
+  mRenderLock = new std::mutex();
 }
 
 NetworkSystem::~NetworkSystem() {
   delete mMapLock;
+  delete mRenderLock;
 }
 
 void NetworkSystem::start() {
@@ -53,6 +55,14 @@ void NetworkSystem::startup() {
       }
     }
 
+    auto spriteData = getRenderData();
+    if (spriteData) {
+      for (auto clientSocket : mClientsSockets) {
+        sf::Packet tempPacket = spriteData->pack();
+        clientSocket.second->send(tempPacket);
+      }
+    }
+
     sf::sleep(sf::milliseconds(1));
   }
 
@@ -79,6 +89,18 @@ void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
 void NetworkSystem::removeClientSocket(int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
   mNewClientsSockets.erase(ID);
+}
+
+void NetworkSystem::setRenderData(std::shared_ptr<SpriteMessage> spriteMessage) {
+  std::lock_guard<std::mutex> lockGuard(*mRenderLock);
+  mSpriteMessage = spriteMessage;
+}
+
+std::shared_ptr<SpriteMessage> NetworkSystem::getRenderData() {
+  std::lock_guard<std::mutex> lockGuard(*mRenderLock);
+  auto spriteData = mSpriteMessage;
+  mSpriteMessage = nullptr;
+  return spriteData;
 }
 
 void NetworkSystem::updateInternalMap() {

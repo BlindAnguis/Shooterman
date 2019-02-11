@@ -8,6 +8,7 @@
 #include "../Systems/AnimationSystem/AnimationSystem.h"
 #include "../Systems/HealthSystem/HealthSystem.h"
 #include "../Systems/GridSystem/GridSystem.h"
+#include "../Systems/NetworkSystem/NetworkSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -20,8 +21,8 @@
 
 class Engine : Trace {
 public:
-  Engine();
-  Engine(std::array<std::array<int, 32>, 32> gameMap);
+  Engine(std::shared_ptr<NetworkSystem> networkSystem);
+  Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<NetworkSystem> networkSystem);
   ~Engine();
   void update();
   InputSystem* getInputSystem();
@@ -46,6 +47,7 @@ private:
   AnimationSystem mAnimationSystem;
   HealthSystem mHealthSystem;
   GridSystem mGridSystem;
+  std::shared_ptr<NetworkSystem> mNetworkSystem;
 
   // Managers
   EntityManager mEntityManager;

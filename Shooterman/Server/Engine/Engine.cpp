@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-Engine::Engine() :
+Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
   mInputSystem(InputSystem()),
   mEntityManager(EntityManager()),
   mRenderComponentManager(ComponentManager<RenderComponent>()),
@@ -15,10 +15,11 @@ Engine::Engine() :
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
   mPlayerComponentManager(ComponentManager<PlayerComponent>()),
+  mNetworkSystem(networkSystem),
   mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
-  mRenderSystem(RenderSystem(&mRenderComponentManager)),
+  mRenderSystem(RenderSystem(&mRenderComponentManager, mNetworkSystem)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
   mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem)),
@@ -30,7 +31,7 @@ Engine::Engine() :
   srand((int)time(0));
 }
 
-Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
+Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<NetworkSystem> networkSystem) :
   mEntityManager(EntityManager()),
   mRenderComponentManager(ComponentManager<RenderComponent>()),
   mVelocityComponentManager(ComponentManager<VelocityComponent>()),
@@ -40,11 +41,12 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   mDamageComponentManager(ComponentManager<DamageComponent>()),
   mClockComponentManager(ComponentManager<ClockComponent>()),
   mPlayerComponentManager(ComponentManager<PlayerComponent>()),
+  mNetworkSystem(networkSystem),
   mInputSystem(InputSystem(&mHealthComponentManager, &mPlayerComponentManager)),
   mGridSystem(GridSystem()),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
-  mRenderSystem(RenderSystem(&mRenderComponentManager)),
+  mRenderSystem(RenderSystem(&mRenderComponentManager, networkSystem)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
   mGameMap(gameMap),
@@ -145,7 +147,7 @@ void Engine::update() {
 
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
 
-  TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
+  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {

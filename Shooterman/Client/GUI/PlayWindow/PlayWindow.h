@@ -20,6 +20,8 @@ private:
   SpriteMessage mSpriteListMessage;
   bool mIsSubscribed;
   sf::Packet mLatestSpriteMessage;
+  std::vector<sf::Sprite> mCachedSprites;
 
   void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData);
+  void buildSpriteCache();
 };

@@ -77,15 +77,11 @@ Entity* MapCreator::createVerticalWall(float xPos, float yPos) {
   RenderComponent* rc = mRenderComponentManager->addComponent(verticalWall->id);
   rc->texture = *mTextures[static_cast<int>(Textures::VerticalWall1)];
   rc->visible = true;
-  rc->isDynamic = true;
+  rc->isDynamic = false;
   rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, (int)size, (int)size));
   rc->sprite.setOrigin(size / 2, size / 2);
   rc->sprite.setPosition(xPos + (size / 2), yPos + (size / 2));
   rc->textureId = Textures::VerticalWall1;
-
-  HealthComponent* hc = mHealthComponentManager->addComponent(verticalWall->id);
-  hc->health = 100;
-  hc->isAlive = true;
 
   mGridSystem->addEntity(verticalWall->id, (sf::Vector2i)rc->sprite.getPosition());
   return verticalWall;
