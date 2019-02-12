@@ -9,6 +9,7 @@
 #include "../Systems/HealthSystem/HealthSystem.h"
 #include "../Systems/GridSystem/GridSystem.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
+#include "../Systems/DeleteSystem/DeleteSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -47,6 +48,7 @@ private:
   AnimationSystem mAnimationSystem;
   HealthSystem mHealthSystem;
   GridSystem mGridSystem;
+  DeleteSystem mDeleteSystem;
   std::shared_ptr<NetworkSystem> mNetworkSystem;
 
   // Managers

@@ -5,11 +5,13 @@ CollisionSystem::CollisionSystem() {}
 CollisionSystem::CollisionSystem(
   ComponentManager<RenderComponent>* renderComponentManager,
   ComponentManager<VelocityComponent>* velocityComponentManager,
-  ComponentManager<CollisionComponent>* collisionComponentManager)
+  ComponentManager<CollisionComponent>* collisionComponentManager,
+  DeleteSystem* deleteSystem)
   :
   mRenderComponentManager(renderComponentManager),
   mVelocityComponentManager(velocityComponentManager),
-  mCollisionComponentManager(collisionComponentManager)
+  mCollisionComponentManager(collisionComponentManager),
+  mDeleteSystem(deleteSystem)
 {
   mName = "ENGINE: COLLISION_SYSTEM";
 }
@@ -105,6 +107,9 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
           mCollisions.emplace(causingColliderEntityId, affectedCollideeEntityId);
           causingColliderCollisionComponent->collided = true;
           causingColliderCollisionComponent->collidedList.push_back(affectedCollideeEntityId);
+          if (causingColliderCollisionComponent->destroyOnCollision) {
+            mDeleteSystem->addEntity(affectedCollideeEntityId);
+          }
 
           affectedCollideeCollisionComponent->collided = true;
           affectedCollideeCollisionComponent->collidedList.push_back(causingColliderEntityId);

@@ -16,8 +16,9 @@ Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
   mClockComponentManager(ComponentManager<ClockComponent>()),
   mPlayerComponentManager(ComponentManager<PlayerComponent>()),
   mNetworkSystem(networkSystem),
+  mDeleteSystem(DeleteSystem()),
   mGridSystem(GridSystem()),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
+  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mDeleteSystem)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager, mNetworkSystem)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
@@ -42,9 +43,10 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
   mClockComponentManager(ComponentManager<ClockComponent>()),
   mPlayerComponentManager(ComponentManager<PlayerComponent>()),
   mNetworkSystem(networkSystem),
+  mDeleteSystem(DeleteSystem()),
   mInputSystem(InputSystem(&mHealthComponentManager, &mPlayerComponentManager)),
   mGridSystem(GridSystem()),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager)),
+  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mDeleteSystem)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager, networkSystem)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
@@ -111,10 +113,13 @@ void Engine::update() {
   c.restart();
 
   // Remove dead entities
-  for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {
-    if (!mPlayerComponentManager.hasComponent(entity.first) && entity.second->collided && entity.second->destroyOnCollision) {
-      destroyEntity(entity.first);
-    }
+  //for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {
+  //  if (!mPlayerComponentManager.hasComponent(entity.first) && entity.second->collided && entity.second->destroyOnCollision) {
+  //    destroyEntity(entity.first);
+  //  }
+  //}
+  for (auto entityId : mDeleteSystem.getEntities()) {
+    destroyEntity(entityId);
   }
 
   for (auto entity : mHealthComponentManager.getAllEntitiesWithComponent()) {
@@ -147,7 +152,7 @@ void Engine::update() {
 
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
 
-  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
+  TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {
