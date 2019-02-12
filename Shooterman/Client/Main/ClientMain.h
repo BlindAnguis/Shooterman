@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <stdlib.h>
+#include <stack>
 #include <time.h>
 
 #include "Executor.h"
@@ -22,11 +23,12 @@ public:
 
 private:
   bool mRunning = true;
+  Interface gameStateInterface;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
   bool mServerStarted;
-  GAME_STATE mCurrentGameState;
   Executor mExecutor;
+  std::stack<GAME_STATE> mGameStateStack;
 
   void handleSystemMessages();
   void handleGameStateMessages();

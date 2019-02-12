@@ -10,10 +10,13 @@ Input::Input() {
   mInputThread = std::make_unique<std::thread>(&Input::readInput, this);
   TRACE_INFO("Starting module done");
 }
+Input::~Input() {
+  MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
+}
 
 void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
+  MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
   bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
   Interface* pc = new Interface();
   MessageHandler::get().publishInterface("ClientInputList", pc);
@@ -42,7 +45,7 @@ void Input::readInput() {
         recentlyChangedState = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PLAYING);
-          MessageHandler::get().pushGameStateMessage(gsm.pack());
+		  mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
           recentlyChangedState = true;
         }
         break;
@@ -78,7 +81,7 @@ void Input::readInput() {
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PAUSE);
-          MessageHandler::get().pushGameStateMessage(gsm.pack());
+          mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
           recentlyChangedState = true;
         }
         break;

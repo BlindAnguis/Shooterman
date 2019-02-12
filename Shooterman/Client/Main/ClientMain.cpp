@@ -3,9 +3,10 @@
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
 
+  MessageHandler::get().publishInterface("GameState", &gameStateInterface);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
-  Input input = Input();
+  MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
+  Input input;
   Gui gui = Gui();
   GameLoop server;
   NetworkHandler networkHandler;
@@ -14,12 +15,12 @@ ClientMain::ClientMain() {
 
   mServerStarted = false;
   bool networkHandlerStarted = false;
-  mCurrentGameState = GAME_STATE::MAIN_MENU;
+  mGameStateStack.push(GAME_STATE::MAIN_MENU);
   Interface pc;
   bool sentIpMessage = false;
 
   while (mRunning) {
-    switch (mCurrentGameState) {
+    switch (mGameStateStack.top()) {
       case GAME_STATE::MAIN_MENU: {
         // Stop Server
         if (mServerStarted) {
@@ -71,7 +72,7 @@ ClientMain::ClientMain() {
         break;
       }
       default:
-        TRACE_ERROR("Unknown game state: " << mCurrentGameState);
+        TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
     }
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleGameStateMessages();
@@ -81,6 +82,7 @@ ClientMain::ClientMain() {
   input.shutDown();
   gui.shutDown();
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
 }
 
 void ClientMain::handleSystemMessages() {
@@ -104,7 +106,7 @@ void ClientMain::handleSystemMessages() {
 }
 
 void ClientMain::handleGameStateMessages() {
-  std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
+  std::queue<sf::Packet> gameStateMessageQueue = gameStateInterface.getMessageQueue();
   sf::Packet gameStateMessage;
   while (!gameStateMessageQueue.empty()) {
     gameStateMessage = gameStateMessageQueue.front();
@@ -112,6 +114,17 @@ void ClientMain::handleGameStateMessages() {
 
     GameStateMessage gsm;
     gsm.unpack(gameStateMessage);
-    mCurrentGameState = gsm.getGameState();
+	if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
+	  mGameStateStack.pop();
+	}
+	else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
+		mGameStateStack = std::stack<GAME_STATE>();
+		mGameStateStack.push(GAME_STATE::MAIN_MENU);
+	} 
+	else {
+	  mGameStateStack.push(gsm.getGameState());
+	}
+	gsm = GameStateMessage(mGameStateStack.top());
+	gameStateInterface.pushMessage(gsm.pack());
   }
 }

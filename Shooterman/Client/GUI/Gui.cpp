@@ -9,7 +9,7 @@ Gui::Gui() {
 
 void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeToGameStateMessages(&mGameStateMessageSubscriber);
+  MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
   mMouseInterface = new Interface();
   MessageHandler::get().publishInterface("MousePosition", mMouseInterface);
 
@@ -42,6 +42,7 @@ void Gui::init() {
   render();
 
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
   MessageHandler::get().unsubscribeAll(&mGameStateMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");

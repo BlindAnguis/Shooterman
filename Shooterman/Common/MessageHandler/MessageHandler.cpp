@@ -1,5 +1,5 @@
 #include "MessageHandler.h"
-
+/*
 // GAME STATE
 void MessageHandler::subscribeToGameStateMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
@@ -10,7 +10,7 @@ void MessageHandler::subscribeToGameStateMessages(Subscriber* newSubscriber) {
 
 void MessageHandler::unSubscribeToGameStateMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  for (auto it = mGameStateSubscriberList.begin(); it != mGameStateSubscriberList.end(); /**/) {
+  for (auto it = mGameStateSubscriberList.begin(); it != mGameStateSubscriberList.end(); ) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mGameStateSubscriberList.erase(it);
       TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to game state list");
@@ -26,7 +26,7 @@ void MessageHandler::pushGameStateMessage(sf::Packet message) {
     subscriber->sendMessage(message);
   }
 }
-
+*/
 // SYSTEM
 void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSystemSubscriberLock);
@@ -82,7 +82,6 @@ void MessageHandler::pushSoundMessage(sf::Packet message) {
 }
 
 void MessageHandler::unsubscribeAll(Subscriber* subscriber) {
-  unSubscribeToGameStateMessages(subscriber);
   unSubscribeToSystemMessages(subscriber);
   unSubscribeToSoundMessages(subscriber);
 }

@@ -19,11 +19,11 @@ public:
     static MessageHandler instance;
     return instance;
   }
-
+  /*
   void subscribeToGameStateMessages(Subscriber* newSubscriber);
   void unSubscribeToGameStateMessages(Subscriber* newSubscriber);
   void pushGameStateMessage(sf::Packet message);
-
+  */
   void subscribeToSystemMessages(Subscriber* newSubscriber);
   void unSubscribeToSystemMessages(Subscriber* newSubscriber);
   void pushSystemMessage(sf::Packet message);

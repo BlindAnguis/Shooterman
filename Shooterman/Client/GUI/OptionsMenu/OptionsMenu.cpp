@@ -7,7 +7,7 @@ OptionsMenu::OptionsMenu() {
   mDebugEnabled = true;
 
   mComponentList.push_back(GUIComponentBuilder::createTitle("Options", 250, 36));
-  mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380, GAME_STATE::MAIN_MENU));
+  mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380,GAME_STATE::PREVIOUS));
 }
 
 OptionsMenu::~OptionsMenu() { }

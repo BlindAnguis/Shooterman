@@ -11,7 +11,8 @@ InputSystem::InputSystem(
   mPlayerComponentManager(playerComponentManager)
 {
   //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
-  MessageHandler::get().subscribeToGameStateMessages(&mGameStateSubscriber);
+ 
+  MessageHandler::get().subscribeTo("GameState", &mGameStateSubscriber);
   mCurrentGameState = GAME_STATE::LOBBY;
   mName = "Server: INPUT_SYSTEM";
   mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
@@ -19,7 +20,7 @@ InputSystem::InputSystem(
 
 InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
-  MessageHandler::get().unsubscribeAll(&mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
 }
 
 std::queue<sf::Packet> InputSystem::getInput() {

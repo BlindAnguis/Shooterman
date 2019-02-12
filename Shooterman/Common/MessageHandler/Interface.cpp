@@ -16,8 +16,13 @@ void Interface::subscribe(Subscriber* newSubscriber) {
 
 void Interface::unsubscribe(Subscriber* subscriber) {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
-  for (auto it = mSubscriberList.begin(); it != mSubscriberList.end(); /**/) {
-    if ((*it)->getId() == subscriber->getId()) {
+  for (auto it = mSubscriberList.begin(); it != mSubscriberList.end();) {
+	if ((*it) == NULL) {
+		it = mSubscriberList.erase(it);
+		TRACE_WARNING("Erased subscription for GameState that was supposed to be unsubscribed.");
+	}
+	//nullcheck, if null someone forgot to remove its subsciption. Remove it and add TRACE informing about this.
+	if ((*it)->getId() == subscriber->getId()) {
       it = mSubscriberList.erase(it);
       TRACE_INFO("Removed subscriber (" << subscriber->getId() << ") from " << mName);
     } else {

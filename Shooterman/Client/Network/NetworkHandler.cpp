@@ -15,6 +15,8 @@ void NetworkHandler::startup() {
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }  
+  Subscriber gameStateSubscriber;
+  MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
   AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
   TRACE_DEBUG("Trying to subscribe to ClientIpList");
@@ -39,7 +41,7 @@ void NetworkHandler::startup() {
   if (ID != IP_MESSAGE) {
     TRACE_ERROR("Received unexpected message with ID: " << ID);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-    MessageHandler::get().pushGameStateMessage(gsm.pack());
+	gameStateSubscriber.reverseSendMessage(gsm.pack());
     return;
   }
 
@@ -55,7 +57,7 @@ void NetworkHandler::startup() {
   if (connected != sf::Socket::Status::Done) {
     TRACE_INFO("Connection failed! " << connected);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-    MessageHandler::get().pushGameStateMessage(gsm.pack());
+	gameStateSubscriber.reverseSendMessage(gsm.pack());
     return;
   }
 
@@ -103,6 +105,7 @@ void NetworkHandler::startup() {
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
+  MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
 }
 
 void NetworkHandler::shutDown() {

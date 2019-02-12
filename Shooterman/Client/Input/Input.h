@@ -18,7 +18,7 @@
 class Input : Trace {
 public:
 	Input();
-
+  ~Input();
   void shutDown();
 
 private:

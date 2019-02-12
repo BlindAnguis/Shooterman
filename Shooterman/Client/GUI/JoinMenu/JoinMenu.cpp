@@ -16,7 +16,11 @@ JoinMenu::JoinMenu() {
     mPc.pushMessage(ipm.pack());
 
     GameStateMessage gsm(GAME_STATE::PLAYING);
-    MessageHandler::get().pushGameStateMessage(gsm.pack());
+    Subscriber gameStateSubscriber;
+    MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
+    gameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
+
   }));
 
   mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380, GAME_STATE::MAIN_MENU));

@@ -127,7 +127,10 @@ public:
     GUIComponentBuilder builder;
     auto callback = [gameState]() {
       GameStateMessage gsm(gameState);
-      MessageHandler::get().pushGameStateMessage(gsm.pack());
+    Subscriber gameStateSubscriber;
+    MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
+    gameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
     };
     return builder.setText(textString)->setTextHighlightColor(sf::Color(0, 120, 0))->setXPosition(xPosition)->setYPosition(yPosition)->setCallback(callback)->build();
   }
