@@ -1,32 +1,5 @@
 #include "MessageHandler.h"
-/*
-// GAME STATE
-void MessageHandler::subscribeToGameStateMessages(Subscriber* newSubscriber) {
-  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  tryToGiveId(newSubscriber);
-  mGameStateSubscriberList.push_back(newSubscriber);
-  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to game state list");
-}
 
-void MessageHandler::unSubscribeToGameStateMessages(Subscriber* newSubscriber) {
-  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  for (auto it = mGameStateSubscriberList.begin(); it != mGameStateSubscriberList.end(); ) {
-    if ((*it)->getId() == newSubscriber->getId()) {
-      it = mGameStateSubscriberList.erase(it);
-      TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to game state list");
-    } else {
-      ++it;
-    }
-  }
-}
-
-void MessageHandler::pushGameStateMessage(sf::Packet message) {
-  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  for (Subscriber* subscriber : mGameStateSubscriberList) {
-    subscriber->sendMessage(message);
-  }
-}
-*/
 // SYSTEM
 void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSystemSubscriberLock);
