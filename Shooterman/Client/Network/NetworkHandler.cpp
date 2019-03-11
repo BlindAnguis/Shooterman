@@ -41,7 +41,8 @@ void NetworkHandler::startup() {
   if (ID != IP_MESSAGE) {
     TRACE_ERROR("Received unexpected message with ID: " << ID);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-	gameStateSubscriber.reverseSendMessage(gsm.pack());
+	  gameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
     return;
   }
 
@@ -57,7 +58,8 @@ void NetworkHandler::startup() {
   if (connected != sf::Socket::Status::Done) {
     TRACE_INFO("Connection failed! " << connected);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-	gameStateSubscriber.reverseSendMessage(gsm.pack());
+	  gameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
     return;
   }
 
