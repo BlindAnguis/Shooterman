@@ -14,14 +14,6 @@ class EntityCreator : Trace
 public:
   EntityCreator(
     EntityManager *entityManager,
-    ComponentManager<RenderComponent> *renderComponentManager,
-    ComponentManager<VelocityComponent> *velocityComponentManager,
-    ComponentManager<CollisionComponent> *collisionComponentManager,
-    ComponentManager<AnimationComponent> *animationComponentManager,
-    ComponentManager<HealthComponent> *healthComponentManager,
-    ComponentManager<ClockComponent> *clockComponentManager,
-    ComponentManager<PlayerComponent> *playerComponentManager,
-    ComponentManager<DamageComponent> *damageComponentManager,
     GridSystem *gridSystem,
     DeleteSystem *deleteSystem
   );

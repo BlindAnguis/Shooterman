@@ -11,10 +11,7 @@ class CollisionSystem : Trace
 {
 public:
   CollisionSystem();
-  CollisionSystem(ComponentManager<RenderComponent>* renderComponentManager, 
-                  ComponentManager<VelocityComponent>* velocityComponentManager,
-                  ComponentManager<CollisionComponent>* collisionComponentManager,
-                  DeleteSystem* deleteSystem);
+  CollisionSystem(DeleteSystem* deleteSystem);
   ~CollisionSystem();
   void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem);
   void resetCollisionInformation();

@@ -5,6 +5,11 @@
 template <typename Component>
 class ComponentManager {
 public:
+  static ComponentManager& get() {
+    static ComponentManager instance;
+    return instance;
+  }
+
   std::vector<Component*> getAllComponents() {
     std::vector<Component*> components;
     for (auto entry : mComponents) {
@@ -42,4 +47,6 @@ public:
 
 private:
   std::map<int, Component*> mComponents;
+
+  ComponentManager<Component>() {}
 };

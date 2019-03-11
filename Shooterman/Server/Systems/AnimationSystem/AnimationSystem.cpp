@@ -1,17 +1,10 @@
 #include "AnimationSystem.h"
 
-AnimationSystem::AnimationSystem() {}
-
-AnimationSystem::AnimationSystem(
-  ComponentManager<AnimationComponent>* animationComponentManager,
-  ComponentManager<VelocityComponent>* velocityComponentManager,
-  ComponentManager<RenderComponent>* renderComponentManager,
-  ComponentManager<HealthComponent>* healthComponentManager
-) :
-  mAnimationComponentManager(animationComponentManager),
-  mVelocityComponentManager(velocityComponentManager),
-  mRenderComponentManager(renderComponentManager),
-  mHealthComponentManager(healthComponentManager)
+AnimationSystem::AnimationSystem() :
+  mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get())
 {
   mName = "SERVER: ANIMATION_SYSTEM";
 }

@@ -1,11 +1,11 @@
 #include "RenderSystem.h"
 
-RenderSystem::RenderSystem() {
+RenderSystem::RenderSystem() : mRenderComponentManager(&ComponentManager<RenderComponent>::get()) {
   mName = "SERVER: RENDER_SYSTEM";
 }
 
-RenderSystem::RenderSystem(ComponentManager<RenderComponent>* renderComponentManager, std::shared_ptr<NetworkSystem> networkSystem)
-  : mRenderComponentManager(renderComponentManager), mNetworkSystem(networkSystem) {
+RenderSystem::RenderSystem(std::shared_ptr<NetworkSystem> networkSystem)
+  : mRenderComponentManager(&ComponentManager<RenderComponent>::get()), mNetworkSystem(networkSystem) {
   mName = "SERVER: RENDER_SYSTEM";
 }
 

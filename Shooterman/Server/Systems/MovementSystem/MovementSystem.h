@@ -13,14 +13,9 @@ class MovementSystem : public ObserverIf
 public:
   MovementSystem();
   MovementSystem(
-    ComponentManager<VelocityComponent>* velocityComponentManager,
-    ComponentManager<RenderComponent>* renderComponentManager,
-    ComponentManager<CollisionComponent>* collisionComponentManager,
-    ComponentManager<PlayerComponent>* playerComponentManager,
     CollisionSystem* collisionSystem,
     GridSystem* gridSystem,
-    EntityManager* entityManager,
-    ComponentManager<AnimationComponent>* animationComponentManager
+    EntityManager* entityManager
   );
   ~MovementSystem();
   void update(InputMessage inputMessage);

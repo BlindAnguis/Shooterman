@@ -7,26 +7,18 @@
 
 EntityCreator::EntityCreator(
   EntityManager *entityManager,
-  ComponentManager<RenderComponent> *renderComponentManager,
-  ComponentManager<VelocityComponent> *velocityComponentManager,
-  ComponentManager<CollisionComponent> *collisionComponentManager,
-  ComponentManager<AnimationComponent> *animationComponentManager,
-  ComponentManager<HealthComponent> *healthComponentManager,
-  ComponentManager<ClockComponent> *clockComponentManager,
-  ComponentManager<PlayerComponent> *playerComponentManager,
-  ComponentManager<DamageComponent> *damageComponentManager,
   GridSystem *gridSystem,
   DeleteSystem *deleteSystem
 ) :
   mEntityManager(entityManager),
-  mRenderComponentManager(renderComponentManager),
-  mVelocityComponentManager(velocityComponentManager),
-  mCollisionComponentManager(collisionComponentManager),
-  mAnimationComponentManager(animationComponentManager),
-  mHealthComponentManager(healthComponentManager),
-  mClockComponentManager(clockComponentManager),
-  mPlayerComponentManager(playerComponentManager),
-  mDamageComponentManager(damageComponentManager),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
+  mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
+  mClockComponentManager(&ComponentManager<ClockComponent>::get()),
+  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
+  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
   mGridSystem(gridSystem),
   mDeleteSystem(deleteSystem)
 {

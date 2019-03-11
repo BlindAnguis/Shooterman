@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
 #include "../../../Common/Trace.h"
@@ -8,10 +9,6 @@ class AnimationSystem : Trace
 {
 public:
   AnimationSystem();
-  AnimationSystem(ComponentManager<AnimationComponent>* animationComponentManager, 
-                  ComponentManager<VelocityComponent>* velocityComponentManager,
-                  ComponentManager<RenderComponent>* renderComponentManager,
-                  ComponentManager<HealthComponent>* healthComponentManager);
   ~AnimationSystem();
   void update();
 private:

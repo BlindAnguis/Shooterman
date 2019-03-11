@@ -3,17 +3,13 @@
 
 MapCreator::MapCreator(
   EntityManager *entityManager,
-  ComponentManager<RenderComponent> *renderComponentManager,
-  ComponentManager<CollisionComponent> *collisionComponentManager,
-  ComponentManager<HealthComponent> *healthComponentManager,
-  ComponentManager<DamageComponent> *damageComponentManager,
   GridSystem *gridSystem
 ) :
   mEntityManager(entityManager),
-  mRenderComponentManager(renderComponentManager),
-  mCollisionComponentManager(collisionComponentManager),
-  mHealthComponentManager(healthComponentManager),
-  mDamageComponentManager(damageComponentManager),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
+  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
   mGridSystem(gridSystem)
 {
   mTextures[static_cast<int>(Textures::HorizontalWall1)] = loadTexture("wall1.png");

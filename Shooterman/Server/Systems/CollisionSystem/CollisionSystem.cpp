@@ -1,16 +1,15 @@
 #include "CollisionSystem.h"
 
-CollisionSystem::CollisionSystem() {}
+CollisionSystem::CollisionSystem() :
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()) {}
 
-CollisionSystem::CollisionSystem(
-  ComponentManager<RenderComponent>* renderComponentManager,
-  ComponentManager<VelocityComponent>* velocityComponentManager,
-  ComponentManager<CollisionComponent>* collisionComponentManager,
-  DeleteSystem* deleteSystem)
+CollisionSystem::CollisionSystem(DeleteSystem* deleteSystem)
   :
-  mRenderComponentManager(renderComponentManager),
-  mVelocityComponentManager(velocityComponentManager),
-  mCollisionComponentManager(collisionComponentManager),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
   mDeleteSystem(deleteSystem)
 {
   mName = "ENGINE: COLLISION_SYSTEM";

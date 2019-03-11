@@ -1,14 +1,10 @@
 #include "InputSystem.h"
 #include <stdio.h>
 
-InputSystem::InputSystem() {}
-
-InputSystem::InputSystem(
-  ComponentManager<HealthComponent>* healthComponentManager,
-  ComponentManager<PlayerComponent>* playerComponentManager)
+InputSystem::InputSystem()
   :
-  mHealthComponentManager(healthComponentManager),
-  mPlayerComponentManager(playerComponentManager)
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
+  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get())
 {
   //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
  
@@ -82,8 +78,8 @@ void InputSystem::handleInput() {
     Entity* playerEntity = mPlayersMap->at(im.getId())->getEntity();
 
     // Ignore input while player is dead or attacking
-    auto playerHealth = mHealthComponentManager->getComponent(playerEntity->id);
-    auto player = mPlayerComponentManager->getComponent(playerEntity->id);
+    auto playerHealth = ComponentManager<HealthComponent>::get().getComponent(playerEntity->id);
+    auto player = ComponentManager<PlayerComponent>::get().getComponent(playerEntity->id);
 
     if (playerHealth && !playerHealth->isAlive || player->state == PlayerState::Attacking) {
       //TRACE_INFO("Player is already attacking - Ignore input");

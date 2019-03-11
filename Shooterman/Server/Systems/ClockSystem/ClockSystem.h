@@ -7,7 +7,6 @@
 class ClockSystem : public Trace {
 public:
   ClockSystem();
-  ClockSystem(ComponentManager<ClockComponent>* clockComponentManager);
   ~ClockSystem();
 
   void update();

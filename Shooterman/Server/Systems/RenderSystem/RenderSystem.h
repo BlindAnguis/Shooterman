@@ -15,7 +15,7 @@
 class RenderSystem : Trace {
 public:
   RenderSystem();
-  RenderSystem(ComponentManager<RenderComponent>* renderComponentManager, std::shared_ptr<NetworkSystem> networkSystem);
+  RenderSystem(std::shared_ptr<NetworkSystem> networkSystem);
   ~RenderSystem();
   void render(std::shared_ptr<std::map<int, Player*>> connectedClients);
 

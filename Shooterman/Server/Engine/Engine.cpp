@@ -7,25 +7,25 @@
 Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
   mInputSystem(InputSystem()),
   mEntityManager(EntityManager()),
-  mRenderComponentManager(ComponentManager<RenderComponent>()),
-  mVelocityComponentManager(ComponentManager<VelocityComponent>()),
-  mCollisionComponentManager(ComponentManager<CollisionComponent>()),
-  mAnimationComponentManager(ComponentManager<AnimationComponent>()),
-  mHealthComponentManager(ComponentManager<HealthComponent>()),
-  mDamageComponentManager(ComponentManager<DamageComponent>()),
-  mClockComponentManager(ComponentManager<ClockComponent>()),
-  mPlayerComponentManager(ComponentManager<PlayerComponent>()),
   mNetworkSystem(networkSystem),
   mDeleteSystem(DeleteSystem()),
   mGridSystem(GridSystem()),
-  mClockSystem(ClockSystem(&mClockComponentManager)),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mDeleteSystem)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
-  mRenderSystem(RenderSystem(&mRenderComponentManager, mNetworkSystem)),
-  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
-  mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
-  mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem, &mDeleteSystem)),
-  mMapCreator(MapCreator(&mEntityManager, &mRenderComponentManager, &mCollisionComponentManager, &mHealthComponentManager, &mDamageComponentManager, &mGridSystem))
+  mClockSystem(ClockSystem()),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
+  mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
+  mClockComponentManager(&ComponentManager<ClockComponent>::get()),
+  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
+  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mCollisionSystem(CollisionSystem(&mDeleteSystem)),
+  mMovementSystem(MovementSystem(&mCollisionSystem, &mGridSystem, &mEntityManager)),
+  mRenderSystem(RenderSystem(mNetworkSystem)),
+  mAnimationSystem(AnimationSystem()),
+  mHealthSystem(HealthSystem()),
+  mEntityCreator(EntityCreator(&mEntityManager, &mGridSystem, &mDeleteSystem)),
+  mMapCreator(MapCreator(&mEntityManager, &mGridSystem))
 {
   mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
@@ -35,33 +35,33 @@ Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
 
 Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<NetworkSystem> networkSystem) :
   mEntityManager(EntityManager()),
-  mRenderComponentManager(ComponentManager<RenderComponent>()),
-  mVelocityComponentManager(ComponentManager<VelocityComponent>()),
-  mCollisionComponentManager(ComponentManager<CollisionComponent>()),
-  mAnimationComponentManager(ComponentManager<AnimationComponent>()),
-  mHealthComponentManager(ComponentManager<HealthComponent>()),
-  mDamageComponentManager(ComponentManager<DamageComponent>()),
-  mClockComponentManager(ComponentManager<ClockComponent>()),
-  mPlayerComponentManager(ComponentManager<PlayerComponent>()),
   mNetworkSystem(networkSystem),
   mDeleteSystem(DeleteSystem()),
-  mInputSystem(InputSystem(&mHealthComponentManager, &mPlayerComponentManager)),
+  mInputSystem(InputSystem()),
   mGridSystem(GridSystem()),
-  mClockSystem(ClockSystem(&mClockComponentManager)),
-  mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mDeleteSystem)),
-  mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
-  mRenderSystem(RenderSystem(&mRenderComponentManager, networkSystem)),
-  mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
-  mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
+  mClockSystem(ClockSystem()),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
+  mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
+  mClockComponentManager(&ComponentManager<ClockComponent>::get()),
+  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
+  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mCollisionSystem(CollisionSystem(&mDeleteSystem)),
+  mMovementSystem(MovementSystem(&mCollisionSystem, &mGridSystem, &mEntityManager)),
+  mRenderSystem(RenderSystem(networkSystem)),
+  mAnimationSystem(AnimationSystem()),
+  mHealthSystem(HealthSystem()),
   mGameMap(gameMap),
-  mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem, &mDeleteSystem)),
-  mMapCreator(MapCreator(&mEntityManager, &mRenderComponentManager, &mCollisionComponentManager, &mHealthComponentManager, &mDamageComponentManager, &mGridSystem))
+  mEntityCreator(EntityCreator(&mEntityManager, &mGridSystem, &mDeleteSystem)),
+  mMapCreator(MapCreator(&mEntityManager, &mGridSystem))
 {
   mName = "SERVER: ENGINE";
   mInputSystem.attach(&mMovementSystem);
   mInputSystem.setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
-    auto player = mPlayerComponentManager.getComponent(entityId);
-    auto attackClock = mClockComponentManager.getComponent(entityId);
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    auto attackClock = mClockComponentManager->getComponent(entityId);
     if (attackClock->clock.getElapsedTime().asMilliseconds() >= player->attackSpeed) {
       //TRACE_INFO("Setting attack mouse info to, x: " << mousePosition.x << ", y: " << mousePosition.y);
       player->nextAttackMousePosition = mousePosition;
@@ -81,10 +81,10 @@ void Engine::update() {
   mCollisionSystem.resetCollisionInformation();
   sf::Int64 resetTime = c.getElapsedTime().asMicroseconds();
 
-  for (auto player : mPlayerComponentManager.getAllEntitiesWithComponent()) {
+  for (auto player : mPlayerComponentManager->getAllEntitiesWithComponent()) {
     if (player.second->state == PlayerState::Attacking) {
       //TRACE_INFO("Player is attacking");
-      auto animation = mAnimationComponentManager.getComponent(player.first);
+      auto animation = mAnimationComponentManager->getComponent(player.first);
       auto &currentAnimation = animation->animations.find(animation->currentAnimation)->second;
       if (currentAnimation.hasBeenPlayedOnce()) {
         //TRACE_INFO("Attack animation has been played, player state set to idle and animation is set to idleDown and animation is reset");
@@ -125,8 +125,8 @@ void Engine::update() {
     destroyEntity(entityId);
   }
 
-  for (auto entity : mHealthComponentManager.getAllEntitiesWithComponent()) {
-    if (!mPlayerComponentManager.hasComponent(entity.first) && !entity.second->isAlive) {
+  for (auto entity : mHealthComponentManager->getAllEntitiesWithComponent()) {
+    if (!mPlayerComponentManager->hasComponent(entity.first) && !entity.second->isAlive) {
       destroyEntity(entity.first);
     }
   }
@@ -139,14 +139,14 @@ void Engine::update() {
   }
   */
  
-  for (auto entity : mPlayerComponentManager.getAllEntitiesWithComponent()) {
-    if (!mHealthComponentManager.getComponent(entity.first)->isAlive) {
-      auto entityRenderComponent = mRenderComponentManager.getComponent(entity.first);
+  for (auto entity : mPlayerComponentManager->getAllEntitiesWithComponent()) {
+    if (!mHealthComponentManager->getComponent(entity.first)->isAlive) {
+      auto entityRenderComponent = mRenderComponentManager->getComponent(entity.first);
       mGridSystem.removeEntity(entity.first, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
-      mCollisionComponentManager.removeComponent(entity.first);
-      mVelocityComponentManager.removeComponent(entity.first);
-      mDamageComponentManager.removeComponent(entity.first);
-      mClockComponentManager.removeComponent(entity.first);
+      mCollisionComponentManager->removeComponent(entity.first);
+      mVelocityComponentManager->removeComponent(entity.first);
+      mDamageComponentManager->removeComponent(entity.first);
+      mClockComponentManager->removeComponent(entity.first);
     }
   }
 
@@ -200,15 +200,15 @@ void Engine::createMap() {
 }
 
 void Engine::destroyEntity(int entityId) {
-  auto entityRenderComponent = mRenderComponentManager.getComponent(entityId);
+  auto entityRenderComponent = mRenderComponentManager->getComponent(entityId);
   mGridSystem.removeEntity(entityId, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
-  mRenderComponentManager.removeComponent(entityId);
-  mCollisionComponentManager.removeComponent(entityId);
-  mVelocityComponentManager.removeComponent(entityId);
-  mAnimationComponentManager.removeComponent(entityId);
-  mHealthComponentManager.removeComponent(entityId);
-  mDamageComponentManager.removeComponent(entityId);
-  mClockComponentManager.removeComponent(entityId);
+  mRenderComponentManager->removeComponent(entityId);
+  mCollisionComponentManager->removeComponent(entityId);
+  mVelocityComponentManager->removeComponent(entityId);
+  mAnimationComponentManager->removeComponent(entityId);
+  mHealthComponentManager->removeComponent(entityId);
+  mDamageComponentManager->removeComponent(entityId);
+  mClockComponentManager->removeComponent(entityId);
   for (auto client : *mConnectedClients) {
     if (client.second->getEntity() && client.second->getEntity()->id == entityId) {
       client.second->setEntity(nullptr);

@@ -1,15 +1,9 @@
 #include "HealthSystem.h"
 
-HealthSystem::HealthSystem() {}
-
-HealthSystem::HealthSystem(
-  ComponentManager<HealthComponent>* healthComponentManager,
-  ComponentManager<DamageComponent>* damageComponentManager,
-  ComponentManager<CollisionComponent>* collisionComponentManager
-) :
-  mHealthComponentManager(healthComponentManager),
-  mDamageComponentManager(damageComponentManager),
-  mCollisionComponentManager(collisionComponentManager)
+HealthSystem::HealthSystem() :
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
+  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get())
 {
   mName = "SERVER: HEALTH_SYSTEM";
 }

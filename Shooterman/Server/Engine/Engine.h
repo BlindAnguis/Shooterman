@@ -55,15 +55,15 @@ private:
 
   // Managers
   EntityManager mEntityManager;
-  ComponentManager<PositionComponent> mPositionComponentManager;
-  ComponentManager<RenderComponent> mRenderComponentManager;
-  ComponentManager<VelocityComponent> mVelocityComponentManager;
-  ComponentManager<CollisionComponent> mCollisionComponentManager;
-  ComponentManager<AnimationComponent> mAnimationComponentManager;
-  ComponentManager<HealthComponent> mHealthComponentManager;
-  ComponentManager<DamageComponent> mDamageComponentManager;
-  ComponentManager<ClockComponent> mClockComponentManager;
-  ComponentManager<PlayerComponent> mPlayerComponentManager;
+
+  ComponentManager<PlayerComponent>* mPlayerComponentManager;
+  ComponentManager<ClockComponent>* mClockComponentManager;
+  ComponentManager<AnimationComponent>* mAnimationComponentManager;
+  ComponentManager<HealthComponent>* mHealthComponentManager;
+  ComponentManager<RenderComponent>* mRenderComponentManager;
+  ComponentManager<CollisionComponent>* mCollisionComponentManager;
+  ComponentManager<VelocityComponent>* mVelocityComponentManager;
+  ComponentManager<DamageComponent>* mDamageComponentManager;
 
   Subscriber mInputSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;

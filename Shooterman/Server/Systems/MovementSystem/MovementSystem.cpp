@@ -1,27 +1,26 @@
 #include "MovementSystem.h"
 #include "../../../Common/KeyBindings.h"
-#include <iostream>
 
-MovementSystem::MovementSystem() {}
+MovementSystem::MovementSystem() :
+mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
+mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
+mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()) {}
 
 MovementSystem::MovementSystem(
-  ComponentManager<VelocityComponent>* velocityComponentManager,
-  ComponentManager<RenderComponent>* renderComponentManager,
-  ComponentManager<CollisionComponent>* collisionComponentManager,
-  ComponentManager<PlayerComponent>* playerComponentManager,
   CollisionSystem* collisionSystem,
   GridSystem* gridSystem,
-  EntityManager* entityManager,
-  ComponentManager<AnimationComponent>* animationComponentManager
+  EntityManager* entityManager
 ) :
-  mVelocityComponentManager(velocityComponentManager),
-  mRenderComponentManager(renderComponentManager),
-  mCollisionComponentManager(collisionComponentManager),
+  mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
+  mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
   mCollisionSystem(collisionSystem),
   mGridSystem(gridSystem),
   mEntityManager(entityManager),
-  mAnimationComponentManager(animationComponentManager),
-  mPlayerComponentManager(playerComponentManager)
+  mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
+  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get())
 {}
 
 MovementSystem::~MovementSystem() {}

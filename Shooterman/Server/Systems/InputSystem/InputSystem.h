@@ -1,4 +1,5 @@
 #pragma once
+
 #include "../MovementSystem/MovementSystem.h"
 #include "../ObservableIf.h"
 #include "../../Player.h"
@@ -28,7 +29,6 @@ public:
   }
   */
   InputSystem();
-  InputSystem(ComponentManager<HealthComponent>* healthComponentManager, ComponentManager<PlayerComponent>* playerComponentManager);
   ~InputSystem();
 	void handleInput();
   InputMessage getLatestInput();

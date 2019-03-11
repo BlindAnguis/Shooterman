@@ -11,10 +11,6 @@ class MapCreator
 public:
   MapCreator(
     EntityManager *entityManager,
-    ComponentManager<RenderComponent> *renderComponentManager,
-    ComponentManager<CollisionComponent> *collisionComponentManager,
-    ComponentManager<HealthComponent> *healthComponentManager,
-    ComponentManager<DamageComponent> *damageComponentManager,
     GridSystem *gridSystem
   );
   ~MapCreator();
@@ -23,10 +19,10 @@ public:
 
 private:
   EntityManager *mEntityManager;
-  ComponentManager<RenderComponent> *mRenderComponentManager;
-  ComponentManager<CollisionComponent> *mCollisionComponentManager;
-  ComponentManager<HealthComponent> *mHealthComponentManager;
-  ComponentManager<DamageComponent> *mDamageComponentManager;
+  ComponentManager<RenderComponent>* mRenderComponentManager;
+  ComponentManager<CollisionComponent>* mCollisionComponentManager;
+  ComponentManager<HealthComponent>* mHealthComponentManager;
+  ComponentManager<DamageComponent>* mDamageComponentManager;
 
   GridSystem *mGridSystem;
 

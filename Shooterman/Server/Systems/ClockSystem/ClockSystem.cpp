@@ -1,8 +1,6 @@
 #include "ClockSystem.h"
 
-ClockSystem::ClockSystem() {}
-
-ClockSystem::ClockSystem(ComponentManager<ClockComponent>* clockComponentManager) : mClockComponentManager(clockComponentManager) {}
+ClockSystem::ClockSystem() : mClockComponentManager(&ComponentManager<ClockComponent>::get()) {}
 
 ClockSystem::~ClockSystem() {}
 
