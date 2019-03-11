@@ -18,12 +18,13 @@ Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
   mNetworkSystem(networkSystem),
   mDeleteSystem(DeleteSystem()),
   mGridSystem(GridSystem()),
+  mClockSystem(ClockSystem(&mClockComponentManager)),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mDeleteSystem)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager, mNetworkSystem)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
-  mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem)),
+  mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem, &mDeleteSystem)),
   mMapCreator(MapCreator(&mEntityManager, &mRenderComponentManager, &mCollisionComponentManager, &mHealthComponentManager, &mDamageComponentManager, &mGridSystem))
 {
   mName = "SERVER: ENGINE";
@@ -46,13 +47,14 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
   mDeleteSystem(DeleteSystem()),
   mInputSystem(InputSystem(&mHealthComponentManager, &mPlayerComponentManager)),
   mGridSystem(GridSystem()),
+  mClockSystem(ClockSystem(&mClockComponentManager)),
   mCollisionSystem(CollisionSystem(&mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mDeleteSystem)),
   mMovementSystem(MovementSystem(&mVelocityComponentManager, &mRenderComponentManager, &mCollisionComponentManager, &mPlayerComponentManager, &mCollisionSystem, &mGridSystem, &mEntityManager, &mAnimationComponentManager)),
   mRenderSystem(RenderSystem(&mRenderComponentManager, networkSystem)),
   mAnimationSystem(AnimationSystem(&mAnimationComponentManager, &mVelocityComponentManager, &mRenderComponentManager, &mHealthComponentManager)),
   mHealthSystem(HealthSystem(&mHealthComponentManager, &mDamageComponentManager, &mCollisionComponentManager)),
   mGameMap(gameMap),
-  mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem)),
+  mEntityCreator(EntityCreator(&mEntityManager, &mRenderComponentManager, &mVelocityComponentManager, &mCollisionComponentManager, &mAnimationComponentManager, &mHealthComponentManager, &mClockComponentManager, &mPlayerComponentManager, &mDamageComponentManager, &mGridSystem, &mDeleteSystem)),
   mMapCreator(MapCreator(&mEntityManager, &mRenderComponentManager, &mCollisionComponentManager, &mHealthComponentManager, &mDamageComponentManager, &mGridSystem))
 {
   mName = "SERVER: ENGINE";
@@ -111,6 +113,7 @@ void Engine::update() {
   mRenderSystem.render(mConnectedClients);
   sf::Int64 renderTime = c.getElapsedTime().asMicroseconds();
   c.restart();
+  mClockSystem.update();
 
   // Remove dead entities
   //for (auto entity : mCollisionComponentManager.getAllEntitiesWithComponent()) {

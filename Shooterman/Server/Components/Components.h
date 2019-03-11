@@ -70,6 +70,9 @@ struct DamageComponent {
 
 struct ClockComponent {
   sf::Clock clock;
+  int timeout = -1;
+  std::function<void()> timeoutCallback = []() {};
+
 };
 
 struct PlayerComponent {

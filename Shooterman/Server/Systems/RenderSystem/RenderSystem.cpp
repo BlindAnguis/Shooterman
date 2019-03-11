@@ -20,7 +20,7 @@ void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClien
   sf::Clock c;
   std::shared_ptr<SpriteMessage> sm = std::make_shared<SpriteMessage>();
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
-    if (entityWithRender.second->isDynamic) {
+    if (entityWithRender.second->isDynamic && entityWithRender.second->visible) {
       sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
 
       SpriteData data;

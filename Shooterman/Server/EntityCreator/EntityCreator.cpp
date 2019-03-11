@@ -15,7 +15,8 @@ EntityCreator::EntityCreator(
   ComponentManager<ClockComponent> *clockComponentManager,
   ComponentManager<PlayerComponent> *playerComponentManager,
   ComponentManager<DamageComponent> *damageComponentManager,
-  GridSystem *gridSystem
+  GridSystem *gridSystem,
+  DeleteSystem *deleteSystem
 ) :
   mEntityManager(entityManager),
   mRenderComponentManager(renderComponentManager),
@@ -26,7 +27,8 @@ EntityCreator::EntityCreator(
   mClockComponentManager(clockComponentManager),
   mPlayerComponentManager(playerComponentManager),
   mDamageComponentManager(damageComponentManager),
-  mGridSystem(gridSystem)
+  mGridSystem(gridSystem),
+  mDeleteSystem(deleteSystem)
 {
   mName = "SERVER: ENTITY_CREATOR";
   mTextures[static_cast<int>(Textures::CharacterBandana)] = loadTexture("CharacterBandana1.png");
@@ -40,6 +42,7 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight.png");
   mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
+  mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
 }
 
@@ -190,7 +193,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   return mage;
 }
 
-Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
+Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible) {
   //std::cout << "Creating bullet" << std::endl;
   auto playerShootClockComponent = mClockComponentManager->getComponent(entityId);
   auto player = mPlayerComponentManager->getComponent(entityId);
@@ -232,7 +235,7 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 
     RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
     rc->texture = *mTextures[static_cast<int>(Textures::Bullet)];
-    rc->visible = true;
+    rc->visible = visible;
     rc->isDynamic = true;
     rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
     rc->sprite.setOrigin(14, 10);
@@ -253,7 +256,68 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     }
 
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
-    //playerShootClockComponent->clock.restart();
+
+    return bullet;
+  }
+  return nullptr;
+}
+
+Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
+  auto playerAttackClockComponent = mClockComponentManager->getComponent(entityId);
+  auto player = mPlayerComponentManager->getComponent(entityId);
+
+  if (playerAttackClockComponent->clock.getElapsedTime() >= sf::milliseconds(player->attackSpeed)) {
+    auto playerPositionComponent = mRenderComponentManager->getComponent(entityId);
+    float originXPos = playerPositionComponent->sprite.getPosition().x;
+    float originYPos = playerPositionComponent->sprite.getPosition().y;
+
+    sf::Vector2f bulletVelocity((float)(mousePosition.x - originXPos), (float)(mousePosition.y - originYPos));
+
+    // Normalize velocity to avoid huge speeds, and multiply with 10 for extra speed
+    float divider = sqrt(bulletVelocity.x*bulletVelocity.x + bulletVelocity.y*bulletVelocity.y);
+    bulletVelocity.x = (bulletVelocity.x / divider) * 10;
+    bulletVelocity.y = (bulletVelocity.y / divider) * 10;
+
+    float angle = atan2(originYPos - mousePosition.y, originXPos - mousePosition.x) * (180 / 3.1415f) - 90; // Remove 90 degrees to compensate for rotation...
+
+    // Move origin position to avoid colliding with the player
+    originXPos += bulletVelocity.x * 4.5f;
+    originYPos += bulletVelocity.y * 4.5f;
+
+    Entity* bullet = mEntityManager->createEntity();
+
+    RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
+    rc->texture = *mTextures[static_cast<int>(Textures::SwordSlash)];
+    rc->visible = true;
+    rc->isDynamic = true;
+    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
+    rc->sprite.setOrigin(14, 10);
+    rc->sprite.setPosition(originXPos, originYPos);
+    rc->sprite.setRotation(angle);
+    rc->textureId = Textures::SwordSlash;
+
+    DamageComponent* dc = mDamageComponentManager->addComponent(bullet->id);
+    dc->damage = 50;
+
+    VelocityComponent* vc = mVelocityComponentManager->addComponent(bullet->id);
+    vc->currentVelocity.x = 0.0001f;
+    vc->currentVelocity.y = 0.0001f;
+    vc->maxVelocity.x = 0.0001f;
+    vc->maxVelocity.y = 0.0001f;
+    vc->moveOnce = false;
+
+    CollisionComponent* cc = mCollisionComponentManager->addComponent(bullet->id);
+    cc->collided = false;
+    cc->destroyOnCollision = false;
+
+    ClockComponent* clockComponent = mClockComponentManager->addComponent(bullet->id);
+    clockComponent->timeout = 100;
+    clockComponent->timeoutCallback = [this, bullet]() {
+      mDeleteSystem->addEntity(bullet->id);
+    };
+
+    mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
+
     return bullet;
   }
   return nullptr;
@@ -266,22 +330,35 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
   auto rc = mRenderComponentManager->getComponent(knight->id);
   auto ac = mAnimationComponentManager->getComponent(knight->id);
 
+  auto attackCallback = [this](int entityId) {
+    //TRACE_INFO("ATTACKING");
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    createMelee(entityId, 0, player->nextAttackMousePosition);
+  };
+
   Animation slashUpAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
     slashUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 12 + 14, 64, 50), 70 });
   }
+  slashUpAnimation.setAttackCallback(attackCallback);
+
   Animation slashLeftAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
     slashLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 13 + 14, 64, 50), 70 });
   }
+  slashLeftAnimation.setAttackCallback(attackCallback);
+
   Animation slashDownAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
     slashDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 14 + 14, 64, 50), 70 });
   }
+  slashDownAnimation.setAttackCallback(attackCallback);
+
   Animation slashRightAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
     slashRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 15 + 14, 64, 50), 70 });
   }
+  slashRightAnimation.setAttackCallback(attackCallback);
 
   ac->animations.emplace(AnimationType::AttackingUp, slashUpAnimation);
   ac->animations.emplace(AnimationType::AttackingDown, slashDownAnimation);

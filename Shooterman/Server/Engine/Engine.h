@@ -10,6 +10,7 @@
 #include "../Systems/GridSystem/GridSystem.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 #include "../Systems/DeleteSystem/DeleteSystem.h"
+#include "../Systems/ClockSystem/ClockSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -45,6 +46,7 @@ private:
   InputSystem mInputSystem;
   RenderSystem mRenderSystem;
   CollisionSystem mCollisionSystem;
+  ClockSystem mClockSystem;
   AnimationSystem mAnimationSystem;
   HealthSystem mHealthSystem;
   GridSystem mGridSystem;

@@ -53,6 +53,7 @@
     <ClCompile Include="Server\EntityCreator\EntityCreator.cpp" />
     <ClCompile Include="Server\MapCreator\MapCreator.cpp" />
     <ClCompile Include="Server\Systems\DeleteSystem\DeleteSystem.cpp" />
+    <ClCompile Include="Server\Systems\ClockSystem\ClockSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Server\EntityCreator\EntityCreator.h" />
     <ClInclude Include="Server\MapCreator\MapCreator.h" />
     <ClInclude Include="Server\Systems\DeleteSystem\DeleteSystem.h" />
+    <ClInclude Include="Server\Systems\ClockSystem\ClockSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

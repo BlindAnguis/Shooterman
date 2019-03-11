@@ -28,11 +28,13 @@ void HealthSystem::update()
       if (entityWithHealth.second->isAlive && collisionComponent && collisionComponent->collided) {
         //TRACE_INFO("Entity: " << entityWithHealth.first << " has health: " << entityWithHealth.second->health);
         //TRACE_INFO("Check if health should go down");
-        DamageComponent* collidingDamage = mDamageComponentManager->getComponent(collisionComponent->collidedList.front());
-        if (collidingDamage) {
-          entityWithHealth.second->health -= collidingDamage->damage;
-          if (entityWithHealth.second->health <= 0) {
-            entityWithHealth.second->isAlive = false;
+        for (auto collider : collisionComponent->collidedList) {
+          DamageComponent* collidingDamage = mDamageComponentManager->getComponent(collider);
+          if (collidingDamage) {
+            entityWithHealth.second->health -= collidingDamage->damage;
+            if (entityWithHealth.second->health <= 0) {
+              entityWithHealth.second->isAlive = false;
+            }
           }
         }
         //TRACE_INFO("Entity: " << entityWithHealth.first << " has new health: " << entityWithHealth.second->health);
