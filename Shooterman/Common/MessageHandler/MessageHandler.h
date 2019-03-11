@@ -22,8 +22,9 @@ public:
   /*
   void subscribeToGameStateMessages(Subscriber* newSubscriber);
   void unSubscribeToGameStateMessages(Subscriber* newSubscriber);
-  void pushGameStateMessage(sf::Packet message);
   */
+  void pushGameStateMessage(std::string name, sf::Packet message);
+
   void subscribeToSystemMessages(Subscriber* newSubscriber);
   void unSubscribeToSystemMessages(Subscriber* newSubscriber);
   void pushSystemMessage(sf::Packet message);

@@ -27,6 +27,14 @@ void MessageHandler::pushSystemMessage(sf::Packet message) {
   }
 }
 
+void MessageHandler::pushGameStateMessage(std::string name, sf::Packet message) {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
+  auto it = mPublishedComms.find(name);
+  if (it != mPublishedComms.end()) {
+    it->second->sendMessage(message);
+  }
+}
+
 // Sound LIST
 void MessageHandler::subscribeToSoundMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSoundSubscriberLock);

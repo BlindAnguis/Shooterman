@@ -45,7 +45,8 @@ void Input::readInput() {
         recentlyChangedState = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PLAYING);
-		  mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
+          
+		      MessageHandler::get().pushGameStateMessage("GameState", gsm.pack());
           recentlyChangedState = true;
         }
         break;
@@ -81,7 +82,7 @@ void Input::readInput() {
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PAUSE);
-          mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
+          MessageHandler::get().pushGameStateMessage("GameState", gsm.pack());
           recentlyChangedState = true;
         }
         break;
