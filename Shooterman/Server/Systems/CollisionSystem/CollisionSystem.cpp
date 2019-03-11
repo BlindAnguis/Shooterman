@@ -108,11 +108,14 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
           causingColliderCollisionComponent->collided = true;
           causingColliderCollisionComponent->collidedList.push_back(affectedCollideeEntityId);
           if (causingColliderCollisionComponent->destroyOnCollision) {
-            mDeleteSystem->addEntity(affectedCollideeEntityId);
+            mDeleteSystem->addEntity(causingColliderEntityId);
           }
 
           affectedCollideeCollisionComponent->collided = true;
           affectedCollideeCollisionComponent->collidedList.push_back(causingColliderEntityId);
+          if (affectedCollideeCollisionComponent->destroyOnCollision) {
+            mDeleteSystem->addEntity(affectedCollideeEntityId);
+          }
         }
 
         return; // Remove this to allow something to collide with several things at once;
