@@ -40,6 +40,8 @@ public:
   }
   std::shared_ptr<std::map<int, Player*>> getConnectedClients() { return mConnectedClients; }
 
+  void collectPlayerData();
+
 private:
   // Systems
   MovementSystem mMovementSystem;
@@ -65,7 +67,7 @@ private:
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<DamageComponent>* mDamageComponentManager;
 
-  Subscriber mInputSubscriber;
+  Subscriber mPlayerDataSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::array<std::array<int, 32>, 32> mGameMap;
   std::array<sf::Texture*, 99> mTextures;

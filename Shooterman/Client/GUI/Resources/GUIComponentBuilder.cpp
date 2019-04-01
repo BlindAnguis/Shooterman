@@ -68,3 +68,11 @@ void GUIComponent::setText(std::string newText) {
 void GUIComponent::setRenderBounds(bool renderBounds) {
   mRenderBounds = renderBounds;
 }
+
+int GUIComponent::getWidth() {
+  return (int)mComponentText.getLocalBounds().width;
+}
+
+int GUIComponent::getHeight() {
+  return (int)mComponentText.getLocalBounds().height;
+}

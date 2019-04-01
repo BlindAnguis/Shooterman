@@ -1,5 +1,7 @@
 #include "NetworkSystem.h"
 
+#include "../../../Common/MessageId.h"
+#include "../../../Common/Messages/PlayerDataMessage.h"
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
@@ -23,6 +25,7 @@ void NetworkSystem::startup() {
   mRunning = true;
   Interface inputListInterface;
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
+  MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   while (mRunning) {
@@ -58,15 +61,18 @@ void NetworkSystem::startup() {
     auto spriteData = getRenderData();
     if (spriteData) {
       for (auto clientSocket : mClientsSockets) {
-        sf::Packet tempPacket = spriteData->pack();
-        clientSocket.second->send(tempPacket);
+        sf::Packet spriteDataPacket = spriteData->pack();
+        clientSocket.second->send(spriteDataPacket);
       }
     }
+
+    handlePlayerData();
 
     sf::sleep(sf::milliseconds(1));
   }
 
   MessageHandler::get().unpublishInterface("ServerInputList");
+  MessageHandler::get().unpublishInterface("ServerPlayerData");
   for (auto client : mClientsSockets) {
     client.second->disconnect();
     delete client.second;
@@ -107,4 +113,31 @@ void NetworkSystem::updateInternalMap() {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
   mClientsSockets.clear();
   mClientsSockets.insert(mNewClientsSockets.begin(), mNewClientsSockets.end());
+}
+
+void NetworkSystem::handlePlayerData() {
+  auto playerDataMessages = mPlayerDataInterface.getMessageQueue();
+  while (playerDataMessages.size() > 0) {
+    auto playerDataPacket = playerDataMessages.front();
+    playerDataMessages.pop();
+
+    int id = -1;
+    playerDataPacket >> id;
+
+    switch (id) {
+    case PLAYER_DATA:
+    {
+      PlayerDataMessage pdm;
+      pdm.unpack(playerDataPacket);
+      int playerId = pdm.getPlayerId();
+
+      sf::Packet packet = pdm.pack();
+      mClientsSockets.at(playerId)->send(packet);
+    }
+      break;
+    default:
+      TRACE_ERROR("Received unknown message: " << id);
+      break;
+    }
+  }
 }

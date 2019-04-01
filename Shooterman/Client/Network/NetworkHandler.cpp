@@ -1,5 +1,7 @@
 #include "NetworkHandler.h"
 
+#include "../../Common/Messages/PlayerDataMessage.h"
+
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
   mDebugEnabled = true;
@@ -66,6 +68,8 @@ void NetworkHandler::startup() {
   TRACE_INFO("Connected!");
   Interface spriteListInterface;
   MessageHandler::get().publishInterface("ClientSpriteList", &spriteListInterface);
+  Interface playerDataInterface;
+  MessageHandler::get().publishInterface("ClientPlayerData", &playerDataInterface);
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
   soc.setBlocking(false);
   mRunning = true;
@@ -95,9 +99,12 @@ void NetworkHandler::startup() {
         SpriteCacheMessage scm;
         scm.unpack(packet);
         spriteListInterface.pushMessage(scm.pack());
+      } else if (id == PLAYER_DATA) {
+        PlayerDataMessage pdm;
+        pdm.unpack(packet);
+        playerDataInterface.pushMessage(pdm.pack());
       } else {
-        TRACE_WARNING("Packet not known: " << id);
-        break;
+        TRACE_ERROR("Packet not known: " << id);
       }
     }
     sf::sleep(sf::milliseconds(1));

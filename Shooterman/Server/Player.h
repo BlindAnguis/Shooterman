@@ -11,10 +11,15 @@ public:
 
   void setSocket(sf::TcpSocket* newSocket);
   sf::TcpSocket* getSocket();
+  
   void setEntity(Entity* newEntity);
   Entity* getEntity();
+
+  void setCurrentHealth(int currentHealth);
+  int getCurrentHealth();
 
 private:
   sf::TcpSocket* mSocket;
   Entity* mEntity;
+  int mCurrentHealth;
 };

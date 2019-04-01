@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <map>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
@@ -47,7 +48,7 @@ private:
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
-  std::map<GAME_STATE, MenuBase*> mMenuMap;
+  std::map<GAME_STATE, std::vector<MenuBase*>> mMenuMap;
   MenuBase* mDebugMenu;
   sf::Clock mRenderClock;
 

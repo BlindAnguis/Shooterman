@@ -34,9 +34,11 @@ private:
   std::map<int, sf::TcpSocket*> mClientsSockets;
   std::map<int, sf::TcpSocket*> mNewClientsSockets;
   std::shared_ptr<SpriteMessage> mSpriteMessage;
+  Interface mPlayerDataInterface;
 
   void startup();
   void updateInternalMap();
   std::shared_ptr<SpriteMessage> getRenderData();
+  void handlePlayerData();
 
 };

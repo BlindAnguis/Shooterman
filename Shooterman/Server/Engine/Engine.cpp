@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include "../../Common/Textures.h"
-
+#include "../../Common/Messages/PlayerDataMessage.h"
 #include <stdlib.h>
 #include <time.h>
 
@@ -155,7 +155,7 @@ void Engine::update() {
 
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
 
-  TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
+  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {
@@ -193,6 +193,8 @@ void Engine::createPlayers() {
     }
     xPos += 100;
   }
+
+  MessageHandler::get().subscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
 }
 
 void Engine::createMap() {
@@ -215,4 +217,22 @@ void Engine::destroyEntity(int entityId) {
     }
   }
   mEntityManager.destroyEntity(entityId);
+}
+
+void Engine::collectPlayerData() {
+  for (auto player : *mConnectedClients) {
+    auto healthComponent = mHealthComponentManager->get().getComponent(player.second->getEntity()->id);
+    
+    if (!healthComponent) {
+      TRACE_ERROR("Player: " << player.second->getEntity()->id << " have no healthComponent");
+      continue;
+    }
+
+    player.second->setCurrentHealth(healthComponent->health);
+
+    PlayerDataMessage pdm(player.first);
+    pdm.setCurrentHealth(healthComponent->health);
+
+    mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
+  }
 }

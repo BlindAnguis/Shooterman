@@ -157,6 +157,7 @@ void GameLoop::gameLoop() {
           world.createMap();
         }
         world.update();
+        world.collectPlayerData();
         break;
 
       case GAME_STATE::GAME_OVER:

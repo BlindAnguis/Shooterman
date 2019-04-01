@@ -18,6 +18,8 @@ public:
   std::string getText();
   void setText(std::string newText);
   void setRenderBounds(bool renderBounds);
+  int getWidth();
+  int getHeight();
 
 private:
   sf::Text mComponentText;

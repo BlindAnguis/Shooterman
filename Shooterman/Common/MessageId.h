@@ -6,13 +6,14 @@
 #define CHANGE_GAME_STATE 2
 #define ADD_DEBUG_BUTTON  3
 
-// Input messages
+// Client to Server
 #define INPUT_KEYS        100
 
-// Sprite list messages
+// Server to Client
 #define SPRITE_LIST_CACHE 200
 #define SPRITE_LIST       201
-
+#define SOUND_LIST        210
+#define PLAYER_DATA       220
 
 // Internal Client messages
 #define IP_MESSAGE        1000

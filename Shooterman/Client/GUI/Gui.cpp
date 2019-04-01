@@ -1,5 +1,7 @@
 #include "Gui.h"
 
+#include "Hud/Hud.h"
+
 Gui::Gui() {
   mName = "CLIENT: GUI";
   TRACE_INFO("Starting module...");
@@ -15,12 +17,12 @@ void Gui::init() {
 
   Interface pc;
 
-  mMenuMap.emplace(GAME_STATE::MAIN_MENU, new MainMenu());
-  mMenuMap.emplace(GAME_STATE::LOBBY, new LobbyMenu());
-  mMenuMap.emplace(GAME_STATE::JOIN, new JoinMenu());
-  mMenuMap.emplace(GAME_STATE::PLAYING, new PlayWindow());
-  mMenuMap.emplace(GAME_STATE::OPTIONS, new OptionsMenu());
-  mMenuMap.emplace(GAME_STATE::PAUSE, new PauseMenu());
+  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::vector<MenuBase*> { new MainMenu() });
+  mMenuMap.emplace(GAME_STATE::LOBBY, std::vector<MenuBase*> { new LobbyMenu() });
+  mMenuMap.emplace(GAME_STATE::JOIN, std::vector<MenuBase*> { new JoinMenu() });
+  mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<MenuBase*> { new PlayWindow(), new Hud() });
+  mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<MenuBase*> { new OptionsMenu() });
+  mMenuMap.emplace(GAME_STATE::PAUSE, std::vector<MenuBase*> { new PauseMenu() });
   mDebugMenu = new DebugMenu;
 
   // This needs to be after the DebugMenu is created
@@ -97,7 +99,9 @@ void Gui::handleWindowEvents() {
     if (event.type == sf::Event::TextEntered && mWindow->hasFocus()) {
       auto it = mMenuMap.find(mCurrentGameState);
       if (it != mMenuMap.end()) {
-        it->second->handleNewText(event.text.unicode);
+        for (auto menu : it->second) {
+          menu->handleNewText(event.text.unicode);
+        }
       }
     }
   }
@@ -124,20 +128,27 @@ bool Gui::renderGameState(GAME_STATE gameState) {
 
   mWindow->clear(sf::Color::White);
   sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mWindow->hasFocus()) {
-    if (!mLeftButtonAlreadyPressed) {
-      mMenuMap.at(gameState)->checkMouse(mousePosition);
-      if (mShowDebugMenu) {
-        mDebugMenu->checkMouse(mousePosition);
+  for (auto menu : it->second) {
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mWindow->hasFocus()) {
+      if (!mLeftButtonAlreadyPressed) {
+        menu->checkMouse(mousePosition);
+        if (mShowDebugMenu) {
+          mDebugMenu->checkMouse(mousePosition);
+        }
       }
+      mLeftButtonAlreadyPressed = true;
+    } else {
+      mLeftButtonAlreadyPressed = false;
     }
-    mLeftButtonAlreadyPressed = true;
-  } else {
-    mLeftButtonAlreadyPressed = false;
-  }
-  mRenderNeeded = mMenuMap.at(gameState)->render(mWindow, mousePosition);
-  if (mShowDebugMenu) {
-    mDebugMenu->render(mWindow, mousePosition);
+    mRenderNeeded = menu->render(mWindow, mousePosition);
+    
+    if (mShowDebugMenu) {
+      mDebugMenu->render(mWindow, mousePosition);
+    }
+
+    if (!mRenderNeeded) {
+      return mRenderNeeded;
+    }
   }
   return mRenderNeeded;
 }
@@ -155,13 +166,17 @@ void Gui::handleGameStateMessages() {
       // Changed game state
       auto previousMenu = mMenuMap.find(mCurrentGameState);
       if (previousMenu != mMenuMap.end()) {
-        previousMenu->second->uninit();
+        for (auto menu : previousMenu->second) {
+          menu->uninit();
+        }
       }
 
       mCurrentGameState = gsm.getGameState();
       auto newMenu = mMenuMap.find(mCurrentGameState);
       if (newMenu != mMenuMap.end()) {
-        newMenu->second->init();
+        for (auto menu : newMenu->second) {
+          menu->init();
+        }
       }
 
       mWindow->clear(sf::Color::White);
