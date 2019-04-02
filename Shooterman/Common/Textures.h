@@ -19,5 +19,8 @@ enum class Textures {
   FloorWhole,
   FloorCracked,
   FloorSpikes,
+  HealthPotion,
+  ManaPotion,
+  Ammo,
   Unknown = 99
 };

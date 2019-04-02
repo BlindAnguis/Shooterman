@@ -33,6 +33,9 @@ void SpriteManager::loadSprites() {
 
   // Other
   mSpriteMap[Textures::Tombstone] = createSprite("Tombstone.png");
+  mSpriteMap[Textures::HealthPotion] = createSprite("Potions/pt1Small.png");
+  mSpriteMap[Textures::ManaPotion] = createSprite("Potions/pt2Small.png");
+  mSpriteMap[Textures::Ammo] = createSprite("Potions/pt4Small.png");
 }
 
 std::pair<sf::Sprite, std::shared_ptr<sf::Texture>> SpriteManager::createSprite(std::string filename) {

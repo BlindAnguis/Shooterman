@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="Client\GUI\Hud\Hud.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
+    <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
     <ClCompile Include="Server\Systems\ClockSystem\ClockSystem.cpp" />
     <ClCompile Include="Common\Animation\Animation.cpp" />
     <ClCompile Include="Client\GUI\Gui.cpp" />
@@ -204,6 +205,7 @@
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
+    <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />
     <ClInclude Include="Server\Systems\ClockSystem\ClockSystem.h" />
     <ClInclude Include="Common\Animation\Animation.h" />
     <ClInclude Include="Client\GUI\Gui.h" />

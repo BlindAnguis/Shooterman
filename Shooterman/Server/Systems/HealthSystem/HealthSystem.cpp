@@ -12,6 +12,24 @@ HealthSystem::~HealthSystem()
 {
 }
 
+HealthSystem& HealthSystem::get() {
+  static HealthSystem instance;
+  return instance;
+}
+
+void HealthSystem::changeHealth(int entityId, int addedHealthEffect) {
+  if (mHealthComponentManager->hasComponent(entityId)) {
+    auto hc = mHealthComponentManager->getComponent(entityId);
+    hc->currentHealth += addedHealthEffect;
+    if (hc->currentHealth > hc->maxHealth) {
+      hc->currentHealth = hc->maxHealth;
+    }
+    else if (hc->currentHealth <= 0) {
+      hc->isAlive = false;
+    }
+  }
+}
+
 void HealthSystem::update()
 {
   for (auto entityWithHealth : mHealthComponentManager->getAllEntitiesWithComponent()) {
@@ -25,8 +43,8 @@ void HealthSystem::update()
         for (auto collider : collisionComponent->collidedList) {
           DamageComponent* collidingDamage = mDamageComponentManager->getComponent(collider);
           if (collidingDamage) {
-            entityWithHealth.second->health -= collidingDamage->damage;
-            if (entityWithHealth.second->health <= 0) {
+            entityWithHealth.second->currentHealth -= collidingDamage->damage;
+            if (entityWithHealth.second->currentHealth <= 0) {
               entityWithHealth.second->isAlive = false;
             }
           }

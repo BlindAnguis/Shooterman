@@ -25,6 +25,7 @@ Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
   mAnimationSystem(AnimationSystem()),
   mHealthSystem(HealthSystem()),
   mEntityCreator(EntityCreator(&mEntityManager, &mGridSystem, &mDeleteSystem)),
+  mPickupSystem(PickupSystem(&mEntityCreator)),
   mMapCreator(MapCreator(&mEntityManager, &mGridSystem))
 {
   mName = "SERVER: ENGINE";
@@ -55,6 +56,7 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
   mHealthSystem(HealthSystem()),
   mGameMap(gameMap),
   mEntityCreator(EntityCreator(&mEntityManager, &mGridSystem, &mDeleteSystem)),
+  mPickupSystem(PickupSystem(&mEntityCreator)),
   mMapCreator(MapCreator(&mEntityManager, &mGridSystem))
 {
   mName = "SERVER: ENGINE";
@@ -103,6 +105,9 @@ void Engine::update() {
   c.restart();
   mMovementSystem.ownUpdate();
   sf::Int64 movementTime = c.getElapsedTime().asMicroseconds();
+  c.restart();
+  mPickupSystem.update();
+  sf::Int64 pickupTime = c.getElapsedTime().asMicroseconds();
   c.restart();
   mHealthSystem.update();
   sf::Int64 healthTime = c.getElapsedTime().asMicroseconds();
@@ -154,8 +159,7 @@ void Engine::update() {
   c.restart();
 
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
-
-  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
+  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, PickupTime: " << pickupTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 InputSystem* Engine::getInputSystem() {
@@ -173,7 +177,7 @@ EntityManager* Engine::getEntityManager() {
 void Engine::createPlayers() {
   float xPos = 100;
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    int id = rand() % 3;
+    int id = rand() % 1;
     switch (id)
     {
       case 0:
@@ -211,6 +215,7 @@ void Engine::destroyEntity(int entityId) {
   mHealthComponentManager->removeComponent(entityId);
   mDamageComponentManager->removeComponent(entityId);
   mClockComponentManager->removeComponent(entityId);
+  ComponentManager<PickupComponent>::get().removeComponent(entityId);
   for (auto client : *mConnectedClients) {
     if (client.second->getEntity() && client.second->getEntity()->id == entityId) {
       client.second->setEntity(nullptr);
@@ -228,10 +233,10 @@ void Engine::collectPlayerData() {
       continue;
     }
 
-    player.second->setCurrentHealth(healthComponent->health);
+    player.second->setCurrentHealth(healthComponent->currentHealth);
 
     PlayerDataMessage pdm(player.first);
-    pdm.setCurrentHealth(healthComponent->health);
+    pdm.setCurrentHealth(healthComponent->currentHealth);
 
     mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
   }

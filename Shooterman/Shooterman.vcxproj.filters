@@ -56,6 +56,7 @@
     <ClCompile Include="Server\Systems\ClockSystem\ClockSystem.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
     <ClCompile Include="Client\GUI\Hud\Hud.cpp" />
+    <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="Server\Systems\ClockSystem\ClockSystem.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
+    <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

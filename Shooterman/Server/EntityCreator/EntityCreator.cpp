@@ -36,6 +36,9 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
   mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
+  mTextures[static_cast<int>(Textures::HealthPotion)] = loadTexture("Potions/pt1Small.png");
+  mTextures[static_cast<int>(Textures::ManaPotion)] = loadTexture("Potions/pt2Small.png");
+  mTextures[static_cast<int>(Textures::Ammo)] = loadTexture("Potions/pt4Small.png");
 }
 
 EntityCreator::~EntityCreator()
@@ -131,8 +134,6 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   ClockComponent* cc = mClockComponentManager->addComponent(player->id);
 
   HealthComponent* hc = mHealthComponentManager->addComponent(player->id);
-  hc->health = health;
-  hc->isAlive = true;
 
   PlayerComponent* pc = mPlayerComponentManager->addComponent(player->id);
   pc->attackSpeed = attackSpeed;
@@ -149,6 +150,10 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   
   auto rc = mRenderComponentManager->getComponent(mage->id);
   auto ac = mAnimationComponentManager->getComponent(mage->id);
+  auto hc = mHealthComponentManager->getComponent(mage->id);
+  hc->maxHealth = 100;
+  hc->currentHealth = hc->maxHealth;
+  hc->isAlive = true;
   
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
@@ -321,6 +326,10 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
 
   auto rc = mRenderComponentManager->getComponent(knight->id);
   auto ac = mAnimationComponentManager->getComponent(knight->id);
+  auto hc = mHealthComponentManager->getComponent(knight->id);
+  hc->maxHealth = 200;
+  hc->currentHealth = hc->maxHealth;
+  hc->isAlive = true;
 
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
@@ -366,6 +375,10 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 
   auto rc = mRenderComponentManager->getComponent(spearman->id);
   auto ac = mAnimationComponentManager->getComponent(spearman->id);
+  auto hc = mHealthComponentManager->getComponent(spearman->id);
+  hc->maxHealth = 150;
+  hc->currentHealth = hc->maxHealth;
+  hc->isAlive = true;
 
   Animation thrustUpAnimation(rc->sprite, true, spearman->id);
   for (int i = 0; i < 6; i++) {
@@ -392,10 +405,53 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
   return spearman;
 }
 
+Entity* EntityCreator::createRandomPickup() {
+  PickupType type = static_cast<PickupType>((int)rand() % 3);
+  Entity* pickup = mEntityManager->createEntity();
+  TRACE_DEBUG("Creating a pickup of type: " << static_cast<int>(type) << " with id: " << pickup->id);
+  PickupComponent* pc = ComponentManager<PickupComponent>::get().addComponent(pickup->id);
+  pc->type = type;
+  pc->addedEffect = 50;
+
+  CollisionComponent* cc = ComponentManager<CollisionComponent>::get().addComponent(pickup->id);
+  cc->collided = false;
+  cc->destroyOnCollision = true;
+
+  RenderComponent* rc = ComponentManager<RenderComponent>::get().addComponent(pickup->id);
+  switch (pc->type)
+  {
+  case PickupType::HealthPotion:
+    //TRACE_INFO("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    rc->textureId = Textures::HealthPotion;
+    rc->texture = *mTextures[static_cast<int>(rc->textureId)];
+    break;
+  case PickupType::ManaPotion:
+    TRACE_DEBUG("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    rc->textureId = Textures::ManaPotion;
+    rc->texture = *mTextures[static_cast<int>(rc->textureId)];
+    break;
+  case PickupType::Ammo:
+    TRACE_DEBUG("Creating ammo created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    rc->textureId = Textures::Ammo;
+    rc->texture = *mTextures[static_cast<int>(rc->textureId)];
+    break;
+  default:
+    break;
+  }
+  rc->visible = true;
+  rc->isDynamic = true;
+  rc->sprite = sf::Sprite(rc->texture);
+  rc->sprite.setOrigin(16, 16);
+  rc->sprite.setPosition(103, 103);
+
+  mGridSystem->addEntity(pickup->id, (sf::Vector2i)rc->sprite.getPosition());
+  return pickup;
+}
+
 sf::Texture* EntityCreator::loadTexture(std::string fileName) {
   sf::Texture* texture = new sf::Texture();
   if (!Collision::CreateTextureAndBitmask(*texture, "Client/Resources/Sprites/" + fileName)) {
-    std::cout << "[GUI] ERROR could not load file " << "Client/Resources/Sprites/" << fileName << std::endl;
+    TRACE_ERROR("Could not load file: Client/Resource/Sprites/" << fileName);
   }
   return texture;
 }

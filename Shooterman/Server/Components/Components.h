@@ -30,6 +30,12 @@ enum class PlayerClass {
   Spearman
 };
 
+enum class PickupType {
+  HealthPotion,
+  ManaPotion,
+  Ammo,
+};
+
 struct PositionComponent {
   sf::Vector2f position;
 };
@@ -60,8 +66,9 @@ struct AnimationComponent {
 };
 
 struct HealthComponent {
-  bool isAlive;
-  int health;
+  bool isAlive = false;
+  int currentHealth = 0;
+  int maxHealth = 0;
 };
 
 struct DamageComponent {
@@ -72,7 +79,6 @@ struct ClockComponent {
   sf::Clock clock;
   int timeout = -1;
   std::function<void()> timeoutCallback = []() {};
-
 };
 
 struct PlayerComponent {
@@ -83,4 +89,9 @@ struct PlayerComponent {
   int nrOfKills;
   int nrOfDeaths;
   int score;
+};
+
+struct PickupComponent {
+  PickupType type;
+  int addedEffect = 0;
 };

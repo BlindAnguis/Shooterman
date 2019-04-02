@@ -10,6 +10,8 @@ public:
   HealthSystem();
   ~HealthSystem();
   void update();
+  static HealthSystem& get();
+  void changeHealth(int entityId, int addedHealthEffect);
 private:
   ComponentManager<HealthComponent>* mHealthComponentManager;
   ComponentManager<DamageComponent>* mDamageComponentManager;

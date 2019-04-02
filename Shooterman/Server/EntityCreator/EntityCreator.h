@@ -20,6 +20,7 @@ public:
   ~EntityCreator();
 
   Entity* createPlayer(PlayerClass playerClass, sf::Vector2f position);
+  Entity* createRandomPickup();
 
   DeleteSystem *mDeleteSystem;
 

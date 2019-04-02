@@ -16,6 +16,7 @@
 #include "../Components/Components.h"
 #include "../EntityCreator/EntityCreator.h"
 #include "../MapCreator/MapCreator.h"
+#include "../Systems/PickupSystem/PickupSystem.h"
 #include <vector>
 #include <SFML\Network.hpp>
 #include <array>
@@ -54,6 +55,7 @@ private:
   GridSystem mGridSystem;
   DeleteSystem mDeleteSystem;
   std::shared_ptr<NetworkSystem> mNetworkSystem;
+  PickupSystem mPickupSystem;
 
   // Managers
   EntityManager mEntityManager;
@@ -66,6 +68,7 @@ private:
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<DamageComponent>* mDamageComponentManager;
+  ComponentManager<PickupComponent>* mPickupComponentManager;
 
   Subscriber mPlayerDataSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
