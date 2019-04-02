@@ -12,5 +12,5 @@ public:
 private:
   bool mSubscribedToPlayerData;
   Subscriber mPlayerDataSubscriber;
-  std::shared_ptr<GUIComponent> mHealthText;
+  std::shared_ptr<GUIComponent> mHealthNumber;
 };

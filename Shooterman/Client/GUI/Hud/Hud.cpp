@@ -4,10 +4,10 @@
 #include "../../../Common/Messages/PlayerDataMessage.h"
 
 Hud::Hud() {
-  auto test = GUIComponentBuilder::createText("Health: ", 50, 50);
-  mComponentList.push_back(test);
-  mHealthText = GUIComponentBuilder::createText("Health: ", 50 + test->getWidth(), 50);
-  mComponentList.push_back(mHealthText);
+  auto healthText = GUIComponentBuilder::createText("Health: ", 50, 50);
+  mComponentList.push_back(healthText);
+  mHealthNumber = GUIComponentBuilder::createText("Health: ", 50 + healthText->getWidth(), 50);
+  mComponentList.push_back(mHealthNumber);
 }
 
 Hud::~Hud() { }
@@ -31,7 +31,7 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
     {
       PlayerDataMessage pdm;
       pdm.unpack(playerDataMessage);
-      mHealthText->setText(std::to_string(pdm.getCurrentHealth()));
+      mHealthNumber->setText(std::to_string(pdm.getCurrentHealth()));
     }
       break;
     default:
