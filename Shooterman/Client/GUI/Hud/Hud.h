@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Resources/MenuBase.h"
+#include "../Resources/GUIProgressBar.h"
 
 class Hud : public MenuBase {
 public:
@@ -12,6 +13,7 @@ public:
 private:
   bool mSubscribedToPlayerData;
   Subscriber mPlayerDataSubscriber;
-  std::shared_ptr<GUIComponent> mHealthText;
-  std::shared_ptr<GUIComponent> mManaText;
+  std::shared_ptr<GUIProgressBar> mHealthBar;
+  std::shared_ptr<GUIProgressBar> mManaBar;
+  std::shared_ptr<GUIProgressBar> mStaminaBar;
 };

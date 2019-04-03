@@ -156,6 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client\GUI\Hud\Hud.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GUIProgressBar.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GUIText.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
@@ -205,6 +207,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiComponent.h" />
+    <ClInclude Include="Client\GUI\Resources\GUIProgressBar.h" />
+    <ClInclude Include="Client\GUI\Resources\GUIText.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

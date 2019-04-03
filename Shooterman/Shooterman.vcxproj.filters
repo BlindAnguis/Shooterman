@@ -58,6 +58,8 @@
     <ClCompile Include="Client\GUI\Hud\Hud.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GUIProgressBar.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GUIText.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -147,6 +149,9 @@
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
+    <ClInclude Include="Client\GUI\Resources\GUIProgressBar.h" />
+    <ClInclude Include="Client\GUI\Resources\GUIText.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

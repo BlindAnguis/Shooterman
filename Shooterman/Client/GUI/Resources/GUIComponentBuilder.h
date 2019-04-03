@@ -8,33 +8,7 @@
 #include "../../../Common/MessageHandler/MessageHandler.h"
 #include "../../../Common/Trace.h"
 #include "../../../Common/Messages/GameStateMessage.h"
-
-class GUIComponent : Trace {
-public:
-  GUIComponent(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback, bool toggleCollorOnClick);
-
-  bool isPressed(sf::Vector2f mousePosition);
-  void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
-  std::string getText();
-  void setText(std::string newText);
-  void setRenderBounds(bool renderBounds);
-  int getWidth();
-  int getHeight();
-
-private:
-  sf::Text mComponentText;
-  sf::Font mFont;
-  sf::RectangleShape mBounds;
-  sf::Color mTextColor;
-  sf::Color mTextHighlightColor;
-  sf::Color mClickedColor = sf::Color::Blue;
-  std::function<void(void)> mCallback;
-  bool mRenderBounds = false;
-  bool mToggleColorOnClick;
-  bool hasBeenClicked = false;
-
-  bool checkMouse(sf::Vector2f mousePosition);
-};
+#include "GUIText.h"
 
 class GUIComponentBuilder : Trace {
 public:
@@ -102,7 +76,7 @@ public:
   }
 
   std::shared_ptr<GUIComponent> build() {
-    return std::make_shared<GUIComponent>(mText, mTextFont, mTextColor, mTextHighlightColor, mTextSize, mXPosition, mYPosition, mCallback, mToggleColorOnClick);
+    return std::make_shared<GUIText>(mText, mTextFont, mTextColor, mTextHighlightColor, mTextSize, mXPosition, mYPosition, mCallback, mToggleColorOnClick);
   }
 
   static std::shared_ptr<GUIComponent> createTitle(std::string textString, int xPosition, int yPosition) {

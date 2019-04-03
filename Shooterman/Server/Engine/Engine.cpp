@@ -226,21 +226,29 @@ void Engine::destroyEntity(int entityId) {
 
 void Engine::collectPlayerData() {
   for (auto player : *mConnectedClients) {
-    auto healthComponent = mHealthComponentManager->get().getComponent(player.second->getEntity()->id);
-    if (!healthComponent) {
-      TRACE_ERROR("Player: " << player.second->getEntity()->id << " have no healthComponent");
-      continue;
-    }
-
-    int currentMana = -1;
-    auto manaComponent = ComponentManager<ManaComponent>::get().getComponent(player.second->getEntity()->id);
-    if (manaComponent) {
-      currentMana = manaComponent->currentMana;
-    }
-
     PlayerDataMessage pdm(player.first);
-    pdm.setCurrentHealth(healthComponent->currentHealth);
-    pdm.setCurrentMana(currentMana);
+
+    int playerId = player.second->getEntity()->id;
+
+    auto renderComponent = mRenderComponentManager->getComponent(playerId);
+    if (renderComponent) {
+      sf::Vector2f position = renderComponent->sprite.getPosition();
+      position.x -= renderComponent->sprite.getGlobalBounds().width / 4;
+      position.y -= renderComponent->sprite.getGlobalBounds().height - 10;
+      pdm.setPosition(position);
+    }
+
+    auto healthComponent = mHealthComponentManager->get().getComponent(playerId);
+    if (healthComponent) {
+      pdm.setCurrentHealth(healthComponent->currentHealth);
+      pdm.setMaxHealth(healthComponent->maxHealth);
+    }
+
+    auto manaComponent = ComponentManager<ManaComponent>::get().getComponent(playerId);
+    if (manaComponent) {
+      pdm.setCurrentMana(manaComponent->currentMana);
+      pdm.setMaxMana(manaComponent->maxMana);
+    }
 
     mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
   }
