@@ -16,7 +16,7 @@ PickupSystem::PickupSystem(EntityCreator* entityCreator)
 
 PickupSystem::~PickupSystem() {}
 
-const int MAX_NR_OF_PICKUPS = 3;
+const int MAX_NR_OF_PICKUPS = 10;
 const int MAX_FRAMES_TO_NEXT_PICKUP = 300;
 const int MIN_FRAMES_TO_NEXT_PICKUP = 150;
 

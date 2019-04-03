@@ -454,10 +454,20 @@ Entity* EntityCreator::createRandomPickup() {
   rc->visible = true;
   rc->isDynamic = true;
   rc->sprite = sf::Sprite(rc->texture);
+
+  auto gridPositions = mGridSystem->getEmptyGridPositions();
+  if (gridPositions.size() == 0) {
+    return nullptr;
+  }
+
+  int randomGridPos = (int)rand() % gridPositions.size();
+  auto pos = mGridSystem->gridPositionToFirstPixelPosition(gridPositions.at(randomGridPos));
+
   rc->sprite.setOrigin(16, 16);
-  rc->sprite.setPosition(103, 103);
+  rc->sprite.setPosition(pos.x + 16, pos.y + 16);
 
   mGridSystem->addEntity(pickup->id, (sf::Vector2i)rc->sprite.getPosition());
+
   return pickup;
 }
 
