@@ -22,11 +22,3 @@ void Player::setEntity(Entity* newEntity) {
 Entity* Player::getEntity() {
   return mEntity;
 }
-
-void Player::setCurrentHealth(int currentHealth) {
-  mCurrentHealth = currentHealth;
-}
-
-int Player::getCurrentHealth() {
-  return mCurrentHealth;
-}

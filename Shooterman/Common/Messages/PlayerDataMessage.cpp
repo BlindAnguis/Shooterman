@@ -14,12 +14,14 @@ sf::Packet PlayerDataMessage::pack() {
   packet << PLAYER_DATA;
   packet << mPlayerId;
   packet << mCurrentHealth;
+  packet << mCurrentMana;
   return packet;
 }
 
 void PlayerDataMessage::unpack(sf::Packet packet) {
   packet >> mPlayerId;
   packet >> mCurrentHealth;
+  packet >> mCurrentMana;
 }
 
 void PlayerDataMessage::setCurrentHealth(int currentHealth) {
@@ -28,4 +30,12 @@ void PlayerDataMessage::setCurrentHealth(int currentHealth) {
 
 int PlayerDataMessage::getCurrentHealth() {
   return mCurrentHealth;
+}
+
+void PlayerDataMessage::setCurrentMana(int currentMana) {
+  mCurrentMana = currentMana;
+}
+
+int PlayerDataMessage::getCurrentMana() {
+  return mCurrentMana;
 }

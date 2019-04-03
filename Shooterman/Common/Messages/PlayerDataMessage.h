@@ -17,7 +17,11 @@ public:
   void setCurrentHealth(int currentHealth);
   int getCurrentHealth();
 
+  void setCurrentMana(int currentMana);
+  int getCurrentMana();
+
 private:
   int mPlayerId;
   int mCurrentHealth;
+  int mCurrentMana;
 };

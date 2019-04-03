@@ -110,8 +110,9 @@ public:
     return builder.setText(textString)->setXPosition(xPosition)->setYPosition(yPosition)->setTextSize(72)->build();
   }
 
-  static std::shared_ptr<GUIComponent> createText(std::string textString, int xPosition, int yPosition) {
+  static std::shared_ptr<GUIComponent> createText(std::string textString, int xPosition, int yPosition, sf::Color textColor = sf::Color::Black) {
     GUIComponentBuilder builder;
+    builder.setTextColor(textColor);
     return builder.setText(textString)->setXPosition(xPosition)->setYPosition(yPosition)->build();
   }
 

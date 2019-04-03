@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include "../HealthSystem/HealthSystem.h"
+#include "../ManaSystem/ManaSystem.h"
 
 PickupSystem::PickupSystem(EntityCreator* entityCreator)
   :
@@ -21,7 +22,6 @@ const int MIN_FRAMES_TO_NEXT_PICKUP = 150;
 
 void PickupSystem::update() {
   if (mTimeToNextPickup == 0) {
-
     if (mPickupComponentManager->getAllComponents().size() <= MAX_NR_OF_PICKUPS) {
       TRACE_DEBUG("*************************************** NEW PICKUP ***********************************");
       auto pickup = mEntityCreator->createRandomPickup();
@@ -50,8 +50,8 @@ void PickupSystem::update() {
       case PickupType::ManaPotion:
         // TODO: Change to mana component.
         for (auto entity : cc->collidedList) {
-          if (ComponentManager<HealthComponent>::get().hasComponent(entity)) {
-            //ComponentManager<HealthComponent>::get().getComponent(entity)->health += pickup.second->addedEffect;
+          if (ComponentManager<ManaComponent>::get().hasComponent(entity)) {
+            ManaSystem::get().changeMana(entity, pickup.second->addedEffect);
           }
         }
         break;

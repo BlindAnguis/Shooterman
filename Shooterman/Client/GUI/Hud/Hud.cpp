@@ -4,10 +4,11 @@
 #include "../../../Common/Messages/PlayerDataMessage.h"
 
 Hud::Hud() {
-  auto healthText = GUIComponentBuilder::createText("Health: ", 50, 50);
-  mComponentList.push_back(healthText);
-  mHealthNumber = GUIComponentBuilder::createText("Health: ", 50 + healthText->getWidth(), 50);
-  mComponentList.push_back(mHealthNumber);
+  mHealthText = GUIComponentBuilder::createText("Health:", 150, 50, sf::Color::White);
+  mComponentList.push_back(mHealthText);
+
+  mManaText = GUIComponentBuilder::createText("Mana: ", 750, 50, sf::Color::White);
+  mComponentList.push_back(mManaText);
 }
 
 Hud::~Hud() { }
@@ -31,7 +32,13 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
     {
       PlayerDataMessage pdm;
       pdm.unpack(playerDataMessage);
-      mHealthNumber->setText(std::to_string(pdm.getCurrentHealth()));
+      mHealthText->setText("Health: " + std::to_string(pdm.getCurrentHealth()));
+      auto currentMana = pdm.getCurrentMana();
+      if (currentMana > -1) {
+        mManaText->setText("Mana: " + std::to_string(pdm.getCurrentMana()));
+      } else { // If Mana is -1 (or less) it means the Player doesn't have mana.
+        mManaText->setText("");
+      }
     }
       break;
     default:

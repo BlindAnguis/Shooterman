@@ -1,9 +1,11 @@
 #include "EntityCreator.h"
 #include "../Systems/CollisionSystem/Collision.h"
+#include "../Systems/ManaSystem/ManaSystem.h"
 
 #define MAGE_MAX_VELOCITY 4.5f
 #define KNIGHT_MAX_VELOCITY 4.8f
 #define SPEARMAN_MAX_VELOCITY 4.65f
+#define MAGE_MANA_COST 20
 
 EntityCreator::EntityCreator(
   EntityManager *entityManager,
@@ -154,11 +156,22 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   hc->maxHealth = 100;
   hc->currentHealth = hc->maxHealth;
   hc->isAlive = true;
+  auto mc = ComponentManager<ManaComponent>::get().addComponent(mage->id);
+  mc->maxMana = 100;
+  mc->currentMana = mc->maxMana;
   
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
     auto player = mPlayerComponentManager->getComponent(entityId);
-    createBullet(entityId, 0, player->nextAttackMousePosition);
+    auto mc = ComponentManager<ManaComponent>::get().getComponent(entityId);
+    if (mc) {
+      if (mc->currentMana >= MAGE_MANA_COST) {
+        createBullet(entityId, 0, player->nextAttackMousePosition);
+        ManaSystem::get().changeMana(entityId, -MAGE_MANA_COST);
+      }
+    } else {
+      TRACE_ERROR("Mage with id: " << entityId << " has no mana component!");
+    }
   };
   
   Animation castingUpAnimation(rc->sprite, true, mage->id);

@@ -227,16 +227,20 @@ void Engine::destroyEntity(int entityId) {
 void Engine::collectPlayerData() {
   for (auto player : *mConnectedClients) {
     auto healthComponent = mHealthComponentManager->get().getComponent(player.second->getEntity()->id);
-    
     if (!healthComponent) {
       TRACE_ERROR("Player: " << player.second->getEntity()->id << " have no healthComponent");
       continue;
     }
 
-    player.second->setCurrentHealth(healthComponent->currentHealth);
+    int currentMana = -1;
+    auto manaComponent = ComponentManager<ManaComponent>::get().getComponent(player.second->getEntity()->id);
+    if (manaComponent) {
+      currentMana = manaComponent->currentMana;
+    }
 
     PlayerDataMessage pdm(player.first);
     pdm.setCurrentHealth(healthComponent->currentHealth);
+    pdm.setCurrentMana(currentMana);
 
     mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
   }
