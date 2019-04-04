@@ -37,18 +37,18 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
       pdm.unpack(playerDataMessage);
       mHealthBar->setMaxValue(pdm.getMaxHealth());
       mHealthBar->setCurrentValue(pdm.getCurrentHealth());
-      mHealthBar->setPosition(pdm.getPosition().x, pdm.getPosition().y);
+      mHealthBar->setPosition(pdm.getPosition().x - (pdm.getGlobalBounds().width / 4), pdm.getPosition().y - pdm.getGlobalBounds().height + 5);
 
       if (pdm.hasMana()) {
         mManaBar->setMaxValue(pdm.getMaxMana());
         mManaBar->setCurrentValue(pdm.getCurrentMana());
-        mManaBar->setPosition(pdm.getPosition().x, pdm.getPosition().y + 6);
+        mManaBar->setPosition(pdm.getPosition().x - (pdm.getGlobalBounds().width / 4), pdm.getPosition().y - pdm.getGlobalBounds().height + 15);
       }
 
       if (pdm.hasStamina()) {
         mStaminaBar->setMaxValue(pdm.getMaxStamina());
         mStaminaBar->setCurrentValue(pdm.getCurrentStamina());
-        mStaminaBar->setPosition(pdm.getPosition().x, pdm.getPosition().y + 6);
+        mStaminaBar->setPosition(pdm.getPosition().x - (pdm.getGlobalBounds().width / 4), pdm.getPosition().y - pdm.getGlobalBounds().height + 15);
       }
     }
       break;

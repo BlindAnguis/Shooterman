@@ -3,6 +3,11 @@
 #include "Message.h"
 #include "../MessageId.h"
 
+struct GlobalBounds {
+  float width;
+  float height;
+};
+
 class PlayerDataMessage : Message {
 public:
   PlayerDataMessage();
@@ -16,6 +21,8 @@ public:
 
   void setPosition(sf::Vector2f position);
   sf::Vector2f getPosition();
+  void setGlobalBounds(GlobalBounds globalBounds);
+  GlobalBounds getGlobalBounds();
 
   bool hasHealth();
   void setCurrentHealth(int currentHealth);
@@ -38,6 +45,7 @@ public:
 private:
   int mPlayerId;
   sf::Vector2f mPosition;
+  GlobalBounds mGlobalBounds;
   bool mHasHealth = false;
   int mCurrentHealth;
   int mMaxHealth;

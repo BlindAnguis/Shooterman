@@ -13,8 +13,11 @@ sf::Packet PlayerDataMessage::pack() {
   sf::Packet packet;
   packet << PLAYER_DATA;
   packet << mPlayerId;
+
   packet << mPosition.x;
   packet << mPosition.y;
+  packet << mGlobalBounds.width;
+  packet << mGlobalBounds.height;
 
   packet << mHasHealth;
   packet << mCurrentHealth;
@@ -32,8 +35,11 @@ sf::Packet PlayerDataMessage::pack() {
 
 void PlayerDataMessage::unpack(sf::Packet packet) {
   packet >> mPlayerId;
+
   packet >> mPosition.x;
   packet >> mPosition.y;
+  packet >> mGlobalBounds.width;
+  packet >> mGlobalBounds.height;
 
   packet >> mHasHealth;
   packet >> mCurrentHealth;
@@ -59,6 +65,15 @@ void PlayerDataMessage::setPosition(sf::Vector2f position) {
 sf::Vector2f PlayerDataMessage::getPosition() {
   return mPosition;
 }
+
+void PlayerDataMessage::setGlobalBounds(GlobalBounds globalBounds) {
+  mGlobalBounds = globalBounds;
+}
+
+GlobalBounds PlayerDataMessage::getGlobalBounds() {
+  return mGlobalBounds;
+}
+
 
 void PlayerDataMessage::setCurrentHealth(int currentHealth) {
   mCurrentHealth = currentHealth;

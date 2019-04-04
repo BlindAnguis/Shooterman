@@ -233,15 +233,22 @@ void Engine::collectPlayerData() {
     auto renderComponent = mRenderComponentManager->getComponent(playerId);
     if (renderComponent) {
       sf::Vector2f position = renderComponent->sprite.getPosition();
-      position.x -= renderComponent->sprite.getGlobalBounds().width / 4;
-      position.y -= renderComponent->sprite.getGlobalBounds().height - 10;
       pdm.setPosition(position);
+
+      GlobalBounds globalBounds;
+      globalBounds.width = renderComponent->sprite.getGlobalBounds().width;
+      globalBounds.height = renderComponent->sprite.getGlobalBounds().height;
+      pdm.setGlobalBounds(globalBounds);
+    } else {
+      TRACE_ERROR("Player with id: " << playerId << " doesn't have a renderComponent");
     }
 
     auto healthComponent = mHealthComponentManager->get().getComponent(playerId);
     if (healthComponent) {
       pdm.setCurrentHealth(healthComponent->currentHealth);
       pdm.setMaxHealth(healthComponent->maxHealth);
+    } else {
+      TRACE_ERROR("Player with id: " << playerId << " doesn't have a healtComponent!");
     }
 
     auto manaComponent = ComponentManager<ManaComponent>::get().getComponent(playerId);
