@@ -13,6 +13,7 @@ public:
   void update();
 private:
   ComponentManager<PickupComponent>* mPickupComponentManager;
-  int mTimeToNextPickup = 150;
+  int mTimeToNextPickup;
+  sf::Clock mPickupClock;
   EntityCreator* mEntityCreator;
 };

@@ -5,28 +5,30 @@
 #include "../HealthSystem/HealthSystem.h"
 #include "../ManaSystem/ManaSystem.h"
 
+const int MAX_NR_OF_PICKUPS = 10;
+const int MAX_TIME_TO_NEXT_PICKUP = 5000;
+const int MIN_TIME_TO_NEXT_PICKUP = 2500;
+
 PickupSystem::PickupSystem(EntityCreator* entityCreator)
   :
   mPickupComponentManager(&ComponentManager<PickupComponent>::get()),
   mEntityCreator(entityCreator)
 {
   srand((int)time(0));
+  mTimeToNextPickup = (rand() % MIN_TIME_TO_NEXT_PICKUP) + (MAX_TIME_TO_NEXT_PICKUP - MIN_TIME_TO_NEXT_PICKUP);
   mName = "SERVER: PICKUP_SYSTEM";
 }
 
 PickupSystem::~PickupSystem() {}
 
-const int MAX_NR_OF_PICKUPS = 10;
-const int MAX_FRAMES_TO_NEXT_PICKUP = 300;
-const int MIN_FRAMES_TO_NEXT_PICKUP = 150;
-
 void PickupSystem::update() {
-  if (mTimeToNextPickup == 0) {
+  if (mPickupClock.getElapsedTime().asMilliseconds() >= mTimeToNextPickup) {
     if (mPickupComponentManager->getAllComponents().size() <= MAX_NR_OF_PICKUPS) {
       TRACE_DEBUG("*************************************** NEW PICKUP ***********************************");
       auto pickup = mEntityCreator->createRandomPickup();
-      mTimeToNextPickup = (rand() % MIN_FRAMES_TO_NEXT_PICKUP) + (MAX_FRAMES_TO_NEXT_PICKUP - MIN_FRAMES_TO_NEXT_PICKUP);
+      mTimeToNextPickup = (rand() % MIN_TIME_TO_NEXT_PICKUP) + (MAX_TIME_TO_NEXT_PICKUP - MIN_TIME_TO_NEXT_PICKUP);
       TRACE_DEBUG("Created a pickup of type: " << static_cast<int>(mPickupComponentManager->getComponent(pickup->id)->type) << " with id: " << pickup->id);
+      mPickupClock.restart();
     }
   } else {
     mTimeToNextPickup--;

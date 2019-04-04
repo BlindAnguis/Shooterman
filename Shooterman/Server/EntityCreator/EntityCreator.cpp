@@ -419,7 +419,16 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 }
 
 Entity* EntityCreator::createRandomPickup() {
-  PickupType type = static_cast<PickupType>((int)rand() % 3);
+  int randomPercentage = (int)rand() % 101;
+  PickupType type;
+  if (randomPercentage >= 0 && randomPercentage <= 15) {
+    type = PickupType::Ammo;
+  } else if (randomPercentage >= 16 && randomPercentage <= 45) {
+    type = PickupType::HealthPotion;
+  } else {
+    type = PickupType::ManaPotion;
+  }
+
   Entity* pickup = mEntityManager->createEntity();
   TRACE_DEBUG("Creating a pickup of type: " << static_cast<int>(type) << " with id: " << pickup->id);
   PickupComponent* pc = ComponentManager<PickupComponent>::get().addComponent(pickup->id);
@@ -434,7 +443,7 @@ Entity* EntityCreator::createRandomPickup() {
   switch (pc->type)
   {
   case PickupType::HealthPotion:
-    //TRACE_INFO("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    TRACE_DEBUG("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::HealthPotion;
     rc->texture = *mTextures[static_cast<int>(rc->textureId)];
     break;
