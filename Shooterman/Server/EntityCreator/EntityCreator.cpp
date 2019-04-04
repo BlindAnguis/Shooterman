@@ -217,21 +217,21 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 
     sf::Vector2f bulletVelocity((float)(mousePosition.x - originXPos), (float)(mousePosition.y - originYPos));
 
-    // Normalize velocity to avoid huge speeds, and multiply with 10 for extra speed
+    // Normalize velocity to avoid huge speeds, and multiply for extra speed
     float divider = sqrt(bulletVelocity.x*bulletVelocity.x + bulletVelocity.y*bulletVelocity.y);
-    bulletVelocity.x = (bulletVelocity.x / divider) * 10;
-    bulletVelocity.y = (bulletVelocity.y / divider) * 10;
+    bulletVelocity.x = (bulletVelocity.x / divider) * 20;
+    bulletVelocity.y = (bulletVelocity.y / divider) * 20;
 
     float angle = atan2(originYPos - mousePosition.y, originXPos - mousePosition.x) * (180 / 3.1415f) - 90; // Remove 90 degrees to compensate for rotation...
 
     // Move origin position to avoid colliding with the player
     if ((angle <= -125 && angle >= -235) || (angle >= -55 && angle <= 55)) {
-      originXPos += bulletVelocity.x * 5.5f;
-      originYPos += bulletVelocity.y * 5.5f;
+      originXPos += bulletVelocity.x * 1.5f;
+      originYPos += bulletVelocity.y * 1.5f;
     }
     else {
-      originXPos += bulletVelocity.x * 4.0f;
-      originYPos += bulletVelocity.y * 4.0f;
+      originXPos += bulletVelocity.x * 1.0f;
+      originYPos += bulletVelocity.y * 1.0f;
     }
 
     Entity* bullet = mEntityManager->createEntity();
@@ -239,8 +239,8 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     VelocityComponent* vc = mVelocityComponentManager->addComponent(bullet->id);
     vc->currentVelocity.x = bulletVelocity.x;
     vc->currentVelocity.y = bulletVelocity.y;
-    vc->maxVelocity.x = 15;
-    vc->maxVelocity.y = 15;
+    vc->maxVelocity.x = 20;
+    vc->maxVelocity.y = 20;
     vc->moveOnce = false;
 
     RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
