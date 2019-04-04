@@ -62,6 +62,10 @@ void PickupSystem::update() {
         for (auto entity : cc->collidedList) {
           if (ComponentManager<HealthComponent>::get().hasComponent(entity)) {
             //ComponentManager<HealthComponent>::get().getComponent(entity)->health += pickup.second->addedEffect;
+            auto player = ComponentManager<PlayerComponent>::get().getComponent(entity);
+            if (player) {
+              player->superAttacks++;
+            }
           }
         }
         break;

@@ -66,7 +66,13 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
     auto attackClock = mClockComponentManager->getComponent(entityId);
     if (attackClock->clock.getElapsedTime().asMilliseconds() >= player->attackSpeed) {
       //TRACE_INFO("Setting attack mouse info to, x: " << mousePosition.x << ", y: " << mousePosition.y);
+      player->state = PlayerState::Attacking;
       player->nextAttackMousePosition = mousePosition;
+      if (player->superAttacks > 0) {
+        player->state = PlayerState::SuperAttacking;
+        player->invinsible = true;
+        ComponentManager<DamageComponent>::get().addComponent(entityId);
+      }
     }
   });
   srand((int)time(0));
@@ -84,7 +90,7 @@ void Engine::update() {
   sf::Int64 resetTime = c.getElapsedTime().asMicroseconds();
 
   for (auto player : mPlayerComponentManager->getAllEntitiesWithComponent()) {
-    if (player.second->state == PlayerState::Attacking) {
+    if (player.second->state == PlayerState::Attacking || player.second->state == PlayerState::SuperAttacking) {
       //TRACE_INFO("Player is attacking");
       auto animation = mAnimationComponentManager->getComponent(player.first);
       auto &currentAnimation = animation->animations.find(animation->currentAnimation)->second;
@@ -177,7 +183,7 @@ EntityManager* Engine::getEntityManager() {
 void Engine::createPlayers() {
   float xPos = 100;
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    int id = rand() % 1;
+    int id = (rand() % 1) + 1;
     switch (id)
     {
       case 0:

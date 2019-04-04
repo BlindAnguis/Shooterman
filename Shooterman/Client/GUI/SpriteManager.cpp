@@ -15,7 +15,7 @@ void SpriteManager::loadSprites() {
   mSpriteMap[Textures::CharacterLeatherCap] = createSprite("CharacterLeatherCap.png");
   mSpriteMap[Textures::CharacterMetalHelmet] = createSprite("CharacterMetalHelmet.png");
   mSpriteMap[Textures::CharacterMage] = createSprite("mage.png");
-  mSpriteMap[Textures::CharacterKnight] = createSprite("knight.png");
+  mSpriteMap[Textures::CharacterKnight] = createSprite("knight2.png");
   mSpriteMap[Textures::CharacterSpearman] = createSprite("spearman.png");
   
   // Walls

@@ -59,7 +59,7 @@ void MovementSystem::update(InputMessage inputMessage)
     }
 
     bool velocityUpdated = false;
-    if (velocity && player->state != PlayerState::Attacking) {
+    if (velocity && (player->state != PlayerState::Attacking || player->state != PlayerState::SuperAttacking)) {
       if (input & D_KEY) {
         velocityUpdated = true;
         velocity->currentVelocity.x += velocity->maxVelocity.x;
@@ -104,6 +104,19 @@ void MovementSystem::update(InputMessage inputMessage)
       }
       else if (animation->currentAnimation == AnimationType::IdleRight) {
         animation->currentAnimation = AnimationType::AttackingRight;
+      }
+    } else if (player->state == PlayerState::SuperAttacking) {
+      if (animation->currentAnimation == AnimationType::IdleUp) {
+        animation->currentAnimation = AnimationType::SuperAttackingUp;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleDown) {
+        animation->currentAnimation = AnimationType::SuperAttackingDown;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleLeft) {
+        animation->currentAnimation = AnimationType::SuperAttackingLeft;
+      }
+      else if (animation->currentAnimation == AnimationType::IdleRight) {
+        animation->currentAnimation = AnimationType::SuperAttackingRight;
       }
     }
   }

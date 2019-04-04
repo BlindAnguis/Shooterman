@@ -15,6 +15,11 @@ enum class AnimationType {
   AttackingLeft,
   AttackingRight,
   Attacking,
+  SuperAttackingUp,
+  SuperAttackingDown,
+  SuperAttackingLeft,
+  SuperAttackingRight,
+  SuperAttacking,
   Death,
   Victory,
   Defeat

@@ -33,7 +33,7 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::CharacterLeatherCap)] = loadTexture("CharacterLeatherCap.png");
   mTextures[static_cast<int>(Textures::CharacterMetalHelmet)] = loadTexture("CharacterMetalHelmet.png");
   mTextures[static_cast<int>(Textures::CharacterMage)] = loadTexture("mage.png");
-  mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight.png");
+  mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight2.png");
   mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
   mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
@@ -350,6 +350,15 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     createMelee(entityId, 0, player->nextAttackMousePosition);
   };
 
+  auto attackFinishedCallback = [this](int entityId) {
+    TRACE_INFO("Attack finished");
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    player->invinsible = false;
+    player->superAttacks--;
+    player->state = PlayerState::Idle;
+    ComponentManager<DamageComponent>::get().removeComponent(entityId);
+  };
+
   Animation slashUpAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
     slashUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 12 + 14, 64, 50), 70 });
@@ -378,6 +387,17 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
   ac->animations.emplace(AnimationType::AttackingDown, slashDownAnimation);
   ac->animations.emplace(AnimationType::AttackingLeft, slashLeftAnimation);
   ac->animations.emplace(AnimationType::AttackingRight, slashRightAnimation);
+
+  Animation superAttackUpAnimation(rc->sprite, true, knight->id);
+  for (int i = 0; i < 7; i++) {
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1379, 30, 97), 70 });
+  }
+  superAttackUpAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackUpAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingLeft, superAttackUpAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingRight, superAttackUpAnimation);
 
   return knight;
 }
@@ -421,9 +441,9 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 Entity* EntityCreator::createRandomPickup() {
   int randomPercentage = (int)rand() % 101;
   PickupType type;
-  if (randomPercentage >= 0 && randomPercentage <= 15) {
+  if (randomPercentage >= 0 && randomPercentage <= 99) {
     type = PickupType::Ammo;
-  } else if (randomPercentage >= 16 && randomPercentage <= 45) {
+  } else if (randomPercentage >= 99 && randomPercentage <= 100) {
     type = PickupType::HealthPotion;
   } else {
     type = PickupType::ManaPotion;
@@ -473,7 +493,7 @@ Entity* EntityCreator::createRandomPickup() {
   auto pos = mGridSystem->gridPositionToFirstPixelPosition(gridPositions.at(randomGridPos));
 
   rc->sprite.setOrigin(16, 16);
-  rc->sprite.setPosition(pos.x + 16, pos.y + 16);
+  rc->sprite.setPosition(pos.x + 16.0f, pos.y + 16.0f);
 
   mGridSystem->addEntity(pickup->id, (sf::Vector2i)rc->sprite.getPosition());
 

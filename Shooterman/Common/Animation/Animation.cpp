@@ -1,5 +1,6 @@
 #include "Animation.h"
 
+
 Animation::Animation(
   sf::Sprite& sprite,
   bool playOnce,
@@ -28,18 +29,19 @@ void Animation::play() {
       //TRACE_INFO("mCurrentAnimationFrameBefore: " << mCurrentAnimationFrame);
       mSprite.setTextureRect(mAnimationFrames.at(mCurrentAnimationFrame).animationFrame);
 
-      if (mAttackCallback != nullptr && mCurrentAnimationFrame == 3) {
+      if (mCurrentAnimationFrame == 3 && mAttackCallback != nullptr) {
         mAttackCallback(mEntityId);
       }
 
       if (mCurrentAnimationFrame >= mAnimationFrames.size() - 1) {
         mCurrentAnimationFrame = 0;
         mHasBeenPlayedOnce = true;
-      }
-      else {
+        if (mAttackFinishedCallback != nullptr) {
+          mAttackFinishedCallback(mEntityId);
+        }
+      } else {
         mCurrentAnimationFrame++;
       }
-      //mCurrentAnimationFrame == (mAnimationFrames.size() - 1) ? mCurrentAnimationFrame = 0 : mCurrentAnimationFrame++;
       //TRACE_INFO("mCurrentAnimationFrameAfter: " << mCurrentAnimationFrame);
       mAnimationTime.restart();
     }

@@ -33,6 +33,7 @@ public:
   }
 
   void setAttackCallback(const std::function<void(int entityId)>& attack) { mAttackCallback = attack; }
+  void setAttackFinishedCallback(const std::function<void(int entityId)>& attackFinished) { mAttackFinishedCallback = attackFinished; }
 
 private:
   int mCurrentAnimationFrame;
@@ -43,5 +44,6 @@ private:
   sf::Clock mAnimationTime;
   int mEntityId;
   std::function<void(int entityId)> mAttackCallback = nullptr;
+  std::function<void(int entityId)> mAttackFinishedCallback = nullptr;
 };
 

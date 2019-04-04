@@ -88,7 +88,6 @@ void InputSystem::handleInput() {
 
     if (im.getKeyboardBitMask() & LEFT_MOUSE) {
       //TRACE_INFO("Started a new attack!");
-      player->state = PlayerState::Attacking;
       mAttack(playerEntity->id, im.getKeyboardBitMask(), im.getMousePosition());
     }
 
