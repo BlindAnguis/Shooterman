@@ -71,7 +71,8 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
       if (player->superAttacks > 0) {
         player->state = PlayerState::SuperAttacking;
         player->invinsible = true;
-        ComponentManager<DamageComponent>::get().addComponent(entityId);
+        auto dc = ComponentManager<DamageComponent>::get().addComponent(entityId);
+        dc->damage = 30;
       }
     }
   });

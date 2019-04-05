@@ -27,13 +27,15 @@ void Animation::play() {
   if (!mPlayOnce || !mHasBeenPlayedOnce) {
     if (mAnimationTime.getElapsedTime().asMilliseconds() > mAnimationFrames.at(mCurrentAnimationFrame).frameTime) {
       //TRACE_INFO("mCurrentAnimationFrameBefore: " << mCurrentAnimationFrame);
-      mSprite.setTextureRect(mAnimationFrames.at(mCurrentAnimationFrame).animationFrame);
+      AnimationFrame af = mAnimationFrames.at(mCurrentAnimationFrame);
+      mSprite.setTextureRect(af.animationFrame);
+      mSprite.setOrigin(af.originPosition);
 
       if (mCurrentAnimationFrame == 3 && mAttackCallback != nullptr) {
         mAttackCallback(mEntityId);
       }
 
-      if (mCurrentAnimationFrame >= mAnimationFrames.size() - 1) {
+      if (mCurrentAnimationFrame >= (int)mAnimationFrames.size() - 1) {
         mCurrentAnimationFrame = 0;
         mHasBeenPlayedOnce = true;
         if (mAttackFinishedCallback != nullptr) {

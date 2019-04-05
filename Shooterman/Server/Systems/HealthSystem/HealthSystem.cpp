@@ -43,7 +43,10 @@ void HealthSystem::update()
         for (auto collider : collisionComponent->collidedList) {
           DamageComponent* collidingDamage = mDamageComponentManager->getComponent(collider);
           if (collidingDamage) {
-            entityWithHealth.second->currentHealth -= collidingDamage->damage;
+            auto player = ComponentManager<PlayerComponent>::get().getComponent(entityWithHealth.first);
+            if (!player || !player->invinsible) {
+              entityWithHealth.second->currentHealth -= collidingDamage->damage;
+            }
             if (entityWithHealth.second->currentHealth <= 0) {
               entityWithHealth.second->isAlive = false;
             }

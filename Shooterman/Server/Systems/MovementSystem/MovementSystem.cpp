@@ -59,7 +59,7 @@ void MovementSystem::update(InputMessage inputMessage)
     }
 
     bool velocityUpdated = false;
-    if (velocity && (player->state != PlayerState::Attacking || player->state != PlayerState::SuperAttacking)) {
+    if (velocity && player->state != PlayerState::Attacking) {
       if (input & D_KEY) {
         velocityUpdated = true;
         velocity->currentVelocity.x += velocity->maxVelocity.x;
@@ -78,7 +78,7 @@ void MovementSystem::update(InputMessage inputMessage)
       }
     }
 
-    if (velocityUpdated) {
+    if (velocityUpdated && player->state != PlayerState::SuperAttacking) {
       //animation->animationFrame = 0;
       if (animation->currentAnimation == AnimationType::IdleUp) {
         animation->currentAnimation = AnimationType::RunningUp;
@@ -126,7 +126,14 @@ void MovementSystem::ownUpdate() {
   for (auto entityWithCollision : mCollisionComponentManager->getAllEntitiesWithComponent())
   {
     VelocityComponent* velocityComponent = mVelocityComponentManager->getComponent(entityWithCollision.first);
-    if (velocityComponent && ((velocityComponent->currentVelocity.x != 0 && velocityComponent->maxVelocity.x > 0) || (velocityComponent->currentVelocity.y != 0 && velocityComponent->maxVelocity.y > 0))) {
+    PlayerComponent* playerComponent = ComponentManager<PlayerComponent>::get().getComponent(entityWithCollision.first);
+    if (playerComponent) {
+
+    }
+    if (
+        (velocityComponent && ((velocityComponent->currentVelocity.x != 0 && velocityComponent->maxVelocity.x > 0) || (velocityComponent->currentVelocity.y != 0 && velocityComponent->maxVelocity.y > 0))) ||
+        (playerComponent && playerComponent->state == PlayerState::SuperAttacking))
+    {
       RenderComponent* renderComponent = mRenderComponentManager->getComponent(entityWithCollision.first);
       sf::Vector2f currentPosition = renderComponent->sprite.getPosition();
       mCollisionSystem->handleAnyCollision(entityWithCollision.first, currentPosition.x + velocityComponent->currentVelocity.x, currentPosition.y + velocityComponent->currentVelocity.y, mGridSystem);

@@ -8,6 +8,7 @@
 struct AnimationFrame {
   sf::IntRect animationFrame;
   int frameTime;
+  sf::Vector2f originPosition;
 };
 
 class Animation : Trace

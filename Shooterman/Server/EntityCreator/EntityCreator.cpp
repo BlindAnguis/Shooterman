@@ -33,7 +33,7 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::CharacterLeatherCap)] = loadTexture("CharacterLeatherCap.png");
   mTextures[static_cast<int>(Textures::CharacterMetalHelmet)] = loadTexture("CharacterMetalHelmet.png");
   mTextures[static_cast<int>(Textures::CharacterMage)] = loadTexture("mage.png");
-  mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight2.png");
+  mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight3.png");
   mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
   mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
@@ -93,34 +93,35 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   AnimationComponent* ac = mAnimationComponentManager->addComponent(player->id);
   ac->currentAnimation = AnimationType::IdleUp;
 
+  sf::Vector2f originPosition(32, 25);
   Animation idleUpAnimation(rc->sprite, false, player->id);
-  idleUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 8 + 14, 64, 50), 140 });
+  idleUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 8 + 14, 64, 50), 140, originPosition });
   Animation idleLeftAnimation(rc->sprite, false, player->id);
-  idleLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 9 + 14, 64, 50), 140 });
+  idleLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 9 + 14, 64, 50), 140, originPosition });
   Animation idleDownAnimation(rc->sprite, false, player->id);
-  idleDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 10 + 14, 64, 50), 140 });
+  idleDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 10 + 14, 64, 50), 140, originPosition });
   Animation idleRightAnimation(rc->sprite, false, player->id);
-  idleRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 11 + 14, 64, 50), 140 });
+  idleRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 64 * 11 + 14, 64, 50), 140, originPosition });
 
   Animation runningUpAnimation(rc->sprite, false, player->id);
   for (int i = 1; i < 9; i++) {
-    runningUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 8 + 14, 64, 50), 70 });
+    runningUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 8 + 14, 64, 50), 70, originPosition });
   }
   Animation runningLeftAnimation(rc->sprite, false, player->id);
   for (int i = 1; i < 9; i++) {
-    runningLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 9 + 14, 64, 50), 70 });
+    runningLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 9 + 14, 64, 50), 70, originPosition });
   }
   Animation runningDownAnimation(rc->sprite, false, player->id);
   for (int i = 1; i < 9; i++) {
-    runningDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 10 + 14, 64, 50), 70 });
+    runningDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 10 + 14, 64, 50), 70, originPosition });
   }
   Animation runningRightAnimation(rc->sprite, false, player->id);
   for (int i = 1; i < 9; i++) {
-    runningRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 11 + 14, 64, 50), 70 });
+    runningRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 11 + 14, 64, 50), 70, originPosition });
   }
   Animation deathAnimation(rc->sprite, true, player->id);
   for (int i = 0; i < 6; i++) {
-    deathAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 20, 64, 64), 140 });
+    deathAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 20, 64, 64), 140, originPosition });
   }
 
   ac->animations.emplace(AnimationType::IdleUp, idleUpAnimation);
@@ -174,24 +175,25 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
     }
   };
   
+  sf::Vector2f originPosition(32, 25);
   Animation castingUpAnimation(rc->sprite, true, mage->id);
   for (int i = 0; i < 7; i++) {
-    castingUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 14, 64, 50), 70 });
+    castingUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 14, 64, 50), 70, originPosition });
   }
   castingUpAnimation.setAttackCallback(attackCallback);
   Animation castingLeftAnimation(rc->sprite, true, mage->id);
   for (int i = 0; i < 7; i++) {
-    castingLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 + 14, 64, 50), 70 });
+    castingLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 + 14, 64, 50), 70, originPosition });
   }
   castingLeftAnimation.setAttackCallback(attackCallback);
   Animation castingDownAnimation(rc->sprite, true, mage->id);
   for (int i = 0; i < 7; i++) {
-    castingDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 2 + 14, 64, 50), 70 });
+    castingDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 2 + 14, 64, 50), 70, originPosition });
   }
   castingDownAnimation.setAttackCallback(attackCallback);
   Animation castingRightAnimation(rc->sprite, true, mage->id);
   for (int i = 0; i < 7; i++) {
-    castingRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 3 + 14, 64, 50), 70 });
+    castingRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 3 + 14, 64, 50), 70, originPosition });
   }
   castingRightAnimation.setAttackCallback(attackCallback);
 
@@ -262,7 +264,7 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 
     Animation attackAnimation(rc->sprite, false, bullet->id);
     for (int i = 0; i < 5; i++) {
-      attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 28, 0, 28, 20), 400 });
+      attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 28, 0, 28, 20), 400, sf::Vector2f(14, 10) });
     }
 
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
@@ -359,27 +361,28 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     ComponentManager<DamageComponent>::get().removeComponent(entityId);
   };
 
+  sf::Vector2f originPosition(32, 25);
   Animation slashUpAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
-    slashUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 12 + 14, 64, 50), 70 });
+    slashUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 12 + 14, 64, 50), 70, originPosition });
   }
   slashUpAnimation.setAttackCallback(attackCallback);
 
   Animation slashLeftAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
-    slashLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 13 + 14, 64, 50), 70 });
+    slashLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 13 + 14, 64, 50), 70, originPosition });
   }
   slashLeftAnimation.setAttackCallback(attackCallback);
 
   Animation slashDownAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
-    slashDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 14 + 14, 64, 50), 70 });
+    slashDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 14 + 14, 64, 50), 70, originPosition });
   }
   slashDownAnimation.setAttackCallback(attackCallback);
 
   Animation slashRightAnimation(rc->sprite, true, knight->id);
   for (int i = 0; i < 6; i++) {
-    slashRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 15 + 14, 64, 50), 70 });
+    slashRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 15 + 14, 64, 50), 70, originPosition });
   }
   slashRightAnimation.setAttackCallback(attackCallback);
 
@@ -389,15 +392,55 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
   ac->animations.emplace(AnimationType::AttackingRight, slashRightAnimation);
 
   Animation superAttackUpAnimation(rc->sprite, true, knight->id);
-  for (int i = 0; i < 7; i++) {
-    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1379, 30, 97), 70 });
+  int superAttackSpeed = 60;
+  superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
   }
+  //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
+  //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(11, 87) }); // Up no slash
   superAttackUpAnimation.setAttackFinishedCallback(attackFinishedCallback);
 
+  Animation superAttackRightAnimation(rc->sprite, true, knight->id);
+  superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+  }
+  //superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
+  superAttackRightAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  Animation superAttackDownAnimation(rc->sprite, true, knight->id);
+  superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+  }
+  //superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
+  superAttackDownAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  Animation superAttackLeftAnimation(rc->sprite, true, knight->id);
+  superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash        
+  }
+  //superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
+  superAttackLeftAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
   ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
-  ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackUpAnimation);
-  ac->animations.emplace(AnimationType::SuperAttackingLeft, superAttackUpAnimation);
-  ac->animations.emplace(AnimationType::SuperAttackingRight, superAttackUpAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackDownAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingLeft, superAttackLeftAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingRight, superAttackRightAnimation);
 
   return knight;
 }
@@ -413,21 +456,22 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
   hc->currentHealth = hc->maxHealth;
   hc->isAlive = true;
 
+  sf::Vector2f originPosition(32, 25);
   Animation thrustUpAnimation(rc->sprite, true, spearman->id);
   for (int i = 0; i < 6; i++) {
-    thrustUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 4 + 14, 64, 50), 90 });
+    thrustUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 4 + 14, 64, 50), 90, originPosition });
   }
   Animation thrustLeftAnimation(rc->sprite, true, spearman->id);
   for (int i = 0; i < 6; i++) {
-    thrustLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 5 + 14, 64, 50), 90 });
+    thrustLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 5 + 14, 64, 50), 90, originPosition });
   }
   Animation thrustDownAnimation(rc->sprite, true, spearman->id);
   for (int i = 0; i < 6; i++) {
-    thrustDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 6 + 14, 64, 50), 90 });
+    thrustDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 6 + 14, 64, 50), 90, originPosition });
   }
   Animation thrustRightAnimation(rc->sprite, true, spearman->id);
   for (int i = 0; i < 6; i++) {
-    thrustRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 7 + 14, 64, 50), 90 });
+    thrustRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 7 + 14, 64, 50), 90, originPosition });
   }
 
   ac->animations.emplace(AnimationType::AttackingUp, thrustUpAnimation);
