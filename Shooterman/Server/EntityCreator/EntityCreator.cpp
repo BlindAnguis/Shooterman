@@ -6,6 +6,7 @@
 #define KNIGHT_MAX_VELOCITY 4.8f
 #define SPEARMAN_MAX_VELOCITY 4.65f
 #define MAGE_MANA_COST 20
+#define MAGE_NR_OF_SUPER_LIGHTNING_BOLTS 20
 
 EntityCreator::EntityCreator(
   EntityManager *entityManager,
@@ -37,6 +38,7 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
   //mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("lightningBall.png");
+  mTextures[static_cast<int>(Textures::LightningBolt)] = loadTexture("lightningBolt.png");
   mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
   mTextures[static_cast<int>(Textures::HealthPotion)] = loadTexture("Potions/pt1Small.png");
@@ -175,6 +177,19 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
       TRACE_ERROR("Mage with id: " << entityId << " has no mana component!");
     }
   };
+
+  auto superAttackCallback = [this](int entityId) {
+    createRandomLightningBolts();
+  };
+
+  auto superAttackFinishedCallback = [this](int entityId) {
+    TRACE_INFO("Super attack finished");
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    player->invinsible = false;
+    player->superAttacks--;
+    player->state = PlayerState::Idle;
+    ComponentManager<DamageComponent>::get().removeComponent(entityId);
+  };
   
   sf::Vector2f originPosition(32, 25);
   Animation castingUpAnimation(rc->sprite, true, mage->id);
@@ -203,7 +218,76 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   ac->animations.emplace(AnimationType::AttackingLeft, castingLeftAnimation);
   ac->animations.emplace(AnimationType::AttackingRight, castingRightAnimation);
 
+  Animation superCastingUpAnimation(rc->sprite, true, mage->id);
+  for (int i = 0; i < 7; i++) {
+    superCastingUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 14, 64, 50), 70, originPosition });
+  }
+  superCastingUpAnimation.setAttackCallback(superAttackCallback);
+  superCastingUpAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
+  Animation superCastingLeftAnimation(rc->sprite, true, mage->id);
+  for (int i = 0; i < 7; i++) {
+    superCastingLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 + 14, 64, 50), 70, originPosition });
+  }
+  superCastingLeftAnimation.setAttackCallback(superAttackCallback);
+  superCastingLeftAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
+  Animation superCastingDownAnimation(rc->sprite, true, mage->id);
+  for (int i = 0; i < 7; i++) {
+    superCastingDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 2 + 14, 64, 50), 70, originPosition });
+  }
+  superCastingDownAnimation.setAttackCallback(superAttackCallback);
+  superCastingDownAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
+  Animation superCastingRightAnimation(rc->sprite, true, mage->id);
+  for (int i = 0; i < 7; i++) {
+    superCastingRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, 64 * 3 + 14, 64, 50), 70, originPosition });
+  }
+  superCastingRightAnimation.setAttackCallback(superAttackCallback);
+  superCastingRightAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
+
+  ac->animations.emplace(AnimationType::SuperAttackingUp, superCastingUpAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingDown, superCastingDownAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingLeft, superCastingLeftAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingRight, superCastingRightAnimation);
+
   return mage;
+}
+
+void EntityCreator::createRandomLightningBolts() {
+  for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
+    Entity* lightningBolt = mEntityManager->createEntity();
+    RenderComponent* rc = mRenderComponentManager->addComponent(lightningBolt->id);
+    rc->texture = *mTextures[static_cast<int>(Textures::LightningBolt)];
+    rc->visible = true;
+    rc->isDynamic = true;
+    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 98, 203));
+    rc->sprite.setOrigin(49, 101);
+    float posX = (rand() % (1024 - 32)) + 32.0f;
+    float posY = (rand() % (1024 - 32)) + 32.0f;
+    rc->sprite.setPosition(posX, posY);
+    rc->textureId = Textures::LightningBolt;
+
+    DamageComponent* dc = mDamageComponentManager->addComponent(lightningBolt->id);
+    dc->damage = 40;
+
+    CollisionComponent* cc = mCollisionComponentManager->addComponent(lightningBolt->id);
+    cc->collided = false;
+    cc->destroyOnCollision = true;
+
+    auto attackFinishedCallback = [this](int entityId) {
+      mDeleteSystem->addEntity(entityId);
+    };
+
+    AnimationComponent* ac = mAnimationComponentManager->addComponent(lightningBolt->id);
+    Animation attackAnimation(rc->sprite, true, lightningBolt->id);
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 11; j++) {
+        attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(j * 98, i * 203, 98, 203), 15, sf::Vector2f(49, 101) });
+      }
+    }
+    attackAnimation.setAttackFinishedCallback(attackFinishedCallback);
+    ac->animations.emplace(AnimationType::Attacking, attackAnimation);
+    ac->currentAnimation = AnimationType::Attacking;
+    mGridSystem->addEntity(lightningBolt->id, (sf::Vector2i)rc->sprite.getPosition());
+  }
 }
 
 Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible) {
@@ -491,7 +575,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 Entity* EntityCreator::createRandomPickup() {
   int randomPercentage = (int)rand() % 101;
   PickupType type;
-  if (randomPercentage >= 0 && randomPercentage <= 1) {
+  if (randomPercentage >= 0 && randomPercentage <= 99) {
     type = PickupType::Ammo;
   } else if (randomPercentage >= 99 && randomPercentage <= 100) {
     type = PickupType::HealthPotion;

@@ -46,5 +46,6 @@ private:
   sf::Texture* loadTexture(std::string fileName);
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
+  void createRandomLightningBolts();
 };
 

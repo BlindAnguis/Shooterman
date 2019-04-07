@@ -14,6 +14,7 @@ enum class Textures {
   HorizontalWall1,
   VerticalWall1,
   Bullet,
+  LightningBolt,
   SwordSlash,
   Tombstone,
   FloorWhole,
