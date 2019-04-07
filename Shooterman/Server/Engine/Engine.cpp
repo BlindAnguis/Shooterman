@@ -184,7 +184,7 @@ EntityManager* Engine::getEntityManager() {
 void Engine::createPlayers() {
   float xPos = 100;
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    int id = (rand() % 1) + 1;
+    int id = (rand() % 1);
     switch (id)
     {
       case 0:

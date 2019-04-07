@@ -23,7 +23,8 @@ void SpriteManager::loadSprites() {
   mSpriteMap[Textures::VerticalWall1] = createSprite("verticalWall1.png");
 
   // Ammo
-  mSpriteMap[Textures::Bullet] = createSprite("waterSpell.png");
+  //mSpriteMap[Textures::Bullet] = createSprite("waterSpell.png");
+  mSpriteMap[Textures::Bullet] = createSprite("lightningBall.png");
   mSpriteMap[Textures::SwordSlash] = createSprite("SwordSlash.png");
 
   // Floors

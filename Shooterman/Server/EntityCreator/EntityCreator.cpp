@@ -35,7 +35,8 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::CharacterMage)] = loadTexture("mage.png");
   mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight3.png");
   mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
-  mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
+  //mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
+  mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("lightningBall.png");
   mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
   mTextures[static_cast<int>(Textures::HealthPotion)] = loadTexture("Potions/pt1Small.png");
@@ -228,12 +229,12 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 
     // Move origin position to avoid colliding with the player
     if ((angle <= -125 && angle >= -235) || (angle >= -55 && angle <= 55)) {
-      originXPos += bulletVelocity.x * 1.5f;
-      originYPos += bulletVelocity.y * 1.5f;
+      originXPos += bulletVelocity.x * 2.5f;
+      originYPos += bulletVelocity.y * 2.5f;
     }
     else {
-      originXPos += bulletVelocity.x * 1.0f;
-      originYPos += bulletVelocity.y * 1.0f;
+      originXPos += bulletVelocity.x * 2.0f;
+      originYPos += bulletVelocity.y * 2.0f;
     }
 
     Entity* bullet = mEntityManager->createEntity();
@@ -249,8 +250,9 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     rc->texture = *mTextures[static_cast<int>(Textures::Bullet)];
     rc->visible = visible;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
-    rc->sprite.setOrigin(14, 10);
+    //rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
+    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 56, 65));
+    rc->sprite.setOrigin(28, 32);
     rc->sprite.setPosition(originXPos, originYPos);
     rc->sprite.setRotation(angle);
     rc->textureId = Textures::Bullet;
@@ -262,11 +264,15 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     cc->collided = false;
     cc->destroyOnCollision = true;
 
+    AnimationComponent* ac = mAnimationComponentManager->addComponent(bullet->id);
     Animation attackAnimation(rc->sprite, false, bullet->id);
-    for (int i = 0; i < 5; i++) {
-      attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 28, 0, 28, 20), 400, sf::Vector2f(14, 10) });
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 5; j++) {
+        attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(j * 56, i*65, 56, 65), 40, sf::Vector2f(28, 32) });
+      }
     }
-
+    ac->animations.emplace(AnimationType::Attacking, attackAnimation);
+    ac->currentAnimation = AnimationType::Attacking;
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
 
     return bullet;
@@ -485,7 +491,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 Entity* EntityCreator::createRandomPickup() {
   int randomPercentage = (int)rand() % 101;
   PickupType type;
-  if (randomPercentage >= 0 && randomPercentage <= 99) {
+  if (randomPercentage >= 0 && randomPercentage <= 1) {
     type = PickupType::Ammo;
   } else if (randomPercentage >= 99 && randomPercentage <= 100) {
     type = PickupType::HealthPotion;
@@ -530,6 +536,7 @@ Entity* EntityCreator::createRandomPickup() {
 
   auto gridPositions = mGridSystem->getEmptyGridPositions();
   if (gridPositions.size() == 0) {
+    TRACE_WARNING("No empty positions in the grid!");
     return nullptr;
   }
 
