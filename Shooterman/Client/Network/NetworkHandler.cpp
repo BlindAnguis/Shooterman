@@ -54,7 +54,7 @@ void NetworkHandler::startup() {
 
   TRACE_INFO("Connecting socket to " << ipm.getIp());
   sf::TcpSocket soc;
-  auto connected = soc.connect(sf::IpAddress(ipm.getIp()), ipm.getPort());
+  auto connected = soc.connect(sf::IpAddress(ipm.getIp()), ipm.getPort(), sf::milliseconds(10000));
 
   // Failed to connect to server
   if (connected != sf::Socket::Status::Done) {

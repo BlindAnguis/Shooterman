@@ -1,67 +1,40 @@
 #pragma once
 
-#include <iostream>
+#include <stdio.h>
+#include <chrono>
+#include <ctime>
 #include <sstream>
-
-//#define STR(msg) {  }
 
 class Trace {
 protected:
   std::string mName = "";
   bool mDebugEnabled = false;
-
-  /*void TRACE_DEBUG(std::string msg) {
-    if (mDebugEnabled) {
-      std::ostringstream ss;
-      ss << "[" << mName << "] DEBUG: " << msg << "\n";
-      std::cout << ss.str(); 
-    }
-  }
-
-  void TRACE_INFO(std::string msg) {
-    std::ostringstream ss;
-    ss << "[" << mName << "] INFO: " << msg << "\n";
-    std::cout << ss.str();
-  }
-
-  void TRACE_WARNING(std::string msg) {
-    std::ostringstream ss;
-    ss << "[" << mName << "] WARNING: " << msg << "\n";
-    std::cout << ss.str();
-  }
-
-  void TRACE_ERROR(std::string msg) {
-    std::ostringstream ss;
-    ss << "[" << mName << "] ERROR: " << msg << "\n";
-    std::cout << ss.str();
-  }*/
 };
 
+#define TRACE(type, msg) { \
+  std::ostringstream ss; \
+  time_t currentTimeInS = time(NULL); \
+  auto currentTimeInMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); \
+  char timeBuffer[80]; \
+  tm timeInfo; \
+  localtime_s(&timeInfo, &currentTimeInS); \
+  strftime(timeBuffer, 80, "%F %H:%M:%S", &timeInfo); \
+  ss << msg; \
+  printf("[%s.%03lld] (%s) %s: %s\n", timeBuffer, (currentTimeInMs % 1000), mName.c_str(), type, ss.str().c_str()); }
 
 #define TRACE_DEBUG(msg) { \
   if (mDebugEnabled) { \
-    std::ostringstream ss; \
-    ss << "[" << mName << "] DEBUG: " << msg << "\n"; \
-    std::cout << ss.str(); \
+    TRACE("DEBUG", msg); \
   } \
 }
 
-#define TRACE_INFO(msg) { \
-  std::ostringstream ss; \
-  ss << "[" << mName << "] INFO: " << msg << "\n"; \
-  std::cout << ss.str(); }
+#define TRACE_INFO(msg) { TRACE("INFO", msg); }
 
-#define TRACE_WARNING(msg) { \
-  std::ostringstream ss; \
-  ss << "[" << mName << "] WARNING: " << msg << "\n"; \
-  std::cout << ss.str(); }
+#define TRACE_WARNING(msg) { TRACE("WARNING", msg); }
 
-#define TRACE_ERROR(msg) { \
-  std::ostringstream ss; \
-  ss << "[" << mName << "] ERROR: " << msg << "\n"; \
-  std::cout << ss.str(); }
+#define TRACE_ERROR(msg) { TRACE("ERROR", msg); }
 
 #define TRACE_ERROR_LONG(msg, file, line) { \
   std::ostringstream ss; \
   ss << "[" << mName << "] ERROR: " << msg << ", " << file << ":" << line << "\n"; \
-  std::cout << ss.str(); }
+  printf("%s", ss.str().c_str()); }

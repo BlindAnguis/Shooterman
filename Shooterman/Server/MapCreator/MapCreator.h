@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Common/Trace.h"
 #include "../Components/Components.h"
 #include "../Components/ComponentManager.h"
 #include "../EntityManager/EntityManager.h"
@@ -6,13 +7,9 @@
 
 #include <array>
 
-class MapCreator
-{
+class MapCreator : public Trace {
 public:
-  MapCreator(
-    EntityManager *entityManager,
-    GridSystem *gridSystem
-  );
+  MapCreator(EntityManager *entityManager, GridSystem *gridSystem);
   ~MapCreator();
 
   void createMap(std::array<std::array<int, 32>, 32> gameMap);

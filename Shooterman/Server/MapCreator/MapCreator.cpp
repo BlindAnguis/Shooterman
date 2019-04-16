@@ -12,6 +12,7 @@ MapCreator::MapCreator(
   mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
   mGridSystem(gridSystem)
 {
+  mName = "MAP_CREATOR";
   mTextures[static_cast<int>(Textures::HorizontalWall1)] = loadTexture("wall1.png");
   mTextures[static_cast<int>(Textures::VerticalWall1)] = loadTexture("verticalWall1.png");
   mTextures[static_cast<int>(Textures::FloorWhole)] = loadTexture("fantasy-tileset.png");
@@ -114,7 +115,7 @@ Entity* MapCreator::createFloorSpikes(sf::Vector2f position) {
 sf::Texture* MapCreator::loadTexture(std::string fileName) {
   sf::Texture* texture = new sf::Texture();
   if (!Collision::CreateTextureAndBitmask(*texture, "Client/Resources/Sprites/" + fileName)) {
-    std::cout << "[GUI] ERROR could not load file " << "Client/Resources/Sprites/" << fileName << std::endl;
+    TRACE_ERROR("[GUI] ERROR could not load file " << "Client/Resources/Sprites/" << fileName);
   }
   return texture;
 }
