@@ -86,10 +86,9 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
 
   RenderComponent* rc = mRenderComponentManager->addComponent(player->id);
   rc->textureId = textureType;
-  rc->texture = *mTextures[static_cast<int>(rc->textureId)];
   rc->visible = true;
   rc->isDynamic = true;
-  rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 64 * 6 + 14, 64, 50));
+  rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)], sf::IntRect(0, 64 * 6 + 14, 64, 50));
   rc->sprite.setOrigin(32, 25);
   rc->sprite.setPosition(position.x, position.y);
 
@@ -255,10 +254,9 @@ void EntityCreator::createRandomLightningBolts() {
   for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
     Entity* lightningBolt = mEntityManager->createEntity();
     RenderComponent* rc = mRenderComponentManager->addComponent(lightningBolt->id);
-    rc->texture = *mTextures[static_cast<int>(Textures::LightningBolt)];
     rc->visible = true;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 98, 203));
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::LightningBolt)], sf::IntRect(0, 0, 98, 203));
     rc->sprite.setOrigin(49, 101);
     float posX = (rand() % (1024 - 32)) + 32.0f;
     float posY = (rand() % (1024 - 32)) + 32.0f;
@@ -331,11 +329,10 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     vc->moveOnce = false;
 
     RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
-    rc->texture = *mTextures[static_cast<int>(Textures::Bullet)];
     rc->visible = visible;
     rc->isDynamic = true;
     //rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
-    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 56, 65));
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::Bullet)], sf::IntRect(0, 0, 56, 65));
     rc->sprite.setOrigin(28, 32);
     rc->sprite.setPosition(originXPos, originYPos);
     rc->sprite.setRotation(angle);
@@ -389,10 +386,9 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
     Entity* bullet = mEntityManager->createEntity();
 
     RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
-    rc->texture = *mTextures[static_cast<int>(Textures::SwordSlash)];
     rc->visible = true;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::SwordSlash)], sf::IntRect(0, 0, 28, 20));
     rc->sprite.setOrigin(14, 10);
     rc->sprite.setPosition(originXPos, originYPos);
     rc->sprite.setRotation(angle);
@@ -599,24 +595,23 @@ Entity* EntityCreator::createRandomPickup() {
   case PickupType::HealthPotion:
     TRACE_DEBUG("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::HealthPotion;
-    rc->texture = *mTextures[static_cast<int>(rc->textureId)];
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
     break;
   case PickupType::ManaPotion:
     TRACE_DEBUG("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::ManaPotion;
-    rc->texture = *mTextures[static_cast<int>(rc->textureId)];
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
     break;
   case PickupType::Ammo:
     TRACE_DEBUG("Creating ammo created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::Ammo;
-    rc->texture = *mTextures[static_cast<int>(rc->textureId)];
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
     break;
   default:
     break;
   }
   rc->visible = true;
   rc->isDynamic = true;
-  rc->sprite = sf::Sprite(rc->texture);
 
   auto gridPositions = mGridSystem->getEmptyGridPositions();
   if (gridPositions.size() == 0) {

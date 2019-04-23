@@ -42,7 +42,6 @@ struct PositionComponent {
 };
 
 struct RenderComponent {
-  sf::Texture texture;
   Textures textureId;
   sf::Sprite sprite;
   bool visible;
