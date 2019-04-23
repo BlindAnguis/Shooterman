@@ -33,4 +33,7 @@ void GUIProgressBar::setMaxValue(int value) {
 
 void GUIProgressBar::setCurrentValue(int value) {
   mCurrentValue = (float) value;
+  if (mCurrentValue < 0) {
+    mCurrentValue = 0;
+  }
 }
