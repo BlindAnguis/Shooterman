@@ -9,7 +9,7 @@ MapCreator::MapCreator(
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
-  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mGridSystem(gridSystem)
 {
   mName = "MAP_CREATOR";
@@ -104,8 +104,8 @@ Entity* MapCreator::createFloorSpikes(sf::Vector2f position) {
   collisionComponent->destroyOnCollision = false;
   mGridSystem->addEntity(floorSpikes->id, (sf::Vector2i)rc->sprite.getPosition());
 
-  DamageComponent* dc = mDamageComponentManager->addComponent(floorSpikes->id);
-  dc->damage = 10;
+  HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(floorSpikes->id);
+  hcc->healthChange = -10;
   return floorSpikes;
 }
 

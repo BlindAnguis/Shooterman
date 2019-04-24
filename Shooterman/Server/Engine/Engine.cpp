@@ -18,7 +18,7 @@ Engine::Engine(std::shared_ptr<NetworkSystem> networkSystem) :
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
-  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mCollisionSystem(CollisionSystem(&mDeleteSystem)),
   mMovementSystem(MovementSystem(&mCollisionSystem, &mGridSystem, &mEntityManager)),
   mRenderSystem(RenderSystem(mNetworkSystem)),
@@ -48,7 +48,7 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
-  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mCollisionSystem(CollisionSystem(&mDeleteSystem)),
   mMovementSystem(MovementSystem(&mCollisionSystem, &mGridSystem, &mEntityManager)),
   mRenderSystem(RenderSystem(networkSystem)),
@@ -71,8 +71,8 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<Netw
       if (player->superAttacks > 0) {
         player->state = PlayerState::SuperAttacking;
         player->invinsible = true;
-        auto dc = ComponentManager<DamageComponent>::get().addComponent(entityId);
-        dc->damage = 30;
+        auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(entityId);
+        hcc->healthChange = -30;
       }
     }
   });
@@ -157,7 +157,7 @@ void Engine::update() {
       mGridSystem.removeEntity(entity.first, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
       mCollisionComponentManager->removeComponent(entity.first);
       mVelocityComponentManager->removeComponent(entity.first);
-      mDamageComponentManager->removeComponent(entity.first);
+      mHealthChangerComponentManager->removeComponent(entity.first);
       mClockComponentManager->removeComponent(entity.first);
     }
   }
@@ -220,7 +220,7 @@ void Engine::destroyEntity(int entityId) {
   mVelocityComponentManager->removeComponent(entityId);
   mAnimationComponentManager->removeComponent(entityId);
   mHealthComponentManager->removeComponent(entityId);
-  mDamageComponentManager->removeComponent(entityId);
+  mHealthChangerComponentManager->removeComponent(entityId);
   mClockComponentManager->removeComponent(entityId);
   ComponentManager<PickupComponent>::get().removeComponent(entityId);
   for (auto client : *mConnectedClients) {

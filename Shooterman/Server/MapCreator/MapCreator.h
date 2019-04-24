@@ -19,7 +19,7 @@ private:
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
   ComponentManager<HealthComponent>* mHealthComponentManager;
-  ComponentManager<DamageComponent>* mDamageComponentManager;
+  ComponentManager<HealthChangerComponent>* mHealthChangerComponentManager;
 
   GridSystem *mGridSystem;
 

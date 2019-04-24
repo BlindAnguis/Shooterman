@@ -76,8 +76,8 @@ struct ManaComponent {
   int maxMana = 0;
 };
 
-struct DamageComponent {
-  int damage;
+struct HealthChangerComponent {
+  int healthChange = 0;
 };
 
 struct ClockComponent {

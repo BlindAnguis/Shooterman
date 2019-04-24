@@ -33,7 +33,7 @@ private:
   ComponentManager<HealthComponent> *mHealthComponentManager;
   ComponentManager<ClockComponent>* mClockComponentManager;
   ComponentManager<PlayerComponent> *mPlayerComponentManager;
-  ComponentManager<DamageComponent> *mDamageComponentManager;
+  ComponentManager<HealthChangerComponent> *mHealthChangerComponentManager;
   
   GridSystem *mGridSystem;
 

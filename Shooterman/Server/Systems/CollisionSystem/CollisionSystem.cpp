@@ -40,6 +40,7 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
         // Add collision if causing collider has not previously collided with affected collidee
         if (std::find(collisionList.begin(), collisionList.end(), affectedCollideeEntityId) == collisionList.end()) {
           mCollisions.emplace(causingColliderEntityId, affectedCollideeEntityId);
+
           causingColliderCollisionComponent->collided = true;
           causingColliderCollisionComponent->collidedList.push_back(affectedCollideeEntityId);
           if (causingColliderCollisionComponent->destroyOnCollision) {

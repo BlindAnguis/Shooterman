@@ -14,6 +14,6 @@ public:
   void changeHealth(int entityId, int addedHealthEffect);
 private:
   ComponentManager<HealthComponent>* mHealthComponentManager;
-  ComponentManager<DamageComponent>* mDamageComponentManager;
+  ComponentManager<HealthChangerComponent>* mHealthChangerComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
 };

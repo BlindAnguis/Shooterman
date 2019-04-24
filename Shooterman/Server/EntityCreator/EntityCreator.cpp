@@ -21,7 +21,7 @@ EntityCreator::EntityCreator(
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
-  mDamageComponentManager(&ComponentManager<DamageComponent>::get()),
+  mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mGridSystem(gridSystem),
   mDeleteSystem(deleteSystem)
 {
@@ -187,7 +187,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
     player->invinsible = false;
     player->superAttacks--;
     player->state = PlayerState::Idle;
-    ComponentManager<DamageComponent>::get().removeComponent(entityId);
+    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
   };
   
   sf::Vector2f originPosition(32, 25);
@@ -263,8 +263,8 @@ void EntityCreator::createRandomLightningBolts() {
     rc->sprite.setPosition(posX, posY);
     rc->textureId = Textures::LightningBolt;
 
-    DamageComponent* dc = mDamageComponentManager->addComponent(lightningBolt->id);
-    dc->damage = 40;
+    HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(lightningBolt->id);
+    hcc->healthChange = -40;
 
     CollisionComponent* cc = mCollisionComponentManager->addComponent(lightningBolt->id);
     cc->collided = false;
@@ -278,7 +278,7 @@ void EntityCreator::createRandomLightningBolts() {
     Animation attackAnimation(rc->sprite, true, lightningBolt->id);
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 11; j++) {
-        attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(j * 98, i * 203, 98, 203), 15, sf::Vector2f(49, 101) });
+        attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(j * 98, i * 203, 98, 203), 40, sf::Vector2f(49, 101) });
       }
     }
     attackAnimation.setAttackFinishedCallback(attackFinishedCallback);
@@ -338,8 +338,8 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     rc->sprite.setRotation(angle);
     rc->textureId = Textures::Bullet;
 
-    DamageComponent* dc = mDamageComponentManager->addComponent(bullet->id);
-    dc->damage = 10;
+    HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(bullet->id);
+    hcc->healthChange = -10;
 
     CollisionComponent* cc = mCollisionComponentManager->addComponent(bullet->id);
     cc->collided = false;
@@ -394,8 +394,8 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
     rc->sprite.setRotation(angle);
     rc->textureId = Textures::SwordSlash;
 
-    DamageComponent* dc = mDamageComponentManager->addComponent(bullet->id);
-    dc->damage = 50;
+    HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(bullet->id);
+    hcc->healthChange = -50;
 
     VelocityComponent* vc = mVelocityComponentManager->addComponent(bullet->id);
     vc->currentVelocity.x = 0.0001f;
@@ -444,7 +444,7 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     player->invinsible = false;
     player->superAttacks--;
     player->state = PlayerState::Idle;
-    ComponentManager<DamageComponent>::get().removeComponent(entityId);
+    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
   };
 
   sf::Vector2f originPosition(32, 25);
@@ -571,9 +571,9 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 Entity* EntityCreator::createRandomPickup() {
   int randomPercentage = (int)rand() % 101;
   PickupType type;
-  if (randomPercentage >= 0 && randomPercentage <= 99) {
+  if (randomPercentage >= 0 && randomPercentage <= 32) {
     type = PickupType::Ammo;
-  } else if (randomPercentage >= 99 && randomPercentage <= 100) {
+  } else if (randomPercentage >= 33 && randomPercentage <= 66) {
     type = PickupType::HealthPotion;
   } else {
     type = PickupType::ManaPotion;
@@ -592,21 +592,26 @@ Entity* EntityCreator::createRandomPickup() {
   RenderComponent* rc = ComponentManager<RenderComponent>::get().addComponent(pickup->id);
   switch (pc->type)
   {
-  case PickupType::HealthPotion:
+  case PickupType::HealthPotion: {
     TRACE_DEBUG("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::HealthPotion;
     rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
+    auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(pickup->id);
+    hcc->healthChange = pc->addedEffect;
     break;
-  case PickupType::ManaPotion:
+  }
+  case PickupType::ManaPotion: {
     TRACE_DEBUG("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::ManaPotion;
     rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
     break;
-  case PickupType::Ammo:
+  }
+  case PickupType::Ammo: {
     TRACE_DEBUG("Creating ammo created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::Ammo;
     rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
     break;
+  }
   default:
     break;
   }

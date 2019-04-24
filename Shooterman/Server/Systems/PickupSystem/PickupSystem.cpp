@@ -42,12 +42,7 @@ void PickupSystem::update() {
       switch (pickup.second->type)
       {
       case PickupType::HealthPotion:
-        for (auto entity : cc->collidedList) {
-          if (ComponentManager<HealthComponent>::get().hasComponent(entity)) {
-            //ComponentManager<HealthComponent>::get().getComponent(entity)->health += pickup.second->addedEffect;
-            HealthSystem::get().changeHealth(entity, pickup.second->addedEffect);
-          }
-        }
+        // This case is handled by the HealthSystem since a health potion now has a HealthChangerComponent.
         break;
       case PickupType::ManaPotion:
         // TODO: Change to mana component.

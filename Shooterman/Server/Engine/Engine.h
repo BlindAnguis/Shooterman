@@ -67,7 +67,7 @@ private:
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
-  ComponentManager<DamageComponent>* mDamageComponentManager;
+  ComponentManager<HealthChangerComponent>* mHealthChangerComponentManager;
   ComponentManager<PickupComponent>* mPickupComponentManager;
 
   Subscriber mPlayerDataSubscriber;
