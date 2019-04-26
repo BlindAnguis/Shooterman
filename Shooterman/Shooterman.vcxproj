@@ -174,7 +174,6 @@
     <ClCompile Include="Client\GUI\SpriteManager.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
-    <ClCompile Include="Client\Main\Executor.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
@@ -226,11 +225,6 @@
     <ClInclude Include="Client\GUI\SpriteManager.h" />
     <ClInclude Include="Client\Input\Input.h" />
     <ClInclude Include="Client\Main\ClientMain.h" />
-    <ClInclude Include="Client\Main\Executor.h" />
-    <ClInclude Include="Client\Main\Tasks\DoneTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Task.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandler.h" />
     <ClInclude Include="Common\MessageHandler\Interface.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />

@@ -11,7 +11,6 @@
     <ClCompile Include="Client\GUI\SpriteManager.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
-    <ClCompile Include="Client\Main\Executor.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Client\Sound\Sound.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
@@ -72,11 +71,6 @@
     <ClInclude Include="Client\GUI\SpriteManager.h" />
     <ClInclude Include="Client\Input\Input.h" />
     <ClInclude Include="Client\Main\ClientMain.h" />
-    <ClInclude Include="Client\Main\Executor.h" />
-    <ClInclude Include="Client\Main\Tasks\DoneTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Task.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
     <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />

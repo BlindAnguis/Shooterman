@@ -18,8 +18,8 @@ void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
   bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
-  Interface* pc = new Interface();
-  MessageHandler::get().publishInterface("ClientInputList", pc);
+  Interface clientInputInterface;
+  MessageHandler::get().publishInterface("ClientInputList", &clientInputInterface);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
@@ -77,7 +77,7 @@ void Input::readInput() {
 
         getLatestMousePosition();
         InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
-        pc->pushMessage(im.pack());
+        clientInputInterface.pushMessage(im.pack());
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PAUSE);
@@ -103,7 +103,6 @@ void Input::readInput() {
   }
 
   MessageHandler::get().unpublishInterface("ClientInputList");
-  delete pc;
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }
 

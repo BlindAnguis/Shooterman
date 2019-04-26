@@ -74,10 +74,6 @@ void NetworkHandler::startup() {
   soc.setBlocking(false);
   mRunning = true;
   while (mRunning) {
-    // 1. Receive new port for UDP from server
-    // 2. Send port to clientMain
-    // 3. Setup connection over UDP
-
     std::queue<sf::Packet> systemMessageQueue = mMessageSubscriber.getMessageQueue();
     while (!systemMessageQueue.empty()) {
       sf::Packet packet = systemMessageQueue.front();
