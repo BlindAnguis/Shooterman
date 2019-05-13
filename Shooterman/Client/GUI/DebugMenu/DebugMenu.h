@@ -3,6 +3,7 @@
 #include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
+#include "../Resources/GuiList.h"
 
 class DebugMenu : public MenuBase {
 public:
@@ -13,6 +14,7 @@ public:
 
 private:
   Interface mIf;
+  std::shared_ptr<GuiList> mGuiList;
   int mCurrentYPos = 50;
 };
 

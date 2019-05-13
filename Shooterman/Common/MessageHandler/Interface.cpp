@@ -2,7 +2,7 @@
 
 Interface::Interface() {
   mName = "";
-  mDebugEnabled = true;
+  mDebugEnabled = false;
 }
 Interface::~Interface() {}
 
@@ -11,7 +11,7 @@ void Interface::subscribe(Subscriber* newSubscriber) {
   MessageHandler::get().tryToGiveId(newSubscriber);
   mSubscriberList.push_back(newSubscriber);
   newSubscriber->setCallback([this](sf::Packet message) { sendMessage(message); });
-  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to " << mName);
+  TRACE_DEBUG("New subscriber (" << newSubscriber->getId() << ") added to " << mName);
 }
 
 void Interface::unsubscribe(Subscriber* subscriber) {
@@ -24,7 +24,7 @@ void Interface::unsubscribe(Subscriber* subscriber) {
 	//nullcheck, if null someone forgot to remove its subsciption. Remove it and add TRACE informing about this.
 	if ((*it)->getId() == subscriber->getId()) {
       it = mSubscriberList.erase(it);
-      TRACE_INFO("Removed subscriber (" << subscriber->getId() << ") from " << mName);
+      TRACE_WARNING("Removed subscriber (" << subscriber->getId() << ") from " << mName);
     } else {
       ++it;
     }

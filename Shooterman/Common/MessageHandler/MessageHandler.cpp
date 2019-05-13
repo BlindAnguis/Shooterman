@@ -5,7 +5,7 @@ void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSystemSubscriberLock);
   tryToGiveId(newSubscriber);
   mSystemSubscriberList.push_back(newSubscriber);
-  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to system list");
+  TRACE_DEBUG("New subscriber (" << newSubscriber->getId() << ") added to system list");
 }
 
 void MessageHandler::unSubscribeToSystemMessages(Subscriber* newSubscriber) {
@@ -13,7 +13,7 @@ void MessageHandler::unSubscribeToSystemMessages(Subscriber* newSubscriber) {
   for (auto it = mSystemSubscriberList.begin(); it != mSystemSubscriberList.end(); /**/) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mSystemSubscriberList.erase(it);
-      TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to system list");
+      TRACE_DEBUG("Removed subscriber (" << newSubscriber->getId() << ") from to system list");
     } else {
       ++it;
     }
@@ -32,7 +32,7 @@ void MessageHandler::subscribeToSoundMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSoundSubscriberLock);
   tryToGiveId(newSubscriber);
   mSoundSubscriberList.push_back(newSubscriber);
-  TRACE_INFO("New subscriber (" << newSubscriber->getId() << ") added to sound list");
+  TRACE_DEBUG("New subscriber (" << newSubscriber->getId() << ") added to sound list");
 }
 
 void MessageHandler::unSubscribeToSoundMessages(Subscriber* newSubscriber) {
@@ -40,7 +40,7 @@ void MessageHandler::unSubscribeToSoundMessages(Subscriber* newSubscriber) {
   for (auto it = mSoundSubscriberList.begin(); it != mSoundSubscriberList.end(); /**/) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mSoundSubscriberList.erase(it);
-      TRACE_INFO("Removed subscriber (" << newSubscriber->getId() << ") from to sound list");
+      TRACE_DEBUG("Removed subscriber (" << newSubscriber->getId() << ") from to sound list");
     } else {
       ++it;
     }
@@ -107,6 +107,6 @@ void MessageHandler::unsubscribeTo(std::string name, Subscriber* s) {
   if (it != mPublishedComms.end()) {
     it->second->unsubscribe(s);
   } else {
-    TRACE_INFO("Could not find " << name);
+    TRACE_WARNING("Could not find " << name);
   }
 }

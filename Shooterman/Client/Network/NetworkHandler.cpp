@@ -126,6 +126,7 @@ void NetworkHandler::startup() {
   soc.disconnect();
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unpublishInterface("ClientLobby");
+  MessageHandler::get().unpublishInterface("ClientPlayerData");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);

@@ -19,11 +19,7 @@ public:
     static MessageHandler instance;
     return instance;
   }
-  /*
-  void subscribeToGameStateMessages(Subscriber* newSubscriber);
-  void unSubscribeToGameStateMessages(Subscriber* newSubscriber);
-  void pushGameStateMessage(sf::Packet message);
-  */
+
   void subscribeToSystemMessages(Subscriber* newSubscriber);
   void unSubscribeToSystemMessages(Subscriber* newSubscriber);
   void pushSystemMessage(sf::Packet message);
@@ -44,7 +40,7 @@ public:
   void unsubscribeTo(std::string name, Subscriber* s);
 
 private:
-  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled = true; }
+  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled = false; }
   
   int mCurrentId;
   std::mutex mIdGeneratorLock;

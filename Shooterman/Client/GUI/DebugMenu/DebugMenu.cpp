@@ -1,8 +1,12 @@
 #include "DebugMenu.h"
 
+#include "../Resources/GuiButton.h"
+
 DebugMenu::DebugMenu() {
   mName = "CLIENT: DEBUG_MENU";
-
+  mGuiFrame = std::make_shared<Frame>();
+  mGuiList = std::make_shared<GuiList>(GuiComponentPosition::BOTTOM_RIGHT, GuiListDirection::VERTICAL);
+  mGuiFrame->addGuiComponent(mGuiList);
   MessageHandler::get().publishInterface("ClientDebugMenu", &mIf);
 }
 
@@ -29,10 +33,9 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
         mIf.pushMessageTo(returnMess.pack(), subscriberId);
         TRACE_DEBUG("Send to " << subscriberId);
       };
-     /* auto newButton = GUIComponentBuilder::createCustomActionButtonWithColorClick(debMess.getButtonText(), 250, mCurrentYPos, callback);
-      newButton->setRenderBounds(true);
-      mComponentList.push_back(newButton);*/
-      mCurrentYPos += 50;
+
+      auto newButton = std::make_shared<GuiButton>(GuiComponentPosition::RIGHT, debMess.getButtonText(), callback);
+      mGuiList->addGuiComponent(newButton);
     }
   }
   return MenuBase::render(window, mousePosition);
