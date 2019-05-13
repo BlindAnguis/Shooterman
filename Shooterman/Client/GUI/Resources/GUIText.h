@@ -1,30 +1,21 @@
 #pragma once
 
+#include <SFML/Graphics/Text.hpp>
+
 #include "GuiComponent.h"
 
-class GUIText : public GUIComponent {
+#include "../../../Common/Trace.h"
+
+class GuiText : public GuiComponent, Trace {
 public:
-  GUIText(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback, bool toggleCollorOnClick);
+  GuiText(GuiComponentPosition guiComponentPosition, std::string text);
 
-  bool isPressed(sf::Vector2f mousePosition) override;
-  void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
-  std::string getText() override;
-  void setText(std::string newText) override;
-  void setRenderBounds(bool renderBounds) override;
-  int getWidth() override;
-  int getHeight() override;
+  void render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) override;
 
-private:
-  sf::Text mComponentText;
+  void setText(std::string newText);
+  void setTextSize(int textSize);
+
+protected:
   sf::Font mFont;
-  sf::RectangleShape mBounds;
-  sf::Color mTextColor;
-  sf::Color mTextHighlightColor;
-  sf::Color mClickedColor = sf::Color::Blue;
-  std::function<void(void)> mCallback;
-  bool mRenderBounds = false;
-  bool mToggleColorOnClick;
-  bool hasBeenClicked = false;
-
-  bool checkMouse(sf::Vector2f mousePosition);
+  sf::Text mText;
 };

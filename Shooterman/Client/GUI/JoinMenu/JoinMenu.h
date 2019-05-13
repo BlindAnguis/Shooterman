@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Resources/GuiButton.h"
 #include "../Resources/MenuBase.h"
 #include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/Trace.h"
@@ -17,6 +18,6 @@ public:
 
 private:
   std::string mIpString;
-  std::shared_ptr<GUIComponent> mIPInputText;
+  std::shared_ptr<GuiText> mIpText;
   Interface mPc;
 };

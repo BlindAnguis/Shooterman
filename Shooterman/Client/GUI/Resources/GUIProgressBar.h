@@ -1,18 +1,21 @@
 #pragma once
 
-#include "GUIComponentBuilder.h"
+#include <SFML/Graphics/Text.hpp>
 
-class GUIProgressBar : public GUIComponent {
+#include "GuiComponent.h"
+
+class GuiProgressBar : public GuiComponent {
 public:
-  GUIProgressBar(float xPosition, float yPosition, float height, float width, sf::Color color);
+  GuiProgressBar(GuiComponentPosition guiComponentPosition);
+  GuiProgressBar(float xPosition, float yPosition, float height, float width, sf::Color color);
 
-  void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
-  void setPosition(float xPosition, float yPosition) override;
+  void render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) override;
+  void setPosition(float xPosition, float yPosition);
 
-  void setMaxValue(int value) override;
-  void setCurrentValue(int value) override;
+  void setMaxValue(int value);
+  void setCurrentValue(int value);
 
-private:
+protected:
   sf::RectangleShape mFrame;
   sf::RectangleShape mBar;
   float mMaxValue = 0;

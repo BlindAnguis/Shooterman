@@ -29,9 +29,9 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
         mIf.pushMessageTo(returnMess.pack(), subscriberId);
         TRACE_DEBUG("Send to " << subscriberId);
       };
-      auto newButton = GUIComponentBuilder::createCustomActionButtonWithColorClick(debMess.getButtonText(), 250, mCurrentYPos, callback);
+     /* auto newButton = GUIComponentBuilder::createCustomActionButtonWithColorClick(debMess.getButtonText(), 250, mCurrentYPos, callback);
       newButton->setRenderBounds(true);
-      mComponentList.push_back(newButton);
+      mComponentList.push_back(newButton);*/
       mCurrentYPos += 50;
     }
   }

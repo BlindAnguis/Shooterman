@@ -1,80 +1,35 @@
-#include "GUIText.h"
+#include "GuiText.h"
 
-GUIText::GUIText(std::string textString, std::string textFont, sf::Color textColor, sf::Color textHighlightColor, int textSize, int xPosition, int yPosition, std::function<void(void)>& callback, bool toggleCollorOnClick)
-  : mTextColor(textColor), mTextHighlightColor(textHighlightColor), mCallback(callback), mToggleColorOnClick(toggleCollorOnClick) {
-  if (!mFont.loadFromFile("Client/Resources/Fonts/" + textFont)) {
-    TRACE_ERROR("Could not load file " << textFont);
+GuiText::GuiText(GuiComponentPosition guiComponentPosition, std::string text) : GuiComponent(guiComponentPosition) {
+  mName = "GuiButton";
+  if (!mFont.loadFromFile("Client/Resources/Fonts/RobbieRocketpants.ttf")) {
+    TRACE_ERROR("Could not load font");
+    // TODO: ERROR
   }
-  mComponentText.setString(textString);
-  mComponentText.setFont(mFont);
-  mComponentText.setFillColor(textColor);
-  mComponentText.setOutlineColor(mTextHighlightColor);
-  mComponentText.setCharacterSize(textSize);
-  float centeredXPosition = xPosition - mComponentText.getLocalBounds().width / 2;
-  float centeredYPosition = yPosition - mComponentText.getLocalBounds().height / 2;
-  mComponentText.setPosition(float(int(centeredXPosition)), float(int(centeredYPosition)));
+  mText.setFont(mFont);
+  mText.setString(text);
+  mText.setCharacterSize(36);
+  mText.setFillColor(sf::Color::Black);
 
-  mBounds.setPosition(mComponentText.getPosition() + sf::Vector2f(0, mComponentText.getLocalBounds().height / 3));
-  mBounds.setSize(sf::Vector2f(mComponentText.getLocalBounds().width, mComponentText.getLocalBounds().height));
-  mBounds.setFillColor(sf::Color::White);
+  mWidth = (int)mText.getLocalBounds().width;
+  mHeight = 36;
 }
 
-bool GUIText::checkMouse(sf::Vector2f mousePosition) {
-  if (mBounds.getGlobalBounds().contains(mousePosition)) {
-    return true;
-  }
-  return false;
+void GuiText::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {
+  calculatePosition(xPosition, yPosition, width, height);
+  mText.setPosition((float)mXPosition, (float)mYPosition);
+  //mBoundingBox.setPosition((float)mXPosition, (float)mYPosition);
+  //mBoundingBox.setSize(sf::Vector2f((float)mWidth, (float)mHeight));
+  //window->draw(mBoundingBox);
+  window->draw(mText);
 }
 
-bool GUIText::isPressed(sf::Vector2f mousePosition) {
-  if (checkMouse(mousePosition)) {
-    if (mCallback) {
-      if (mToggleColorOnClick) {
-        if (!hasBeenClicked) {
-          mComponentText.setFillColor(mClickedColor);
-          hasBeenClicked = true;
-        } else {
-          mComponentText.setFillColor(mTextColor);
-          hasBeenClicked = false;
-        }
-      }
-      mCallback();
-    }
-    return true;
-  }
-  return false;
+void GuiText::setText(std::string newText) {
+  mText.setString(newText);
 }
 
-void GUIText::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  if (mRenderBounds) {
-    window->draw(mBounds);
-  }
-  if (checkMouse(mousePosition)) {
-    mComponentText.setOutlineThickness(1);
-  } else {
-    mComponentText.setOutlineThickness(0);
-  }
-  window->draw(mComponentText);
-}
-
-std::string GUIText::getText() {
-  return mComponentText.getString();
-}
-
-void GUIText::setText(std::string newText) {
-  mComponentText.setString(newText);
-  mBounds.setPosition(mComponentText.getPosition() + sf::Vector2f(0, mComponentText.getLocalBounds().height / 3));
-  mBounds.setSize(sf::Vector2f(mComponentText.getLocalBounds().width, mComponentText.getLocalBounds().height));
-}
-
-void GUIText::setRenderBounds(bool renderBounds) {
-  mRenderBounds = renderBounds;
-}
-
-int GUIText::getWidth() {
-  return (int)mComponentText.getLocalBounds().width;
-}
-
-int GUIText::getHeight() {
-  return (int)mComponentText.getLocalBounds().height;
+void GuiText::setTextSize(int textSize) {
+  mText.setCharacterSize(textSize);
+  mWidth = (int)mText.getLocalBounds().width;
+  mHeight = textSize;
 }

@@ -6,7 +6,6 @@
     <ClCompile Include="Client\GUI\LobbyMenu\LobbyMenu.cpp" />
     <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\MainMenu\MainMenu.cpp" />
-    <ClCompile Include="Client\GUI\Resources\GUIComponentBuilder.cpp" />
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
     <ClCompile Include="Client\GUI\SpriteManager.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
@@ -37,9 +36,7 @@
     <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Common\Socket\Tcp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
-    <ClCompile Include="Client\Main\Executor.cpp" />
     <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
-    <ClCompile Include="Client\GUI\Resources\GUIComponentBuilder.cpp" />
     <ClCompile Include="Server\Systems\AnimationSystem\AnimationSystem.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
@@ -57,8 +54,13 @@
     <ClCompile Include="Client\GUI\Hud\Hud.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
-    <ClCompile Include="Client\GUI\Resources\GUIProgressBar.cpp" />
-    <ClCompile Include="Client\GUI\Resources\GUIText.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiButton.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiComponent.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiFrame.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiList.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiComponentFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -66,7 +68,6 @@
     <ClInclude Include="Client\GUI\LobbyMenu\LobbyMenu.h" />
     <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\MainMenu\MainMenu.h" />
-    <ClInclude Include="Client\GUI\Resources\GUIComponentBuilder.h" />
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
     <ClInclude Include="Client\GUI\SpriteManager.h" />
     <ClInclude Include="Client\Input\Input.h" />
@@ -111,16 +112,10 @@
     <ClInclude Include="Common\Socket\Tcp.h" />
     <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
-    <ClInclude Include="Client\Main\Executor.h" />
-    <ClInclude Include="Client\Main\Tasks\Task.h" />
-    <ClInclude Include="Client\Main\Tasks\DoneTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkConnectionTask.h" />
-    <ClInclude Include="Client\Main\Tasks\Network\SetupNetworkHandlerCommunicationTask.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />
     <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
-    <ClInclude Include="Client\GUI\Resources\GUIComponentBuilder.h" />
     <ClInclude Include="Common\Textures.h" />
     <ClInclude Include="Server\Systems\AnimationSystem\AnimationSystem.h" />
     <ClInclude Include="Common\MessageHandler\Interface.h" />
@@ -143,9 +138,13 @@
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
-    <ClInclude Include="Client\GUI\Resources\GUIProgressBar.h" />
-    <ClInclude Include="Client\GUI\Resources\GUIText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponent.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiButton.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiFrame.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiList.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiText.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiComponentFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

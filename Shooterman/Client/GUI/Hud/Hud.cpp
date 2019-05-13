@@ -3,15 +3,16 @@
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
 
-#include "../Resources/GUIProgressBar.h"
-
 Hud::Hud() {  
-  mHealthBar = std::make_shared<GUIProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Green);
-  mManaBar = std::make_shared<GUIProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Blue);
-  mStaminaBar = std::make_shared<GUIProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Yellow);
-  mComponentList.push_back(mHealthBar);
-  mComponentList.push_back(mManaBar);
-  mComponentList.push_back(mStaminaBar);
+  mGuiFrame = std::make_shared<Frame>();
+
+  mHealthBar = std::make_shared<GuiProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Green);
+  mManaBar = std::make_shared<GuiProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Blue);
+  mStaminaBar = std::make_shared<GuiProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Yellow);
+
+  mGuiFrame->addGuiComponent(mHealthBar);
+  mGuiFrame->addGuiComponent(mManaBar);
+  mGuiFrame->addGuiComponent(mStaminaBar);
 }
 
 Hud::~Hud() { }

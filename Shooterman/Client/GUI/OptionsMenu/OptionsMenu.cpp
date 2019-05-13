@@ -1,13 +1,22 @@
 #include "OptionsMenu.h"
 
+#include "../Resources/GuiList.h"
+#include "../Resources/GuiComponentFactory.h"
+
 #include <SFML/Graphics.hpp>
 
 OptionsMenu::OptionsMenu() {
   mName = "CLIENT: OPTIONS_MENU";
   mDebugEnabled = true;
 
-  mComponentList.push_back(GUIComponentBuilder::createTitle("Options", 250, 36));
-  mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380,GAME_STATE::PREVIOUS));
+  mGuiFrame = std::make_shared<Frame>();
+
+  mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Options"));
+
+  auto optionsMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
+  optionsMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+
+  mGuiFrame->addGuiComponent(optionsMenuList);
 }
 
 OptionsMenu::~OptionsMenu() { }

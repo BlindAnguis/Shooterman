@@ -1,12 +1,22 @@
 #include "LobbyMenu.h"
 
+#include "../Resources/GuiList.h"
+#include "../Resources/GuiComponentFactory.h"
+
 LobbyMenu::LobbyMenu() {
   mName = "CLIENT: LOBBY_MENU";
   mDebugEnabled = true;
 
-  mComponentList.push_back(GUIComponentBuilder::createTitle("Lobby", 250, 36));
-  mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Start Game", 250, 200, GAME_STATE::PLAYING));
-  mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380, GAME_STATE::MAIN_MENU));
+  mGuiFrame = std::make_shared<Frame>();
+
+  auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
+
+  mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Join Lobby"));
+
+  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING));
+  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+
+  mGuiFrame->addGuiComponent(lobbyMenuList);
 }
 
 LobbyMenu::~LobbyMenu() { }

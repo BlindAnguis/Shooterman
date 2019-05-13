@@ -1,22 +1,32 @@
 #pragma once
 
-#include <functional>
-#include <string>
+#include <memory>
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
-#include "../../../Common/Trace.h"
+enum GuiComponentPosition { CENTER, TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
 
-class GUIComponent : public Trace {
+class GuiComponent {
 public:
-  virtual void render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) = 0;
-  virtual bool isPressed(sf::Vector2f mousePosition) { return false; };
-  virtual void setText(std::string newText) {};
-  virtual std::string getText() { return ""; };
-  virtual void setRenderBounds(bool renderBounds) {};
-  virtual void setPosition(float xPosition, float yPosition) {}
-  virtual int getWidth() { return 0; };
-  virtual int getHeight() { return 0; };
-  virtual void setMaxValue(int value) {}
-  virtual void setCurrentValue(int value) {}
+  GuiComponent();
+  explicit GuiComponent(GuiComponentPosition guiComponentPosition);
+
+  virtual void render(std::shared_ptr<sf::RenderWindow>, int xPosition, int yPosition, int width, int height) = 0;
+  virtual bool checkMouse(sf::Vector2f mousePosition);
+
+  int getXPosition();
+  int getYPosition();
+  int getWidth();
+  int getHeight();
+
+protected:
+  GuiComponentPosition mGuiComponentPosition;
+  int mXPosition = 0;
+  int mYPosition = 0;
+  int mWidth = 0;
+  int mHeight = 0;
+  sf::RectangleShape mBoundingBox;
+
+  void calculatePosition(int xPosition, int yPosition, int width, int height);
 };

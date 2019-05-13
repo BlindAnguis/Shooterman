@@ -1,13 +1,20 @@
 #include "JoinMenu.h"
 
+#include "../Resources/GuiList.h"
+#include "../Resources/GuiComponentFactory.h"
+
 JoinMenu::JoinMenu() {
   mName = "CLIENT: JOIN_MENU";
 
+  mGuiFrame = std::make_shared<Frame>();
+  mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Join Host"));
 
-  mComponentList.push_back(GUIComponentBuilder::createTitle("Join Host", 250, 36));
-  mIPInputText = GUIComponentBuilder::createText("Enter IP", 100, 200);
-  mComponentList.push_back(mIPInputText);
-  mComponentList.push_back(GUIComponentBuilder::createCustomActionButton(" Join", 300, 200, [this]() {
+  auto joinMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
+
+  auto ipList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
+  mIpText = std::make_shared<GuiText>(GuiComponentPosition::CENTER, "Enter IP");
+  ipList->addGuiComponent(mIpText);
+  ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", [this](){
     while (mPc.getNumberOfSubscribers() == 0) {
       sf::sleep(sf::milliseconds(5));
     }
@@ -20,10 +27,12 @@ JoinMenu::JoinMenu() {
     MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
     gameStateSubscriber.reverseSendMessage(gsm.pack());
     MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
-
   }));
 
-  mComponentList.push_back(GUIComponentBuilder::createGameStateButton("Back", 250, 380, GAME_STATE::MAIN_MENU));
+  joinMenuList->addGuiComponent(ipList);
+  joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+
+  mGuiFrame->addGuiComponent(joinMenuList);
 }
 
 JoinMenu::~JoinMenu() { uninit(); }
@@ -46,5 +55,5 @@ void JoinMenu::handleNewText(sf::Uint32 newChar) {
   } else if (mIpString.length() < 15) {
     mIpString += newChar;
   }
-  mIPInputText->setText(mIpString);
+  mIpText->setText(mIpString);
 }

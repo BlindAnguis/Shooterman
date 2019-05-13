@@ -5,6 +5,7 @@ PlayWindow::PlayWindow() {
   mSpriteManager = new SpriteManager();
   mSpriteManager->loadSprites();
   mIsSubscribed = false;
+  mGuiFrame = std::make_shared<Frame>();
 }
 
 PlayWindow::~PlayWindow() {
