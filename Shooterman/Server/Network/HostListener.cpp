@@ -64,7 +64,7 @@ void HostListener::listen() {
       // Send player names to all clients, to show in lobby
       LobbyDataMessage ldm;
       for (auto client : *mConnectedClients) {
-        ldm.addPlayerName("Dummy name " + std::to_string(client.first));
+        ldm.addPlayerName("Dummy name " + std::to_string(client.first - 1));
       }
 
       for (auto client : *mConnectedClients) {

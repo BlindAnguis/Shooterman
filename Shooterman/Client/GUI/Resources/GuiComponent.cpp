@@ -35,35 +35,35 @@ void GuiComponent::calculatePosition(int xPosition, int yPosition, int width, in
     break;
   case TOP:
     mXPosition = (xPosition + (width / 2)) - (mWidth / 2);
-    mYPosition = yPosition;
+    mYPosition = yPosition + mPadding;
     break;
   case BOTTOM:
     mXPosition = (xPosition + (width / 2)) - (mWidth / 2);
-    mYPosition = (yPosition + height) - mHeight;
+    mYPosition = (yPosition + height - mPadding) - mHeight;
     break;
   case LEFT:
-    mXPosition = xPosition;
+    mXPosition = xPosition + mPadding;
     mYPosition = (yPosition + (height / 2)) - (mHeight / 2);
     break;
   case RIGHT:
-    mXPosition = (xPosition + width) - mWidth;
+    mXPosition = (xPosition + width - mPadding) - mWidth;
     mYPosition = (yPosition + (height / 2)) - (mHeight / 2);
     break;
   case TOP_LEFT:
-    mXPosition = xPosition;
-    mYPosition = yPosition;
+    mXPosition = xPosition + mPadding;
+    mYPosition = yPosition + mPadding;
     break;
   case TOP_RIGHT:
-    mXPosition = (xPosition + width) - mWidth;
-    mYPosition = yPosition;
+    mXPosition = (xPosition + width - mPadding) - mWidth;
+    mYPosition = yPosition + mPadding;
     break;
   case BOTTOM_LEFT:
-    mXPosition = xPosition;
-    mYPosition = (yPosition + height) - mHeight;
+    mXPosition = xPosition + mPadding;
+    mYPosition = (yPosition + height - mPadding) - mHeight;
     break;
   case BOTTOM_RIGHT:
-    mXPosition = (xPosition + width) - mWidth;
-    mYPosition = (yPosition + height) - mHeight;
+    mXPosition = (xPosition + width - mPadding) - mWidth;
+    mYPosition = (yPosition + height - mPadding) - mHeight;
     break;
   }
 }

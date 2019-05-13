@@ -26,6 +26,7 @@ protected:
   int mYPosition = 0;
   int mWidth = 0;
   int mHeight = 0;
+  int mPadding = 20;
   sf::RectangleShape mBoundingBox;
 
   void calculatePosition(int xPosition, int yPosition, int width, int height);
