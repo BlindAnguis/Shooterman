@@ -50,6 +50,10 @@ void GuiList::addGuiComponent(std::shared_ptr<GuiComponent> guiComponent) {
   calculateSize();
 }
 
+void GuiList::clear() {
+  mGuiComponentList.clear();
+}
+
 void GuiList::calculateSize() {
   mWidth = 0;
   mHeight = 0;

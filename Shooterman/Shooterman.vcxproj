@@ -163,6 +163,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiList.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
+    <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiList.h" />
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
+    <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

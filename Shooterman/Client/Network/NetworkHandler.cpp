@@ -1,6 +1,17 @@
 #include "NetworkHandler.h"
 
+#include "../../Common/KeyBindings.h"
+#include "../../Common/Constants.h"
+#include "../../Common/MessageId.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
+#include "../../Common/Messages/GameStateMessage.h"
+#include "../../Common/Messages/LobbyDataMessage.h"
 #include "../../Common/Messages/PlayerDataMessage.h"
+#include "../../Common/Messages/SpriteMessage.h"
+#include "../../Common/Messages/SpriteCacheMessage.h"
+#include "../../Common/Messages/ClientInternal/IpMessage.h"
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
@@ -14,6 +25,8 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
+  MessageHandler::get().publishInterface("ClientLobby", &mLobbyInterface);
+
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }  
@@ -99,6 +112,10 @@ void NetworkHandler::startup() {
         PlayerDataMessage pdm;
         pdm.unpack(packet);
         playerDataInterface.pushMessage(pdm.pack());
+      } else if (id == LOBBY_DATA) {
+        LobbyDataMessage ldm;
+        ldm.unpack(packet);
+        mLobbyInterface.pushMessage(ldm.pack());
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
@@ -108,6 +125,7 @@ void NetworkHandler::startup() {
   TRACE_INFO("Not running any more");
   soc.disconnect();
   MessageHandler::get().unpublishInterface("ClientSpriteList");
+  MessageHandler::get().unpublishInterface("ClientLobby");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);

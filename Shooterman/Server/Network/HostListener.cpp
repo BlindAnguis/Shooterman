@@ -1,5 +1,7 @@
 #include "HostListener.h"
 
+#include "../../Common/Messages/LobbyDataMessage.h"
+
 HostListener::HostListener() {
   mName = "SERVER: HOST_LISTENER";
   TRACE_INFO("Created a HostListener");
@@ -57,6 +59,18 @@ void HostListener::listen() {
       //doSomethingWith(client);
       // TODO: Add client to a list of clients?
       client = new sf::TcpSocket();
+
+
+      // Send player names to all clients, to show in lobby
+      LobbyDataMessage ldm;
+      for (auto client : *mConnectedClients) {
+        ldm.addPlayerName("Dummy name " + std::to_string(client.first));
+      }
+
+      for (auto client : *mConnectedClients) {
+        sf::Packet packet = ldm.pack();
+        client.second->getSocket()->send(packet);
+      }
     }
     sf::sleep(sf::milliseconds(5));
   }

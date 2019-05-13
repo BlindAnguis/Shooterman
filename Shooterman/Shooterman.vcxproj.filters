@@ -61,6 +61,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiComponentFactory.cpp" />
+    <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponentFactory.h" />
+    <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

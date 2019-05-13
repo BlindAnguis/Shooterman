@@ -16,6 +16,7 @@ public:
   bool checkMouse(sf::Vector2f mousePosition);
 
   void addGuiComponent(std::shared_ptr<GuiComponent> guiComponent);
+  void clear();
 
 private:
   GuiListDirection mGuiListDirection;
