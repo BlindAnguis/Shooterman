@@ -7,7 +7,8 @@
 #define KNIGHT_MAX_VELOCITY 4.8f
 #define SPEARMAN_MAX_VELOCITY 4.65f
 #define MAGE_MANA_COST 20
-#define MAGE_NR_OF_SUPER_LIGHTNING_BOLTS 20
+#define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
+#define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
 
 EntityCreator::EntityCreator() :
   mEntityManager(&EntityManager::get()),
@@ -173,10 +174,13 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   };
 
   auto superAttackCallback = [this](int entityId) {
-    for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
+    int framesUntilAttack = 0;
+    int nrOfStrikes = (int)(rand() % (MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX - MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN) + MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN);
+    for (int i = 0; i < nrOfStrikes; i++) {
       float posX = (rand() % (1024 - 32)) + 32.0f;
       float posY = (rand() % (1024 - 32)) + 32.0f;
-      EntityCreatorSystem::get().addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), (int)(rand() % (100 - 40) + 40));
+      framesUntilAttack += (int)(rand() % (5 - 2) + 2);
+      EntityCreatorSystem::get().addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack);
     }
   };
 
@@ -286,7 +290,7 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position) {
 }
 
 void EntityCreator::createRandomLightningBolts() {
-  for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
+  for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX; i++) {
     int sleepTime = (int)(rand() % (100 - 40) + 40);
     sf::sleep(sf::milliseconds(sleepTime));
     Entity* lightningBolt = mEntityManager->createEntity();
@@ -608,9 +612,9 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 Entity* EntityCreator::createRandomPickup() {
   int randomPercentage = (int)rand() % 101;
   PickupType type;
-  if (randomPercentage >= 0 && randomPercentage <= 32) {
+  if (randomPercentage >= 0 && randomPercentage <= 99) {
     type = PickupType::Ammo;
-  } else if (randomPercentage >= 33 && randomPercentage <= 66) {
+  } else if (randomPercentage >= 100 && randomPercentage <= 101) {
     type = PickupType::HealthPotion;
   } else {
     type = PickupType::ManaPotion;
