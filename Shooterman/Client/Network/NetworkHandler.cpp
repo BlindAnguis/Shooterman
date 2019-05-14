@@ -25,93 +25,115 @@ void NetworkHandler::start() {
 }
 
 void NetworkHandler::startup() {
+  setupSubscribersAndInterfaces();
+
+  sf::Socket::Status connectionStatus = setupSocketConnection();
+
+  // Failed to connect to server
+  if (connectionStatus != sf::Socket::Status::Done) {
+    TRACE_INFO("Connection failed! " << connectionStatus);
+    GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+    mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
+    return;
+  }
+
+  TRACE_INFO("Connected!");
+
+  MessageHandler::get().publishInterface("ClientSpriteList", &mSpriteListInterface);
+  MessageHandler::get().publishInterface("ClientPlayerData", &mPlayerDataInterface);
+  MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
+
+  mSocket.setBlocking(false);
+  mRunning = true;
+
+  handlePackets();
+ 
+  TRACE_INFO("Not running any more");
+  mSocket.disconnect();
+  teardownSubscribersAndInterfaces();
+}
+
+void NetworkHandler::setupSubscribersAndInterfaces() {
   MessageHandler::get().publishInterface("ClientLobby", &mLobbyInterface);
 
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
-  }  
-  Subscriber gameStateSubscriber;
-  MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
+  }
   AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
-  TRACE_DEBUG("Trying to subscribe to ClientIpList");
+
+  while (!MessageHandler::get().subscribeTo("GameState", &mGameStateSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
+
   while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
-  TRACE_DEBUG("Subscribed to ClientIpList");
+}
 
+sf::Socket::Status NetworkHandler::setupSocketConnection() {
+  sf::Socket::Status connectionStatus = sf::Socket::Status::Disconnected;
+
+  // Wait for IP address
   std::queue<sf::Packet> messages;
   while (messages.size() == 0) {
     messages = mMessageSubscriber.getMessageQueue();
     sf::sleep(sf::milliseconds(5));
   }
-  TRACE_DEBUG("Got IP message");
-
+  // We have the IP, no need to be subscribed
   MessageHandler::get().unsubscribeTo("ClientIpList", &mMessageSubscriber);
-  TRACE_DEBUG("Unsubscribed to ClientIpList");
 
   int ID = -1;
   auto ipMessage = messages.front();
   ipMessage >> ID;
   if (ID != IP_MESSAGE) {
+    // Received unexpected message
     TRACE_ERROR("Received unexpected message with ID: " << ID);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-	  gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
-    return;
+    mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
+    return connectionStatus;
   }
-
-  TRACE_DEBUG("Unpacking message");
 
   IpMessage ipm(ipMessage);
-
   TRACE_INFO("Connecting socket to " << ipm.getIp());
-  sf::TcpSocket soc;
-  auto connected = soc.connect(sf::IpAddress(ipm.getIp()), ipm.getPort(), sf::milliseconds(10000));
-
-  // Failed to connect to server
-  if (connected != sf::Socket::Status::Done) {
-    TRACE_INFO("Connection failed! " << connected);
-    GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-	  gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
-    return;
+  int connectionAttempts = 10;
+  // Try to connect multiple times
+  while (connectionStatus != sf::Socket::Status::Done && connectionAttempts > 0) {
+    connectionStatus = mSocket.connect(sf::IpAddress(ipm.getIp()), ipm.getPort(), sf::milliseconds(100));
+    connectionAttempts--;
+    sf::sleep(sf::milliseconds(500));
   }
 
-  TRACE_INFO("Connected!");
-  Interface spriteListInterface;
-  MessageHandler::get().publishInterface("ClientSpriteList", &spriteListInterface);
-  Interface playerDataInterface;
-  MessageHandler::get().publishInterface("ClientPlayerData", &playerDataInterface);
-  MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
-  soc.setBlocking(false);
-  mRunning = true;
+  return connectionStatus;
+}
+
+void NetworkHandler::handlePackets() {
   while (mRunning) {
     std::queue<sf::Packet> systemMessageQueue = mMessageSubscriber.getMessageQueue();
     while (!systemMessageQueue.empty()) {
       sf::Packet packet = systemMessageQueue.front();
       systemMessageQueue.pop();
-      soc.send(packet);
-      //TRACE_DEBUG("SENDING MESAGE");
+      mSocket.send(packet);
     }
 
     sf::Packet packet;
-    if (soc.receive(packet) == sf::Socket::Done) {
+    if (mSocket.receive(packet) == sf::Socket::Done) {
       int id = -1;
       packet >> id;
-      if (id == SPRITE_LIST) {
+      if (id == SPRITE_LIST_CACHE) {
+        SpriteCacheMessage sm;
+        sm.unpack(packet);
+        mSpriteListInterface.pushMessage(sm.pack());
+      } else if (id == SPRITE_LIST) {
         SpriteMessage sm;
         sm.unpack(packet);
-        //TRACE_DEBUG("Receveid sprite package with id: " << id);
-        spriteListInterface.pushMessage(sm.pack());
-      } else if (id == SPRITE_LIST_CACHE) {
-        SpriteCacheMessage scm;
-        scm.unpack(packet);
-        spriteListInterface.pushMessage(scm.pack());
+        mSpriteListInterface.pushMessage(sm.pack());
       } else if (id == PLAYER_DATA) {
         PlayerDataMessage pdm;
         pdm.unpack(packet);
-        playerDataInterface.pushMessage(pdm.pack());
+        mPlayerDataInterface.pushMessage(pdm.pack());
       } else if (id == LOBBY_DATA) {
         LobbyDataMessage ldm;
         ldm.unpack(packet);
@@ -122,14 +144,15 @@ void NetworkHandler::startup() {
     }
     sf::sleep(sf::milliseconds(1));
   }
-  TRACE_INFO("Not running any more");
-  soc.disconnect();
+}
+
+void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unpublishInterface("ClientLobby");
   MessageHandler::get().unpublishInterface("ClientPlayerData");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
-  MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
+  MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
 }
 
 void NetworkHandler::shutDown() {

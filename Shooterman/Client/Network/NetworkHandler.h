@@ -2,13 +2,10 @@
 
 #include <thread>
 
-#include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/Trace.h"
-#include "../../Common/Socket/Tcp.h"
-#include "../../Common/Socket/Udp.h"
 
 class NetworkHandler : Trace {
 public:
@@ -21,11 +18,18 @@ private:
   bool mRunning = true;
   std::unique_ptr<std::thread> mNetworkHandlerThread;
   Interface mLobbyInterface;
+  Interface mSpriteListInterface;
+  Interface mPlayerDataInterface;
   Subscriber mMessageSubscriber;
   Subscriber mDebugSubscriber;
-  UdpSocket mUdp;
-  TcpSocket mTcp;
+  Subscriber mGameStateSubscriber;
+  sf::TcpSocket mSocket;
 
   void startup();
+  void setupSubscribersAndInterfaces();
+  sf::Socket::Status setupSocketConnection();
+  void handlePackets();
+  void teardownSubscribersAndInterfaces();
+
   void handleDebugMessages();
 };
