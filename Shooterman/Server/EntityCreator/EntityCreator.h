@@ -8,6 +8,8 @@
 #include "../../Common/Trace.h"
 
 #include <array>
+#include <vector>
+#include <thread>
 
 class EntityCreator : Trace
 {
@@ -47,5 +49,5 @@ private:
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createRandomLightningBolts();
+  std::vector<std::thread*> mMageSuperAttacks;
 };
-

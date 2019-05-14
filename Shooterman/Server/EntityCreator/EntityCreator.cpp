@@ -48,6 +48,10 @@ EntityCreator::EntityCreator(
 
 EntityCreator::~EntityCreator()
 {
+  // Temporary solution, how to do this in a proper way? Where should the join go?
+  for (auto thread : mMageSuperAttacks) {
+    thread->join();
+  }
 }
 
 Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f position) {
@@ -178,7 +182,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   };
 
   auto superAttackCallback = [this](int entityId) {
-    createRandomLightningBolts();
+    mMageSuperAttacks.emplace_back(new std::thread(&EntityCreator::createRandomLightningBolts, this));
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -252,6 +256,8 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
 
 void EntityCreator::createRandomLightningBolts() {
   for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
+    int sleepTime = (int)(rand() % (100 - 40) + 40);
+    sf::sleep(sf::milliseconds(sleepTime));
     Entity* lightningBolt = mEntityManager->createEntity();
     RenderComponent* rc = mRenderComponentManager->addComponent(lightningBolt->id);
     rc->visible = true;
