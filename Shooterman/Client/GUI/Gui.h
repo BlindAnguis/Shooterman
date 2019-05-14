@@ -44,12 +44,12 @@ private:
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Subscriber mDebugSubscriber;
-  Interface* mMouseInterface;
+  Interface mMouseInterface;
   GAME_STATE mCurrentGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
   std::map<GAME_STATE, std::vector<MenuBase*>> mMenuMap;
-  MenuBase* mDebugMenu;
+  std::shared_ptr<MenuBase> mDebugMenu;
   sf::Clock mRenderClock;
 
   void init();

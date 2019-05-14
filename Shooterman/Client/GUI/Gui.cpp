@@ -11,9 +11,8 @@ Gui::Gui() {
 
 void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
-  mMouseInterface = new Interface();
-  MessageHandler::get().publishInterface("MousePosition", mMouseInterface);
+  MessageHandler::get().subscribeTo("GameState", &mGameStateMessageSubscriber);
+  MessageHandler::get().publishInterface("MousePosition", &mMouseInterface);
 
   Interface pc;
 
@@ -23,7 +22,7 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<MenuBase*> { new PlayWindow(), new Hud() });
   mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<MenuBase*> { new OptionsMenu() });
   mMenuMap.emplace(GAME_STATE::PAUSE, std::vector<MenuBase*> { new PauseMenu() });
-  mDebugMenu = new DebugMenu;
+  mDebugMenu = std::make_shared<DebugMenu>();
 
   // This needs to be after the DebugMenu is created
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
@@ -45,12 +44,8 @@ void Gui::init() {
 
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
   MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
-  MessageHandler::get().unsubscribeAll(&mGameStateMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
-  delete mMouseInterface;
-  delete mDebugMenu;
-  // TODO: Delete all in mMenuMap
 }
 
 void Gui::render() {
@@ -90,7 +85,7 @@ void Gui::handleWindowEvents() {
     }
     if (event.type == sf::Event::MouseMoved) {
       MouseMessage mm(sf::Mouse::getPosition(*mWindow));
-      mMouseInterface->pushMessage(mm.pack());
+      mMouseInterface.pushMessage(mm.pack());
     }
     if (event.type == sf::Event::Resized) {
       sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);

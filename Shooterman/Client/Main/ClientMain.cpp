@@ -2,12 +2,11 @@
 
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
-
+  TRACE_INFO("Starting...");
   MessageHandler::get().publishInterface("GameState", &gameStateInterface);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
   Input input;
-  Gui gui = Gui();
+  Gui gui;
   GameLoop server;
   NetworkHandler networkHandler;
   //Sound sound = Sound();
@@ -18,6 +17,8 @@ ClientMain::ClientMain() {
   mGameStateStack.push(GAME_STATE::MAIN_MENU);
   Interface pc;
   bool sentIpMessage = false;
+
+  TRACE_INFO("Starting complete");
 
   while (mRunning) {
     switch (mGameStateStack.top()) {
@@ -81,8 +82,12 @@ ClientMain::ClientMain() {
   }
   input.shutDown();
   gui.shutDown();
+  if (networkHandlerStarted) {
+    networkHandler.shutDown();
+  }
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
-  MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
+  MessageHandler::get().unpublishInterface("GameState");
+  TRACE_INFO("Shutting down complete");
 }
 
 void ClientMain::handleSystemMessages() {
@@ -96,7 +101,7 @@ void ClientMain::handleSystemMessages() {
     systemMessage >> messageId;
     switch (messageId) {
     case SHUT_DOWN:
-      TRACE_INFO("Preparing to shut down");
+      TRACE_INFO("Shutting down...");
       mRunning = false;
       break;
     default:

@@ -1,5 +1,7 @@
 #include "MenuBase.h"
 
+MenuBase::~MenuBase() { }
+
 void MenuBase::init() { }
 void MenuBase::uninit() { }
 

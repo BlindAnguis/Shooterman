@@ -88,6 +88,7 @@ void MessageHandler::unpublishInterface(std::string name) {
       interface->second->unsubscribe(interface->second->getSubscribers().front());
     }
     mPublishedComms.erase(interface);
+    TRACE_DEBUG("Interface: " << name << " unpublished");
   }
 }
 
