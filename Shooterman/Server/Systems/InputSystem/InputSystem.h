@@ -22,14 +22,9 @@ private:
   std::queue<sf::Packet> getInput();
 
 public:
-  /*
-  static InputSystem& get() {
-    static InputSystem instance;
-    return instance;
-  }
-  */
   InputSystem();
   ~InputSystem();
+  static InputSystem& get();
 	void handleInput();
   InputMessage getLatestInput();
   void setPlayers(std::shared_ptr<std::map<int, Player*>> playersMap) { mPlayersMap = playersMap; }

@@ -19,6 +19,11 @@ InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
 }
 
+InputSystem& InputSystem::get() {
+  static InputSystem instance;
+  return instance;
+}
+
 std::queue<sf::Packet> InputSystem::getInput() {
   if (!mIsSubscribedToInput) {
     mIsSubscribedToInput = MessageHandler::get().subscribeTo("ServerInputList", &mInputSubscriber);

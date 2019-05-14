@@ -16,7 +16,7 @@ public:
 private:
   bool mRunning;
   std::thread* mGameLoopThread;
-  std::shared_ptr<NetworkSystem> mNetworkSystem;
+  NetworkSystem* mNetworkSystem;
 
   void gameLoop();
 };

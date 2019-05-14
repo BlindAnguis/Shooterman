@@ -2,28 +2,22 @@
 #include "../../../Common/KeyBindings.h"
 
 MovementSystem::MovementSystem() :
-mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
-mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
-mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
-mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
-mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()) {}
-
-MovementSystem::MovementSystem(
-  CollisionSystem* collisionSystem,
-  GridSystem* gridSystem,
-  EntityManager* entityManager
-) :
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
-  mCollisionSystem(collisionSystem),
-  mGridSystem(gridSystem),
-  mEntityManager(entityManager),
+  mCollisionSystem(&CollisionSystem::get()),
+  mGridSystem(&GridSystem::get()),
+  mEntityManager(&EntityManager::get()),
   mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get())
 {}
 
 MovementSystem::~MovementSystem() {}
+
+MovementSystem& MovementSystem::get() {
+  static MovementSystem instance;
+  return instance;
+}
 
 void MovementSystem::update(InputMessage inputMessage)
 {

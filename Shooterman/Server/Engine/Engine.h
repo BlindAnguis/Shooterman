@@ -11,10 +11,10 @@
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 #include "../Systems/DeleteSystem/DeleteSystem.h"
 #include "../Systems/ClockSystem/ClockSystem.h"
+#include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
-#include "../EntityCreator/EntityCreator.h"
 #include "../MapCreator/MapCreator.h"
 #include "../Systems/PickupSystem/PickupSystem.h"
 #include <vector>
@@ -24,20 +24,17 @@
 
 class Engine : Trace {
 public:
-  Engine(std::shared_ptr<NetworkSystem> networkSystem);
-  Engine(std::array<std::array<int, 32>, 32> gameMap, std::shared_ptr<NetworkSystem> networkSystem);
+  Engine();
+  Engine(std::array<std::array<int, 32>, 32> gameMap);
   ~Engine();
   void update();
-  InputSystem* getInputSystem();
-  MovementSystem* getMovementSystem();
-  EntityManager* getEntityManager();
   // EntityFactory entityFactory;
   void createPlayers();
   void createMap();
   void setConnectedClients(std::shared_ptr<std::map<int, Player*>> connectedClients) {
     mConnectedClients = connectedClients; 
-    mInputSystem.setPlayers(mConnectedClients); 
-    mMovementSystem.setPlayers(mConnectedClients);
+    mInputSystem->setPlayers(mConnectedClients); 
+    mMovementSystem->setPlayers(mConnectedClients);
   }
   std::shared_ptr<std::map<int, Player*>> getConnectedClients() { return mConnectedClients; }
 
@@ -45,20 +42,21 @@ public:
 
 private:
   // Systems
-  MovementSystem mMovementSystem;
-  InputSystem mInputSystem;
-  RenderSystem mRenderSystem;
-  CollisionSystem mCollisionSystem;
-  ClockSystem mClockSystem;
-  AnimationSystem mAnimationSystem;
-  HealthSystem mHealthSystem;
-  GridSystem mGridSystem;
-  DeleteSystem mDeleteSystem;
-  std::shared_ptr<NetworkSystem> mNetworkSystem;
-  PickupSystem mPickupSystem;
+  MovementSystem* mMovementSystem;
+  InputSystem* mInputSystem;
+  RenderSystem* mRenderSystem;
+  CollisionSystem* mCollisionSystem;
+  ClockSystem* mClockSystem;
+  AnimationSystem* mAnimationSystem;
+  HealthSystem* mHealthSystem;
+  GridSystem* mGridSystem;
+  DeleteSystem* mDeleteSystem;
+  NetworkSystem* mNetworkSystem;
+  PickupSystem* mPickupSystem;
+  EntityCreatorSystem* mEntityCreatorSystem;
 
   // Managers
-  EntityManager mEntityManager;
+  EntityManager* mEntityManager;
 
   ComponentManager<PlayerComponent>* mPlayerComponentManager;
   ComponentManager<ClockComponent>* mClockComponentManager;
@@ -76,7 +74,6 @@ private:
   std::array<sf::Texture*, 99> mTextures;
 
   void destroyEntity(int entityId);
-  EntityCreator mEntityCreator;
   MapCreator mMapCreator;
 };
 

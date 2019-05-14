@@ -11,6 +11,11 @@ AnimationSystem::AnimationSystem() :
 
 AnimationSystem::~AnimationSystem() {}
 
+AnimationSystem& AnimationSystem::get() {
+  static AnimationSystem instance;
+  return instance;
+}
+
 void AnimationSystem::update()
 {
   for (auto entity : mAnimationComponentManager->getAllEntitiesWithComponent()) {

@@ -34,7 +34,7 @@ void GameLoop::stop() {
 }
 
 void GameLoop::gameLoop() {
-  mNetworkSystem = std::make_shared<NetworkSystem>();
+  mNetworkSystem = &NetworkSystem::get();
   GAME_STATE state;
   mRunning = true;
   TRACE_INFO("Gameloop started");
@@ -104,7 +104,7 @@ void GameLoop::gameLoop() {
   };
 
   std::array<std::array<int, 16>, 16> gameMap3 = {};
-  Engine world = Engine(gameMap1, mNetworkSystem);
+  Engine world = Engine(gameMap1);
   //world.createMap();
   /*Entity* player1 = world.createPlayer(50, 50, 5, 5, 100);
   Entity* player2 = world.createPlayer(200, 200, -2, -2, 100);*/
@@ -117,11 +117,11 @@ void GameLoop::gameLoop() {
   mNetworkSystem->start();
   while (mRunning) {
     c.restart();
-    state = world.getInputSystem()->getLatestGameStateMessage();
+    state = InputSystem::get().getLatestGameStateMessage();
 
     switch (state) {
       case GAME_STATE::LOBBY:
-        input = world.getInputSystem()->getLatestInput();
+        input = InputSystem::get().getLatestInput();
         //TRACE_INFO("In the LOBBY");
         //if (input == A_KEY) {
         //TRACE_INFO("Setting GameLoopState to SETUP_GAME");

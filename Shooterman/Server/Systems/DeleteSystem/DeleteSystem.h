@@ -9,6 +9,7 @@ public:
   DeleteSystem();
   ~DeleteSystem();
 
+  static DeleteSystem& get();
   void addEntity(int entityId);
   std::vector<int> getEntities();
 

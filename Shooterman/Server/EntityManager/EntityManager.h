@@ -14,6 +14,7 @@ class EntityManager : Trace {
 public:
   EntityManager();
   ~EntityManager();
+  static EntityManager& get();
   Entity* createEntity();
   void destroyEntity(int entityId);
 

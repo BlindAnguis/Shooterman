@@ -165,6 +165,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
+    <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
     <ClCompile Include="Server\Systems\ClockSystem\ClockSystem.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
+    <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />
     <ClInclude Include="Server\Systems\ClockSystem\ClockSystem.h" />

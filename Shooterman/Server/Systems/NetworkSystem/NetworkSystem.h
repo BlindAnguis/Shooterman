@@ -18,6 +18,7 @@ public:
   NetworkSystem();
   ~NetworkSystem();
 
+  static NetworkSystem& get();
   void start();
   void shutDown();
 

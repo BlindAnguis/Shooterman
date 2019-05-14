@@ -4,6 +4,11 @@ ClockSystem::ClockSystem() : mClockComponentManager(&ComponentManager<ClockCompo
 
 ClockSystem::~ClockSystem() {}
 
+ClockSystem& ClockSystem::get() {
+  static ClockSystem instance;
+  return instance;
+}
+
 void ClockSystem::update() {
   for (auto clockComponent : mClockComponentManager->getAllComponents()) {
     if (clockComponent->timeout != -1 && clockComponent->clock.getElapsedTime().asMilliseconds() >= clockComponent->timeout) {

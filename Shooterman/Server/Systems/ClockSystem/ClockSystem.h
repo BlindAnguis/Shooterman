@@ -8,7 +8,7 @@ class ClockSystem : public Trace {
 public:
   ClockSystem();
   ~ClockSystem();
-
+  static ClockSystem& get();
   void update();
 
 private:

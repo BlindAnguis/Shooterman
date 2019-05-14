@@ -8,21 +8,16 @@
 #include "../../Common/Trace.h"
 
 #include <array>
-#include <vector>
-#include <thread>
 
 class EntityCreator : Trace
 {
 public:
-  EntityCreator(
-    EntityManager *entityManager,
-    GridSystem *gridSystem,
-    DeleteSystem *deleteSystem
-  );
+  EntityCreator();
   ~EntityCreator();
 
   Entity* createPlayer(PlayerClass playerClass, sf::Vector2f position);
   Entity* createRandomPickup();
+  Entity* createLightningStrike(sf::Vector2f position);
 
   DeleteSystem *mDeleteSystem;
 
@@ -49,5 +44,4 @@ private:
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createRandomLightningBolts();
-  std::vector<std::thread*> mMageSuperAttacks;
 };

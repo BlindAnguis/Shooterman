@@ -1,6 +1,7 @@
 #include "EntityCreator.h"
 #include "../Systems/CollisionSystem/Collision.h"
 #include "../Systems/ManaSystem/ManaSystem.h"
+#include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
 
 #define MAGE_MAX_VELOCITY 4.5f
 #define KNIGHT_MAX_VELOCITY 4.8f
@@ -8,12 +9,8 @@
 #define MAGE_MANA_COST 20
 #define MAGE_NR_OF_SUPER_LIGHTNING_BOLTS 20
 
-EntityCreator::EntityCreator(
-  EntityManager *entityManager,
-  GridSystem *gridSystem,
-  DeleteSystem *deleteSystem
-) :
-  mEntityManager(entityManager),
+EntityCreator::EntityCreator() :
+  mEntityManager(&EntityManager::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
@@ -22,8 +19,8 @@ EntityCreator::EntityCreator(
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mGridSystem(gridSystem),
-  mDeleteSystem(deleteSystem)
+  mGridSystem(&GridSystem::get()),
+  mDeleteSystem(&DeleteSystem::get())
 {
   mName = "SERVER: ENTITY_CREATOR";
   mTextures[static_cast<int>(Textures::CharacterBandana)] = loadTexture("CharacterBandana1.png");
@@ -38,7 +35,7 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
   //mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
   mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("lightningBall.png");
-  mTextures[static_cast<int>(Textures::LightningBolt)] = loadTexture("lightningBolt.png");
+  mTextures[static_cast<int>(Textures::LightningStrike)] = loadTexture("lightningBolt.png");
   mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
   mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
   mTextures[static_cast<int>(Textures::HealthPotion)] = loadTexture("Potions/pt1Small.png");
@@ -46,13 +43,7 @@ EntityCreator::EntityCreator(
   mTextures[static_cast<int>(Textures::Ammo)] = loadTexture("Potions/pt4Small.png");
 }
 
-EntityCreator::~EntityCreator()
-{
-  // Temporary solution, how to do this in a proper way? Where should the join go?
-  for (auto thread : mMageSuperAttacks) {
-    thread->join();
-  }
-}
+EntityCreator::~EntityCreator() {}
 
 Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f position) {
   Entity* createdPlayer = nullptr;
@@ -182,7 +173,11 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   };
 
   auto superAttackCallback = [this](int entityId) {
-    mMageSuperAttacks.emplace_back(new std::thread(&EntityCreator::createRandomLightningBolts, this));
+    for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
+      float posX = (rand() % (1024 - 32)) + 32.0f;
+      float posY = (rand() % (1024 - 32)) + 32.0f;
+      EntityCreatorSystem::get().addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), (int)(rand() % (100 - 40) + 40));
+    }
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -254,6 +249,42 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   return mage;
 }
 
+Entity* EntityCreator::createLightningStrike(sf::Vector2f position) {
+  Entity* lightningStrike = mEntityManager->createEntity();
+  RenderComponent* rc = mRenderComponentManager->addComponent(lightningStrike->id);
+  rc->visible = true;
+  rc->isDynamic = true;
+  rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::LightningStrike)], sf::IntRect(0, 0, 98, 203));
+  rc->sprite.setOrigin(49, 101);
+  rc->sprite.setPosition(position.x, position.y);
+  rc->textureId = Textures::LightningStrike;
+
+  HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(lightningStrike->id);
+  hcc->healthChange = -40;
+
+  CollisionComponent* cc = mCollisionComponentManager->addComponent(lightningStrike->id);
+  cc->collided = false;
+  cc->destroyOnCollision = true;
+
+  auto attackFinishedCallback = [this](int entityId) {
+    mDeleteSystem->addEntity(entityId);
+  };
+
+  AnimationComponent* ac = mAnimationComponentManager->addComponent(lightningStrike->id);
+  Animation attackAnimation(rc->sprite, true, lightningStrike->id);
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 11; j++) {
+      attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(j * 98, i * 203, 98, 203), 40, sf::Vector2f(49, 101) });
+    }
+  }
+  attackAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  ac->animations.emplace(AnimationType::Attacking, attackAnimation);
+  ac->currentAnimation = AnimationType::Attacking;
+  mGridSystem->addEntity(lightningStrike->id, (sf::Vector2i)rc->sprite.getPosition());
+
+  return lightningStrike;
+}
+
 void EntityCreator::createRandomLightningBolts() {
   for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_BOLTS; i++) {
     int sleepTime = (int)(rand() % (100 - 40) + 40);
@@ -262,12 +293,12 @@ void EntityCreator::createRandomLightningBolts() {
     RenderComponent* rc = mRenderComponentManager->addComponent(lightningBolt->id);
     rc->visible = true;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::LightningBolt)], sf::IntRect(0, 0, 98, 203));
+    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::LightningStrike)], sf::IntRect(0, 0, 98, 203));
     rc->sprite.setOrigin(49, 101);
     float posX = (rand() % (1024 - 32)) + 32.0f;
     float posY = (rand() % (1024 - 32)) + 32.0f;
     rc->sprite.setPosition(posX, posY);
-    rc->textureId = Textures::LightningBolt;
+    rc->textureId = Textures::LightningStrike;
 
     HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(lightningBolt->id);
     hcc->healthChange = -40;

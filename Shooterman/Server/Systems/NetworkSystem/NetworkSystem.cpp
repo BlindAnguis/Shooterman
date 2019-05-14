@@ -15,6 +15,11 @@ NetworkSystem::~NetworkSystem() {
   delete mRenderLock;
 }
 
+NetworkSystem& NetworkSystem::get() {
+  static NetworkSystem instance;
+  return instance;
+}
+
 void NetworkSystem::start() {
   TRACE_INFO("Starting module...");
   mNetworkSystemThread = std::make_unique<std::thread>(&NetworkSystem::startup, this);

@@ -3,17 +3,18 @@
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
 #include "../../../Common/Trace.h"
-#include "../../EntityCreator/EntityCreator.h"
+#include "../EntityCreatorSystem/EntityCreatorSystem.h"
 
 class PickupSystem : public Trace
 {
 public:
-  PickupSystem(EntityCreator* entityCreator);
+  PickupSystem();
   ~PickupSystem();
+  static PickupSystem& get();
   void update();
 private:
   ComponentManager<PickupComponent>* mPickupComponentManager;
   int mTimeToNextPickup;
   sf::Clock mPickupClock;
-  EntityCreator* mEntityCreator;
+  EntityCreatorSystem* mEntityCreatorSystem;
 };

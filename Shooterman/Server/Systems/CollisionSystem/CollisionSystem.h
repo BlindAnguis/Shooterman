@@ -11,8 +11,8 @@ class CollisionSystem : Trace
 {
 public:
   CollisionSystem();
-  CollisionSystem(DeleteSystem* deleteSystem);
   ~CollisionSystem();
+  static CollisionSystem& get();
   void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem);
   void resetCollisionInformation();
 private:

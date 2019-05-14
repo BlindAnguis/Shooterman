@@ -10,6 +10,11 @@ EntityManager::EntityManager() : mLatestEntityId(0) {
 EntityManager::~EntityManager() {
 }
 
+EntityManager& EntityManager::get() {
+  static EntityManager instance;
+  return instance;
+}
+
 Entity* EntityManager::createEntity() {
   if (mFreeIds.empty()) {
     TRACE_ERROR("MAXIMUN NUMBER OF ENTITIES REACHED!");

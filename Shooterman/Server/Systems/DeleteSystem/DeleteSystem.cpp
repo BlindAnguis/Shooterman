@@ -4,6 +4,11 @@ DeleteSystem::DeleteSystem() {}
 
 DeleteSystem::~DeleteSystem() {}
 
+DeleteSystem& DeleteSystem::get() {
+  static DeleteSystem instance;
+  return instance;
+}
+
 void DeleteSystem::addEntity(int entityId) {
   mEntitiesToRemove.emplace_back(entityId);
 }
