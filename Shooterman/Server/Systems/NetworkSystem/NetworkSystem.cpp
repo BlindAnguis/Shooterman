@@ -2,6 +2,7 @@
 
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
+#include "../../../Common/Messages/GameStateMessage.h"
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
@@ -31,6 +32,7 @@ void NetworkSystem::startup() {
   Interface inputListInterface;
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
   MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
+  MessageHandler::get().publishInterface("ServerGameState", &mGameStateInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   while (mRunning) {
@@ -55,6 +57,14 @@ void NetworkSystem::startup() {
         case SHUT_DOWN:
           break;
         case CHANGE_GAME_STATE:
+        {
+          // Check if it is the host
+          if (client.first == 2) {
+            GameStateMessage gsm;
+            gsm.unpack(packet);
+            mGameStateInterface.pushMessage(gsm.pack());
+          }
+        }
           break;
         default:
           TRACE_ERROR("Received unhandled packet with ID: " << packetId);
@@ -68,6 +78,25 @@ void NetworkSystem::startup() {
       for (auto clientSocket : mClientsSockets) {
         sf::Packet spriteDataPacket = spriteData->pack();
         clientSocket.second->send(spriteDataPacket);
+      }
+    }
+
+    auto gameStateQueue = mGameStateInterface.getMessageQueue();
+    while (!gameStateQueue.empty()) {
+      auto gameStatePacket = gameStateQueue.front();
+      gameStateQueue.pop();
+      int id = -1;
+      gameStatePacket >> id;
+      
+      if (id == CHANGE_GAME_STATE) {
+        GameStateMessage gsm;
+        gsm.unpack(gameStatePacket);
+        for (auto clientSocket : mClientsSockets) {
+          sf::Packet gsmPacket = gsm.pack();
+          clientSocket.second->send(gsmPacket);
+        }
+      } else {
+        TRACE_WARNING("Received unhandeled packet with id: " << id);
       }
     }
 

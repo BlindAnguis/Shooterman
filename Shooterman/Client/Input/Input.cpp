@@ -11,12 +11,12 @@ Input::Input() {
   TRACE_INFO("Starting module done");
 }
 Input::~Input() {
-  MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
 }
 
 void Input::readInput() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo("GameState",&mGameStateMessageSubscriber);
+  MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
   Interface clientInputInterface;
   MessageHandler::get().publishInterface("ClientInputList", &clientInputInterface);
@@ -33,6 +33,7 @@ void Input::readInput() {
         // Do nothing
         break;
       case GAME_STATE::LOBBY:
+      case GAME_STATE::CLIENT_LOBBY:
         // Do nothing
         break;
       case GAME_STATE::JOIN:
@@ -133,9 +134,16 @@ void Input::handleGameStateMessages() {
     gameStateMessage = gameStateMessageQueue.front();
     gameStateMessageQueue.pop();
 
-    GameStateMessage gsm;
-    gsm.unpack(gameStateMessage);
-    mCurrentGameState = gsm.getGameState();
+    int id = -1;
+    gameStateMessage >> id;
+
+    if (id == CHANGE_GAME_STATE) {
+      GameStateMessage gsm;
+      gsm.unpack(gameStateMessage);
+      mCurrentGameState = gsm.getGameState();
+    } else {
+      TRACE_WARNING("Received unexpected message with ID : " << id);
+    }
   }
 }
 

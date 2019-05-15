@@ -1,6 +1,7 @@
 #include "HostListener.h"
 
 #include "../../Common/Messages/LobbyDataMessage.h"
+#include "../Systems/NetworkSystem/NetworkSystem.h"
 
 HostListener::HostListener() {
   mName = "SERVER: HOST_LISTENER";
@@ -38,6 +39,7 @@ void HostListener::listen() {
   sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
   mListener->setBlocking(false);
   //sf::Socket::Status status = mListener->listen(1337, "localhost");
+  auto networkSystem = &NetworkSystem::get();
   if (status != sf::Socket::Status::Done) {
     TRACE_ERROR("Couldn't start listening to port 1337 on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
     //TRACE_ERROR("Couldn't start listening to port 1337 on IP: localhost, status: " << status);
@@ -55,7 +57,8 @@ void HostListener::listen() {
       TRACE_INFO("New connection received from " << client->getRemoteAddress());
       Player* player = new Player();
       player->setSocket(client);
-      mConnectedClients->emplace(getNextID(), player);
+      int playerId = getNextID();
+      mConnectedClients->emplace(playerId, player);
       //doSomethingWith(client);
       // TODO: Add client to a list of clients?
       client = new sf::TcpSocket();
@@ -71,6 +74,8 @@ void HostListener::listen() {
         sf::Packet packet = ldm.pack();
         client.second->getSocket()->send(packet);
       }
+
+      networkSystem->addNewClientSocket(player->getSocket(), playerId);
     }
     sf::sleep(sf::milliseconds(5));
   }

@@ -3,7 +3,7 @@
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
   TRACE_INFO("Starting...");
-  MessageHandler::get().publishInterface("GameState", &gameStateInterface);
+  MessageHandler::get().publishInterface("ClientGameState", &gameStateInterface);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   Input input;
   Gui gui;
@@ -55,6 +55,8 @@ ClientMain::ClientMain() {
 
         break; 
       }
+      case GAME_STATE::CLIENT_LOBBY:
+        break;
       case GAME_STATE::JOIN:
         if (!networkHandlerStarted) {
           networkHandler.start();
@@ -85,8 +87,11 @@ ClientMain::ClientMain() {
   if (networkHandlerStarted) {
     networkHandler.shutDown();
   }
+  if (mServerStarted) {
+    server.stop();
+  }
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
-  MessageHandler::get().unpublishInterface("GameState");
+  MessageHandler::get().unpublishInterface("ClientGameState");
   TRACE_INFO("Shutting down complete");
 }
 
@@ -117,19 +122,25 @@ void ClientMain::handleGameStateMessages() {
     gameStateMessage = gameStateMessageQueue.front();
     gameStateMessageQueue.pop();
 
-    GameStateMessage gsm;
-    gsm.unpack(gameStateMessage);
-	if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
-	  mGameStateStack.pop();
-	}
-	else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
-		mGameStateStack = std::stack<GAME_STATE>();
-		mGameStateStack.push(GAME_STATE::MAIN_MENU);
-	} 
-	else {
-	  mGameStateStack.push(gsm.getGameState());
-	}
-	gsm = GameStateMessage(mGameStateStack.top());
-	gameStateInterface.pushMessage(gsm.pack());
+    int id = -1;
+    gameStateMessage >> id;
+    if (id == CHANGE_GAME_STATE) {
+      GameStateMessage gsm;
+      gsm.unpack(gameStateMessage);
+
+      if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
+        mGameStateStack.pop();
+      } else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
+        mGameStateStack = std::stack<GAME_STATE>();
+        mGameStateStack.push(GAME_STATE::MAIN_MENU);
+      } else {
+        mGameStateStack.push(gsm.getGameState());
+      }
+
+      gsm = GameStateMessage(mGameStateStack.top());
+      gameStateInterface.pushMessage(gsm.pack());
+    } else {
+      TRACE_WARNING("Received unhandeled message with ID: " << id);
+    }
   }
 }

@@ -3,14 +3,11 @@
 HealthSystem::HealthSystem() :
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get())
-{
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()) {
   mName = "SERVER: HEALTH_SYSTEM";
 }
 
-HealthSystem::~HealthSystem()
-{
-}
+HealthSystem::~HealthSystem() { }
 
 HealthSystem& HealthSystem::get() {
   static HealthSystem instance;

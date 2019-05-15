@@ -19,7 +19,7 @@ PickupSystem::PickupSystem()
   mName = "SERVER: PICKUP_SYSTEM";
 }
 
-PickupSystem::~PickupSystem() {}
+PickupSystem::~PickupSystem() { }
 
 PickupSystem& PickupSystem::get() {
   static PickupSystem instance;

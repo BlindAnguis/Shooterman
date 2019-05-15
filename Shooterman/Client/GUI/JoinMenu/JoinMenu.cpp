@@ -22,11 +22,11 @@ JoinMenu::JoinMenu() {
     IpMessage ipm(mIpString, 1337);
     mPc.pushMessage(ipm.pack());
 
-    GameStateMessage gsm(GAME_STATE::PLAYING);
+    GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
     Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
+    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
     gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
+    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
   }));
 
   joinMenuList->addGuiComponent(ipList);

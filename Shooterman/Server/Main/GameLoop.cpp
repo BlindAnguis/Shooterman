@@ -1,15 +1,9 @@
+#include "GameLoop.h"
+
 #include <SFML\System.hpp>
 #include <SFML\Graphics.hpp>
-#include <list>
-#include <array>
 
-#include "GameLoop.h"
-#include "../../Common/KeyBindings.h"
-#include "../../Common/Messages/SpriteMessage.h"
-#include "../EntityManager/EntityManager.h"
-#include "../Systems/InputSystem/InputSystem.h"
 #include "../Engine/Engine.h"
-#include "../../Common/Messages/GameStateMessage.h"
 #include "../Network/HostListener.h"
 
 GameLoop::GameLoop() {
@@ -24,13 +18,10 @@ void GameLoop::start() {
 
 void GameLoop::stop() {
   TRACE_INFO("Exit Server");
-  
-  mNetworkSystem->shutDown();
   mRunning = false;
   mGameLoopThread->join();
   delete mGameLoopThread;
   TRACE_INFO("Server finished");
-
 }
 
 void GameLoop::gameLoop() {
@@ -38,11 +29,6 @@ void GameLoop::gameLoop() {
   GAME_STATE state;
   mRunning = true;
   TRACE_INFO("Gameloop started");
-  sf::Packet movePacket;
-  sf::CircleShape shape(50.f);
-  shape.setPosition(200, 200);
-  float velocityX = 5;
-  float velocityY = 5;
   std::array<std::array<int, 32>, 32> gameMap1 =
   {
     {
@@ -104,55 +90,29 @@ void GameLoop::gameLoop() {
   };
 
   std::array<std::array<int, 16>, 16> gameMap3 = {};
-  Engine world = Engine(gameMap1);
-  //world.createMap();
-  /*Entity* player1 = world.createPlayer(50, 50, 5, 5, 100);
-  Entity* player2 = world.createPlayer(200, 200, -2, -2, 100);*/
-  //Entity* ball1 = world.createBall(100, 100, 1, 1);
-  InputMessage input = -1;
+
   HostListener hostListener = HostListener();
-  std::list<sf::TcpSocket*> clients;
   hostListener.startListening();
-  sf::Clock c;
   mNetworkSystem->start();
+  Engine world = Engine(gameMap1);
+  sf::Clock c;
   while (mRunning) {
     c.restart();
     state = InputSystem::get().getLatestGameStateMessage();
 
     switch (state) {
       case GAME_STATE::LOBBY:
-        input = InputSystem::get().getLatestInput();
-        //TRACE_INFO("In the LOBBY");
-        //if (input == A_KEY) {
-        //TRACE_INFO("Setting GameLoopState to SETUP_GAME");
-        //state = GAME_STATE::SETUP_GAME;
-        //}
         break;
 
       case GAME_STATE::SETUP_GAME:
         TRACE_INFO("Setting GameLoopState to PLAYING");
         state = GAME_STATE::PLAYING;
-        //std::cout << "Game setup finished" << std::endl;
-        /*
-        clients = hostListener.stopListening();
-        TRACE_INFO("Clients connected:")
-        for (auto client : clients) {
-          TRACE_INFO("Client: " << client->getLocalPort());
-        }
-        */
         break;
 
       case GAME_STATE::PLAYING:
         if (hostListener.isListening()) {
           auto tempMap = hostListener.stopListening();
           world.setConnectedClients(tempMap);
-          TRACE_INFO("Clients connected:")
-          for (auto client : *world.getConnectedClients()) {
-            if (client.second->getSocket()) {
-              TRACE_INFO("Client: " << client.second->getSocket()->getRemoteAddress());
-              mNetworkSystem->addNewClientSocket(client.second->getSocket(), client.first);
-            }
-          }
           world.createPlayers();
           world.createMap();
         }
@@ -172,6 +132,7 @@ void GameLoop::gameLoop() {
         if (hostListener.isListening()) {
           hostListener.stopListening();
         }
+        mNetworkSystem->shutDown();
         break;
 
       case GAME_STATE::OPTIONS:
@@ -183,15 +144,14 @@ void GameLoop::gameLoop() {
         TRACE_ERROR("This state doesn't exist " << state);
     }
     
-    input = -1;
     int sleepTime = FRAME_LENGTH_IN_MS - c.getElapsedTime().asMilliseconds();
     if (sleepTime > 0) {
       sf::sleep(sf::milliseconds(sleepTime));
     }
-    
   }  
 
   if (hostListener.isListening()) {
     hostListener.stopListening();
   }
+  mNetworkSystem->shutDown();
 }

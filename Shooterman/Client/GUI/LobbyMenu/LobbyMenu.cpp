@@ -4,7 +4,7 @@
 #include "../Resources/GuiComponentFactory.h"
 #include "../Resources/GuiText.h"
 
-LobbyMenu::LobbyMenu() {
+LobbyMenu::LobbyMenu(bool server) {
   mName = "CLIENT: LOBBY_MENU";
   mDebugEnabled = true;
 
@@ -18,7 +18,9 @@ LobbyMenu::LobbyMenu() {
   mGuiFrame->addGuiComponent(mPlayersList);
 
   auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
-  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING));
+  if (server) {
+    lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING));
+  }
   lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
 
   mGuiFrame->addGuiComponent(lobbyMenuList);

@@ -3,6 +3,7 @@
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiButton.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../../Common/MessageId.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -24,9 +25,9 @@ PauseMenu::PauseMenu() {
       GameStateMessage gsm(GAME_STATE::MAIN_MENU);
 
       Subscriber gameStateSubscriber;
-      MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
+      MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
       gameStateSubscriber.reverseSendMessage(gsm.pack());
-      MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
+      MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
 
       sf::sleep(sf::milliseconds(100));
       sf::Packet shutdownMessage;

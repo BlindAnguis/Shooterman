@@ -9,7 +9,7 @@
 
 class LobbyMenu : public MenuBase {
 public:
-  LobbyMenu();
+  LobbyMenu(bool server);
   ~LobbyMenu();
 
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;

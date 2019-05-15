@@ -11,13 +11,14 @@ Gui::Gui() {
 
 void Gui::init() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo("GameState", &mGameStateMessageSubscriber);
+  MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().publishInterface("MousePosition", &mMouseInterface);
 
   Interface pc;
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::vector<MenuBase*> { new MainMenu() });
-  mMenuMap.emplace(GAME_STATE::LOBBY, std::vector<MenuBase*> { new LobbyMenu() });
+  mMenuMap.emplace(GAME_STATE::LOBBY, std::vector<MenuBase*> { new LobbyMenu(true) });
+  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::vector<MenuBase*> { new LobbyMenu(false) });
   mMenuMap.emplace(GAME_STATE::JOIN, std::vector<MenuBase*> { new JoinMenu() });
   mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<MenuBase*> { new PlayWindow(), new Hud() });
   mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<MenuBase*> { new OptionsMenu() });
@@ -43,7 +44,7 @@ void Gui::init() {
   render();
 
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
-  MessageHandler::get().unsubscribeTo("GameState", &mGameStateMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
 }
@@ -153,29 +154,36 @@ void Gui::handleGameStateMessages() {
   sf::Packet gameStateMessage;
   while (!gameStateMessageQueue.empty()) {
     gameStateMessage = gameStateMessageQueue.front();
-    gameStateMessageQueue.pop();
+    int id = -1;
+    gameStateMessage >> id;
 
-    GameStateMessage gsm;
-    gsm.unpack(gameStateMessage);
-    if (gsm.getGameState() != mCurrentGameState) {
-      // Changed game state
-      auto previousMenu = mMenuMap.find(mCurrentGameState);
-      if (previousMenu != mMenuMap.end()) {
-        for (auto menu : previousMenu->second) {
-          menu->uninit();
+    if (id == CHANGE_GAME_STATE) {
+      gameStateMessageQueue.pop();
+
+      GameStateMessage gsm;
+      gsm.unpack(gameStateMessage);
+      if (gsm.getGameState() != mCurrentGameState) {
+        // Changed game state
+        auto previousMenu = mMenuMap.find(mCurrentGameState);
+        if (previousMenu != mMenuMap.end()) {
+          for (auto menu : previousMenu->second) {
+            menu->uninit();
+          }
         }
-      }
 
-      mCurrentGameState = gsm.getGameState();
-      auto newMenu = mMenuMap.find(mCurrentGameState);
-      if (newMenu != mMenuMap.end()) {
-        for (auto menu : newMenu->second) {
-          menu->init();
+        mCurrentGameState = gsm.getGameState();
+        auto newMenu = mMenuMap.find(mCurrentGameState);
+        if (newMenu != mMenuMap.end()) {
+          for (auto menu : newMenu->second) {
+            menu->init();
+          }
         }
-      }
 
-      mWindow->clear(sf::Color::White);
-      mWindow->display();
+        mWindow->clear(sf::Color::White);
+        mWindow->display();
+      }
+    } else {
+      TRACE_WARNING("Received unexpected message with ID: " << id);
     }
   }
 }

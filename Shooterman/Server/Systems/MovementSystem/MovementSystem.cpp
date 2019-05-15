@@ -12,7 +12,7 @@ MovementSystem::MovementSystem() :
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get())
 {}
 
-MovementSystem::~MovementSystem() {}
+MovementSystem::~MovementSystem() { }
 
 MovementSystem& MovementSystem::get() {
   static MovementSystem instance;

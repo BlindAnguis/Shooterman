@@ -4,20 +4,18 @@ AnimationSystem::AnimationSystem() :
   mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
-  mHealthComponentManager(&ComponentManager<HealthComponent>::get())
-{
+  mHealthComponentManager(&ComponentManager<HealthComponent>::get()) {
   mName = "SERVER: ANIMATION_SYSTEM";
 }
 
-AnimationSystem::~AnimationSystem() {}
+AnimationSystem::~AnimationSystem() { }
 
 AnimationSystem& AnimationSystem::get() {
   static AnimationSystem instance;
   return instance;
 }
 
-void AnimationSystem::update()
-{
+void AnimationSystem::update() {
   for (auto entity : mAnimationComponentManager->getAllEntitiesWithComponent()) {
     auto entityHealth = mHealthComponentManager->getComponent(entity.first);
     if (entityHealth && !entityHealth->isAlive) {

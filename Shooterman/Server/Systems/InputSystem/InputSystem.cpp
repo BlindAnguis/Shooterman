@@ -4,11 +4,10 @@
 InputSystem::InputSystem()
   :
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
-  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get())
-{
+  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()) {
   //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
  
-  MessageHandler::get().subscribeTo("GameState", &mGameStateSubscriber);
+  mIsSubscribedToGameState = MessageHandler::get().subscribeTo("ServerGameState", &mGameStateSubscriber);
   mCurrentGameState = GAME_STATE::LOBBY;
   mName = "Server: INPUT_SYSTEM";
   mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
@@ -16,7 +15,7 @@ InputSystem::InputSystem()
 
 InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
-  MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
 }
 
 InputSystem& InputSystem::get() {
@@ -54,18 +53,29 @@ InputMessage InputSystem::getLatestInput() {
 }
 
 GAME_STATE InputSystem::getLatestGameStateMessage() {
+  if (!mIsSubscribedToGameState) {
+    mIsSubscribedToGameState = MessageHandler::get().subscribeTo("ServerGameState", &mGameStateSubscriber);
+  }
+
   GameStateMessage gsm;
   std::queue<sf::Packet> gameStateMessagesQueue = mGameStateSubscriber.getMessageQueue();
 
   if (!gameStateMessagesQueue.empty()) {
-    gsm.unpack(gameStateMessagesQueue.front());
+    sf::Packet packet = gameStateMessagesQueue.front();
     gameStateMessagesQueue.pop();
-  }
+    int id = -1;
+    packet >> id;
 
-  GAME_STATE gameState = gsm.getGameState();
-  if (gameState != GAME_STATE::NO_STATE) {
-    //TRACE_INFO("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
-    mCurrentGameState = gameState;
+    if (id == CHANGE_GAME_STATE) {
+      gsm.unpack(packet);
+      GAME_STATE gameState = gsm.getGameState();
+      if (gameState != GAME_STATE::NO_STATE) {
+        //TRACE_INFO("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
+        mCurrentGameState = gameState;
+      }
+
+      mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    }
   }
   return mCurrentGameState;
 }

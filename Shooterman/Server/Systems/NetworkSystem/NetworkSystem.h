@@ -36,6 +36,7 @@ private:
   std::map<int, sf::TcpSocket*> mNewClientsSockets;
   std::shared_ptr<SpriteMessage> mSpriteMessage;
   Interface mPlayerDataInterface;
+  Interface mGameStateInterface;
 
   void startup();
   void updateInternalMap();

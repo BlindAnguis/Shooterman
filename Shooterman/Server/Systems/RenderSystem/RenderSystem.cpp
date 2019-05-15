@@ -5,7 +5,7 @@ RenderSystem::RenderSystem()
   mName = "SERVER: RENDER_SYSTEM";
 }
 
-RenderSystem::~RenderSystem() {}
+RenderSystem::~RenderSystem() { }
 
 RenderSystem& RenderSystem::get() {
   static RenderSystem instance;

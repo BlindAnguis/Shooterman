@@ -1,5 +1,7 @@
 #include "GameStateMessage.h"
 
+#include "../MessageId.h"
+
 GameStateMessage::GameStateMessage() :
   mGameState(GAME_STATE::NO_STATE) { }
 
@@ -8,6 +10,7 @@ GameStateMessage::GameStateMessage(GAME_STATE newGameState) :
 
 sf::Packet GameStateMessage::pack() {
   sf::Packet packet;
+  packet << CHANGE_GAME_STATE;
   packet << mGameState;
   return packet;
 }

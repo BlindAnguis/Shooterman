@@ -34,7 +34,7 @@ void NetworkHandler::startup() {
     TRACE_INFO("Connection failed! " << connectionStatus);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
+    MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
     return;
   }
 
@@ -63,7 +63,7 @@ void NetworkHandler::setupSubscribersAndInterfaces() {
   AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
 
-  while (!MessageHandler::get().subscribeTo("GameState", &mGameStateSubscriber)) {
+  while (!MessageHandler::get().subscribeTo("ClientGameState", &mGameStateSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
 
@@ -92,7 +92,7 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
     TRACE_ERROR("Received unexpected message with ID: " << ID);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
+    MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
     return connectionStatus;
   }
 
@@ -111,10 +111,17 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
 
 void NetworkHandler::handlePackets() {
   while (mRunning) {
-    std::queue<sf::Packet> systemMessageQueue = mMessageSubscriber.getMessageQueue();
+    auto systemMessageQueue = mMessageSubscriber.getMessageQueue();
     while (!systemMessageQueue.empty()) {
       sf::Packet packet = systemMessageQueue.front();
       systemMessageQueue.pop();
+      mSocket.send(packet);
+    }
+
+    auto gameStateMessageQueue = mGameStateSubscriber.getMessageQueue();
+    while (!gameStateMessageQueue.empty()) {
+      sf::Packet packet = gameStateMessageQueue.front();
+      gameStateMessageQueue.pop();
       mSocket.send(packet);
     }
 
@@ -138,6 +145,10 @@ void NetworkHandler::handlePackets() {
         LobbyDataMessage ldm;
         ldm.unpack(packet);
         mLobbyInterface.pushMessage(ldm.pack());
+      } else if (id == CHANGE_GAME_STATE) {
+        GameStateMessage gsm;
+        gsm.unpack(packet);
+        mGameStateSubscriber.reverseSendMessage(gsm.pack());
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
@@ -152,7 +163,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unpublishInterface("ClientPlayerData");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
-  MessageHandler::get().unsubscribeTo("GameState", &mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
 }
 
 void NetworkHandler::shutDown() {

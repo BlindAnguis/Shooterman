@@ -3,6 +3,7 @@
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiButton.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../../Common/MessageId.h"
 
 MainMenu::MainMenu() {
   mName = "CLIENT: MAIN_MENU";

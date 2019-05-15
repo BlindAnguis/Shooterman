@@ -12,6 +12,7 @@
 class InputSystem : public ObservableIf, Trace
 {
 private:
+  bool mIsSubscribedToGameState = false;
   bool mIsSubscribedToInput = false;
   Subscriber mInputSubscriber;
   Subscriber mGameStateSubscriber;

@@ -5,8 +5,7 @@ CollisionSystem::CollisionSystem()
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
-  mDeleteSystem(&DeleteSystem::get())
-{
+  mDeleteSystem(&DeleteSystem::get()) {
   mName = "ENGINE: COLLISION_SYSTEM";
 }
 
@@ -15,7 +14,7 @@ CollisionSystem& CollisionSystem::get() {
   return instance;
 }
 
-CollisionSystem::~CollisionSystem() {}
+CollisionSystem::~CollisionSystem() { }
 
 void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
   RenderComponent* causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);

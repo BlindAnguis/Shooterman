@@ -13,9 +13,9 @@ std::shared_ptr<GuiComponent> GCF::createGameStateButton(GuiComponentPosition gu
   auto gameStateButton = std::make_shared<GuiButton>(guiComponentPosition, text, [gameState] {
     GameStateMessage gsm(gameState);
     Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("GameState", &gameStateSubscriber);
+    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
     gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("GameState", &gameStateSubscriber);
+    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
   });
 
   return gameStateButton;

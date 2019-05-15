@@ -1,11 +1,8 @@
 #pragma once
 #include <thread>
-#include "../../Common/MessageHandler/MessageHandler.h"
-#include "../../Common/KeyBindings.h"
-#include "../../Common/Trace.h"
-#include "../../Common/Constants.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
-#include "../../Common/Socket/Tcp.h"
+#include "../../Common/Trace.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 
 class GameLoop : Trace {
 public:
