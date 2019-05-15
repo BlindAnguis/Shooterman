@@ -44,7 +44,9 @@ void HealthSystem::update()
         for (auto collider : collisionComponent->collidedList) {
           HealthChangerComponent* collidingHealthChanger = mHealthChangerComponentManager->getComponent(collider);
           if (collidingHealthChanger) {
-            changeHealth(entityWithHealth.first, collidingHealthChanger->healthChange);
+            if (collidingHealthChanger->immuneEntityIds.find(entityWithHealth.first) == collidingHealthChanger->immuneEntityIds.end()) {
+              changeHealth(entityWithHealth.first, collidingHealthChanger->healthChange);
+            }
           }
         }
       }

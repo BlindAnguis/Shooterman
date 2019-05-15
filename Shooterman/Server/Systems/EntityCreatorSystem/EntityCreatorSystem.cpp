@@ -18,7 +18,7 @@ void EntityCreatorSystem::update() {
   auto it = mEntitiesToCreate.begin();
   while (it != mEntitiesToCreate.end()) {
     if (it->framesToCreation == 0) {
-      createEntity(it->type, it->pos);
+      createEntity(it->type, it->pos, it->immuneEntityIds);
       it = mEntitiesToCreate.erase(it);
     } else {
       it->framesToCreation--;
@@ -27,19 +27,11 @@ void EntityCreatorSystem::update() {
   }
 }
 
-void EntityCreatorSystem::addEntityToCreate(EntityType type, int framesToCreation) {
-  mEntitiesToCreate.emplace_back(EntityToCreate{ type, sf::Vector2f(0, 0), framesToCreation });
+void EntityCreatorSystem::addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation, std::set<int> immuneEntityIds) {
+  mEntitiesToCreate.emplace_back(EntityToCreate{ type, pos, framesToCreation, immuneEntityIds });
 }
 
-void EntityCreatorSystem::addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation) {
-  mEntitiesToCreate.emplace_back(EntityToCreate{ type, pos, framesToCreation });
-}
-
-Entity* EntityCreatorSystem::createEntity(EntityType type) {
-  return createEntity(type, sf::Vector2f(0, 0));
-}
-
-Entity* EntityCreatorSystem::createEntity(EntityType type, sf::Vector2f pos) {
+Entity* EntityCreatorSystem::createEntity(EntityType type, sf::Vector2f pos, std::set<int> immuneEntityIds) {
   switch (type)
   {
   case EntityType::PlayerMage:
@@ -53,7 +45,7 @@ Entity* EntityCreatorSystem::createEntity(EntityType type, sf::Vector2f pos) {
   case EntityType::LightningBolt:
     break;
   case EntityType::LightningStrike:
-    return mEntityCreator.createLightningStrike(pos);
+    return mEntityCreator.createLightningStrike(pos, immuneEntityIds);
   case EntityType::RandomPickup:
     return mEntityCreator.createRandomPickup();
   default:

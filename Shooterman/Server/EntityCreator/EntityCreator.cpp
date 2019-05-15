@@ -180,7 +180,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
       float posX = (rand() % (1024 - 32)) + 32.0f;
       float posY = (rand() % (1024 - 32)) + 32.0f;
       framesUntilAttack += (int)(rand() % (5 - 2) + 2);
-      EntityCreatorSystem::get().addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack);
+      EntityCreatorSystem::get().addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
     }
   };
 
@@ -253,7 +253,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   return mage;
 }
 
-Entity* EntityCreator::createLightningStrike(sf::Vector2f position) {
+Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int> immuneEntityIds) {
   Entity* lightningStrike = mEntityManager->createEntity();
   RenderComponent* rc = mRenderComponentManager->addComponent(lightningStrike->id);
   rc->visible = true;
@@ -265,6 +265,7 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position) {
 
   HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(lightningStrike->id);
   hcc->healthChange = -40;
+  hcc->immuneEntityIds = immuneEntityIds;
 
   CollisionComponent* cc = mCollisionComponentManager->addComponent(lightningStrike->id);
   cc->collided = false;

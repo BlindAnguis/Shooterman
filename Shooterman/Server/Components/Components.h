@@ -6,6 +6,7 @@
 #include "../../Common/Animation/Animation.h"
 
 #include <map>
+#include <set>
 
 enum class ComponentType {
   Position,
@@ -78,6 +79,7 @@ struct ManaComponent {
 
 struct HealthChangerComponent {
   int healthChange = 0;
+  std::set<int> immuneEntityIds;
 };
 
 struct ClockComponent {

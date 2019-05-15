@@ -18,6 +18,7 @@ struct EntityToCreate {
   EntityType type;
   sf::Vector2f pos;
   int framesToCreation;
+  std::set<int> immuneEntityIds;
 };
 
 class EntityCreatorSystem
@@ -27,10 +28,8 @@ public:
   ~EntityCreatorSystem();
   static EntityCreatorSystem& get();
   void update();
-  void addEntityToCreate(EntityType type, int framesToCreation);
-  void addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation);
-  Entity* createEntity(EntityType type);
-  Entity* createEntity(EntityType type, sf::Vector2f pos);
+  void addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation, std::set<int> immuneEntityIds);
+  Entity* createEntity(EntityType type, sf::Vector2f pos, std::set<int> immuneEntityIds);
 private:
   std::vector<EntityToCreate> mEntitiesToCreate;
   EntityCreator mEntityCreator;

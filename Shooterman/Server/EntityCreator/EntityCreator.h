@@ -17,7 +17,7 @@ public:
 
   Entity* createPlayer(PlayerClass playerClass, sf::Vector2f position);
   Entity* createRandomPickup();
-  Entity* createLightningStrike(sf::Vector2f position);
+  Entity* createLightningStrike(sf::Vector2f position, std::set<int> immuneEntityIds);
 
   DeleteSystem *mDeleteSystem;
 
