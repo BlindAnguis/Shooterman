@@ -69,11 +69,13 @@ private:
   ComponentManager<PickupComponent>* mPickupComponentManager;
 
   Subscriber mPlayerDataSubscriber;
+  Subscriber mDebugMenuSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::array<std::array<int, 32>, 32> mGameMap;
   std::array<sf::Texture*, 99> mTextures;
 
   void destroyEntity(int entityId);
+  void handleDebugMessage();
   MapCreator mMapCreator;
 };
 

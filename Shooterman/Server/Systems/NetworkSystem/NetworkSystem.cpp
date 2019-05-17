@@ -3,6 +3,7 @@
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/Messages/GameStateMessage.h"
+#include "../../../Common/Messages/AddDebugButtonMessage.h"
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
@@ -34,6 +35,7 @@ void NetworkSystem::startup() {
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
   MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
   MessageHandler::get().publishInterface("ServerGameState", &mGameStateInterface);
+  MessageHandler::get().publishInterface("ServerDebugMenu", &mDebugMenuInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   while (mRunning) {
@@ -65,6 +67,12 @@ void NetworkSystem::startup() {
             gsm.unpack(packet);
             mGameStateInterface.pushMessage(gsm.pack());
           }
+        }
+        case ADD_DEBUG_BUTTON:
+        {
+          AddDebugButtonMessage adbm;
+          adbm.unpack(packet);
+          mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
         }
           break;
         default:
@@ -102,6 +110,7 @@ void NetworkSystem::startup() {
     }
 
     handlePlayerData();
+    handleDebugMenu();
 
     sf::sleep(sf::milliseconds(1));
   }
@@ -110,6 +119,7 @@ void NetworkSystem::startup() {
   MessageHandler::get().unpublishInterface("ServerInputList");
   MessageHandler::get().unpublishInterface("ServerPlayerData");
   MessageHandler::get().unpublishInterface("ServerGameState");
+  MessageHandler::get().unpublishInterface("ServerDebugMenu");
   for (auto client : mClientsSockets) {
     client.second->disconnect();
     delete client.second;
@@ -172,6 +182,31 @@ void NetworkSystem::handlePlayerData() {
 
       sf::Packet packet = pdm.pack();
       mClientsSockets.at(playerId)->send(packet);
+    }
+      break;
+    default:
+      TRACE_ERROR("Received unknown message: " << id);
+      break;
+    }
+  }
+}
+
+void NetworkSystem::handleDebugMenu() {
+  auto debugMenuQueue = mDebugMenuInterface.getMessageQueue();
+  while (!debugMenuQueue.empty()) {
+    sf::Packet debugMenuMessage = debugMenuQueue.front();
+    debugMenuQueue.pop();
+
+    int id = -1;
+    debugMenuMessage >> id;
+
+    switch (id) {
+    case ADD_DEBUG_BUTTON: {
+      AddDebugButtonMessage adbm;
+      adbm.unpack(debugMenuMessage);
+
+      sf::Packet packet = adbm.pack();
+      mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
     }
       break;
     default:

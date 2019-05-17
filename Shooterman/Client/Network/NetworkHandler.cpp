@@ -43,6 +43,7 @@ void NetworkHandler::startup() {
   MessageHandler::get().publishInterface("ClientSpriteList", &mSpriteListInterface);
   MessageHandler::get().publishInterface("ClientPlayerData", &mPlayerDataInterface);
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
+  MessageHandler::get().subscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
 
   mSocket.setBlocking(false);
   mRunning = true;
@@ -125,6 +126,20 @@ void NetworkHandler::handlePackets() {
       mSocket.send(packet);
     }
 
+    auto debugMessageQueue = mServerDebugSubscriber.getMessageQueue();
+    while (!debugMessageQueue.empty()) {
+      sf::Packet packet = debugMessageQueue.front();
+      debugMessageQueue.pop();
+      int id = -1;
+      packet >> id;
+
+      AddDebugButtonMessage adbm;
+      adbm.unpack(packet);
+      AddDebugButtonMessage adbm2(adbm.getCallbackId(), "");
+      sf::Packet p2 = adbm2.pack();
+      mSocket.send(p2);
+    }
+
     sf::Packet packet;
     if (mSocket.receive(packet) == sf::Socket::Done) {
       int id = -1;
@@ -149,6 +164,11 @@ void NetworkHandler::handlePackets() {
         GameStateMessage gsm;
         gsm.unpack(packet);
         mGameStateSubscriber.reverseSendMessage(gsm.pack());
+      } else if (id == ADD_DEBUG_BUTTON) {
+        AddDebugButtonMessage adbm;
+        adbm.unpack(packet);
+        AddDebugButtonMessage adbm2(mServerDebugSubscriber.getId(), adbm.getButtonText(), adbm.getSubscriberId());
+        mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
@@ -162,6 +182,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unpublishInterface("ClientLobby");
   MessageHandler::get().unpublishInterface("ClientPlayerData");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
 }

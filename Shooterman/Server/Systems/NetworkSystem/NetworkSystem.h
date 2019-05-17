@@ -37,10 +37,12 @@ private:
   std::shared_ptr<SpriteMessage> mSpriteMessage;
   Interface mPlayerDataInterface;
   Interface mGameStateInterface;
+  Interface mDebugMenuInterface;
 
   void startup();
   void updateInternalMap();
   std::shared_ptr<SpriteMessage> getRenderData();
   void handlePlayerData();
+  void handleDebugMenu();
 
 };

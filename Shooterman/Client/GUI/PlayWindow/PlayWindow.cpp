@@ -15,8 +15,6 @@ PlayWindow::~PlayWindow() {
 }
 
 void PlayWindow::uninit() {
-  MessageHandler::get().unsubscribeTo("ClientSpriteList", &mSpriteListSubscriber);
-  mIsSubscribed = false;
   // This will clear the queue in case there is crap left over from previous game
   mSpriteListSubscriber.getMessageQueue();
 }

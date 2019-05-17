@@ -24,7 +24,7 @@ void Input::readInput() {
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "CLient input debug traces");
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client input debug traces");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
   std::uint32_t keyboardBitmask;
   while (mRunning) {

@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "../../Common/Textures.h"
 #include "../../Common/Messages/PlayerDataMessage.h"
+#include "../../Common/Messages/AddDebugButtonMessage.h"
 #include <stdlib.h>
 #include <time.h>
 
@@ -80,10 +81,13 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
 }
 
 Engine::~Engine() {
+  MessageHandler::get().unsubscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
+  MessageHandler::get().unsubscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
 }
 
 void Engine::update() {
-  //TRACE_INFO("Frame begins!!");
+  handleDebugMessage();
+  //TRACE_DEBUG("Frame begins!!");
   sf::Clock c;
   // Reset
   //TRACE_INFO("Reset");
@@ -169,7 +173,7 @@ void Engine::update() {
   c.restart();
 
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
-  //TRACE_INFO("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, PickupTime: " << pickupTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
+  TRACE_DEBUG("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, PickupTime: " << pickupTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
 
 void Engine::createPlayers() {
@@ -197,6 +201,9 @@ void Engine::createPlayers() {
   }
 
   MessageHandler::get().subscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
+  MessageHandler::get().subscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
+  AddDebugButtonMessage debMess(mDebugMenuSubscriber.getId(), "Engine debug traces");
+  mDebugMenuSubscriber.reverseSendMessage(debMess.pack());
 }
 
 void Engine::createMap() {
@@ -256,5 +263,17 @@ void Engine::collectPlayerData() {
     }
 
     mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
+  }
+}
+
+void Engine::handleDebugMessage() {
+  std::queue<sf::Packet> debugMessageQueue = mDebugMenuSubscriber.getMessageQueue();
+  sf::Packet debugMessage;
+  while (!debugMessageQueue.empty()) {
+    debugMessage = debugMessageQueue.front();
+    debugMessageQueue.pop();
+    TRACE_DEBUG("Toggle debug traces");
+    mDebugEnabled = !mDebugEnabled;
+    TRACE_DEBUG("Toggle debug traces");
   }
 }

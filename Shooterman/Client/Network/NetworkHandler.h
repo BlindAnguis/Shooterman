@@ -23,6 +23,7 @@ private:
   Subscriber mMessageSubscriber;
   Subscriber mDebugSubscriber;
   Subscriber mGameStateSubscriber;
+  Subscriber mServerDebugSubscriber;
   sf::TcpSocket mSocket;
 
   void startup();
