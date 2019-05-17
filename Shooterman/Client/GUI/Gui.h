@@ -37,7 +37,6 @@ public:
 private:
   bool mDebugEnabled = true;
   bool mWindowOpen;
-  bool mShowDebugMenu;
   bool mF1KeyAlreadyPressed = false;
   std::unique_ptr<std::thread> mGuiThread;
   std::shared_ptr<sf::RenderWindow> mWindow;
@@ -46,10 +45,10 @@ private:
   Subscriber mDebugSubscriber;
   Interface mMouseInterface;
   GAME_STATE mCurrentGameState;
+  GAME_STATE mPreviousGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
   std::map<GAME_STATE, std::vector<MenuBase*>> mMenuMap;
-  std::shared_ptr<MenuBase> mDebugMenu;
   sf::Clock mRenderClock;
 
   void init();

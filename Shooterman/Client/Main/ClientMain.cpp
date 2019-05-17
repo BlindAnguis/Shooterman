@@ -133,7 +133,7 @@ void ClientMain::handleGameStateMessages() {
       } else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
         mGameStateStack = std::stack<GAME_STATE>();
         mGameStateStack.push(GAME_STATE::MAIN_MENU);
-      } else {
+      } else if (mGameStateStack.top() != gsm.getGameState()) {
         mGameStateStack.push(gsm.getGameState());
       }
 

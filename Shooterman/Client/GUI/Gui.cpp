@@ -23,7 +23,7 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<MenuBase*> { new PlayWindow(), new Hud() });
   mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<MenuBase*> { new OptionsMenu() });
   mMenuMap.emplace(GAME_STATE::PAUSE, std::vector<MenuBase*> { new PauseMenu() });
-  mDebugMenu = std::make_shared<DebugMenu>();
+  mMenuMap.emplace(GAME_STATE::DEBUG, std::vector<MenuBase*> { new DebugMenu() });
 
   // This needs to be after the DebugMenu is created
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
@@ -32,12 +32,10 @@ void Gui::init() {
   AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "GUI debug traces");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
 
-
-
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
   mWindowOpen = true;
-  mShowDebugMenu = false;
 
+  mCurrentGameState = GAME_STATE::MAIN_MENU;
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   mLeftButtonAlreadyPressed = false;
 
@@ -104,7 +102,12 @@ void Gui::handleWindowEvents() {
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1)) {
     if (!mF1KeyAlreadyPressed) {
-      mShowDebugMenu = !mShowDebugMenu;
+      if (mCurrentGameState == GAME_STATE::DEBUG) {
+        mCurrentGameState = mPreviousGameState;
+      } else {
+        mPreviousGameState = mCurrentGameState;
+        mCurrentGameState = GAME_STATE::DEBUG;
+      }
       mF1KeyAlreadyPressed = true;
     }
   } else {
@@ -128,19 +131,12 @@ bool Gui::renderGameState(GAME_STATE gameState) {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mWindow->hasFocus()) {
       if (!mLeftButtonAlreadyPressed) {
         menu->checkMouse(mousePosition);
-        if (mShowDebugMenu) {
-          mDebugMenu->checkMouse(mousePosition);
-        }
       }
       mLeftButtonAlreadyPressed = true;
     } else {
       mLeftButtonAlreadyPressed = false;
     }
     mRenderNeeded = menu->render(mWindow, mousePosition);
-    
-    if (mShowDebugMenu) {
-      mDebugMenu->render(mWindow, mousePosition);
-    }
 
     if (!mRenderNeeded) {
       return mRenderNeeded;
@@ -171,6 +167,7 @@ void Gui::handleGameStateMessages() {
           }
         }
 
+        mPreviousGameState = mCurrentGameState;
         mCurrentGameState = gsm.getGameState();
         auto newMenu = mMenuMap.find(mCurrentGameState);
         if (newMenu != mMenuMap.end()) {

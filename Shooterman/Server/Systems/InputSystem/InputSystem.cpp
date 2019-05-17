@@ -70,12 +70,15 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
     if (id == CHANGE_GAME_STATE) {
       gsm.unpack(packet);
       GAME_STATE gameState = gsm.getGameState();
-      if (gameState != GAME_STATE::NO_STATE) {
-        //TRACE_INFO("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
-        mCurrentGameState = gameState;
+
+      if (gameState != mCurrentGameState) {
+        mGameStateSubscriber.reverseSendMessage(gsm.pack());
       }
 
-      mGameStateSubscriber.reverseSendMessage(gsm.pack());
+      if (gameState != GAME_STATE::NO_STATE) {
+        TRACE_DEBUG("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
+        mCurrentGameState = gameState;
+      }
     }
   }
   return mCurrentGameState;
