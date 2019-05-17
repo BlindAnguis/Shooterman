@@ -1,8 +1,8 @@
 #include "ClockSystem.h"
 
-ClockSystem::ClockSystem() : mClockComponentManager(&ComponentManager<ClockComponent>::get()) {}
+ClockSystem::ClockSystem() : mClockComponentManager(&ComponentManager<ClockComponent>::get()) { mName = "SERVER: CLOCK_SYSTEM"; }
 
-ClockSystem::~ClockSystem() {}
+ClockSystem::~ClockSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 ClockSystem& ClockSystem::get() {
   static ClockSystem instance;

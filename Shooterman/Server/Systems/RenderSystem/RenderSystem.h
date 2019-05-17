@@ -21,7 +21,6 @@ public:
 
 private:
   bool mSentCachedSpriteList = false;
-  std::shared_ptr<NetworkSystem> mNetworkSystem;
   ComponentManager<RenderComponent>* mRenderComponentManager;
 
   void renderCached(std::shared_ptr<std::map<int, Player*>> connectedClients);

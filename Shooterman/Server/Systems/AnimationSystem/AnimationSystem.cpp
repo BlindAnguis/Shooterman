@@ -8,7 +8,7 @@ AnimationSystem::AnimationSystem() :
   mName = "SERVER: ANIMATION_SYSTEM";
 }
 
-AnimationSystem::~AnimationSystem() { }
+AnimationSystem::~AnimationSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 AnimationSystem& AnimationSystem::get() {
   static AnimationSystem instance;

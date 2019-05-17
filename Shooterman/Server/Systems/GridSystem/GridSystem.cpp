@@ -1,5 +1,4 @@
 #include "GridSystem.h"
-#include <iostream>
 
 GridSystem::GridSystem()
 {
@@ -12,10 +11,13 @@ GridSystem::GridSystem()
       mGrid.at(i).emplace_back(std::vector<int>());
     }
   }
+
+  mName = "SERVER: GRID_SYSTEM";
 }
 
 GridSystem::~GridSystem()
 {
+  TRACE_DEBUG("Enter Destructor");
 }
 
 GridSystem & GridSystem::get()

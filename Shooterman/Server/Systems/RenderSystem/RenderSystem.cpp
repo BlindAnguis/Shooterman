@@ -1,11 +1,11 @@
 #include "RenderSystem.h"
 
 RenderSystem::RenderSystem()
-  : mRenderComponentManager(&ComponentManager<RenderComponent>::get()), mNetworkSystem(&NetworkSystem::get()) {
+  : mRenderComponentManager(&ComponentManager<RenderComponent>::get()) {
   mName = "SERVER: RENDER_SYSTEM";
 }
 
-RenderSystem::~RenderSystem() { }
+RenderSystem::~RenderSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 RenderSystem& RenderSystem::get() {
   static RenderSystem instance;
@@ -35,7 +35,7 @@ void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClien
   }
   auto first = c.getElapsedTime().asMicroseconds();
   c.restart();
-  mNetworkSystem->setRenderData(sm);
+  NetworkSystem::get().setRenderData(sm);
   auto second = c.getElapsedTime().asMicroseconds();
   //TRACE_INFO("Render f: " << first << "us, s: " << second << "us");
 }

@@ -14,7 +14,7 @@ CollisionSystem& CollisionSystem::get() {
   return instance;
 }
 
-CollisionSystem::~CollisionSystem() { }
+CollisionSystem::~CollisionSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
   RenderComponent* causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);

@@ -6,7 +6,7 @@ ManaSystem::ManaSystem() :
   mName = "SERVER: MANA_SYSTEM";
 }
 
-ManaSystem::~ManaSystem() { }
+ManaSystem::~ManaSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 ManaSystem& ManaSystem::get() {
   static ManaSystem instance;

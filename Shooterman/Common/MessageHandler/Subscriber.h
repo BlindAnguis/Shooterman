@@ -17,6 +17,7 @@ public:
 
   ~Subscriber() {
     delete mQueueLock;
+    TRACE_DEBUG("Enter Destructor " << mName);
   }
 
   void sendMessage(sf::Packet message) {

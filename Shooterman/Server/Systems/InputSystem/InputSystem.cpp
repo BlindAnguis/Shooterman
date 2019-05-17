@@ -16,6 +16,7 @@ InputSystem::InputSystem()
 InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
   MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
+  TRACE_DEBUG("Enter Destructor");
 }
 
 InputSystem& InputSystem::get() {

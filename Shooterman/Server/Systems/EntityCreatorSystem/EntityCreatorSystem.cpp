@@ -3,10 +3,12 @@
 EntityCreatorSystem::EntityCreatorSystem() :
   mEntityCreator(EntityCreator())
 {
+  mName = "SERVER: ENTITY_CREATOR_SYSTEM";
 }
 
 EntityCreatorSystem::~EntityCreatorSystem()
 {
+  TRACE_DEBUG("Enter Destructor");
 }
 
 EntityCreatorSystem& EntityCreatorSystem::get() {

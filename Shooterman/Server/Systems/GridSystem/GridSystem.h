@@ -3,8 +3,9 @@
 #include <memory>
 #include <vector>
 #include <SFML\Graphics.hpp>
+#include "../../../Common/Trace.h"
 
-class GridSystem
+class GridSystem : Trace
 {
 public:
   GridSystem();

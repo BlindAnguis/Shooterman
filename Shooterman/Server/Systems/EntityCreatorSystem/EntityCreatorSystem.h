@@ -21,7 +21,7 @@ struct EntityToCreate {
   std::set<int> immuneEntityIds;
 };
 
-class EntityCreatorSystem
+class EntityCreatorSystem : Trace
 {
 public:
   EntityCreatorSystem();

@@ -14,6 +14,7 @@ NetworkSystem::NetworkSystem() {
 NetworkSystem::~NetworkSystem() {
   delete mMapLock;
   delete mRenderLock;
+  TRACE_DEBUG("Enter Destructor");
 }
 
 NetworkSystem& NetworkSystem::get() {
@@ -105,8 +106,10 @@ void NetworkSystem::startup() {
     sf::sleep(sf::milliseconds(1));
   }
 
+  TRACE_INFO("UNPUBLISHING");
   MessageHandler::get().unpublishInterface("ServerInputList");
   MessageHandler::get().unpublishInterface("ServerPlayerData");
+  MessageHandler::get().unpublishInterface("ServerGameState");
   for (auto client : mClientsSockets) {
     client.second->disconnect();
     delete client.second;
@@ -115,8 +118,10 @@ void NetworkSystem::startup() {
 
 void NetworkSystem::shutDown() {
   TRACE_INFO("Shutdown of module requested...");
-  mRunning = false;
-  mNetworkSystemThread->join();
+  if (mRunning) {
+    mRunning = false;
+    mNetworkSystemThread->join();
+  }
   TRACE_INFO("Shutdown of module done");
 }
 
