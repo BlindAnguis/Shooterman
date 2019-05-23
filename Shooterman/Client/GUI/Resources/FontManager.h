@@ -6,7 +6,7 @@
 
 #include "../../../Common/Trace.h"
 
-enum FONT { CLEAN, DIRTY };
+enum FONT { COURIER, MORRIS };
 
 class FontManager : public Trace {
 public:

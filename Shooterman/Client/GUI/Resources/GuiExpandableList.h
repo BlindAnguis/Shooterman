@@ -5,7 +5,7 @@
 
 class GuiExpandableList : public GuiList {
 public:
-  GuiExpandableList(GuiComponentPosition guiComponentPosition, std::string header, FONT font = DIRTY);
+  GuiExpandableList(GuiComponentPosition guiComponentPosition, std::string header, FONT font = MORRIS);
 
   void render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) override;
 

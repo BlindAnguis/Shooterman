@@ -11,13 +11,13 @@ FontManager::FontManager() {
   if (!font1.loadFromFile("Client/Resources/Fonts/cour.ttf")) {
     TRACE_ERROR("Could not load font");
   }
-  mFontMap[FONT::CLEAN] = font1;
+  mFontMap[FONT::COURIER] = font1;
 
   sf::Font font2;
-  if (!font2.loadFromFile("Client/Resources/Fonts/RobbieRocketpants.ttf")) {
+  if (!font2.loadFromFile("Client/Resources/Fonts/MorrisRoman-Black.ttf")) {
     TRACE_ERROR("Could not load font");
   }
-  mFontMap[FONT::DIRTY] = font2;
+  mFontMap[FONT::MORRIS] = font2;
 }
 
 sf::Font& FontManager::getFont(FONT font) {

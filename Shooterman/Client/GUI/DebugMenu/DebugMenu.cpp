@@ -37,13 +37,13 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
         }
         TRACE_DEBUG("Send to " << subscriberId);
       };
-      auto button = std::make_shared<GuiButton>(GuiComponentPosition::LEFT, debMess.getButtonText(), callback, 20, FONT::CLEAN);
+      auto button = std::make_shared<GuiButton>(GuiComponentPosition::LEFT, debMess.getButtonText(), callback, 20, FONT::COURIER);
 
       mSubscirberToComponentMap[subscriberId] = button;
 
       auto it = mCategoriesMap.find(debMess.getCategoryText());
       if (it == mCategoriesMap.end()) {
-        auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, debMess.getCategoryText(), FONT::CLEAN);
+        auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, debMess.getCategoryText(), FONT::COURIER);
         mCategoriesMap[debMess.getCategoryText()] = expandableList;
         mGuiList->addGuiComponent(expandableList);
       }

@@ -9,7 +9,7 @@
 
 class GuiText : public GuiComponent, Trace {
 public:
-  GuiText(GuiComponentPosition guiComponentPosition, std::string text, int fontSize = 36, FONT font = FONT::DIRTY);
+  GuiText(GuiComponentPosition guiComponentPosition, std::string text, int fontSize = 36, FONT font = FONT::MORRIS);
 
   void render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) override;
 
