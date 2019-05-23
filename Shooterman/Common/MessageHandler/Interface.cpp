@@ -19,12 +19,12 @@ void Interface::unsubscribe(Subscriber* subscriber) {
   for (auto it = mSubscriberList.begin(); it != mSubscriberList.end();) {
 	if ((*it) == NULL) {
 	  it = mSubscriberList.erase(it);
-	  TRACE_WARNING("Erased subscription for GameState that was supposed to be unsubscribed.");
+	  TRACE_ERROR("Removed subscriber that was null");
 	}
 	//nullcheck, if null someone forgot to remove its subsciption. Remove it and add TRACE informing about this.
 	if ((*it)->getId() == subscriber->getId()) {
       it = mSubscriberList.erase(it);
-      TRACE_WARNING("Removed subscriber (" << subscriber->getId() << ") from " << mName);
+      TRACE_DEBUG("Removed subscriber (" << subscriber->getId() << ") from " << mName);
     } else {
       ++it;
     }

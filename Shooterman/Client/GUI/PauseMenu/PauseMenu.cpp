@@ -17,7 +17,7 @@ PauseMenu::PauseMenu() {
 
     mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Pause"));
 
-    pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Unpause", GAME_STATE::PLAYING));
+    pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Unpause", GAME_STATE::PREVIOUS));
     pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Leave Game", GAME_STATE::MAIN_MENU));
     pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS));
 

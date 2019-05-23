@@ -21,7 +21,7 @@ LobbyMenu::LobbyMenu(bool server) {
   if (server) {
     lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING));
   }
-  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::PREVIOUS));
 
   mGuiFrame->addGuiComponent(lobbyMenuList);
 

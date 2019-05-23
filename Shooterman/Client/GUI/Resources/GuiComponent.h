@@ -20,7 +20,13 @@ public:
   int getWidth();
   int getHeight();
 
+  int getId();
+
+  bool operator == (const GuiComponent& guiComponent) const { return mId == guiComponent.mId; }
+  bool operator != (const GuiComponent& guiComponent) const { return !operator==(guiComponent); }
+
 protected:
+  int mId;
   GuiComponentPosition mGuiComponentPosition;
   int mXPosition = 0;
   int mYPosition = 0;

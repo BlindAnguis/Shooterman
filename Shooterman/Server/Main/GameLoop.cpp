@@ -132,6 +132,7 @@ void GameLoop::gameLoop() {
         if (hostListener.isListening()) {
           hostListener.stopListening();
         }
+        world.shutDown();
         mNetworkSystem->shutDown();
         break;
 
@@ -153,5 +154,6 @@ void GameLoop::gameLoop() {
   if (hostListener.isListening()) {
     hostListener.stopListening();
   }
+  world.shutDown();
   mNetworkSystem->shutDown();
 }

@@ -5,6 +5,7 @@
 #define SHUT_DOWN         1
 #define CHANGE_GAME_STATE 2
 #define ADD_DEBUG_BUTTON  3
+#define REMOVE_DEBUG_BUTTON 4
 
 // Client to Server
 #define INPUT_KEYS        100

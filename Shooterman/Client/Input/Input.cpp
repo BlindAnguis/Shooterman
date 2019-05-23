@@ -3,6 +3,10 @@
 #include <cstdint>
 
 #include "../../Common/Trace.h"
+#include "../../Common/Messages/MouseMessage.h"
+#include "../../Common/Messages/InputMessage.h"
+#include "../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../Common/Messages/RemoveDebugButtonMessage.h"
 
 Input::Input() {
   mName = "CLIENT: INPUT";
@@ -24,7 +28,7 @@ void Input::readInput() {
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client input debug traces");
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client input debug traces", "Client");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
   std::uint32_t keyboardBitmask;
   while (mRunning) {
@@ -100,8 +104,12 @@ void Input::readInput() {
     if (!subscribedToMouse) {
       subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
     }
-
   }
+
+  RemoveDebugButtonMessage rdbm(mDebugSubscriber.getId());
+  sf::Packet packet = rdbm.pack();
+  mDebugSubscriber.reverseSendMessage(packet);
+  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
 
   MessageHandler::get().unpublishInterface("ClientInputList");
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);

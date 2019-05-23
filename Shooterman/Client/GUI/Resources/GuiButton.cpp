@@ -3,8 +3,8 @@
 #include <utility>
 #include <SFML/Window/Mouse.hpp>
 
-GuiButton::GuiButton(GuiComponentPosition guiComponentPosition, std::string text, const std::function<void(void)>& callback)
-  : GuiText(guiComponentPosition, std::move(text)), mCallback(callback) {
+GuiButton::GuiButton(GuiComponentPosition guiComponentPosition, std::string text, const std::function<void(void)>& callback, int fontSize, FONT font)
+  : GuiText(guiComponentPosition, std::move(text), fontSize, font), mCallback(callback) {
   mText.setOutlineThickness(1);
 }
 

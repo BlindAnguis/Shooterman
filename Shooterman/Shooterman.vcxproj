@@ -161,10 +161,14 @@
     <ClCompile Include="Client\GUI\Resources\GuiComponentFactory.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiFrame.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiList.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiExpandableList.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
+    <ClCompile Include="Client\GUI\Resources\FontManager.cpp" />
+    <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
+    <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
     <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
@@ -212,15 +216,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
+    <ClInclude Include="Client\GUI\Resources\FontManager.h" />
     <ClInclude Include="Client\GUI\Resources\GuiButton.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponent.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponentFactory.h" />
     <ClInclude Include="Client\GUI\Resources\GuiFrame.h" />
     <ClInclude Include="Client\GUI\Resources\GuiList.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiExpandableList.h" />
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
+    <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

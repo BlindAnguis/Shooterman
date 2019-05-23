@@ -1,6 +1,20 @@
 #include "Gui.h"
 
 #include "Hud/Hud.h"
+#include "Resources/FontManager.h"
+#include "MainMenu/MainMenu.h"
+#include "LobbyMenu/LobbyMenu.h"
+#include "JoinMenu/JoinMenu.h"
+#include "PlayWindow/PlayWindow.h"
+#include "OptionsMenu/OptionsMenu.h" 
+#include "DebugMenu/DebugMenu.h"
+#include "PauseMenu/PauseMenu.h"
+#include "../../Common/Constants.h"
+#include "../../Common/MessageId.h"
+#include "../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../Common/Messages/RemoveDebugButtonMessage.h"
+#include "../../Common/Messages/SpriteMessage.h"
+#include "../../Common/Messages/MouseMessage.h"
 
 Gui::Gui() {
   mName = "CLIENT: GUI";
@@ -29,7 +43,7 @@ void Gui::init() {
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "GUI debug traces");
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "GUI debug traces", "Client");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
@@ -41,10 +55,16 @@ void Gui::init() {
 
   render();
 
+  RemoveDebugButtonMessage rdbm(mDebugSubscriber.getId());
+  sf::Packet packet = rdbm.pack();
+  mDebugSubscriber.reverseSendMessage(packet);
+
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
+
+  FontManager::getInstance().clear();
 }
 
 void Gui::render() {

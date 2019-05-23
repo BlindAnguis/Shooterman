@@ -14,7 +14,7 @@ OptionsMenu::OptionsMenu() {
   mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Options"));
 
   auto optionsMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
-  optionsMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+  optionsMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::PREVIOUS));
 
   mGuiFrame->addGuiComponent(optionsMenuList);
 }

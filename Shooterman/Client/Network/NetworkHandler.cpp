@@ -5,6 +5,7 @@
 #include "../../Common/MessageId.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../Common/Messages/RemoveDebugButtonMessage.h"
 #include "../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/LobbyDataMessage.h"
@@ -61,7 +62,7 @@ void NetworkHandler::setupSubscribersAndInterfaces() {
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces");
+  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces", "Client");
   mDebugSubscriber.reverseSendMessage(debMess.pack());
 
   while (!MessageHandler::get().subscribeTo("ClientGameState", &mGameStateSubscriber)) {
@@ -133,10 +134,8 @@ void NetworkHandler::handlePackets() {
       int id = -1;
       packet >> id;
 
-      AddDebugButtonMessage adbm;
-      adbm.unpack(packet);
-      AddDebugButtonMessage adbm2(adbm.getCallbackId(), "");
-      sf::Packet p2 = adbm2.pack();
+      AddDebugButtonMessage adbm(packet);
+      sf::Packet p2 = adbm.pack();
       mSocket.send(p2);
     }
 
@@ -165,10 +164,12 @@ void NetworkHandler::handlePackets() {
         gsm.unpack(packet);
         mGameStateSubscriber.reverseSendMessage(gsm.pack());
       } else if (id == ADD_DEBUG_BUTTON) {
-        AddDebugButtonMessage adbm;
-        adbm.unpack(packet);
-        AddDebugButtonMessage adbm2(mServerDebugSubscriber.getId(), adbm.getButtonText(), adbm.getSubscriberId());
+        AddDebugButtonMessage adbm(packet);
+        AddDebugButtonMessage adbm2(adbm.getSubscriberId(), adbm.getButtonText(), adbm.getCategoryText(), mServerDebugSubscriber.getId());
         mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
+      } else if(id == REMOVE_DEBUG_BUTTON) {
+        RemoveDebugButtonMessage rdbm(packet);
+        mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
@@ -178,6 +179,10 @@ void NetworkHandler::handlePackets() {
 }
 
 void NetworkHandler::teardownSubscribersAndInterfaces() {
+  RemoveDebugButtonMessage rdbm(mDebugSubscriber.getId());
+  sf::Packet packet = rdbm.pack();
+  mDebugSubscriber.reverseSendMessage(packet);
+
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unpublishInterface("ClientLobby");
   MessageHandler::get().unpublishInterface("ClientPlayerData");

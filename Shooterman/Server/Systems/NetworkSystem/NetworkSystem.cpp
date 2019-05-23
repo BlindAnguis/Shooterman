@@ -4,6 +4,7 @@
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/Messages/GameStateMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../../Common/Messages/RemoveDebugButtonMessage.h"
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
@@ -67,14 +68,14 @@ void NetworkSystem::startup() {
             gsm.unpack(packet);
             mGameStateInterface.pushMessage(gsm.pack());
           }
+          break;
         }
         case ADD_DEBUG_BUTTON:
         {
-          AddDebugButtonMessage adbm;
-          adbm.unpack(packet);
+          AddDebugButtonMessage adbm(packet);
           mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
-        }
           break;
+        }
         default:
           TRACE_ERROR("Received unhandled packet with ID: " << packetId);
           break;
@@ -202,13 +203,19 @@ void NetworkSystem::handleDebugMenu() {
 
     switch (id) {
     case ADD_DEBUG_BUTTON: {
-      AddDebugButtonMessage adbm;
-      adbm.unpack(debugMenuMessage);
+      AddDebugButtonMessage adbm(debugMenuMessage);
 
       sf::Packet packet = adbm.pack();
       mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
-    }
       break;
+    }
+    case REMOVE_DEBUG_BUTTON:
+    {
+      RemoveDebugButtonMessage rdbm(debugMenuMessage);
+      sf::Packet packet = rdbm.pack();
+      mClientsSockets.at(2)->send(packet);
+      break;
+    }
     default:
       TRACE_ERROR("Received unknown message: " << id);
       break;

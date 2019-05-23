@@ -1,5 +1,7 @@
 #include "ClientMain.h"
 
+#include "../../Common/Messages/ClientInternal/IpMessage.h"
+
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
   TRACE_INFO("Starting...");

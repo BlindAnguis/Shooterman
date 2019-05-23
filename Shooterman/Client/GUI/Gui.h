@@ -7,26 +7,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
-#include "SpriteManager.h"
 #include "Resources/MenuBase.h"
-#include "MainMenu/MainMenu.h"
-#include "LobbyMenu/LobbyMenu.h"
-#include "JoinMenu/JoinMenu.h"
-#include "PlayWindow/PlayWindow.h"
-#include "OptionsMenu/OptionsMenu.h" 
-#include "DebugMenu/DebugMenu.h"
-#include "PauseMenu/PauseMenu.h"
-
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/MessageHandler/Subscriber.h"
-#include "../../Common/MessageId.h"
 #include "../../Common/Trace.h"
-#include "../../Common/Constants.h"
-#include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/GameStateMessage.h"
-#include "../../Common/Messages/MouseMessage.h"
-#include "../../Common/Messages/AddDebugButtonMessage.h"
 
 class Gui : Trace {
 public:

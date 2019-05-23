@@ -40,6 +40,8 @@ public:
 
   void collectPlayerData();
 
+  void shutDown();
+
 private:
   // Systems
   MovementSystem* mMovementSystem;

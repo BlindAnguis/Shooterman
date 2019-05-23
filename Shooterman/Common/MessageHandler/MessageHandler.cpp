@@ -74,9 +74,8 @@ void MessageHandler::publishInterface(std::string name, Interface* pc) {
     pc->setMName(name);
     mPublishedComms.emplace(name, pc);
     TRACE_DEBUG("Interface: " << name << " published");
-  }
-  else {
-    TRACE_WARNING("Interface: " << name << " is already published");
+  } else {
+    TRACE_ERROR("Interface: " << name << " is already published");
   }
 }
 

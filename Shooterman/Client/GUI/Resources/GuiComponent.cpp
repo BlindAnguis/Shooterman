@@ -1,6 +1,11 @@
 #include "GuiComponent.h"
 
-GuiComponent::GuiComponent() {}
+static int freeId = 0;
+
+GuiComponent::GuiComponent() {
+  mId = freeId;
+  freeId++;
+}
 
 GuiComponent::GuiComponent(GuiComponentPosition guiComponentPosition)
   : mGuiComponentPosition(guiComponentPosition) {
@@ -66,4 +71,8 @@ void GuiComponent::calculatePosition(int xPosition, int yPosition, int width, in
     mYPosition = (yPosition + height - mPadding) - mHeight;
     break;
   }
+}
+
+int GuiComponent::getId() {
+  return mId;
 }

@@ -11,9 +11,6 @@
 #include "../../Common/Constants.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
-#include "../../Common/Messages/MouseMessage.h"
-#include "../../Common/Messages/InputMessage.h"
-#include "../../Common/Messages/AddDebugButtonMessage.h"
 
 class Input : Trace {
 public:

@@ -3,7 +3,7 @@
 #include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
-#include "../Resources/GuiList.h"
+#include "../Resources/GuiExpandableList.h"
 
 class DebugMenu : public MenuBase {
 public:
@@ -15,6 +15,7 @@ public:
 private:
   Interface mIf;
   std::shared_ptr<GuiList> mGuiList;
-  int mCurrentYPos = 50;
+  std::map<std::string, std::shared_ptr<GuiExpandableList>> mCategoriesMap;
+  std::map<int, std::shared_ptr<GuiComponent>> mSubscirberToComponentMap;
 };
 

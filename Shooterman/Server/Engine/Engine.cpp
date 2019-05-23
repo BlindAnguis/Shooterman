@@ -2,6 +2,7 @@
 #include "../../Common/Textures.h"
 #include "../../Common/Messages/PlayerDataMessage.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../Common/Messages/RemoveDebugButtonMessage.h"
 #include <stdlib.h>
 #include <time.h>
 
@@ -80,7 +81,13 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   srand((int)time(0));
 }
 
-Engine::~Engine() {
+Engine::~Engine() { }
+
+void Engine::shutDown() {
+  RemoveDebugButtonMessage rdbm(mDebugMenuSubscriber.getId());
+  sf::Packet packet = rdbm.pack();
+  mDebugMenuSubscriber.reverseSendMessage(packet);
+
   MessageHandler::get().unsubscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
   MessageHandler::get().unsubscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
 }
@@ -202,7 +209,7 @@ void Engine::createPlayers() {
 
   MessageHandler::get().subscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
   MessageHandler::get().subscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
-  AddDebugButtonMessage debMess(mDebugMenuSubscriber.getId(), "Engine debug traces");
+  AddDebugButtonMessage debMess(mDebugMenuSubscriber.getId(), "Engine debug traces", "Server");
   mDebugMenuSubscriber.reverseSendMessage(debMess.pack());
 }
 

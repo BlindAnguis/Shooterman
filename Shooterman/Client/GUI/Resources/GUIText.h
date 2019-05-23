@@ -3,12 +3,13 @@
 #include <SFML/Graphics/Text.hpp>
 
 #include "GuiComponent.h"
+#include "FontManager.h"
 
 #include "../../../Common/Trace.h"
 
 class GuiText : public GuiComponent, Trace {
 public:
-  GuiText(GuiComponentPosition guiComponentPosition, std::string text);
+  GuiText(GuiComponentPosition guiComponentPosition, std::string text, int fontSize = 36, FONT font = FONT::DIRTY);
 
   void render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) override;
 
@@ -16,6 +17,5 @@ public:
   void setTextSize(int textSize);
 
 protected:
-  sf::Font mFont;
   sf::Text mText;
 };

@@ -30,7 +30,7 @@ JoinMenu::JoinMenu() {
   }));
 
   joinMenuList->addGuiComponent(ipList);
-  joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+  joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::PREVIOUS));
 
   mGuiFrame->addGuiComponent(joinMenuList);
 }

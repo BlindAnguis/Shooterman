@@ -47,7 +47,14 @@ bool GuiList::checkMouse(sf::Vector2f mousePosition) {
 
 void GuiList::addGuiComponent(std::shared_ptr<GuiComponent> guiComponent) {
   mGuiComponentList.emplace_back(guiComponent);
-  calculateSize();
+}
+
+void GuiList::removeGuiComponent(std::shared_ptr<GuiComponent> guiComponent) {
+  mGuiComponentList.remove(guiComponent);
+}
+
+int GuiList::getNumberOfComponents() {
+  return mGuiComponentList.size();
 }
 
 void GuiList::clear() {

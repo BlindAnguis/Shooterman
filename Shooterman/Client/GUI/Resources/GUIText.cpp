@@ -1,18 +1,15 @@
 #include "GuiText.h"
 
-GuiText::GuiText(GuiComponentPosition guiComponentPosition, std::string text) : GuiComponent(guiComponentPosition) {
+
+GuiText::GuiText(GuiComponentPosition guiComponentPosition, std::string text, int fontSize, FONT font) : GuiComponent(guiComponentPosition) {
   mName = "GuiButton";
-  if (!mFont.loadFromFile("Client/Resources/Fonts/RobbieRocketpants.ttf")) {
-    TRACE_ERROR("Could not load font");
-    // TODO: ERROR
-  }
-  mText.setFont(mFont);
+  mText.setFont(FontManager::getInstance().getFont(font));
   mText.setString(text);
-  mText.setCharacterSize(36);
+  mText.setCharacterSize(fontSize);
   mText.setFillColor(sf::Color::Black);
 
   mWidth = (int)mText.getLocalBounds().width;
-  mHeight = 36;
+  mHeight = fontSize;
 }
 
 void GuiText::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {

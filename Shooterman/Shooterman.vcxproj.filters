@@ -63,6 +63,10 @@
     <ClCompile Include="Client\GUI\Resources\GuiComponentFactory.cpp" />
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiExpandableList.cpp" />
+    <ClCompile Include="Client\GUI\Resources\FontManager.cpp" />
+    <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
+    <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -149,6 +153,9 @@
     <ClInclude Include="Client\GUI\Resources\GuiComponentFactory.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiExpandableList.h" />
+    <ClInclude Include="Client\GUI\Resources\FontManager.h" />
+    <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
