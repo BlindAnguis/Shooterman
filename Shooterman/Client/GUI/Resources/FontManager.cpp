@@ -18,12 +18,37 @@ FontManager::FontManager() {
     TRACE_ERROR("Could not load font");
   }
   mFontMap[FONT::MORRIS] = font2;
+
+
+  sf::Texture textureM;
+  if (!textureM.loadFromFile("Client/Resources/Gui/ButtonM.png")) {
+    TRACE_ERROR("Could not load texture");
+  }
+  mTextureMap[TEXTURE::BUTTON] = textureM;
+
+  sf::Texture textureL;
+  if (!textureL.loadFromFile("Client/Resources/Gui/ButtonL.png")) {
+    TRACE_ERROR("Could not load texture");
+  }
+  mTextureMap[TEXTURE::BUTTON_LEFT] = textureL;
+
+  sf::Texture textureR;
+  if (!textureR.loadFromFile("Client/Resources/Gui/ButtonR.png")) {
+    TRACE_ERROR("Could not load texture");
+  }
+  mTextureMap[TEXTURE::BUTTON_RIGHT] = textureR;
 }
 
 sf::Font& FontManager::getFont(FONT font) {
   return mFontMap[font];
 }
 
+sf::Sprite FontManager::createSprite(TEXTURE texture) {
+  sf::Sprite sprite(mTextureMap[texture]);
+  return sprite;
+}
+
 void FontManager::clear() {
   mFontMap.clear();
+  mTextureMap.clear();
 }

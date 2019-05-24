@@ -11,7 +11,7 @@ public:
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 
 private:
-  bool mSubscribedToPlayerData;
+  bool mSubscribedToPlayerData = false;
   Subscriber mPlayerDataSubscriber;
   std::shared_ptr<GuiProgressBar> mHealthBar;
   std::shared_ptr<GuiProgressBar> mManaBar;

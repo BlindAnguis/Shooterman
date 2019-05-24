@@ -13,4 +13,9 @@ public:
 
 private:
   std::function<void(void)> mCallback;
+  sf::Sprite mBackgroundL;
+  sf::Sprite mBackgroundM;
+  sf::Sprite mBackgroundR;
+
+  void renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height);
 };

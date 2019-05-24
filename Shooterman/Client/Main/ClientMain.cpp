@@ -9,7 +9,7 @@ ClientMain::ClientMain() {
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   Input input;
   Gui gui;
-  GameLoop server;
+  std::shared_ptr<GameLoop> server;
   NetworkHandler networkHandler;
   //Sound sound = Sound();
 
@@ -27,7 +27,8 @@ ClientMain::ClientMain() {
       case GAME_STATE::MAIN_MENU: {
         // Stop Server
         if (mServerStarted) {
-          server.stop();
+          server->stop();
+          server = nullptr;
           mServerStarted = false;
         }
         if (networkHandlerStarted) {
@@ -40,7 +41,8 @@ ClientMain::ClientMain() {
       case GAME_STATE::LOBBY: {
         // In the lobby
         if (!mServerStarted) {
-          server.start();
+          server = std::make_shared<GameLoop>();
+          server->start();
           mServerStarted = true;
         }
         if (!networkHandlerStarted) {
@@ -90,7 +92,8 @@ ClientMain::ClientMain() {
     networkHandler.shutDown();
   }
   if (mServerStarted) {
-    server.stop();
+    server->stop();
+    server = nullptr;
   }
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
   MessageHandler::get().unpublishInterface("ClientGameState");

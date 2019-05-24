@@ -23,7 +23,7 @@ public:
   void clear();
 
 protected:
-  int padding = 10;
+  int padding = 20;
   std::list<std::shared_ptr<GuiComponent>> mGuiComponentList;
 
 
