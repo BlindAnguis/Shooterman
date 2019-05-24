@@ -14,7 +14,7 @@ public:
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 
 private:
-  SpriteManager* mSpriteManager;
+  SpriteManager mSpriteManager;
   Subscriber mSpriteListSubscriber;
   SpriteCacheMessage mSpriteListCacheMessage;
   SpriteMessage mSpriteListMessage;

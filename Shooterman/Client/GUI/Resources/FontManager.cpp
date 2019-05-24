@@ -1,6 +1,6 @@
 #include "FontManager.h"
 
-FontManager & FontManager::getInstance() {
+FontManager& FontManager::getInstance() {
   static FontManager fontManager;
   return fontManager;
 }

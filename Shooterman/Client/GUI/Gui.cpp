@@ -30,14 +30,14 @@ void Gui::init() {
 
   Interface pc;
 
-  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::vector<MenuBase*> { new MainMenu() });
-  mMenuMap.emplace(GAME_STATE::LOBBY, std::vector<MenuBase*> { new LobbyMenu(true) });
-  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::vector<MenuBase*> { new LobbyMenu(false) });
-  mMenuMap.emplace(GAME_STATE::JOIN, std::vector<MenuBase*> { new JoinMenu() });
-  mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<MenuBase*> { new PlayWindow(), new Hud() });
-  mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<MenuBase*> { new OptionsMenu() });
-  mMenuMap.emplace(GAME_STATE::PAUSE, std::vector<MenuBase*> { new PauseMenu() });
-  mMenuMap.emplace(GAME_STATE::DEBUG, std::vector<MenuBase*> { new DebugMenu() });
+  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
+  mMenuMap.emplace(GAME_STATE::LOBBY, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
+  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(false) });
+  mMenuMap.emplace(GAME_STATE::JOIN, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<JoinMenu>() });
+  mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<PlayWindow>(), std::make_shared<Hud>() });
+  mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>() });
+  mMenuMap.emplace(GAME_STATE::PAUSE, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>() });
+  mMenuMap.emplace(GAME_STATE::DEBUG, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
 
   // This needs to be after the DebugMenu is created
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {

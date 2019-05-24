@@ -2,8 +2,6 @@
 
 PlayWindow::PlayWindow() {
   mName = "CLIENT: PLAY_WINDOW";
-  mSpriteManager = new SpriteManager();
-  mSpriteManager->loadSprites();
   mIsSubscribed = false;
   mGuiFrame = std::make_shared<Frame>();
 }
@@ -11,7 +9,6 @@ PlayWindow::PlayWindow() {
 PlayWindow::~PlayWindow() {
   MessageHandler::get().unsubscribeTo("ClientSpriteList", &mSpriteListSubscriber);
   mIsSubscribed = false;
-  delete mSpriteManager;
 }
 
 void PlayWindow::uninit() {
@@ -72,7 +69,7 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
 
 void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData) {
   //TRACE_DEBUG(static_cast<int>(spriteData.textureId));
-  sf::Sprite sprite = mSpriteManager->get(spriteData.textureId);
+  sf::Sprite sprite = mSpriteManager.getSprite(spriteData.textureId);
   sprite.setPosition(spriteData.position);
   sprite.setTextureRect(spriteData.texturePosition);
   sprite.setOrigin((float)(sprite.getTextureRect().width / 2),
@@ -86,7 +83,7 @@ void PlayWindow::buildSpriteCache() {
   SpriteData spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
   while (spriteData.textureId != Textures::Unknown) {
     sf::Sprite sprite;
-    sprite = mSpriteManager->get(spriteData.textureId);
+    sprite = mSpriteManager.getSprite(spriteData.textureId);
     sprite.setPosition(spriteData.position);
     sprite.setTextureRect(spriteData.texturePosition);
     sprite.setOrigin((float)(sprite.getTextureRect().width / 2),

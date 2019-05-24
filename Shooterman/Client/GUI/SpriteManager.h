@@ -14,18 +14,17 @@ public:
   SpriteManager();
   ~SpriteManager();
 
-  void loadSprites();
-  sf::Sprite get(Textures texture) {
-    auto sprite = mSpriteMap.find(texture);
-    if (sprite == mSpriteMap.end()) {
-      TRACE_ERROR("Sprite with texture " << static_cast<int>(texture) << " not found");
-    }
-    return sprite->second.first; 
-  }
+  sf::Sprite& getSprite(Textures textureId);
+
+  SpriteManager(SpriteManager const&) = delete;
+  void operator=(SpriteManager const&) = delete;
 
 private:
-  std::map<Textures, std::pair<sf::Sprite, std::shared_ptr<sf::Texture>>> mSpriteMap;
+  std::map<Textures, sf::Sprite> mSpriteMap;
+  std::map<Textures, sf::Texture*> mTextureMap;
+  std::map<Textures, std::string> mTexturePathMap;
 
-  std::pair<sf::Sprite, std::shared_ptr<sf::Texture>> createSprite(std::string filename);
-  std::shared_ptr<sf::Texture> loadTexture(std::string fileName);
+  void createSprite(Textures textureId, std::string filename);
+  void loadTexture(Textures textureId, std::string fileName);
+
 };
