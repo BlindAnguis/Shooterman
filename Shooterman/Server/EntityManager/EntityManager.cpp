@@ -15,6 +15,10 @@ EntityManager& EntityManager::get() {
   return instance;
 }
 
+std::map<int, Entity*> EntityManager::getAllEntities() {
+  return mEntities;
+}
+
 Entity* EntityManager::createEntity() {
   if (mFreeIds.empty()) {
     TRACE_ERROR("MAXIMUN NUMBER OF ENTITIES REACHED!");
@@ -31,7 +35,6 @@ Entity* EntityManager::createEntity() {
 void EntityManager::destroyEntity(int entityId) {
   auto it = mEntities.find(entityId);
   if (it != mEntities.end()) {
-    // Remove all related componentes
     delete it->second;
     mEntities.erase(entityId);
     mFreeIds.push(entityId);

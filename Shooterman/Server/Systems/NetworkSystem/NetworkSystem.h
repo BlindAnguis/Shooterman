@@ -44,5 +44,4 @@ private:
   std::shared_ptr<SpriteMessage> getRenderData();
   void handlePlayerData();
   void handleDebugMenu();
-
 };

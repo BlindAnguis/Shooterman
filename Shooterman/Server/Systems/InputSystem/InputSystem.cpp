@@ -1,13 +1,7 @@
 #include "InputSystem.h"
 #include <stdio.h>
 
-InputSystem::InputSystem()
-  :
-  mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
-  mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()) {
-  //std::cout << "[SERVER: INPUT_SYSTEM] Subscribing to inputMessages for: " << mInputSubscriber.getId() << " : " << &mInputSubscriber << std::endl;
- 
-  mIsSubscribedToGameState = MessageHandler::get().subscribeTo("ServerGameState", &mGameStateSubscriber);
+InputSystem::InputSystem() { 
   mCurrentGameState = GAME_STATE::LOBBY;
   mName = "Server: INPUT_SYSTEM";
   mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
@@ -17,6 +11,15 @@ InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
   MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
   TRACE_DEBUG("Enter Destructor");
+}
+
+void InputSystem::resetSystem() {
+  MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
+  mIsSubscribedToInput = false;
+  MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
+  mIsSubscribedToGameState = false;
+  mCurrentGameState = GAME_STATE::LOBBY;
+  mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
 }
 
 InputSystem& InputSystem::get() {

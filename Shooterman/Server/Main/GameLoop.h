@@ -16,6 +16,7 @@ private:
   NetworkSystem* mNetworkSystem;
 
   void gameLoop();
+  void cleanUp();
 };
 
 enum class GameLoopState { 

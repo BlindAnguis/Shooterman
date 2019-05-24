@@ -39,6 +39,7 @@ void NetworkSystem::startup() {
   MessageHandler::get().publishInterface("ServerDebugMenu", &mDebugMenuInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
+  mDebugMenuInterface.getMessageQueue(); // Empty old queue.
   while (mRunning) {
     updateInternalMap();
     for (auto client : mClientsSockets) {
@@ -106,7 +107,7 @@ void NetworkSystem::startup() {
           clientSocket.second->send(gsmPacket);
         }
       } else {
-        TRACE_WARNING("Received unhandeled packet with id: " << id);
+        TRACE_WARNING("Received unhandled packet with id: " << id);
       }
     }
 
@@ -206,14 +207,18 @@ void NetworkSystem::handleDebugMenu() {
       AddDebugButtonMessage adbm(debugMenuMessage);
 
       sf::Packet packet = adbm.pack();
-      mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
+      if (!mClientsSockets.empty()) {
+        mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
+      }
       break;
     }
     case REMOVE_DEBUG_BUTTON:
     {
       RemoveDebugButtonMessage rdbm(debugMenuMessage);
       sf::Packet packet = rdbm.pack();
-      mClientsSockets.at(2)->send(packet);
+      if (!mClientsSockets.empty()) {
+        mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
+      }
       break;
     }
     default:

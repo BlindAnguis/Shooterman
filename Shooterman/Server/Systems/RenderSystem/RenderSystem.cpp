@@ -12,6 +12,10 @@ RenderSystem& RenderSystem::get() {
   return instance;
 }
 
+void RenderSystem::resetSystem() {
+  mSentCachedSpriteList = false;
+}
+
 void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClients) {
 
   if (!mSentCachedSpriteList) {
@@ -23,7 +27,6 @@ void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClien
   for (auto entityWithRender : mRenderComponentManager->getAllEntitiesWithComponent()) {
     if (entityWithRender.second->isDynamic && entityWithRender.second->visible) {
       sf::Vector2f currentPosition = entityWithRender.second->sprite.getPosition();
-
       SpriteData data;
       data.textureId = entityWithRender.second->textureId;
       data.position = entityWithRender.second->sprite.getPosition();

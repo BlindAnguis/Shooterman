@@ -81,7 +81,12 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
   srand((int)time(0));
 }
 
-Engine::~Engine() { }
+Engine::~Engine() {
+  for (auto entity : mEntityManager->getAllEntities()) {
+    destroyEntity(entity.second->id);
+  }
+  mRenderSystem->resetSystem();
+}
 
 void Engine::shutDown() {
   RemoveDebugButtonMessage rdbm(mDebugMenuSubscriber.getId());

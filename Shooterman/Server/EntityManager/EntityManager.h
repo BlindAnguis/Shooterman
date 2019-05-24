@@ -17,6 +17,7 @@ public:
   static EntityManager& get();
   Entity* createEntity();
   void destroyEntity(int entityId);
+  std::map<int, Entity*> getAllEntities();
 
 private:
   int mLatestEntityId;

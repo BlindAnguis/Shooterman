@@ -18,6 +18,7 @@ public:
   static RenderSystem& get();
   ~RenderSystem();
   void render(std::shared_ptr<std::map<int, Player*>> connectedClients);
+  void resetSystem();
 
 private:
   bool mSentCachedSpriteList = false;

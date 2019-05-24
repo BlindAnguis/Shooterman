@@ -18,9 +18,7 @@ void GameLoop::start() {
 
 void GameLoop::stop() {
   TRACE_INFO("Exit Server");
-  mRunning = false;
-  mGameLoopThread->join();
-  delete mGameLoopThread;
+  cleanUp();
   TRACE_INFO("Server finished");
 }
 
@@ -105,7 +103,6 @@ void GameLoop::gameLoop() {
         break;
 
       case GAME_STATE::SETUP_GAME:
-        TRACE_INFO("Setting GameLoopState to PLAYING");
         state = GAME_STATE::PLAYING;
         break;
 
@@ -154,6 +151,13 @@ void GameLoop::gameLoop() {
   if (hostListener.isListening()) {
     hostListener.stopListening();
   }
+  InputSystem::get().resetSystem();
   world.shutDown();
   mNetworkSystem->shutDown();
+}
+
+void GameLoop::cleanUp() {
+  mRunning = false;
+  mGameLoopThread->join();
+  delete mGameLoopThread;
 }
