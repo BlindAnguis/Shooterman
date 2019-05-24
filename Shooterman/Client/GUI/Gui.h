@@ -34,7 +34,7 @@ private:
   GAME_STATE mPreviousGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
-  std::map<GAME_STATE, std::vector<std::shared_ptr<MenuBase>>> mMenuMap;
+  std::map<GAME_STATE, std::list<std::shared_ptr<MenuBase>>> mMenuMap;
   sf::Clock mRenderClock;
 
   void init();

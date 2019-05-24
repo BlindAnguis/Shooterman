@@ -4,6 +4,7 @@ MenuBase::~MenuBase() { }
 
 void MenuBase::init() { }
 void MenuBase::uninit() { }
+void MenuBase::reset() { }
 
 bool MenuBase::checkMouse(sf::Vector2f mousePosition) {
   mGuiFrame->checkMouse(mousePosition);

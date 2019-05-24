@@ -16,6 +16,10 @@ void PlayWindow::uninit() {
   mSpriteListSubscriber.getMessageQueue();
 }
 
+void PlayWindow::reset() {
+  mIsSubscribed = false;
+}
+
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   bool renderNeeded = false;
 

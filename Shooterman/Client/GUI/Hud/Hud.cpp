@@ -17,6 +17,10 @@ Hud::Hud() {
 
 Hud::~Hud() { }
 
+void Hud::reset() {
+  mSubscribedToPlayerData = false;
+}
+
 bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   if (!mSubscribedToPlayerData) {
     mSubscribedToPlayerData = MessageHandler::get().subscribeTo("ClientPlayerData", &mPlayerDataSubscriber);

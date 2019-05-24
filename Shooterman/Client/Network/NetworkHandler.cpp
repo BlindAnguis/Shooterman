@@ -92,7 +92,7 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
   if (ID != IP_MESSAGE) {
     // Received unexpected message
     TRACE_ERROR("Received unexpected message with ID: " << ID);
-    GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+    GameStateMessage gsm(GAME_STATE::PREVIOUS);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
     MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
     return connectionStatus;

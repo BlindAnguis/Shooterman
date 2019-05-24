@@ -8,6 +8,8 @@ public:
   Hud();
   ~Hud();
 
+  void reset() override;
+
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 
 private:

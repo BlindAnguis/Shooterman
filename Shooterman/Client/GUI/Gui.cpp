@@ -30,14 +30,14 @@ void Gui::init() {
 
   Interface pc;
 
-  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
-  mMenuMap.emplace(GAME_STATE::LOBBY, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
-  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(false) });
-  mMenuMap.emplace(GAME_STATE::JOIN, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<JoinMenu>() });
-  mMenuMap.emplace(GAME_STATE::PLAYING, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<PlayWindow>(), std::make_shared<Hud>() });
-  mMenuMap.emplace(GAME_STATE::OPTIONS, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>() });
-  mMenuMap.emplace(GAME_STATE::PAUSE, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>() });
-  mMenuMap.emplace(GAME_STATE::DEBUG, std::vector<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
+  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
+  mMenuMap.emplace(GAME_STATE::LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
+  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(false) });
+  mMenuMap.emplace(GAME_STATE::JOIN, std::list<std::shared_ptr<MenuBase>> { std::make_shared<JoinMenu>() });
+  mMenuMap.emplace(GAME_STATE::PLAYING, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PlayWindow>(), std::make_shared<Hud>() });
+  mMenuMap.emplace(GAME_STATE::OPTIONS, std::list<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>() });
+  mMenuMap.emplace(GAME_STATE::PAUSE, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>() });
+  mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
 
   // This needs to be after the DebugMenu is created
   while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
@@ -49,7 +49,6 @@ void Gui::init() {
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
   mWindowOpen = true;
 
-  mCurrentGameState = GAME_STATE::MAIN_MENU;
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   mLeftButtonAlreadyPressed = false;
 
@@ -199,6 +198,15 @@ void Gui::handleGameStateMessages() {
         mWindow->clear(sf::Color::White);
         mWindow->display();
       }
+
+      if (mCurrentGameState == GAME_STATE::MAIN_MENU) {
+        for (auto menuList : mMenuMap) {
+          for (auto menu : menuList.second) {
+            menu->reset();
+          }
+        }
+      }
+
     } else {
       TRACE_WARNING("Received unexpected message with ID: " << id);
     }

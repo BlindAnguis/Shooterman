@@ -15,6 +15,7 @@ GuiText::GuiText(GuiComponentPosition guiComponentPosition, std::string text, in
 void GuiText::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {
   calculatePosition(xPosition, yPosition, width, height);
   mText.setPosition((float)mXPosition, (float)mYPosition);
+  mWidth = (int)mText.getLocalBounds().width;
   //mBoundingBox.setPosition((float)mXPosition, (float)mYPosition);
   //mBoundingBox.setSize(sf::Vector2f((float)mWidth, (float)mHeight));
   //window->draw(mBoundingBox);
