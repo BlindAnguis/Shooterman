@@ -3,7 +3,7 @@
 #include <SFML/Graphics/Text.hpp>
 
 #include "GuiComponent.h"
-#include "FontManager.h"
+#include "GuiResourceManager.h"
 
 #include "../../../Common/Trace.h"
 

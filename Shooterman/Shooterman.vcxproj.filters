@@ -7,7 +7,6 @@
     <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\MainMenu\MainMenu.cpp" />
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
-    <ClCompile Include="Client\GUI\SpriteManager.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
@@ -64,9 +63,9 @@
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiExpandableList.cpp" />
-    <ClCompile Include="Client\GUI\Resources\FontManager.cpp" />
     <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -75,7 +74,6 @@
     <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\MainMenu\MainMenu.h" />
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
-    <ClInclude Include="Client\GUI\SpriteManager.h" />
     <ClInclude Include="Client\Input\Input.h" />
     <ClInclude Include="Client\Main\ClientMain.h" />
     <ClInclude Include="Client\Network\NetworkHandler.h" />
@@ -154,8 +152,8 @@
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Client\GUI\Resources\GuiExpandableList.h" />
-    <ClInclude Include="Client\GUI\Resources\FontManager.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiResourceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

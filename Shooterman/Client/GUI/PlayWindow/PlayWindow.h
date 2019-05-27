@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Resources/MenuBase.h"
-#include "../SpriteManager.h"
+#include "../Resources/GuiResourceManager.h"
 #include "../../../Common/Messages/SpriteMessage.h"
 #include "../../../Common/Messages/SpriteCacheMessage.h"
 
@@ -16,7 +16,6 @@ public:
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 
 private:
-  SpriteManager mSpriteManager;
   Subscriber mSpriteListSubscriber;
   SpriteCacheMessage mSpriteListCacheMessage;
   SpriteMessage mSpriteListMessage;

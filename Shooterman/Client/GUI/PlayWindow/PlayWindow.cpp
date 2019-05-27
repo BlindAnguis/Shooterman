@@ -73,7 +73,7 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
 
 void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData) {
   //TRACE_DEBUG(static_cast<int>(spriteData.textureId));
-  sf::Sprite sprite = mSpriteManager.getSprite(spriteData.textureId);
+  sf::Sprite sprite = GuiResourceManager::getInstance().createSprite(spriteData.textureId);
   sprite.setPosition(spriteData.position);
   sprite.setTextureRect(spriteData.texturePosition);
   sprite.setOrigin((float)(sprite.getTextureRect().width / 2),
@@ -87,7 +87,7 @@ void PlayWindow::buildSpriteCache() {
   SpriteData spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
   while (spriteData.textureId != Textures::Unknown) {
     sf::Sprite sprite;
-    sprite = mSpriteManager.getSprite(spriteData.textureId);
+    sprite = GuiResourceManager::getInstance().createSprite(spriteData.textureId);
     sprite.setPosition(spriteData.position);
     sprite.setTextureRect(spriteData.texturePosition);
     sprite.setOrigin((float)(sprite.getTextureRect().width / 2),

@@ -1,7 +1,7 @@
 #include "Gui.h"
 
 #include "Hud/Hud.h"
-#include "Resources/FontManager.h"
+#include "Resources/GuiResourceManager.h"
 #include "MainMenu/MainMenu.h"
 #include "LobbyMenu/LobbyMenu.h"
 #include "JoinMenu/JoinMenu.h"
@@ -63,7 +63,7 @@ void Gui::init() {
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
 
-  FontManager::getInstance().clear();
+  GuiResourceManager::getInstance().clear();
 }
 
 void Gui::render() {

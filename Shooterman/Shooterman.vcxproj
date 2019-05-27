@@ -164,7 +164,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiExpandableList.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
-    <ClCompile Include="Client\GUI\Resources\FontManager.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
@@ -181,7 +181,6 @@
     <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\MainMenu\MainMenu.cpp" />
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
-    <ClCompile Include="Client\GUI\SpriteManager.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
@@ -216,7 +215,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
-    <ClInclude Include="Client\GUI\Resources\FontManager.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiResourceManager.h" />
     <ClInclude Include="Client\GUI\Resources\GuiButton.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponent.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponentFactory.h" />
@@ -240,7 +239,6 @@
     <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\MainMenu\MainMenu.h" />
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
-    <ClInclude Include="Client\GUI\SpriteManager.h" />
     <ClInclude Include="Client\Input\Input.h" />
     <ClInclude Include="Client\Main\ClientMain.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandler.h" />

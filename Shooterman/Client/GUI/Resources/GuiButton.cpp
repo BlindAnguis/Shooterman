@@ -7,9 +7,9 @@ GuiButton::GuiButton(GuiComponentPosition guiComponentPosition, std::string text
   : GuiText(guiComponentPosition, std::move(text), fontSize, font), mCallback(callback) {
   mText.setOutlineThickness(1);
 
-  mBackgroundL = FontManager::getInstance().createSprite(TEXTURE::BUTTON_LEFT);
-  mBackgroundM = FontManager::getInstance().createSprite(TEXTURE::BUTTON);
-  mBackgroundR = FontManager::getInstance().createSprite(TEXTURE::BUTTON_RIGHT);
+  mBackgroundL = GuiResourceManager::getInstance().createSprite(GUI_TEXTURE::BUTTON_LEFT);
+  mBackgroundM = GuiResourceManager::getInstance().createSprite(GUI_TEXTURE::BUTTON);
+  mBackgroundR = GuiResourceManager::getInstance().createSprite(GUI_TEXTURE::BUTTON_RIGHT);
 }
 
 void GuiButton::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {

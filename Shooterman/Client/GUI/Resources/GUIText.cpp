@@ -3,7 +3,7 @@
 
 GuiText::GuiText(GuiComponentPosition guiComponentPosition, std::string text, int fontSize, FONT font) : GuiComponent(guiComponentPosition) {
   mName = "GuiButton";
-  mText.setFont(FontManager::getInstance().getFont(font));
+  mText.setFont(GuiResourceManager::getInstance().getFont(font));
   mText.setString(text);
   mText.setCharacterSize(fontSize);
   mText.setFillColor(sf::Color::Black);
