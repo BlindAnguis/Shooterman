@@ -99,6 +99,7 @@ Engine::~Engine() {
   ComponentManager<AnimationComponent>::get().clearManager();
   ComponentManager<HealthComponent>::get().clearManager();
   ComponentManager<ManaComponent>::get().clearManager();
+  ComponentManager<StaminaComponent>::get().clearManager();
   ComponentManager<HealthChangerComponent>::get().clearManager();
   ComponentManager<ClockComponent>::get().clearManager();
   ComponentManager<PlayerComponent>::get().clearManager();
@@ -289,6 +290,12 @@ void Engine::collectPlayerData() {
     if (manaComponent) {
       pdm.setCurrentMana(manaComponent->currentMana);
       pdm.setMaxMana(manaComponent->maxMana);
+    }
+
+    auto staminaComponent = ComponentManager<StaminaComponent>::get().getComponent(playerId);
+    if (staminaComponent) {
+      pdm.setCurrentStamina(staminaComponent->currentStamina);
+      pdm.setMaxStamina(staminaComponent->maxStamina);
     }
 
     mPlayerDataSubscriber.reverseSendMessage(pdm.pack());

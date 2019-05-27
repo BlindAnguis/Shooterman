@@ -77,6 +77,11 @@ struct ManaComponent {
   int maxMana = 0;
 };
 
+struct StaminaComponent {
+  int currentStamina = 0;
+  int maxStamina = 0;
+};
+
 struct HealthChangerComponent {
   int healthChange = 0;
   std::set<int> immuneEntityIds;

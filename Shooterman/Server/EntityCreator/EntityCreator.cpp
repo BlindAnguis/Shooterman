@@ -475,6 +475,9 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
   hc->maxHealth = 200;
   hc->currentHealth = hc->maxHealth;
   hc->isAlive = true;
+  auto sc = ComponentManager<StaminaComponent>::get().addComponent(knight->id);
+  sc->maxStamina = 100;
+  sc->currentStamina = sc->maxStamina;
 
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
@@ -585,6 +588,9 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
   hc->maxHealth = 150;
   hc->currentHealth = hc->maxHealth;
   hc->isAlive = true;
+  auto sc = ComponentManager<StaminaComponent>::get().addComponent(spearman->id);
+  sc->maxStamina = 100;
+  sc->currentStamina = sc->maxStamina;
 
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");

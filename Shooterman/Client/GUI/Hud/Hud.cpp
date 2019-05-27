@@ -20,6 +20,9 @@ Hud::~Hud() { }
 
 void Hud::reset() {
   mSubscribedToPlayerData = false;
+  mManaBar->setPosition(-300.0f, -300.0f);
+  mStaminaBar->setPosition(-300.0f, -300.0f);
+  mPlayerDataSubscriber.getMessageQueue();
 }
 
 bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
