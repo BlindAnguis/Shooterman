@@ -17,11 +17,22 @@ CollisionSystem& CollisionSystem::get() {
 CollisionSystem::~CollisionSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
+  if (!mDebugMenuSubscribed) {
+    mDebugMenuSubscribed = MessageHandler::get().subscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
+    if (mDebugMenuSubscribed) {
+      AddDebugButtonMessage debMess(mDebugMenuSubscriber.getId(), "Collision debug traces", "Server");
+      mDebugMenuSubscriber.reverseSendMessage(debMess.pack());
+    }
+  }
+  handleDebugMessage();
+
   auto causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);
   auto causingColliderCollisionComponent = mCollisionComponentManager->getComponent(causingColliderEntityId);
   if (causingColliderCollisionComponent) {
     sf::Vector2f oldPosition = causingColliderMovingComponent->sprite.getPosition();
     causingColliderMovingComponent->sprite.setPosition(newXPos, newYPos);
+    
+    TRACE_DEBUG("No of nearEntities: " << gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition()).size());
 
     for (auto affectedCollideeEntityId : gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition())) {
       auto affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntityId);
@@ -29,7 +40,7 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
 
       // If collision with another entity
       if (causingColliderEntityId != affectedCollideeEntityId && Collision::PixelPerfectTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
-        //TRACE_INFO("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntityId);
+        TRACE_DEBUG("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntityId);
 
         handleCollision(causingColliderEntityId, causingColliderMovingComponent, affectedCollideeEntityId, affectedCollideeMovingComponent);
         causingColliderMovingComponent->sprite.setPosition(oldPosition); // Reset movement.
@@ -89,4 +100,22 @@ void CollisionSystem::resetCollisionInformation() {
 
   mCollisions.clear();
   //TRACE_INFO("Collisions after reset: " << mCollisions.size());
+}
+
+void CollisionSystem::resetSystem() {
+  MessageHandler::get().unsubscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
+  mDebugMenuSubscribed = false;
+  mDebugEnabled = false;
+}
+
+void CollisionSystem::handleDebugMessage() {
+  std::queue<sf::Packet> debugMessageQueue = mDebugMenuSubscriber.getMessageQueue();
+  sf::Packet debugMessage;
+  while (!debugMessageQueue.empty()) {
+    debugMessage = debugMessageQueue.front();
+    debugMessageQueue.pop();
+    TRACE_DEBUG("Toggle debug traces");
+    mDebugEnabled = !mDebugEnabled;
+    TRACE_DEBUG("Toggle debug traces");
+  }
 }

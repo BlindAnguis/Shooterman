@@ -36,7 +36,7 @@ private:
   
   GridSystem *mGridSystem;
 
-  std::map<Textures, sf::Texture> mTextures;
+  std::map<Textures, sf::Texture*> mTextures;
 
   Entity* createPlayerBase(float maxVelocity, Textures textureType, sf::Vector2f position, int health, int attackSpeed);
   Entity* createMage(sf::Vector2f position);

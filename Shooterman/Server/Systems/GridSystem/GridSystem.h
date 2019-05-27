@@ -19,6 +19,7 @@ public:
   void moveEntity(int entityId, sf::Vector2i oldSpritePosition, sf::Vector2i newSpritePosition);
   bool isOutOfBounds(sf::Vector2i spritePosition);
   sf::Vector2i gridPositionToFirstPixelPosition(sf::Vector2i gridPosition);
+  void resetGridSystem();
 private:
   std::vector<std::vector<std::vector<int>>> mGrid;
   sf::Vector2i positionToGridPosition(sf::Vector2i position);

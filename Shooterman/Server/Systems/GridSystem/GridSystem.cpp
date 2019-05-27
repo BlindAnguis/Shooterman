@@ -26,6 +26,19 @@ GridSystem & GridSystem::get()
   return instance;
 }
 
+void GridSystem::resetGridSystem() {
+  mGrid.clear();
+  for (int i = 0; i < mGridBoxSize; i++) {
+    mGrid.emplace_back(std::vector<std::vector<int>>());
+  }
+
+  for (int i = 0; i < mGridBoxSize; i++) {
+    for (int j = 0; j < mGridBoxSize; j++) {
+      mGrid.at(i).emplace_back(std::vector<int>());
+    }
+  }
+}
+
 std::vector<int> GridSystem::getNearEntities(sf::Vector2i spritePosition) {
   std::vector<int> nearEntities;
   auto nearGridPositions = getNearGridPositions(spritePosition);

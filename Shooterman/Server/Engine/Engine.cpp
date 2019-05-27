@@ -86,7 +86,8 @@ Engine::~Engine() {
     destroyEntity(entity.second->id);
   }
   mRenderSystem->resetSystem();
-  mEntityCreatorSystem->reset();
+  mGridSystem->resetGridSystem();
+  mCollisionSystem->resetSystem();
   ComponentManager<ComponentType>::get().clearManager();
   ComponentManager<PlayerState>::get().clearManager();
   ComponentManager<PlayerClass>::get().clearManager();

@@ -18,6 +18,7 @@ void PlayWindow::uninit() {
 
 void PlayWindow::reset() {
   mIsSubscribed = false;
+  mCachedSprites.clear();
 }
 
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
