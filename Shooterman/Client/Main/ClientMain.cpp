@@ -1,6 +1,11 @@
 #include "ClientMain.h"
 
+#include "../Input/Input.h"
+#include "../GUI/Gui.h"
+#include "../Sound/Sound.h"
+#include "../Network/NetworkHandler.h"
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
+#include "../../Server/Main/GameLoop.h"
 
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";

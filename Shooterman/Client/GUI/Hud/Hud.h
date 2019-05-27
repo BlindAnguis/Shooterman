@@ -2,6 +2,7 @@
 
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiProgressBar.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 class Hud : public MenuBase {
 public:

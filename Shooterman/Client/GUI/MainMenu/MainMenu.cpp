@@ -4,6 +4,7 @@
 #include "../Resources/GuiButton.h"
 #include "../Resources/GuiComponentFactory.h"
 #include "../../../Common/MessageId.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 MainMenu::MainMenu() {
   mName = "CLIENT: MAIN_MENU";

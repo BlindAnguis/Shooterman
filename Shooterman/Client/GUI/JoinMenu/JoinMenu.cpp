@@ -1,7 +1,9 @@
 #include "JoinMenu.h"
 
+#include "../Resources/GuiButton.h"
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../../Common/Messages/ClientInternal/IpMessage.h"
 
 JoinMenu::JoinMenu() {
   mName = "CLIENT: JOIN_MENU";

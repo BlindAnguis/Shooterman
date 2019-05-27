@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../Resources/GuiButton.h"
+#include "../Resources/GuiText.h"
 #include "../Resources/MenuBase.h"
 #include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/Trace.h"
-#include "../../../Common/Messages/ClientInternal/IpMessage.h"
 
 class JoinMenu : public MenuBase {
 public:

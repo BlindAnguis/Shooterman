@@ -1,7 +1,10 @@
 #include "DebugMenu.h"
 
 #include "../Resources/GuiButton.h"
+#include "../../../Common/MessageId.h"
+#include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
+#include "../../../Common/MessageHandler/Interface.h"
 
 DebugMenu::DebugMenu() {
   mName = "CLIENT: DEBUG_MENU";

@@ -2,7 +2,7 @@
 
 #include <thread>
 
-#include <SFML/Network.hpp>
+#include <SFML/Network/TcpSocket.hpp>
 
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/Trace.h"

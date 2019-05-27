@@ -1,11 +1,8 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiList.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
-#include "../../../Common/MessageHandler/Subscriber.h"
 
 class LobbyMenu : public MenuBase {
 public:

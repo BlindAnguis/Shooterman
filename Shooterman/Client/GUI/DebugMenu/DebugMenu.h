@@ -1,9 +1,8 @@
 #pragma once
+
 #include "../Resources/MenuBase.h"
-#include "../../../Common/MessageHandler/Interface.h"
-#include "../../../Common/MessageId.h"
-#include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../Resources/GuiExpandableList.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 class DebugMenu : public MenuBase {
 public:

@@ -1,8 +1,9 @@
 #include "LobbyMenu.h"
 
-#include "../../../Common/Messages/LobbyDataMessage.h"
 #include "../Resources/GuiComponentFactory.h"
 #include "../Resources/GuiText.h"
+#include "../../../Common/Messages/LobbyDataMessage.h"
+#include "../../../Common/MessageHandler/Subscriber.h"
 
 LobbyMenu::LobbyMenu(bool server) {
   mName = "CLIENT: LOBBY_MENU";

@@ -1,9 +1,8 @@
 #pragma once
 
 #include "../Resources/MenuBase.h"
-#include "../Resources/GuiResourceManager.h"
-#include "../../../Common/Messages/SpriteMessage.h"
 #include "../../../Common/Messages/SpriteCacheMessage.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 class PlayWindow : public MenuBase {
 public:

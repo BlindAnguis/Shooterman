@@ -4,8 +4,7 @@
 #include "../Resources/GuiButton.h"
 #include "../Resources/GuiComponentFactory.h"
 #include "../../../Common/MessageId.h"
-
-#include <SFML/Graphics.hpp>
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 PauseMenu::PauseMenu() {
     mName = "CLIENT: PAUSE_MENU";

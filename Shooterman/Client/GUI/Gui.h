@@ -2,10 +2,8 @@
 
 #include <thread>
 #include <map>
-#include <vector>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Network.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include "Resources/MenuBase.h"
 #include "../../Common/MessageHandler/MessageHandler.h"

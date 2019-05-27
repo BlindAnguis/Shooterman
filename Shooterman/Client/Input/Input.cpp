@@ -1,8 +1,10 @@
 #include "Input.h"
 
-#include <cstdint>
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Keyboard.hpp>
 
-#include "../../Common/Trace.h"
+#include "../../Common/KeyBindings.h"
+#include "../../Common/Constants.h"
 #include "../../Common/Messages/MouseMessage.h"
 #include "../../Common/Messages/InputMessage.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"

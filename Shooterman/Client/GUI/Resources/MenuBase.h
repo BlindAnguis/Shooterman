@@ -1,15 +1,9 @@
 #pragma once
 
-#include <list>
-
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include "GuiFrame.h"
-#include "../../../Common/MessageHandler/MessageHandler.h"
-#include "../../../Common/Messages/GameStateMessage.h"
 #include "../../../Common/Trace.h"
-
-#define FONT_FILE_PATH "Client/Resources/Fonts/"
 
 class MenuBase : public Trace {
 public:

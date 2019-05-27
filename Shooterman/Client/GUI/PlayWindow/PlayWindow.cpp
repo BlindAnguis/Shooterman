@@ -1,5 +1,8 @@
 #include "PlayWindow.h"
 
+#include "../Resources/GuiResourceManager.h"
+#include "../../../Common/Messages/SpriteMessage.h"
+
 PlayWindow::PlayWindow() {
   mName = "CLIENT: PLAY_WINDOW";
   mIsSubscribed = false;

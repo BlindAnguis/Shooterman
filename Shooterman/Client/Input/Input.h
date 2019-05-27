@@ -1,14 +1,8 @@
 #pragma once
 
 #include <thread>
-#include <SFML/System.hpp>
-#include <SFML/Network.hpp>
-#include <SFML/Window.hpp>
 
-
-#include "../../Common/KeyBindings.h"
-#include "../../Common/MessageId.h"
-#include "../../Common/Constants.h"
+#include "../../Common/Trace.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/GameStateMessage.h"
 

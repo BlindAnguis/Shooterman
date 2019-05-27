@@ -3,8 +3,6 @@
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiComponentFactory.h"
 
-#include <SFML/Graphics.hpp>
-
 OptionsMenu::OptionsMenu() {
   mName = "CLIENT: OPTIONS_MENU";
   mDebugEnabled = true;

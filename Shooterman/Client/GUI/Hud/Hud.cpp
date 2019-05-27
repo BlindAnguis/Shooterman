@@ -2,6 +2,7 @@
 
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 Hud::Hud() {  
   mGuiFrame = std::make_shared<Frame>();
