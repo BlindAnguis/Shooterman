@@ -4,27 +4,15 @@
 
 class MouseMessage : Message {
 public:
-  MouseMessage() : mPosition(sf::Vector2i()) {}
-  MouseMessage(sf::Vector2i position) : mPosition(position) {}
-  ~MouseMessage() {}
+  MouseMessage();
+  MouseMessage(sf::Vector2i position);
+  ~MouseMessage();
 
-  sf::Packet pack() {
-    sf::Packet packet;
-    packet << mPosition.x;
-    packet << mPosition.y;
-    return packet;
-  }
+  sf::Packet pack();
+  void unpack(sf::Packet packet);
 
-  void unpack(sf::Packet packet) {
-    packet >> mPosition.x;
-    packet >> mPosition.y;
-  }
-
-  sf::Vector2i getPosition() {
-    return mPosition;
-  }
+  sf::Vector2i getPosition();
 
 private:
-  std::string mName = "TRACE";
   sf::Vector2i mPosition;
 };

@@ -5,24 +5,15 @@
 
 class SetupSocketConnectionData : public Message {
 public:
-  SetupSocketConnectionData() {}
-  SetupSocketConnectionData(std::string ip, unsigned short port) : mIP(ip), mPort(port) {}
+  SetupSocketConnectionData();
+  SetupSocketConnectionData(std::string ip, unsigned short port);
 
-  sf::Packet pack() {
-    sf::Packet packet;
-    //packet << SETUP_SOCKET_CONNECTION_DATA;
-    packet << mIP;
-    packet << mPort;
-    return packet;
-  }
+  sf::Packet pack();
 
-  void unpack(sf::Packet packet) {
-    packet >> mIP;
-    packet >> mPort;
-  }
+  void unpack(sf::Packet packet);
 
-  std::string getIP() { return mIP; }
-  unsigned short getPort() { return mPort; }
+  std::string getIP();
+  unsigned short getPort();
 
 private:
   std::string mIP;

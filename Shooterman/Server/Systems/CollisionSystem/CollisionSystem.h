@@ -7,7 +7,6 @@
 #include "../DeleteSystem/DeleteSystem.h"
 #include "../../../Common/Trace.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
-#include "../../../Common/Messages/AddDebugButtonMessage.h"
 
 class CollisionSystem : Trace
 {

@@ -7,35 +7,15 @@
 
 class IpMessage : Message {
 public:
-  IpMessage(std::string ip, unsigned short port) : mIp(ip), mPort(port) { }
+  IpMessage(std::string ip, unsigned short port);
+  IpMessage(sf::Packet packet);
+  ~IpMessage();
 
-  IpMessage(sf::Packet packet) {
-    packet >> mIp;
-    packet >> mPort;
-  }
+  sf::Packet pack();
+  void unpack(sf::Packet packet);
 
-  ~IpMessage() {}
-
-  sf::Packet pack() {
-    sf::Packet packet;
-    packet << IP_MESSAGE;
-    packet << mIp;
-    packet << mPort;
-    return packet;
-  }
-
-  void unpack(sf::Packet packet) {
-    packet >> mIp;
-    packet >> mPort;
-  }
-
-  std::string getIp() {
-    return mIp;
-  }
-
-  unsigned short getPort() {
-    return mPort;
-  }
+  std::string getIp();
+  unsigned short getPort();
 
 private:
   std::string mName = "TRACE";

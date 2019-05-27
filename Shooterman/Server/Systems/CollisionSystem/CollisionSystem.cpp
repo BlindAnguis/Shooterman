@@ -1,5 +1,8 @@
 #include "CollisionSystem.h"
 
+#include "../../../Common/Messages/AddDebugButtonMessage.h"
+#include "../../../Common/Messages/RemoveDebugButtonMessage.h"
+
 CollisionSystem::CollisionSystem()
   :
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
@@ -103,6 +106,9 @@ void CollisionSystem::resetCollisionInformation() {
 }
 
 void CollisionSystem::resetSystem() {
+  RemoveDebugButtonMessage rdbm(mDebugMenuSubscriber.getId());
+  sf::Packet packet = rdbm.pack();
+  mDebugMenuSubscriber.reverseSendMessage(packet);
   MessageHandler::get().unsubscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
   mDebugMenuSubscribed = false;
   mDebugEnabled = false;

@@ -66,6 +66,13 @@
     <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiResourceManager.cpp" />
+    <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
+    <ClCompile Include="Common\Messages\ClientInternal\IpMessage.cpp" />
+    <ClCompile Include="Common\Messages\ClientMainAndNetworkHandlerMessages.cpp" />
+    <ClCompile Include="Common\Messages\InputMessage.cpp" />
+    <ClCompile Include="Common\Messages\MouseMessage.cpp" />
+    <ClCompile Include="Common\Messages\SpriteCacheMessage.cpp" />
+    <ClCompile Include="Common\Messages\SpriteMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
