@@ -36,10 +36,10 @@ void HealthSystem::update()
 {
   for (auto entityWithHealth : mHealthComponentManager->getAllEntitiesWithComponent()) {
     if (entityWithHealth.second->isAlive) {
-      CollisionComponent* collisionComponent = mCollisionComponentManager->getComponent(entityWithHealth.first);
+      auto collisionComponent = mCollisionComponentManager->getComponent(entityWithHealth.first);
       if (collisionComponent && collisionComponent->collided) {
         for (auto collider : collisionComponent->collidedList) {
-          HealthChangerComponent* collidingHealthChanger = mHealthChangerComponentManager->getComponent(collider);
+          auto collidingHealthChanger = mHealthChangerComponentManager->getComponent(collider);
           if (collidingHealthChanger) {
             if (collidingHealthChanger->immuneEntityIds.find(entityWithHealth.first) == collidingHealthChanger->immuneEntityIds.end()) {
               changeHealth(entityWithHealth.first, collidingHealthChanger->healthChange);

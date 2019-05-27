@@ -17,15 +17,15 @@ CollisionSystem& CollisionSystem::get() {
 CollisionSystem::~CollisionSystem() { TRACE_DEBUG("Enter Destructor"); }
 
 void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
-  RenderComponent* causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);
-  CollisionComponent* causingColliderCollisionComponent = mCollisionComponentManager->getComponent(causingColliderEntityId);
+  auto causingColliderMovingComponent = mRenderComponentManager->getComponent(causingColliderEntityId);
+  auto causingColliderCollisionComponent = mCollisionComponentManager->getComponent(causingColliderEntityId);
   if (causingColliderCollisionComponent) {
     sf::Vector2f oldPosition = causingColliderMovingComponent->sprite.getPosition();
     causingColliderMovingComponent->sprite.setPosition(newXPos, newYPos);
 
     for (auto affectedCollideeEntityId : gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition())) {
-      RenderComponent* affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntityId);
-      CollisionComponent* affectedCollideeCollisionComponent = mCollisionComponentManager->getComponent(affectedCollideeEntityId);
+      auto affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntityId);
+      auto affectedCollideeCollisionComponent = mCollisionComponentManager->getComponent(affectedCollideeEntityId);
 
       // If collision with another entity
       if (causingColliderEntityId != affectedCollideeEntityId && Collision::PixelPerfectTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
@@ -61,10 +61,10 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
   }
 }
 
-void CollisionSystem::handleCollision(int causingColliderEntityId, RenderComponent* causingColliderMovingComponent, int affectedCollideeEntityId, RenderComponent* affectedCollideeMovingComponent) {
+void CollisionSystem::handleCollision(int causingColliderEntityId, std::shared_ptr<RenderComponent> causingColliderMovingComponent, int affectedCollideeEntityId, std::shared_ptr<RenderComponent> affectedCollideeMovingComponent) {
   // TODO: Check if any of the components can deal damage and so on. What should happen when the moving component touches the stillComponent.
 
-  VelocityComponent* causingColliderEntityVelocity = mVelocityComponentManager->getComponent(causingColliderEntityId);
+  auto causingColliderEntityVelocity = mVelocityComponentManager->getComponent(causingColliderEntityId);
   if (causingColliderEntityVelocity) {
     causingColliderEntityVelocity->currentVelocity.x = 0;
     causingColliderEntityVelocity->currentVelocity.y = 0;
@@ -74,13 +74,13 @@ void CollisionSystem::handleCollision(int causingColliderEntityId, RenderCompone
 void CollisionSystem::resetCollisionInformation() {
   //TRACE_INFO("Collisions made last update: " << mCollisions.size());
   for (auto& collision : mCollisions) {
-    CollisionComponent* causingColliderEntity = mCollisionComponentManager->getComponent(collision.first);
+    auto causingColliderEntity = mCollisionComponentManager->getComponent(collision.first);
     if (causingColliderEntity) {
       causingColliderEntity->collided = false;
       causingColliderEntity->collidedList.clear();
     }
 
-    CollisionComponent* affectedCollideeEntity = mCollisionComponentManager->getComponent(collision.second);
+    auto affectedCollideeEntity = mCollisionComponentManager->getComponent(collision.second);
     if (affectedCollideeEntity) {
       affectedCollideeEntity->collided = false;
       affectedCollideeEntity->collidedList.clear();

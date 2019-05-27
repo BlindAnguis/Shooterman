@@ -20,7 +20,7 @@ public:
 
 private:
   //void move(PositionComponent* position, VelocityComponent* velocity);
-  void move(int entityId, RenderComponent* position, VelocityComponent* velocity);
+  void move(int entityId, std::shared_ptr<RenderComponent> position, std::shared_ptr<VelocityComponent> velocity);
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<AnimationComponent>* mAnimationComponentManager;

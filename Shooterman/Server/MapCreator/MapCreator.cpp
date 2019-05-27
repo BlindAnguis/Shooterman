@@ -52,7 +52,7 @@ Entity* MapCreator::createHorizontalWall(float xPos, float yPos) {
   auto collisionComponent = mCollisionComponentManager->addComponent(horizontalWall->id);
   collisionComponent->collided = false;
   collisionComponent->destroyOnCollision = false;
-  RenderComponent* rc = mRenderComponentManager->addComponent(horizontalWall->id);
+  auto rc = mRenderComponentManager->addComponent(horizontalWall->id);
   rc->visible = true;
   rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::HorizontalWall1)], sf::IntRect(0, 0, (int)size, (int)size));
   rc->sprite.setOrigin(size / 2, size / 2);
@@ -70,7 +70,7 @@ Entity* MapCreator::createVerticalWall(float xPos, float yPos) {
   collisionComponent->collided = false;
   collisionComponent->destroyOnCollision = false;
 
-  RenderComponent* rc = mRenderComponentManager->addComponent(verticalWall->id);
+  auto rc = mRenderComponentManager->addComponent(verticalWall->id);
   rc->visible = true;
   rc->isDynamic = false;
   rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::VerticalWall1)], sf::IntRect(0, 0, (int)size, (int)size));
@@ -84,7 +84,7 @@ Entity* MapCreator::createVerticalWall(float xPos, float yPos) {
 
 Entity* MapCreator::createFloor(Textures texture, sf::Vector2f position, sf::IntRect positionInTexture) {
   Entity* floor = mEntityManager->createEntity();
-  RenderComponent* rc = mRenderComponentManager->addComponent(floor->id);
+  auto rc = mRenderComponentManager->addComponent(floor->id);
   rc->visible = true;
   rc->isDynamic = false;
   rc->sprite = sf::Sprite(*mTextures[static_cast<int>(texture)], positionInTexture);
@@ -104,7 +104,7 @@ Entity* MapCreator::createFloorSpikes(sf::Vector2f position) {
   collisionComponent->destroyOnCollision = false;
   mGridSystem->addEntity(floorSpikes->id, (sf::Vector2i)rc->sprite.getPosition());
 
-  HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(floorSpikes->id);
+  auto hcc = mHealthChangerComponentManager->addComponent(floorSpikes->id);
   hcc->healthChange = -10;
   return floorSpikes;
 }

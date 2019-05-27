@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <memory>
 
 template <typename Component>
 class ComponentManager {
@@ -10,19 +11,19 @@ public:
     return instance;
   }
 
-  std::vector<Component*> getAllComponents() {
-    std::vector<Component*> components;
+  std::vector<std::shared_ptr<Component>> getAllComponents() {
+    std::vector<std::shared_ptr<Component>> components;
     for (auto entry : mComponents) {
       components.push_back(entry.second);
     }
     return components;
   }
 
-  std::map<int, Component*> getAllEntitiesWithComponent() {
+  std::map<int, std::shared_ptr<Component>> getAllEntitiesWithComponent() {
     return mComponents;
   }
 
-  Component* getComponent(int entityId) {
+  std::shared_ptr<Component> getComponent(int entityId) {
     auto it = mComponents.find(entityId);
     return it != mComponents.end() ? it->second : nullptr;
   }
@@ -31,8 +32,8 @@ public:
     return mComponents.count(entityId);
   }
 
-  Component* addComponent(int entityId) {
-    Component* newComponent = new Component;
+  std::shared_ptr<Component> addComponent(int entityId) {
+    std::shared_ptr<Component> newComponent = std::make_shared<Component>();
     mComponents.emplace(entityId, newComponent);
     return newComponent;
   }
@@ -40,13 +41,16 @@ public:
   void removeComponent(int entityId) {
     auto it = mComponents.find(entityId);
     if (it != mComponents.end()) {
-      delete it->second;
       mComponents.erase(entityId);
     }
   }
 
+  void clearManager() {
+    mComponents.clear();
+  }
+
 private:
-  std::map<int, Component*> mComponents;
+  std::map<int, std::shared_ptr<Component>> mComponents;
 
   ComponentManager<Component>() {}
 };

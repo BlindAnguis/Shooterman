@@ -16,7 +16,7 @@ public:
   void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem);
   void resetCollisionInformation();
 private:
-  void handleCollision(int causingColliderEntityId, RenderComponent* causingColliderMovingComponent, int affectedCollideeEntityId, RenderComponent* affectedCollideeMovingComponent);
+  void handleCollision(int causingColliderEntityId, std::shared_ptr<RenderComponent> causingColliderMovingComponent, int affectedCollideeEntityId, std::shared_ptr<RenderComponent> affectedCollideeMovingComponent);
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;

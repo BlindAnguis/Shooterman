@@ -87,6 +87,21 @@ Engine::~Engine() {
   }
   mRenderSystem->resetSystem();
   mEntityCreatorSystem->reset();
+  ComponentManager<ComponentType>::get().clearManager();
+  ComponentManager<PlayerState>::get().clearManager();
+  ComponentManager<PlayerClass>::get().clearManager();
+  ComponentManager<PickupType>::get().clearManager();
+  ComponentManager<PositionComponent>::get().clearManager();
+  ComponentManager<RenderComponent>::get().clearManager();
+  ComponentManager<VelocityComponent>::get().clearManager();
+  ComponentManager<CollisionComponent>::get().clearManager();
+  ComponentManager<AnimationComponent>::get().clearManager();
+  ComponentManager<HealthComponent>::get().clearManager();
+  ComponentManager<ManaComponent>::get().clearManager();
+  ComponentManager<HealthChangerComponent>::get().clearManager();
+  ComponentManager<ClockComponent>::get().clearManager();
+  ComponentManager<PlayerComponent>::get().clearManager();
+  ComponentManager<PickupComponent>::get().clearManager();
 }
 
 void Engine::shutDown() {

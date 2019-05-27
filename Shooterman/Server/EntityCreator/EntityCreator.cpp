@@ -73,7 +73,7 @@ Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f positi
 
 Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType, sf::Vector2f position, int health, int attackSpeed) {
   Entity* player = mEntityManager->createEntity();
-  VelocityComponent* vc = mVelocityComponentManager->addComponent(player->id);
+  auto vc = mVelocityComponentManager->addComponent(player->id);
   vc->currentVelocity.x = 0;
   vc->currentVelocity.y = 0;
   vc->maxVelocity.x = maxVelocity;
@@ -84,7 +84,7 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   collisionComponent->collided = false;
   collisionComponent->destroyOnCollision = false;
 
-  RenderComponent* rc = mRenderComponentManager->addComponent(player->id);
+  auto rc = mRenderComponentManager->addComponent(player->id);
   rc->textureId = textureType;
   rc->visible = true;
   rc->isDynamic = true;
@@ -92,7 +92,7 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   rc->sprite.setOrigin(32, 25);
   rc->sprite.setPosition(position.x, position.y);
 
-  AnimationComponent* ac = mAnimationComponentManager->addComponent(player->id);
+  auto ac = mAnimationComponentManager->addComponent(player->id);
   ac->currentAnimation = AnimationType::IdleUp;
 
   sf::Vector2f originPosition(32, 25);
@@ -136,11 +136,11 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   ac->animations.emplace(AnimationType::RunningRight, runningRightAnimation);
   ac->animations.emplace(AnimationType::Death, deathAnimation);
 
-  ClockComponent* cc = mClockComponentManager->addComponent(player->id);
+  auto cc = mClockComponentManager->addComponent(player->id);
 
-  HealthComponent* hc = mHealthComponentManager->addComponent(player->id);
+  auto hc = mHealthComponentManager->addComponent(player->id);
 
-  PlayerComponent* pc = mPlayerComponentManager->addComponent(player->id);
+  auto pc = mPlayerComponentManager->addComponent(player->id);
   pc->attackSpeed = attackSpeed;
   pc->state = PlayerState::Idle;
 
@@ -259,7 +259,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
 
 Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int> immuneEntityIds) {
   Entity* lightningStrike = mEntityManager->createEntity();
-  RenderComponent* rc = mRenderComponentManager->addComponent(lightningStrike->id);
+  auto rc = mRenderComponentManager->addComponent(lightningStrike->id);
   rc->visible = true;
   rc->isDynamic = true;
   rc->sprite = sf::Sprite(mTextures[Textures::LightningStrike], sf::IntRect(0, 0, 98, 203));
@@ -267,11 +267,11 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int
   rc->sprite.setPosition(position.x, position.y);
   rc->textureId = Textures::LightningStrike;
 
-  HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(lightningStrike->id);
+  auto hcc = mHealthChangerComponentManager->addComponent(lightningStrike->id);
   hcc->healthChange = -40;
   hcc->immuneEntityIds = immuneEntityIds;
 
-  CollisionComponent* cc = mCollisionComponentManager->addComponent(lightningStrike->id);
+  auto cc = mCollisionComponentManager->addComponent(lightningStrike->id);
   cc->collided = false;
   cc->destroyOnCollision = true;
 
@@ -279,7 +279,7 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int
     mDeleteSystem->addEntity(entityId);
   };
 
-  AnimationComponent* ac = mAnimationComponentManager->addComponent(lightningStrike->id);
+  auto ac = mAnimationComponentManager->addComponent(lightningStrike->id);
   Animation attackAnimation(rc->sprite, true, lightningStrike->id);
   for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 11; j++) {
@@ -299,7 +299,7 @@ void EntityCreator::createRandomLightningBolts() {
     int sleepTime = (int)(rand() % (100 - 40) + 40);
     sf::sleep(sf::milliseconds(sleepTime));
     Entity* lightningBolt = mEntityManager->createEntity();
-    RenderComponent* rc = mRenderComponentManager->addComponent(lightningBolt->id);
+    auto rc = mRenderComponentManager->addComponent(lightningBolt->id);
     rc->visible = true;
     rc->isDynamic = true;
     rc->sprite = sf::Sprite(mTextures[Textures::LightningStrike], sf::IntRect(0, 0, 98, 203));
@@ -309,10 +309,10 @@ void EntityCreator::createRandomLightningBolts() {
     rc->sprite.setPosition(posX, posY);
     rc->textureId = Textures::LightningStrike;
 
-    HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(lightningBolt->id);
+    auto hcc = mHealthChangerComponentManager->addComponent(lightningBolt->id);
     hcc->healthChange = -40;
 
-    CollisionComponent* cc = mCollisionComponentManager->addComponent(lightningBolt->id);
+    auto cc = mCollisionComponentManager->addComponent(lightningBolt->id);
     cc->collided = false;
     cc->destroyOnCollision = true;
 
@@ -320,7 +320,7 @@ void EntityCreator::createRandomLightningBolts() {
       mDeleteSystem->addEntity(entityId);
     };
 
-    AnimationComponent* ac = mAnimationComponentManager->addComponent(lightningBolt->id);
+    auto ac = mAnimationComponentManager->addComponent(lightningBolt->id);
     Animation attackAnimation(rc->sprite, true, lightningBolt->id);
     for (int i = 0; i < 2; i++) {
       for (int j = 0; j < 11; j++) {
@@ -367,14 +367,14 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 
     Entity* bullet = mEntityManager->createEntity();
 
-    VelocityComponent* vc = mVelocityComponentManager->addComponent(bullet->id);
+    auto vc = mVelocityComponentManager->addComponent(bullet->id);
     vc->currentVelocity.x = bulletVelocity.x;
     vc->currentVelocity.y = bulletVelocity.y;
     vc->maxVelocity.x = 20;
     vc->maxVelocity.y = 20;
     vc->moveOnce = false;
 
-    RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
+    auto rc = mRenderComponentManager->addComponent(bullet->id);
     rc->visible = visible;
     rc->isDynamic = true;
     //rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
@@ -384,14 +384,14 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     rc->sprite.setRotation(angle);
     rc->textureId = Textures::Bullet;
 
-    HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(bullet->id);
+    auto hcc = mHealthChangerComponentManager->addComponent(bullet->id);
     hcc->healthChange = -10;
 
-    CollisionComponent* cc = mCollisionComponentManager->addComponent(bullet->id);
+    auto cc = mCollisionComponentManager->addComponent(bullet->id);
     cc->collided = false;
     cc->destroyOnCollision = true;
 
-    AnimationComponent* ac = mAnimationComponentManager->addComponent(bullet->id);
+    auto ac = mAnimationComponentManager->addComponent(bullet->id);
     Animation attackAnimation(rc->sprite, false, bullet->id);
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 5; j++) {
@@ -431,7 +431,7 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
 
     Entity* bullet = mEntityManager->createEntity();
 
-    RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
+    auto rc = mRenderComponentManager->addComponent(bullet->id);
     rc->visible = true;
     rc->isDynamic = true;
     rc->sprite = sf::Sprite(mTextures[Textures::SwordSlash], sf::IntRect(0, 0, 28, 20));
@@ -440,21 +440,21 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
     rc->sprite.setRotation(angle);
     rc->textureId = Textures::SwordSlash;
 
-    HealthChangerComponent* hcc = mHealthChangerComponentManager->addComponent(bullet->id);
+    auto hcc = mHealthChangerComponentManager->addComponent(bullet->id);
     hcc->healthChange = -50;
 
-    VelocityComponent* vc = mVelocityComponentManager->addComponent(bullet->id);
+    auto vc = mVelocityComponentManager->addComponent(bullet->id);
     vc->currentVelocity.x = 0.0001f;
     vc->currentVelocity.y = 0.0001f;
     vc->maxVelocity.x = 0.0001f;
     vc->maxVelocity.y = 0.0001f;
     vc->moveOnce = false;
 
-    CollisionComponent* cc = mCollisionComponentManager->addComponent(bullet->id);
+    auto cc = mCollisionComponentManager->addComponent(bullet->id);
     cc->collided = false;
     cc->destroyOnCollision = false;
 
-    ClockComponent* clockComponent = mClockComponentManager->addComponent(bullet->id);
+    auto clockComponent = mClockComponentManager->addComponent(bullet->id);
     clockComponent->timeout = 100;
     clockComponent->timeoutCallback = [this, bullet]() {
       mDeleteSystem->addEntity(bullet->id);
@@ -627,15 +627,15 @@ Entity* EntityCreator::createRandomPickup() {
 
   Entity* pickup = mEntityManager->createEntity();
   TRACE_DEBUG("Creating a pickup of type: " << static_cast<int>(type) << " with id: " << pickup->id);
-  PickupComponent* pc = ComponentManager<PickupComponent>::get().addComponent(pickup->id);
+  auto pc = ComponentManager<PickupComponent>::get().addComponent(pickup->id);
   pc->type = type;
   pc->addedEffect = 50;
 
-  CollisionComponent* cc = ComponentManager<CollisionComponent>::get().addComponent(pickup->id);
+  auto cc = ComponentManager<CollisionComponent>::get().addComponent(pickup->id);
   cc->collided = false;
   cc->destroyOnCollision = true;
 
-  RenderComponent* rc = ComponentManager<RenderComponent>::get().addComponent(pickup->id);
+  auto rc = ComponentManager<RenderComponent>::get().addComponent(pickup->id);
   switch (pc->type)
   {
   case PickupType::HealthPotion: {

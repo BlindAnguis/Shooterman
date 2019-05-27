@@ -27,9 +27,9 @@ void MovementSystem::update(InputMessage inputMessage)
   //std::cout << "[SERVER: MOVEMENT_SYSTEM] update called with input: " << input << std::endl;
   Entity* e = mPlayersMap->at(inputMessage.getId())->getEntity();
   if (e && mRenderComponentManager->hasComponent(e->id)) {
-    VelocityComponent* velocity = mVelocityComponentManager->getComponent(e->id);
-    AnimationComponent* animation = mAnimationComponentManager->getComponent(e->id);
-    RenderComponent* spritePosition = mRenderComponentManager->getComponent(e->id);
+    auto velocity = mVelocityComponentManager->getComponent(e->id);
+    auto animation = mAnimationComponentManager->getComponent(e->id);
+    auto spritePosition = mRenderComponentManager->getComponent(e->id);
     auto player = mPlayerComponentManager->getComponent(e->id);
 
     // Calculate the angle between the sprite and the mouse
@@ -119,8 +119,8 @@ void MovementSystem::update(InputMessage inputMessage)
 void MovementSystem::ownUpdate() {
   for (auto entityWithCollision : mCollisionComponentManager->getAllEntitiesWithComponent())
   {
-    VelocityComponent* velocityComponent = mVelocityComponentManager->getComponent(entityWithCollision.first);
-    PlayerComponent* playerComponent = ComponentManager<PlayerComponent>::get().getComponent(entityWithCollision.first);
+    auto velocityComponent = mVelocityComponentManager->getComponent(entityWithCollision.first);
+    auto playerComponent = ComponentManager<PlayerComponent>::get().getComponent(entityWithCollision.first);
     if (playerComponent) {
 
     }
@@ -128,7 +128,7 @@ void MovementSystem::ownUpdate() {
         (velocityComponent && ((velocityComponent->currentVelocity.x != 0 && velocityComponent->maxVelocity.x > 0) || (velocityComponent->currentVelocity.y != 0 && velocityComponent->maxVelocity.y > 0))) ||
         (playerComponent && playerComponent->state == PlayerState::SuperAttacking))
     {
-      RenderComponent* renderComponent = mRenderComponentManager->getComponent(entityWithCollision.first);
+      auto renderComponent = mRenderComponentManager->getComponent(entityWithCollision.first);
       sf::Vector2f currentPosition = renderComponent->sprite.getPosition();
       mCollisionSystem->handleAnyCollision(entityWithCollision.first, currentPosition.x + velocityComponent->currentVelocity.x, currentPosition.y + velocityComponent->currentVelocity.y, mGridSystem);
       move(entityWithCollision.first, renderComponent, velocityComponent);
@@ -136,7 +136,7 @@ void MovementSystem::ownUpdate() {
   }
 }
 
-void MovementSystem::move(int entityId, RenderComponent* position, VelocityComponent* velocity) {
+void MovementSystem::move(int entityId, std::shared_ptr<RenderComponent> position, std::shared_ptr<VelocityComponent> velocity) {
   sf::Vector2f pos = position->sprite.getPosition();
   position->sprite.setPosition(pos.x + velocity->currentVelocity.x, pos.y + velocity->currentVelocity.y);
   if (velocity->moveOnce) {
