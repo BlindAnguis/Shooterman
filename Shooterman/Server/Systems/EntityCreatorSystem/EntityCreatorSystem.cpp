@@ -16,6 +16,10 @@ EntityCreatorSystem& EntityCreatorSystem::get() {
   return instance;
 }
 
+void EntityCreatorSystem::reset() {
+  mEntitiesToCreate.clear();
+}
+
 void EntityCreatorSystem::update() {
   auto it = mEntitiesToCreate.begin();
   while (it != mEntitiesToCreate.end()) {

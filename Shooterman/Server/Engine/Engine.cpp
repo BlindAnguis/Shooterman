@@ -88,6 +88,7 @@ Engine::~Engine() {
   mRenderSystem->resetSystem();
   mGridSystem->resetGridSystem();
   mCollisionSystem->resetSystem();
+  mEntityCreatorSystem->reset();
   ComponentManager<ComponentType>::get().clearManager();
   ComponentManager<PlayerState>::get().clearManager();
   ComponentManager<PlayerClass>::get().clearManager();
