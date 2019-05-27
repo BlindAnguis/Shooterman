@@ -22,6 +22,7 @@ void InputSystem::resetSystem() {
   mIsSubscribedToGameState = false;
   mCurrentGameState = GAME_STATE::LOBBY;
   mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
+  mObservers.clear();
 }
 
 InputSystem& InputSystem::get() {
@@ -95,7 +96,6 @@ void InputSystem::handleInput() {
   while (!inputMessagesQueue.empty()) {
     InputMessage im(inputMessagesQueue.front());
     inputMessagesQueue.pop();
-    //TRACE_INFO("New input from queue");
     //std::cout << "[SERVER_INPUT_SYSTEM] Message id: " << messageId << std::endl;
     //std::cout << "[SERVER_INPUT_SYSTEM] input: " << input << std::endl;
 

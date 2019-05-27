@@ -11,6 +11,6 @@ public:
   virtual void detach(ObserverIf* subscriber);
   virtual void notify(InputMessage message);
   virtual void notify(int message, int ID);
-private:
+protected:
   std::vector<ObserverIf*> mObservers;
 };
