@@ -29,6 +29,7 @@ public:
   static EntityCreatorSystem& get();
   void update();
   void addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation, std::set<int> immuneEntityIds);
+  void reset();
   Entity* createEntity(EntityType type, sf::Vector2f pos, std::set<int> immuneEntityIds);
 private:
   std::vector<EntityToCreate> mEntitiesToCreate;

@@ -86,6 +86,7 @@ Engine::~Engine() {
     destroyEntity(entity.second->id);
   }
   mRenderSystem->resetSystem();
+  mEntityCreatorSystem->reset();
 }
 
 void Engine::shutDown() {

@@ -24,27 +24,31 @@ EntityCreator::EntityCreator() :
   mDeleteSystem(&DeleteSystem::get())
 {
   mName = "SERVER: ENTITY_CREATOR";
-  mTextures[static_cast<int>(Textures::CharacterBandana)] = loadTexture("CharacterBandana1.png");
-  mTextures[static_cast<int>(Textures::CharacterChainHat)] = loadTexture("CharacterChainHat.png");
-  mTextures[static_cast<int>(Textures::CharacterChainHood)] = loadTexture("CharacterChainHood.png");
-  mTextures[static_cast<int>(Textures::CharacterClothHood)] = loadTexture("CharacterClothHood.png");
-  mTextures[static_cast<int>(Textures::CharacterGoldenHelmet)] = loadTexture("CharacterGoldenHelmet.png");
-  mTextures[static_cast<int>(Textures::CharacterLeatherCap)] = loadTexture("CharacterLeatherCap.png");
-  mTextures[static_cast<int>(Textures::CharacterMetalHelmet)] = loadTexture("CharacterMetalHelmet.png");
-  mTextures[static_cast<int>(Textures::CharacterMage)] = loadTexture("mage.png");
-  mTextures[static_cast<int>(Textures::CharacterKnight)] = loadTexture("knight3.png");
-  mTextures[static_cast<int>(Textures::CharacterSpearman)] = loadTexture("spearman.png");
-  //mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("waterSpell.png");
-  mTextures[static_cast<int>(Textures::Bullet)] = loadTexture("lightningBall.png");
-  mTextures[static_cast<int>(Textures::LightningStrike)] = loadTexture("lightningBolt.png");
-  mTextures[static_cast<int>(Textures::SwordSlash)] = loadTexture("SwordSlash.png");
-  mTextures[static_cast<int>(Textures::Tombstone)] = loadTexture("Tombstone.png");
-  mTextures[static_cast<int>(Textures::HealthPotion)] = loadTexture("Potions/pt1Small.png");
-  mTextures[static_cast<int>(Textures::ManaPotion)] = loadTexture("Potions/pt2Small.png");
-  mTextures[static_cast<int>(Textures::Ammo)] = loadTexture("Potions/pt4Small.png");
+  loadTexture(Textures::CharacterBandana, "CharacterBandana1.png");
+  loadTexture(Textures::CharacterChainHat, "CharacterChainHat.png");
+  loadTexture(Textures::CharacterChainHood, "CharacterChainHood.png");
+  loadTexture(Textures::CharacterClothHood, "CharacterClothHood.png");
+  loadTexture(Textures::CharacterGoldenHelmet, "CharacterGoldenHelmet.png");
+  loadTexture(Textures::CharacterLeatherCap, "CharacterLeatherCap.png");
+  loadTexture(Textures::CharacterMetalHelmet, "CharacterMetalHelmet.png");
+  loadTexture(Textures::CharacterMage, "mage.png");
+  loadTexture(Textures::CharacterKnight, "knight3.png");
+  loadTexture(Textures::CharacterSpearman, "spearman.png");
+  //loadTexture(Textures::Bullet, "waterSpell.png");
+  loadTexture(Textures::Bullet, "lightningBall.png");
+  loadTexture(Textures::LightningStrike, "lightningBolt.png");
+  loadTexture(Textures::SwordSlash, "SwordSlash.png");
+  loadTexture(Textures::Tombstone, "Tombstone.png");
+  loadTexture(Textures::HealthPotion, "Potions/pt1Small.png");
+  loadTexture(Textures::ManaPotion, "Potions/pt2Small.png");
+  loadTexture(Textures::Ammo, "Potions/pt4Small.png");
 }
 
-EntityCreator::~EntityCreator() {}
+EntityCreator::~EntityCreator() { }
+
+void EntityCreator::clearSprites() {
+  mTextures.clear();
+}
 
 Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f position) {
   Entity* createdPlayer = nullptr;
@@ -84,7 +88,7 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   rc->textureId = textureType;
   rc->visible = true;
   rc->isDynamic = true;
-  rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)], sf::IntRect(0, 64 * 6 + 14, 64, 50));
+  rc->sprite = sf::Sprite(mTextures[rc->textureId], sf::IntRect(0, 64 * 6 + 14, 64, 50));
   rc->sprite.setOrigin(32, 25);
   rc->sprite.setPosition(position.x, position.y);
 
@@ -258,7 +262,7 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int
   RenderComponent* rc = mRenderComponentManager->addComponent(lightningStrike->id);
   rc->visible = true;
   rc->isDynamic = true;
-  rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::LightningStrike)], sf::IntRect(0, 0, 98, 203));
+  rc->sprite = sf::Sprite(mTextures[Textures::LightningStrike], sf::IntRect(0, 0, 98, 203));
   rc->sprite.setOrigin(49, 101);
   rc->sprite.setPosition(position.x, position.y);
   rc->textureId = Textures::LightningStrike;
@@ -298,7 +302,7 @@ void EntityCreator::createRandomLightningBolts() {
     RenderComponent* rc = mRenderComponentManager->addComponent(lightningBolt->id);
     rc->visible = true;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::LightningStrike)], sf::IntRect(0, 0, 98, 203));
+    rc->sprite = sf::Sprite(mTextures[Textures::LightningStrike], sf::IntRect(0, 0, 98, 203));
     rc->sprite.setOrigin(49, 101);
     float posX = (rand() % (1024 - 32)) + 32.0f;
     float posY = (rand() % (1024 - 32)) + 32.0f;
@@ -374,7 +378,7 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     rc->visible = visible;
     rc->isDynamic = true;
     //rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::Bullet)], sf::IntRect(0, 0, 56, 65));
+    rc->sprite = sf::Sprite(mTextures[Textures::Bullet], sf::IntRect(0, 0, 56, 65));
     rc->sprite.setOrigin(28, 32);
     rc->sprite.setPosition(originXPos, originYPos);
     rc->sprite.setRotation(angle);
@@ -430,7 +434,7 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
     RenderComponent* rc = mRenderComponentManager->addComponent(bullet->id);
     rc->visible = true;
     rc->isDynamic = true;
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(Textures::SwordSlash)], sf::IntRect(0, 0, 28, 20));
+    rc->sprite = sf::Sprite(mTextures[Textures::SwordSlash], sf::IntRect(0, 0, 28, 20));
     rc->sprite.setOrigin(14, 10);
     rc->sprite.setPosition(originXPos, originYPos);
     rc->sprite.setRotation(angle);
@@ -637,7 +641,7 @@ Entity* EntityCreator::createRandomPickup() {
   case PickupType::HealthPotion: {
     TRACE_DEBUG("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::HealthPotion;
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
+    rc->sprite = sf::Sprite(mTextures[rc->textureId]);
     auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(pickup->id);
     hcc->healthChange = pc->addedEffect;
     break;
@@ -645,13 +649,13 @@ Entity* EntityCreator::createRandomPickup() {
   case PickupType::ManaPotion: {
     TRACE_DEBUG("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::ManaPotion;
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
+    rc->sprite = sf::Sprite(mTextures[rc->textureId]);
     break;
   }
   case PickupType::Ammo: {
     TRACE_DEBUG("Creating ammo created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::Ammo;
-    rc->sprite = sf::Sprite(*mTextures[static_cast<int>(rc->textureId)]);
+    rc->sprite = sf::Sprite(mTextures[rc->textureId]);
     break;
   }
   default:
@@ -677,10 +681,10 @@ Entity* EntityCreator::createRandomPickup() {
   return pickup;
 }
 
-sf::Texture* EntityCreator::loadTexture(std::string fileName) {
-  sf::Texture* texture = new sf::Texture();
-  if (!Collision::CreateTextureAndBitmask(*texture, "Client/Resources/Sprites/" + fileName)) {
+void EntityCreator::loadTexture(Textures textureId, std::string fileName) {
+  sf::Texture texture;
+  if (!Collision::CreateTextureAndBitmask(texture, "Client/Resources/Sprites/" + fileName)) {
     TRACE_ERROR("Could not load file: Client/Resource/Sprites/" << fileName);
   }
-  return texture;
+  mTextures[textureId] = texture;
 }
