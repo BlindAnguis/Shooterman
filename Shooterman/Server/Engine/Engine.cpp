@@ -208,7 +208,7 @@ void Engine::update() {
 void Engine::createPlayers() {
   float xPos = 100;
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    int id = (rand() % 1);
+    int id = (rand() % 3);
     switch (id)
     {
       case 0:

@@ -586,6 +586,21 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
   hc->currentHealth = hc->maxHealth;
   hc->isAlive = true;
 
+  auto attackCallback = [this](int entityId) {
+    //TRACE_INFO("ATTACKING");
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    createMelee(entityId, 0, player->nextAttackMousePosition);
+  };
+
+  auto attackFinishedCallback = [this](int entityId) {
+    TRACE_INFO("Attack finished");
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    player->invinsible = false;
+    player->superAttacks--;
+    player->state = PlayerState::Idle;
+    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
+  };
+
   sf::Vector2f originPosition(32, 25);
   Animation thrustUpAnimation(rc->sprite, true, spearman->id);
   for (int i = 0; i < 6; i++) {
@@ -608,6 +623,57 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
   ac->animations.emplace(AnimationType::AttackingDown, thrustDownAnimation);
   ac->animations.emplace(AnimationType::AttackingLeft, thrustLeftAnimation);
   ac->animations.emplace(AnimationType::AttackingRight, thrustRightAnimation);
+
+  Animation superAttackUpAnimation(rc->sprite, true, spearman->id);
+  int superAttackSpeed = 60;
+  superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+  }
+  //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
+  //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(11, 87) }); // Up no slash
+  superAttackUpAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  Animation superAttackRightAnimation(rc->sprite, true, spearman->id);
+  superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+  }
+  //superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
+  superAttackRightAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  Animation superAttackDownAnimation(rc->sprite, true, spearman->id);
+  superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+  }
+  //superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
+  superAttackDownAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  Animation superAttackLeftAnimation(rc->sprite, true, spearman->id);
+  superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
+  for (int i = 0; i < 2; i++) {
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
+    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
+  }
+  //superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
+  superAttackLeftAnimation.setAttackFinishedCallback(attackFinishedCallback);
+
+  ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackDownAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingLeft, superAttackLeftAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingRight, superAttackRightAnimation);
 
   return spearman;
 }
