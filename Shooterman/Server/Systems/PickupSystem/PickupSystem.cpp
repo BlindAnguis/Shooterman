@@ -19,7 +19,7 @@ PickupSystem::PickupSystem()
   mName = "SERVER: PICKUP_SYSTEM";
 }
 
-PickupSystem::~PickupSystem() { TRACE_DEBUG("Enter Destructor"); }
+PickupSystem::~PickupSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 PickupSystem& PickupSystem::get() {
   static PickupSystem instance;
@@ -29,10 +29,10 @@ PickupSystem& PickupSystem::get() {
 void PickupSystem::update() {
   if (mPickupClock.getElapsedTime().asMilliseconds() >= mTimeToNextPickup) {
     if (mPickupComponentManager->getAllComponents().size() <= MAX_NR_OF_PICKUPS) {
-      TRACE_DEBUG("*************************************** NEW PICKUP ***********************************");
+      TRACE_DEBUG1("*************************************** NEW PICKUP ***********************************");
       auto pickup = mEntityCreatorSystem->createEntity(EntityType::RandomPickup, sf::Vector2f(), {});
       mTimeToNextPickup = (rand() % MIN_TIME_TO_NEXT_PICKUP) + (MAX_TIME_TO_NEXT_PICKUP - MIN_TIME_TO_NEXT_PICKUP);
-      TRACE_DEBUG("Created a pickup of type: " << static_cast<int>(mPickupComponentManager->getComponent(pickup->id)->type) << " with id: " << pickup->id);
+      TRACE_DEBUG1("Created a pickup of type: " << static_cast<int>(mPickupComponentManager->getComponent(pickup->id)->type) << " with id: " << pickup->id);
       mPickupClock.restart();
     }
   } else {
@@ -43,7 +43,7 @@ void PickupSystem::update() {
     // Check for collision.
     auto cc = ComponentManager<CollisionComponent>::get().getComponent(pickup.first);
     if (cc && cc->collided) {
-      TRACE_DEBUG("Pickup of type: " << static_cast<int>(pickup.second->type) << "with id: " << pickup.first << " picked up!");
+      TRACE_DEBUG1("Pickup of type: " << static_cast<int>(pickup.second->type) << "with id: " << pickup.first << " picked up!");
       switch (pickup.second->type)
       {
       case PickupType::HealthPotion:

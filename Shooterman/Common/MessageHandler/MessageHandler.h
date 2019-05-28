@@ -40,7 +40,7 @@ public:
   void unsubscribeTo(std::string name, Subscriber* s);
 
 private:
-  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled = false; }
+  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled1 = false; }
   
   int mCurrentId;
   std::mutex mIdGeneratorLock;

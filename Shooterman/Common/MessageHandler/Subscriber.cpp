@@ -7,7 +7,7 @@ Subscriber::Subscriber() : mId(-1) {
 
 Subscriber::~Subscriber() {
   delete mQueueLock;
-  TRACE_DEBUG("Enter Destructor " << mName);
+  TRACE_DEBUG1("Enter Destructor " << mName);
 }
 
 void Subscriber::sendMessage(sf::Packet message) {

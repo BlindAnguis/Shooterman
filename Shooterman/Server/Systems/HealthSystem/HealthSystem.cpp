@@ -7,7 +7,7 @@ HealthSystem::HealthSystem() :
   mName = "SERVER: HEALTH_SYSTEM";
 }
 
-HealthSystem::~HealthSystem() { TRACE_DEBUG("Enter Destructor"); }
+HealthSystem::~HealthSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 HealthSystem& HealthSystem::get() {
   static HealthSystem instance;

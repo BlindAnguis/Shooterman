@@ -27,11 +27,9 @@ void Input::readInput() {
   Interface clientInputInterface;
   MessageHandler::get().publishInterface("ClientInputList", &clientInputInterface);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
-  while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
+  while (!setupDebugMessages("Client", "Input")) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client input debug traces", "Client");
-  mDebugSubscriber.reverseSendMessage(debMess.pack());
   std::uint32_t keyboardBitmask;
   while (mRunning) {
     switch (mCurrentGameState) {
@@ -108,11 +106,7 @@ void Input::readInput() {
     }
   }
 
-  RemoveDebugButtonMessage rdbm(mDebugSubscriber.getId());
-  sf::Packet packet = rdbm.pack();
-  mDebugSubscriber.reverseSendMessage(packet);
-  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
-
+  teardownDebugMessages();
   MessageHandler::get().unpublishInterface("ClientInputList");
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
 }
@@ -154,18 +148,6 @@ void Input::handleGameStateMessages() {
     } else {
       TRACE_WARNING("Received unexpected message with ID : " << id);
     }
-  }
-}
-
-void Input::handleDebugMessages() {
-  std::queue<sf::Packet> debugMessageQueue = mDebugSubscriber.getMessageQueue();
-  sf::Packet debugMessage;
-  while (!debugMessageQueue.empty()) {
-    debugMessage = debugMessageQueue.front();
-    debugMessageQueue.pop();
-    TRACE_DEBUG("Toggle debug traces");
-    mDebugEnabled = !mDebugEnabled;
-    TRACE_DEBUG("Toggle debug traces");
   }
 }
 

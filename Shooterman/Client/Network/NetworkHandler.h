@@ -21,7 +21,6 @@ private:
   Interface mSpriteListInterface;
   Interface mPlayerDataInterface;
   Subscriber mMessageSubscriber;
-  Subscriber mDebugSubscriber;
   Subscriber mGameStateSubscriber;
   Subscriber mServerDebugSubscriber;
   sf::TcpSocket mSocket;
@@ -31,6 +30,4 @@ private:
   sf::Socket::Status setupSocketConnection();
   void handlePackets();
   void teardownSubscribersAndInterfaces();
-
-  void handleDebugMessages();
 };

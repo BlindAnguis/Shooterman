@@ -17,7 +17,7 @@ CollisionSystem& CollisionSystem::get() {
   return instance;
 }
 
-CollisionSystem::~CollisionSystem() { TRACE_DEBUG("Enter Destructor"); }
+CollisionSystem::~CollisionSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
   if (!mDebugMenuSubscribed) {
@@ -35,7 +35,7 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
     sf::Vector2f oldPosition = causingColliderMovingComponent->sprite.getPosition();
     causingColliderMovingComponent->sprite.setPosition(newXPos, newYPos);
     
-    TRACE_DEBUG("No of nearEntities: " << gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition()).size());
+    TRACE_DEBUG1("No of nearEntities: " << gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition()).size());
 
     for (auto affectedCollideeEntityId : gridSystem->getNearEntities((sf::Vector2i)causingColliderMovingComponent->sprite.getPosition())) {
       auto affectedCollideeMovingComponent = mRenderComponentManager->getComponent(affectedCollideeEntityId);
@@ -43,7 +43,7 @@ void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newX
 
       // If collision with another entity
       if (causingColliderEntityId != affectedCollideeEntityId && Collision::PixelPerfectTest(causingColliderMovingComponent->sprite, affectedCollideeMovingComponent->sprite)) {
-        TRACE_DEBUG("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntityId);
+        TRACE_DEBUG1("Entity: " << causingColliderEntityId << " collided with: " << affectedCollideeEntityId);
 
         handleCollision(causingColliderEntityId, causingColliderMovingComponent, affectedCollideeEntityId, affectedCollideeMovingComponent);
         causingColliderMovingComponent->sprite.setPosition(oldPosition); // Reset movement.
@@ -111,7 +111,7 @@ void CollisionSystem::resetSystem() {
   mDebugMenuSubscriber.reverseSendMessage(packet);
   MessageHandler::get().unsubscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
   mDebugMenuSubscribed = false;
-  mDebugEnabled = false;
+  mDebugEnabled1 = false;
 }
 
 void CollisionSystem::handleDebugMessage() {
@@ -120,8 +120,8 @@ void CollisionSystem::handleDebugMessage() {
   while (!debugMessageQueue.empty()) {
     debugMessage = debugMessageQueue.front();
     debugMessageQueue.pop();
-    TRACE_DEBUG("Toggle debug traces");
-    mDebugEnabled = !mDebugEnabled;
-    TRACE_DEBUG("Toggle debug traces");
+    TRACE_DEBUG1("Toggle debug traces");
+    mDebugEnabled1 = !mDebugEnabled1;
+    TRACE_DEBUG1("Toggle debug traces");
   }
 }

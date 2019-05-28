@@ -8,7 +8,7 @@
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
-  mDebugEnabled = true;
+  mDebugEnabled1 = true;
   mMapLock = new std::mutex();
   mRenderLock = new std::mutex();
 }
@@ -16,7 +16,7 @@ NetworkSystem::NetworkSystem() {
 NetworkSystem::~NetworkSystem() {
   delete mMapLock;
   delete mRenderLock;
-  TRACE_DEBUG("Enter Destructor");
+  TRACE_DEBUG1("Enter Destructor");
 }
 
 NetworkSystem& NetworkSystem::get() {
@@ -140,7 +140,7 @@ void NetworkSystem::shutDown() {
 void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
   mNewClientsSockets.emplace(ID, socket);
-  TRACE_DEBUG("Added new client");
+  TRACE_DEBUG1("Added new client");
 }
 
 void NetworkSystem::removeClientSocket(int ID) {

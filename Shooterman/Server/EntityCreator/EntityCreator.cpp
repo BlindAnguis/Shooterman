@@ -696,7 +696,7 @@ Entity* EntityCreator::createRandomPickup() {
   }
 
   Entity* pickup = mEntityManager->createEntity();
-  TRACE_DEBUG("Creating a pickup of type: " << static_cast<int>(type) << " with id: " << pickup->id);
+  TRACE_DEBUG1("Creating a pickup of type: " << static_cast<int>(type) << " with id: " << pickup->id);
   auto pc = ComponentManager<PickupComponent>::get().addComponent(pickup->id);
   pc->type = type;
   pc->addedEffect = 50;
@@ -709,7 +709,7 @@ Entity* EntityCreator::createRandomPickup() {
   switch (pc->type)
   {
   case PickupType::HealthPotion: {
-    TRACE_DEBUG("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    TRACE_DEBUG1("Creating health potion! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::HealthPotion;
     rc->sprite = sf::Sprite(*mTextures[rc->textureId]);
     auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(pickup->id);
@@ -717,13 +717,13 @@ Entity* EntityCreator::createRandomPickup() {
     break;
   }
   case PickupType::ManaPotion: {
-    TRACE_DEBUG("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    TRACE_DEBUG1("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::ManaPotion;
     rc->sprite = sf::Sprite(*mTextures[rc->textureId]);
     break;
   }
   case PickupType::Ammo: {
-    TRACE_DEBUG("Creating ammo created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
+    TRACE_DEBUG1("Creating ammo created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::Ammo;
     rc->sprite = sf::Sprite(*mTextures[rc->textureId]);
     break;

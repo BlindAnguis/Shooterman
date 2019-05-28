@@ -165,6 +165,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiResourceManager.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ClientInternal\IpMessage.cpp" />
@@ -176,6 +177,8 @@
     <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteCacheMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteMessage.cpp" />
+    <ClCompile Include="Common\Messages\ToggleDebugButtonMessage.cpp" />
+    <ClCompile Include="Common\Trace.cpp" />
     <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
@@ -231,9 +234,11 @@
     <ClInclude Include="Client\GUI\Resources\GuiExpandableList.h" />
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
+    <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

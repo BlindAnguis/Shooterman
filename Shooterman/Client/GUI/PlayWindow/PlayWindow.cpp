@@ -63,20 +63,20 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
 
     int position = mSpriteListMessage.getSize() - 1;
     SpriteData spriteData = mSpriteListMessage.getSpriteData(position);
-    //TRACE_DEBUG("SpriteID: " << static_cast<int>(spriteData.textureId));
+    //TRACE_DEBUG1("SpriteID: " << static_cast<int>(spriteData.textureId));
     while (spriteData.textureId != Textures::Unknown) {
       renderSpriteData(window, spriteData);
       position--;
       spriteData = mSpriteListMessage.getSpriteData(position);
     }
   } else {
-    TRACE_DEBUG("Found no message");
+    TRACE_DEBUG1("Found no message");
   }
   return renderNeeded;
 }
 
 void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData) {
-  //TRACE_DEBUG(static_cast<int>(spriteData.textureId));
+  //TRACE_DEBUG1(static_cast<int>(spriteData.textureId));
   sf::Sprite sprite = GuiResourceManager::getInstance().createSprite(spriteData.textureId);
   sprite.setPosition(spriteData.position);
   sprite.setTextureRect(spriteData.texturePosition);

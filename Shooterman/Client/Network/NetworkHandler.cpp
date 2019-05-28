@@ -16,7 +16,7 @@
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
-  mDebugEnabled = true;
+  mDebugEnabled1 = true;
 }
 
 void NetworkHandler::start() {
@@ -59,11 +59,9 @@ void NetworkHandler::startup() {
 void NetworkHandler::setupSubscribersAndInterfaces() {
   MessageHandler::get().publishInterface("ClientLobby", &mLobbyInterface);
 
-  while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
+  while (!setupDebugMessages("Client", "Network")) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "Client network debug traces", "Client");
-  mDebugSubscriber.reverseSendMessage(debMess.pack());
 
   while (!MessageHandler::get().subscribeTo("ClientGameState", &mGameStateSubscriber)) {
     sf::sleep(sf::milliseconds(5));
@@ -179,16 +177,13 @@ void NetworkHandler::handlePackets() {
 }
 
 void NetworkHandler::teardownSubscribersAndInterfaces() {
-  RemoveDebugButtonMessage rdbm(mDebugSubscriber.getId());
-  sf::Packet packet = rdbm.pack();
-  mDebugSubscriber.reverseSendMessage(packet);
+  teardownDebugMessages();
 
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unpublishInterface("ClientLobby");
   MessageHandler::get().unpublishInterface("ClientPlayerData");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
-  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
 }
 
@@ -197,14 +192,4 @@ void NetworkHandler::shutDown() {
   mRunning = false;
   mNetworkHandlerThread->join();
   TRACE_INFO("Shutdown of module done");
-}
-
-void NetworkHandler::handleDebugMessages() {
-  std::queue<sf::Packet> debugMessageQueue = mDebugSubscriber.getMessageQueue();
-  sf::Packet debugMessage;
-  while (!debugMessageQueue.empty()) {
-    debugMessage = debugMessageQueue.front();
-    debugMessageQueue.pop();
-    mDebugEnabled = !mDebugEnabled;
-  }
 }

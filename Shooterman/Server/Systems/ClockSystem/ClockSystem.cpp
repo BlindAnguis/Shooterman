@@ -2,7 +2,7 @@
 
 ClockSystem::ClockSystem() : mClockComponentManager(&ComponentManager<ClockComponent>::get()) { mName = "SERVER: CLOCK_SYSTEM"; }
 
-ClockSystem::~ClockSystem() { TRACE_DEBUG("Enter Destructor"); }
+ClockSystem::~ClockSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 ClockSystem& ClockSystem::get() {
   static ClockSystem instance;

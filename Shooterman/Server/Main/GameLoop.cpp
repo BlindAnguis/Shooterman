@@ -8,7 +8,7 @@
 
 GameLoop::GameLoop() {
   mName = "SERVER: GAME_LOOP";
-  mDebugEnabled = false;
+  mDebugEnabled1 = false;
 }
 
 void GameLoop::start() {

@@ -16,6 +16,7 @@ private:
   sf::Sprite mBackgroundL;
   sf::Sprite mBackgroundM;
   sf::Sprite mBackgroundR;
+  float mYOffset = 0;
 
   void renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height);
 };

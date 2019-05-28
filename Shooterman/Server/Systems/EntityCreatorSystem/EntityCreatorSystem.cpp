@@ -8,7 +8,7 @@ EntityCreatorSystem::EntityCreatorSystem() :
 
 EntityCreatorSystem::~EntityCreatorSystem()
 {
-  TRACE_DEBUG("Enter Destructor");
+  TRACE_DEBUG1("Enter Destructor");
 }
 
 EntityCreatorSystem& EntityCreatorSystem::get() {

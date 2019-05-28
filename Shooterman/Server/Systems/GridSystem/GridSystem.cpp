@@ -17,7 +17,7 @@ GridSystem::GridSystem()
 
 GridSystem::~GridSystem()
 {
-  TRACE_DEBUG("Enter Destructor");
+  TRACE_DEBUG1("Enter Destructor");
 }
 
 GridSystem & GridSystem::get()

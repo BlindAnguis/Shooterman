@@ -24,6 +24,7 @@ Gui::Gui() {
 }
 
 void Gui::init() {
+  TRACE_FUNC_ENTER();
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().publishInterface("MousePosition", &mMouseInterface);
@@ -40,11 +41,9 @@ void Gui::init() {
   mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
 
   // This needs to be after the DebugMenu is created
-  while (!MessageHandler::get().subscribeTo("ClientDebugMenu", &mDebugSubscriber)) {
+  while(!setupDebugMessages("Client", "Gui")) {
     sf::sleep(sf::milliseconds(5));
   }
-  AddDebugButtonMessage debMess(mDebugSubscriber.getId(), "GUI debug traces", "Client");
-  mDebugSubscriber.reverseSendMessage(debMess.pack());
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
   mWindowOpen = true;
@@ -54,19 +53,17 @@ void Gui::init() {
 
   render();
 
-  RemoveDebugButtonMessage rdbm(mDebugSubscriber.getId());
-  sf::Packet packet = rdbm.pack();
-  mDebugSubscriber.reverseSendMessage(packet);
+  teardownDebugMessages();
 
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
-  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mDebugSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
 
   GuiResourceManager::getInstance().clear();
 }
 
 void Gui::render() {
+  TRACE_FUNC_ENTER();
   while (mWindow != nullptr && mWindow->isOpen()) {
     mRenderClock.restart();
     handleWindowEvents();
@@ -93,6 +90,7 @@ void Gui::render() {
 }
 
 void Gui::handleWindowEvents() {
+  TRACE_FUNC_ENTER();
   sf::Event event;
   
   while (mWindow->pollEvent(event)) {
@@ -135,6 +133,7 @@ void Gui::handleWindowEvents() {
 }
 
 bool Gui::renderGameState(GAME_STATE gameState) {
+  TRACE_FUNC_ENTER();
   mRenderNeeded = false;
 
   auto it = mMenuMap.find(gameState);
@@ -165,6 +164,7 @@ bool Gui::renderGameState(GAME_STATE gameState) {
 }
 
 void Gui::handleGameStateMessages() {
+  TRACE_FUNC_ENTER();
   std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
   sf::Packet gameStateMessage;
   while (!gameStateMessageQueue.empty()) {
@@ -214,6 +214,7 @@ void Gui::handleGameStateMessages() {
 }
 
 void Gui::handleSystemMessages() {
+  TRACE_FUNC_ENTER();
   std::queue<sf::Packet> systemMessageQueue = mSystemMessageSubscriber.getMessageQueue();
   sf::Packet systemMessage;
   while (!systemMessageQueue.empty()) {
@@ -233,19 +234,8 @@ void Gui::handleSystemMessages() {
   }
 }
 
-void Gui::handleDebugMessages() {
-  std::queue<sf::Packet> debugMessageQueue = mDebugSubscriber.getMessageQueue();
-  sf::Packet debugMessage;
-  while (!debugMessageQueue.empty()) {
-    debugMessage = debugMessageQueue.front();
-    debugMessageQueue.pop();
-    TRACE_DEBUG("Toggle debug traces");
-    mDebugEnabled = !mDebugEnabled;
-    TRACE_DEBUG("Toggle debug traces");
-  }
-}
-
 void Gui::shutDown() {
+  TRACE_FUNC_ENTER();
   TRACE_INFO("Shutdown of module requested...");
   while (mWindowOpen) {
     // Wait for GUI to close window

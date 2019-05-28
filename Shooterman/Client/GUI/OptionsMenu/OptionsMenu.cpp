@@ -5,7 +5,7 @@
 
 OptionsMenu::OptionsMenu() {
   mName = "CLIENT: OPTIONS_MENU";
-  mDebugEnabled = true;
+  mDebugEnabled1 = true;
 
   mGuiFrame = std::make_shared<Frame>();
 

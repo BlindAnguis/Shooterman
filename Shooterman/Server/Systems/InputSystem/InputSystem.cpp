@@ -10,7 +10,7 @@ InputSystem::InputSystem() {
 InputSystem::~InputSystem() {
   MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
   MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
-  TRACE_DEBUG("Enter Destructor");
+  TRACE_DEBUG1("Enter Destructor");
 }
 
 void InputSystem::resetSystem() {
@@ -82,7 +82,7 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
       }
 
       if (gameState != GAME_STATE::NO_STATE) {
-        TRACE_DEBUG("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
+        TRACE_DEBUG1("Changing current game state from: " << mCurrentGameState << " to: " << gameState);
         mCurrentGameState = gameState;
       }
     }

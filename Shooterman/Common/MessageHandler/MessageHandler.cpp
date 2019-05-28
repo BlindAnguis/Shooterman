@@ -5,7 +5,7 @@ void MessageHandler::subscribeToSystemMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSystemSubscriberLock);
   tryToGiveId(newSubscriber);
   mSystemSubscriberList.push_back(newSubscriber);
-  TRACE_DEBUG("New subscriber (" << newSubscriber->getId() << ") added to system list");
+  TRACE_DEBUG1("New subscriber (" << newSubscriber->getId() << ") added to system list");
 }
 
 void MessageHandler::unSubscribeToSystemMessages(Subscriber* newSubscriber) {
@@ -13,7 +13,7 @@ void MessageHandler::unSubscribeToSystemMessages(Subscriber* newSubscriber) {
   for (auto it = mSystemSubscriberList.begin(); it != mSystemSubscriberList.end(); /**/) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mSystemSubscriberList.erase(it);
-      TRACE_DEBUG("Removed subscriber (" << newSubscriber->getId() << ") from to system list");
+      TRACE_DEBUG1("Removed subscriber (" << newSubscriber->getId() << ") from to system list");
     } else {
       ++it;
     }
@@ -32,7 +32,7 @@ void MessageHandler::subscribeToSoundMessages(Subscriber* newSubscriber) {
   std::lock_guard<std::mutex> lockGuard(mSoundSubscriberLock);
   tryToGiveId(newSubscriber);
   mSoundSubscriberList.push_back(newSubscriber);
-  TRACE_DEBUG("New subscriber (" << newSubscriber->getId() << ") added to sound list");
+  TRACE_DEBUG1("New subscriber (" << newSubscriber->getId() << ") added to sound list");
 }
 
 void MessageHandler::unSubscribeToSoundMessages(Subscriber* newSubscriber) {
@@ -40,7 +40,7 @@ void MessageHandler::unSubscribeToSoundMessages(Subscriber* newSubscriber) {
   for (auto it = mSoundSubscriberList.begin(); it != mSoundSubscriberList.end(); /**/) {
     if ((*it)->getId() == newSubscriber->getId()) {
       it = mSoundSubscriberList.erase(it);
-      TRACE_DEBUG("Removed subscriber (" << newSubscriber->getId() << ") from to sound list");
+      TRACE_DEBUG1("Removed subscriber (" << newSubscriber->getId() << ") from to sound list");
     } else {
       ++it;
     }
@@ -73,7 +73,7 @@ void MessageHandler::publishInterface(std::string name, Interface* pc) {
   if (it == mPublishedComms.end()) {
     pc->setMName(name);
     mPublishedComms.emplace(name, pc);
-    TRACE_DEBUG("Interface: " << name << " published");
+    TRACE_DEBUG1("Interface: " << name << " published");
   } else {
     TRACE_ERROR("Interface: " << name << " is already published");
   }
@@ -87,7 +87,7 @@ void MessageHandler::unpublishInterface(std::string name) {
       interface->second->unsubscribe(interface->second->getSubscribers().front());
     }
     mPublishedComms.erase(interface);
-    TRACE_DEBUG("Interface: " << name << " unpublished");
+    TRACE_DEBUG1("Interface: " << name << " unpublished");
   }
 }
 

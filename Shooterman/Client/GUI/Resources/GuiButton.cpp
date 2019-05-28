@@ -7,6 +7,12 @@ GuiButton::GuiButton(GuiComponentPosition guiComponentPosition, std::string text
   : GuiText(guiComponentPosition, std::move(text), fontSize, font), mCallback(callback) {
   mText.setOutlineThickness(1);
 
+  if (font == FONT::MORRIS) {
+    mYOffset = 5.0f;
+  } else if (font == FONT::COURIER) {
+    mYOffset = -5.0f;
+  }
+
   mBackgroundL = GuiResourceManager::getInstance().createSprite(GUI_TEXTURE::BUTTON_LEFT);
   mBackgroundM = GuiResourceManager::getInstance().createSprite(GUI_TEXTURE::BUTTON);
   mBackgroundR = GuiResourceManager::getInstance().createSprite(GUI_TEXTURE::BUTTON_RIGHT);
@@ -45,12 +51,12 @@ bool GuiButton::checkMouse(sf::Vector2f mousePosition) {
 }
 
 void GuiButton::renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {
-  mBackgroundL.setPosition((float)xPosition - (float)mBackgroundL.getLocalBounds().width, (float)yPosition + 5.0f);
+  mBackgroundL.setPosition((float)xPosition - (float)mBackgroundL.getLocalBounds().width, (float)yPosition + mYOffset);
   
   mBackgroundM.setScale(sf::Vector2f((float)width / (float)mBackgroundM.getTexture()->getSize().x, 1));
-  mBackgroundM.setPosition((float)xPosition, (float)yPosition + 5.0f);
+  mBackgroundM.setPosition((float)xPosition, (float)yPosition + mYOffset);
 
-  mBackgroundR.setPosition((float)xPosition + (float)width, (float)yPosition + 5.0f);
+  mBackgroundR.setPosition((float)xPosition + (float)width, (float)yPosition + mYOffset);
 
   window->draw(mBackgroundL);
   window->draw(mBackgroundM);

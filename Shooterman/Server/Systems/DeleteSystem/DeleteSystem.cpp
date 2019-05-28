@@ -2,7 +2,7 @@
 
 DeleteSystem::DeleteSystem() { mName = "SERVER: DELETE_SYSTEM"; }
 
-DeleteSystem::~DeleteSystem() { TRACE_DEBUG("Enter Destructor"); }
+DeleteSystem::~DeleteSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 DeleteSystem& DeleteSystem::get() {
   static DeleteSystem instance;

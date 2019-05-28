@@ -14,7 +14,7 @@ UdpSocket::~UdpSocket() {
 bool UdpSocket::connect() {
   sf::Socket::Status status = mUdpSocket->bind(mPort);
 
-  TRACE_DEBUG("Socket status is: " << status);
+  TRACE_DEBUG1("Socket status is: " << status);
   if (status != sf::Socket::Done) {
     TRACE_ERROR("Could not connect to server with address: " << mIp);
     return false;

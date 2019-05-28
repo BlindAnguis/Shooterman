@@ -12,7 +12,7 @@ MovementSystem::MovementSystem() :
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get())
 {}
 
-MovementSystem::~MovementSystem() { TRACE_DEBUG("Enter Destructor"); }
+MovementSystem::~MovementSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 MovementSystem& MovementSystem::get() {
   static MovementSystem instance;

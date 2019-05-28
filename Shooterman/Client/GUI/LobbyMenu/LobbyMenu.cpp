@@ -7,7 +7,6 @@
 
 LobbyMenu::LobbyMenu(bool server) {
   mName = "CLIENT: LOBBY_MENU";
-  mDebugEnabled = true;
 
   mGuiFrame = std::make_shared<Frame>();
 

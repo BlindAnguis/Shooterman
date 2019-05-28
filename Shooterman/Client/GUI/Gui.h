@@ -19,14 +19,13 @@ public:
   void shutDown();
 
 private:
-  bool mDebugEnabled = true;
+  bool mDebugEnabled1 = true;
   bool mWindowOpen;
   bool mF1KeyAlreadyPressed = false;
   std::unique_ptr<std::thread> mGuiThread;
   std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
-  Subscriber mDebugSubscriber;
   Interface mMouseInterface;
   GAME_STATE mCurrentGameState;
   GAME_STATE mPreviousGameState;
@@ -41,5 +40,4 @@ private:
   bool renderGameState(GAME_STATE gameState);
   void handleSystemMessages();
   void handleGameStateMessages();
-  void handleDebugMessages();
 };

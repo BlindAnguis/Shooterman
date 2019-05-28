@@ -5,7 +5,7 @@ RenderSystem::RenderSystem()
   mName = "SERVER: RENDER_SYSTEM";
 }
 
-RenderSystem::~RenderSystem() { TRACE_DEBUG("Enter Destructor"); }
+RenderSystem::~RenderSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 RenderSystem& RenderSystem::get() {
   static RenderSystem instance;

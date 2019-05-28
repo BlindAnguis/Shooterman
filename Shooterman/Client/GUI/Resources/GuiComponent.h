@@ -17,8 +17,8 @@ public:
 
   int getXPosition();
   int getYPosition();
-  int getWidth();
-  int getHeight();
+  virtual int getWidth();
+  virtual int getHeight();
 
   int getId();
 
