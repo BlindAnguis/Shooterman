@@ -6,6 +6,8 @@
 #include "../Systems/GridSystem/GridSystem.h"
 #include "../Systems/DeleteSystem/DeleteSystem.h"
 #include "../../Common/Trace.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/Subscriber.h"
 
 #include <array>
 
@@ -46,4 +48,5 @@ private:
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createRandomLightningBolts();
+  Subscriber mSoundSubscriber;
 };

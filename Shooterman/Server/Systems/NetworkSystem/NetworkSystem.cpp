@@ -37,6 +37,7 @@ void NetworkSystem::startup() {
   MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
   MessageHandler::get().publishInterface("ServerGameState", &mGameStateInterface);
   MessageHandler::get().publishInterface("ServerDebugMenu", &mDebugMenuInterface);
+  MessageHandler::get().publishInterface("ServerSoundList", &mSoundInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   mDebugMenuInterface.getMessageQueue(); // Empty old queue.
@@ -111,6 +112,26 @@ void NetworkSystem::startup() {
       }
     }
 
+    auto soundListQueue = mSoundInterface.getMessageQueue();
+    while (!soundListQueue.empty()) {
+      auto soundListPacket = soundListQueue.front();
+      soundListQueue.pop();
+      int id = -1;
+      soundListPacket >> id;
+
+      if (id == SOUND_LIST) {
+        SoundMessage sm;
+        sm.unpack(soundListPacket);
+        for (auto clientSocket : mClientsSockets) {
+          sf::Packet smPacket = sm.pack();
+          clientSocket.second->send(smPacket);
+        }
+      }
+      else {
+        TRACE_WARNING("Received unhandled packet with id: " << id);
+      }
+    }
+
     handlePlayerData();
     handleDebugMenu();
 
@@ -122,6 +143,7 @@ void NetworkSystem::startup() {
   MessageHandler::get().unpublishInterface("ServerPlayerData");
   MessageHandler::get().unpublishInterface("ServerGameState");
   MessageHandler::get().unpublishInterface("ServerDebugMenu");
+  MessageHandler::get().unpublishInterface("ServerSoundList");
   for (auto client : mClientsSockets) {
     client.second->disconnect();
     delete client.second;

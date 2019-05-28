@@ -13,6 +13,7 @@
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/SpriteCacheMessage.h"
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
+#include "../../Common/Messages/SoundMessage.h"
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
@@ -43,6 +44,7 @@ void NetworkHandler::startup() {
 
   MessageHandler::get().publishInterface("ClientSpriteList", &mSpriteListInterface);
   MessageHandler::get().publishInterface("ClientPlayerData", &mPlayerDataInterface);
+  MessageHandler::get().publishInterface("ClientSoundList", &mSoundListInterface);
   MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().subscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
 
@@ -165,9 +167,13 @@ void NetworkHandler::handlePackets() {
         AddDebugButtonMessage adbm(packet);
         AddDebugButtonMessage adbm2(adbm.getSubscriberId(), adbm.getButtonText(), adbm.getCategoryText(), mServerDebugSubscriber.getId());
         mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
-      } else if(id == REMOVE_DEBUG_BUTTON) {
+      } else if (id == REMOVE_DEBUG_BUTTON) {
         RemoveDebugButtonMessage rdbm(packet);
         mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
+      } else if (id == SOUND_LIST) {
+        SoundMessage sm;
+        sm.unpack(packet);
+        mSoundListInterface.pushMessage(sm.pack());
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
@@ -182,6 +188,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unpublishInterface("ClientLobby");
   MessageHandler::get().unpublishInterface("ClientPlayerData");
+  MessageHandler::get().unpublishInterface("ClientSoundList");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);

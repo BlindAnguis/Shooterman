@@ -239,8 +239,11 @@
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
+<<<<<<< Updated upstream
     <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
+=======
     <ClInclude Include="Common\Sounds.h" />
+>>>>>>> Stashed changes
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

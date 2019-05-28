@@ -8,6 +8,7 @@
 #include "../../../Common/MessageHandler/MessageHandler.h"
 #include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/Messages/SpriteMessage.h"
+#include "../../../Common/Messages/SoundMessage.h"
 #include "../../../Common/Constants.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Trace.h"
@@ -38,6 +39,7 @@ private:
   Interface mPlayerDataInterface;
   Interface mGameStateInterface;
   Interface mDebugMenuInterface;
+  Interface mSoundInterface;
 
   void startup();
   void updateInternalMap();

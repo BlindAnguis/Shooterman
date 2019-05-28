@@ -2,6 +2,7 @@
 #include "../Systems/CollisionSystem/Collision.h"
 #include "../Systems/ManaSystem/ManaSystem.h"
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
+#include "../../Common/Messages/SoundMessage.h"
 
 #define MAGE_MAX_VELOCITY 4.5f
 #define KNIGHT_MAX_VELOCITY 4.8f
@@ -42,10 +43,11 @@ EntityCreator::EntityCreator() :
   loadTexture(Textures::HealthPotion, "Potions/pt1Small.png");
   loadTexture(Textures::ManaPotion, "Potions/pt2Small.png");
   loadTexture(Textures::Ammo, "Potions/pt4Small.png");
+  MessageHandler::get().subscribeTo("ServerSoundList", &mSoundSubscriber);
 }
 
 EntityCreator::~EntityCreator() {
-
+  MessageHandler::get().unsubscribeTo("ServerSoundList", &mSoundSubscriber);
 }
 
 Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f position) {
@@ -458,8 +460,10 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
       mDeleteSystem->addEntity(bullet->id);
     };
 
+    SoundMessage sm;
+    sm.addSound(Sounds::Hit1);
+    mSoundSubscriber.reverseSendMessage(sm.pack());
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
-
     return bullet;
   }
   return nullptr;

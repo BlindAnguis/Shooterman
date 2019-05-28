@@ -73,10 +73,13 @@
     <ClCompile Include="Common\Messages\MouseMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteCacheMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteMessage.cpp" />
+<<<<<<< Updated upstream
     <ClCompile Include="Common\Messages\ToggleDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Trace.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
+=======
     <ClCompile Include="Common\Messages\SoundMessage.cpp" />
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -165,10 +168,13 @@
     <ClInclude Include="Client\GUI\Resources\GuiExpandableList.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
     <ClInclude Include="Client\GUI\Resources\GuiResourceManager.h" />
+<<<<<<< Updated upstream
     <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
+=======
     <ClInclude Include="Common\Messages\SoundMessage.h" />
     <ClInclude Include="Common\Sounds.h" />
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
