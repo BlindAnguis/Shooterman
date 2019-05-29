@@ -8,51 +8,35 @@ struct GlobalBounds {
   float height;
 };
 
+struct PlayerData {
+  bool hasHealth = false;
+  float currentHealth;
+  float maxHealth;
+  bool hasStamina = false;
+  float currentStamina;
+  float maxStamina;
+  bool hasMana = false;
+  float currentMana;
+  float maxMana;
+  sf::Vector2f position;
+  GlobalBounds globalBounds;
+};
+
 class PlayerDataMessage : Message {
 public:
   PlayerDataMessage();
-  PlayerDataMessage(int playerId);
+  PlayerDataMessage(sf::Packet packet);
   ~PlayerDataMessage();
-
-  int getPlayerId();
 
   sf::Packet pack() override;
   void unpack(sf::Packet packet) override;
 
-  void setPosition(sf::Vector2f position);
-  sf::Vector2f getPosition();
-  void setGlobalBounds(GlobalBounds globalBounds);
-  GlobalBounds getGlobalBounds();
+  void addPlayerData(PlayerData playerData);
+  PlayerData getPlayerData(int position);
 
-  bool hasHealth();
-  void setCurrentHealth(int currentHealth);
-  int getCurrentHealth();
-  void setMaxHealth(int maxHealth);
-  int getMaxHealth();
-
-  bool hasMana();
-  void setCurrentMana(int currentMana);
-  int getCurrentMana();
-  void setMaxMana(int maxMana);
-  int getMaxMana();
-
-  bool hasStamina();
-  void setCurrentStamina(int currentStamina);
-  int getCurrentStamina();
-  void setMaxStamina(int maxStamina);
-  int getMaxStamina();
+  int getNumberOfPlayerData();
 
 private:
-  int mPlayerId;
-  sf::Vector2f mPosition;
-  GlobalBounds mGlobalBounds;
-  bool mHasHealth = false;
-  int mCurrentHealth;
-  int mMaxHealth;
-  bool mHasMana = false;
-  int mCurrentMana;
-  int mMaxMana;
-  bool mHasStamina = false;
-  int mCurrentStamina;
-  int mMaxStamina;
+  int mNumberOfPlayerData = 0;
+  std::vector<PlayerData> mPlayerDatas;
 };

@@ -72,5 +72,6 @@ void Trace::teardownDebugMessages() {
   MessageHandler::get().unsubscribeTo(mCategory + "DebugMenu", mDebugSubscriber);
   if (mDebugSubscriber) {
     delete mDebugSubscriber;
+    mDebugSubscriber = false;
   }
 }

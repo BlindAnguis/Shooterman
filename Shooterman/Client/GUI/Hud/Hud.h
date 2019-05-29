@@ -16,7 +16,7 @@ public:
 private:
   bool mSubscribedToPlayerData = false;
   Subscriber mPlayerDataSubscriber;
-  std::shared_ptr<GuiProgressBar> mHealthBar;
-  std::shared_ptr<GuiProgressBar> mManaBar;
-  std::shared_ptr<GuiProgressBar> mStaminaBar;
+  std::vector<std::shared_ptr<GuiProgressBar>> mHealthBars;
+  std::vector<std::shared_ptr<GuiProgressBar>> mStaminaBars;
+  std::vector<std::shared_ptr<GuiProgressBar>> mManaBars;
 };

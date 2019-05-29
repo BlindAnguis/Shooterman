@@ -202,10 +202,11 @@ void NetworkSystem::handlePlayerData() {
     {
       PlayerDataMessage pdm;
       pdm.unpack(playerDataPacket);
-      int playerId = pdm.getPlayerId();
 
-      sf::Packet packet = pdm.pack();
-      mClientsSockets.at(playerId)->send(packet);
+      for (auto client : mClientsSockets) {
+        sf::Packet packet = pdm.pack();
+        client.second->send(packet);
+      }
     }
       break;
     default:

@@ -37,6 +37,7 @@ void NetworkHandler::startup() {
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
     MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+    teardownDebugMessages();
     return;
   }
 

@@ -18,3 +18,7 @@ bool Frame::checkMouse(sf::Vector2f mousePosition) {
   }
   return false;
 }
+
+void Frame::clearGuiComponents() {
+  mComponents.clear();
+}

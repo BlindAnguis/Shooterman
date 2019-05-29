@@ -69,7 +69,13 @@ ClientMain::ClientMain() {
         break; 
       }
       case GAME_STATE::CLIENT_LOBBY:
+      {
+        while (!MessageHandler::get().subscribeTo("ClientSoundList", &soundSubcription)) {
+          sf::sleep(sf::milliseconds(5));
+        }
+        //TRACE_INFO("Subscribed to sounds");
         break;
+      }
       case GAME_STATE::JOIN:
         if (!networkHandlerStarted) {
           networkHandler.start();

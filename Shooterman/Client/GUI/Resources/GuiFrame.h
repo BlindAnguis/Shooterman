@@ -13,6 +13,7 @@ public:
   void addGuiComponent(std::shared_ptr<GuiComponent> component);
   void render(std::shared_ptr<sf::RenderWindow> window);
   bool checkMouse(sf::Vector2f mousePosition);
+  void clearGuiComponents();
 
 private:
   std::vector<std::shared_ptr<GuiComponent>> mComponents;

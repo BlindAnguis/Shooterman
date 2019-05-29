@@ -1,136 +1,67 @@
 #include "PlayerDataMessage.h"
 
-PlayerDataMessage::PlayerDataMessage() {}
-PlayerDataMessage::PlayerDataMessage(int playerId) : mPlayerId(playerId) {}
+PlayerDataMessage::PlayerDataMessage() { }
 
-PlayerDataMessage::~PlayerDataMessage() {}
-
-int PlayerDataMessage::getPlayerId() {
-  return mPlayerId;
+PlayerDataMessage::PlayerDataMessage(sf::Packet packet) {
+  unpack(packet);
 }
+
+PlayerDataMessage::~PlayerDataMessage() { }
 
 sf::Packet PlayerDataMessage::pack() {
   sf::Packet packet;
   packet << PLAYER_DATA;
-  packet << mPlayerId;
+  packet << mPlayerDatas.size();
 
-  packet << mPosition.x;
-  packet << mPosition.y;
-  packet << mGlobalBounds.width;
-  packet << mGlobalBounds.height;
+  for (PlayerData playerData : mPlayerDatas) {
+    packet << playerData.hasHealth;
+    packet << playerData.currentHealth;
+    packet << playerData.maxHealth;
+    packet << playerData.hasStamina;
+    packet << playerData.currentStamina;
+    packet << playerData.maxStamina;
+    packet << playerData.hasMana;
+    packet << playerData.currentMana;
+    packet << playerData.maxMana;
+    packet << playerData.position.x;
+    packet << playerData.position.y;
+    packet << playerData.globalBounds.width;
+    packet << playerData.globalBounds.height;
+  }
 
-  packet << mHasHealth;
-  packet << mCurrentHealth;
-  packet << mMaxHealth;
-
-  packet << mHasMana;
-  packet << mCurrentMana;
-  packet << mMaxMana;
-
-  packet << mHasStamina;
-  packet << mCurrentStamina;
-  packet << mMaxStamina;
   return packet;
 }
 
 void PlayerDataMessage::unpack(sf::Packet packet) {
-  packet >> mPlayerId;
+  packet >> mNumberOfPlayerData;
 
-  packet >> mPosition.x;
-  packet >> mPosition.y;
-  packet >> mGlobalBounds.width;
-  packet >> mGlobalBounds.height;
-
-  packet >> mHasHealth;
-  packet >> mCurrentHealth;
-  packet >> mMaxHealth;
-
-  packet >> mHasMana;
-  packet >> mCurrentMana;
-  packet >> mMaxMana;
-
-  packet >> mHasStamina;
-  packet >> mCurrentStamina;
-  packet >> mMaxStamina;
+  for (int i = 0; i < mNumberOfPlayerData; ++i) {
+    PlayerData playerData;
+    packet >> playerData.hasHealth;
+    packet >> playerData.currentHealth;
+    packet >> playerData.maxHealth;
+    packet >> playerData.hasStamina;
+    packet >> playerData.currentStamina;
+    packet >> playerData.maxStamina;
+    packet >> playerData.hasMana;
+    packet >> playerData.currentMana;
+    packet >> playerData.maxMana;
+    packet >> playerData.position.x;
+    packet >> playerData.position.y;
+    packet >> playerData.globalBounds.width;
+    packet >> playerData.globalBounds.height;
+    mPlayerDatas.push_back(playerData);
+  }
 }
 
-bool PlayerDataMessage::hasHealth() {
-  return mHasHealth;
+void PlayerDataMessage::addPlayerData(PlayerData playerData) {
+  mPlayerDatas.push_back(playerData);
 }
 
-void PlayerDataMessage::setPosition(sf::Vector2f position) {
-  mPosition = position;
+PlayerData PlayerDataMessage::getPlayerData(int position) {
+  return mPlayerDatas[position];
 }
 
-sf::Vector2f PlayerDataMessage::getPosition() {
-  return mPosition;
-}
-
-void PlayerDataMessage::setGlobalBounds(GlobalBounds globalBounds) {
-  mGlobalBounds = globalBounds;
-}
-
-GlobalBounds PlayerDataMessage::getGlobalBounds() {
-  return mGlobalBounds;
-}
-
-
-void PlayerDataMessage::setCurrentHealth(int currentHealth) {
-  mCurrentHealth = currentHealth;
-}
-
-int PlayerDataMessage::getCurrentHealth() {
-  return mCurrentHealth;
-}
-
-void PlayerDataMessage::setMaxHealth(int maxHealth) {
-  mMaxHealth = maxHealth;
-}
-
-int PlayerDataMessage::getMaxHealth() {
-  return mMaxHealth;
-}
-
-
-bool PlayerDataMessage::hasMana() {
-  return mHasMana;
-}
-
-void PlayerDataMessage::setCurrentMana(int currentMana) {
-  mHasMana = true;
-  mCurrentMana = currentMana;
-}
-
-int PlayerDataMessage::getCurrentMana() {
-  return mCurrentMana;
-}
-
-void PlayerDataMessage::setMaxMana(int maxMana) {
-  mMaxMana = maxMana;
-}
-
-int PlayerDataMessage::getMaxMana() {
-  return mMaxMana;
-}
-
-
-bool PlayerDataMessage::hasStamina() {
-  return mHasStamina;
-}
-
-void PlayerDataMessage::setCurrentStamina(int currentStamina) {
-  mHasStamina = true;
-  mCurrentStamina = currentStamina;
-}
-
-int PlayerDataMessage::getCurrentStamina() {
-  return mCurrentStamina;
-}
-
-void PlayerDataMessage::setMaxStamina(int maxStamina) {
-  mMaxStamina = maxStamina;
-}
-
-int PlayerDataMessage::getMaxStamina() {
-  return mMaxStamina;
+int PlayerDataMessage::getNumberOfPlayerData() {
+  return mPlayerDatas.size();
 }

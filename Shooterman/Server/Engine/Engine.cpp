@@ -256,44 +256,46 @@ void Engine::destroyEntity(int entityId) {
 }
 
 void Engine::collectPlayerData() {
+  PlayerDataMessage pdm;
   for (auto player : *mConnectedClients) {
-    PlayerDataMessage pdm(player.first);
-
+    PlayerData playerData;
     int playerId = player.second->getEntity()->id;
 
     auto renderComponent = mRenderComponentManager->getComponent(playerId);
     if (renderComponent) {
       sf::Vector2f position = renderComponent->sprite.getPosition();
-      pdm.setPosition(position);
+      playerData.position = position;
 
-      GlobalBounds globalBounds;
-      globalBounds.width = renderComponent->sprite.getGlobalBounds().width;
-      globalBounds.height = renderComponent->sprite.getGlobalBounds().height;
-      pdm.setGlobalBounds(globalBounds);
+      playerData.globalBounds.width = renderComponent->sprite.getGlobalBounds().width;
+      playerData.globalBounds.height = renderComponent->sprite.getGlobalBounds().height;
     } else {
       TRACE_ERROR("Player with id: " << playerId << " doesn't have a renderComponent");
     }
 
     auto healthComponent = mHealthComponentManager->get().getComponent(playerId);
     if (healthComponent) {
-      pdm.setCurrentHealth(healthComponent->currentHealth);
-      pdm.setMaxHealth(healthComponent->maxHealth);
+      playerData.hasHealth = true;
+      playerData.currentHealth = healthComponent->currentHealth;
+      playerData.maxHealth = healthComponent->maxHealth;
     } else {
       TRACE_ERROR("Player with id: " << playerId << " doesn't have a healtComponent!");
     }
 
     auto manaComponent = ComponentManager<ManaComponent>::get().getComponent(playerId);
     if (manaComponent) {
-      pdm.setCurrentMana(manaComponent->currentMana);
-      pdm.setMaxMana(manaComponent->maxMana);
+      playerData.hasMana = true;
+      playerData.currentMana = manaComponent->currentMana;
+      playerData.maxMana = manaComponent->maxMana;
     }
 
     auto staminaComponent = ComponentManager<StaminaComponent>::get().getComponent(playerId);
     if (staminaComponent) {
-      pdm.setCurrentStamina(staminaComponent->currentStamina);
-      pdm.setMaxStamina(staminaComponent->maxStamina);
+      playerData.hasStamina = true;
+      playerData.currentStamina = staminaComponent->currentStamina;
+      playerData.maxStamina = staminaComponent->maxStamina;
     }
 
-    mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
+    pdm.addPlayerData(playerData);
   }
+  mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
 }
