@@ -64,13 +64,15 @@ void GuiButton::renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosi
 }
 
 void GuiButton::setEnabled() {
-  this->enabled = true;
+  enabled = true;
+  mText.setFillColor(sf::Color::Black);
 }
 
 void GuiButton::setDisabled() {
-  this->enabled = false;
+  enabled = false;
+  mText.setFillColor(sf::Color::Red);
 }
 
 bool GuiButton::isEnabled() {
-  return this->enabled;
+  return enabled;
 }
