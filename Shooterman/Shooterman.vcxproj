@@ -223,6 +223,7 @@
     <ClCompile Include="Server\Systems\RenderSystem\RenderSystem.cpp" />
     <ClCompile Include="Shooterman.cpp" />
     <ClCompile Include="Common\Messages\SoundMessage.cpp" />
+    <ClCompile Include="Client\SoundSystem\SoundSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
@@ -303,6 +304,7 @@
     <ClInclude Include="Server\Systems\RenderSystem\RenderSystem.h" />
     <ClInclude Include="Server\Systems\System.h" />
     <ClInclude Include="Common\Messages\SoundMessage.h" />
+    <ClInclude Include="Client\SoundSystem\SoundSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Bullet.png" />

@@ -8,6 +8,7 @@
 #include "../../Server/Main/GameLoop.h"
 #include "../../Common/Sounds.h"
 #include "../../Common/Messages/SoundMessage.h"
+#include "../SoundSystem/SoundSystem.h"
 
 #include "SFML/Audio.hpp"
 
@@ -16,39 +17,11 @@ ClientMain::ClientMain() {
   TRACE_INFO("Starting...");
   MessageHandler::get().publishInterface("ClientGameState", &gameStateInterface);
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
-  Subscriber soundSubcription;
   Input input;
   Gui gui;
   std::shared_ptr<GameLoop> server;
   NetworkHandler networkHandler;
-  //Sound sound = Sound();
-  std::map<Sounds, sf::Sound> soundMap;
-  sf::SoundBuffer slashLong1Buffer;
-  if (!slashLong1Buffer.loadFromFile("Client/Resources/Sounds/SoundEffects/swish_2.wav")) {
-    TRACE_ERROR("Couldn't load Client/Resources/Sounds/SoundEffects/swish_2.wav");
-  }
-  else {
-    TRACE_INFO("Loaded Client/Resources/Sounds/SoundEffects/swish_2.wav");
-  }
-  soundMap.emplace(Sounds::SlashLong1, sf::Sound(slashLong1Buffer));
-
-  sf::SoundBuffer slashLong2Buffer;
-  if (!slashLong2Buffer.loadFromFile("Client/Resources/Sounds/SoundEffects/swish_4.wav")) {
-    TRACE_ERROR("Couldn't load Client/Resources/Sounds/SoundEffects/swish_4.wav");
-  }
-  else {
-    TRACE_INFO("Loaded Client/Resources/Sounds/SoundEffects/swish_4.wav");
-  }
-  soundMap.emplace(Sounds::SlashLong2, sf::Sound(slashLong2Buffer));
-
-  sf::SoundBuffer hit1Buffer;
-  if (!hit1Buffer.loadFromFile("Client/Resources/Sounds/SoundEffects/fall.wav")) {
-    TRACE_ERROR("Couldn't load Client/Resources/Sounds/SoundEffects/fall.wav");
-  }
-  else {
-    TRACE_INFO("Loaded Client/Resources/Sounds/SoundEffects/fall.wav");
-  }
-  soundMap.emplace(Sounds::Hit1, sf::Sound(hit1Buffer));
+  SoundSystem soundSystem;
 
   mServerStarted = false;
   bool networkHandlerStarted = false;
@@ -92,12 +65,7 @@ ClientMain::ClientMain() {
           pc.pushMessage(ipm.pack());
           MessageHandler::get().unpublishInterface("ClientIpList");
           sentIpMessage = true;
-          while (!MessageHandler::get().subscribeTo("ClientSoundList", &soundSubcription)) {
-            sf::sleep(sf::milliseconds(5));
-          }
-          TRACE_INFO("Subscribed to sounds");
         }
-
         break; 
       }
       case GAME_STATE::CLIENT_LOBBY:
@@ -109,27 +77,6 @@ ClientMain::ClientMain() {
         }
         break;
 	    case GAME_STATE::PLAYING: {
-        auto sounds = soundSubcription.getMessageQueue();
-        while (!sounds.empty()) {
-          auto sound = sounds.front();
-          sounds.pop();
-          SoundMessage sm;
-          sm.unpack(sound);
-          for (auto i = 0; i < sm.getSize(); i++) {
-            soundMap.at(sm.getSound(i)).play();
-          }
-        }
-
-        /*
-        if (counter == 60) {
-          soundMap.at(Sounds::SlashLong1).play();
-          soundMap.at(Sounds::SlashLong2).play();
-        }
-        if (counter >= 120) {
-          soundMap.at(Sounds::SlashLong2).play();
-          counter = 0;
-        }
-        counter++;*/
 		    break;
 	      }
       case GAME_STATE::OPTIONS: {
@@ -137,12 +84,12 @@ ClientMain::ClientMain() {
 		    break;
 	      }
       case GAME_STATE::PAUSE: {
-
         break;
       }
       default:
         TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
     }
+    soundSystem.update();
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     handleGameStateMessages();
     handleSystemMessages();

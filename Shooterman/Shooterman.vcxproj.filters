@@ -77,6 +77,7 @@
     <ClCompile Include="Common\Trace.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
     <ClCompile Include="Common\Messages\SoundMessage.cpp" />
+    <ClCompile Include="Client\SoundSystem\SoundSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
     <ClInclude Include="Common\Messages\SoundMessage.h" />
     <ClInclude Include="Common\Sounds.h" />
+    <ClInclude Include="Client\SoundSystem\SoundSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
