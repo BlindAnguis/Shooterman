@@ -10,5 +10,6 @@ enum class Sounds
   Hit1,
   Hit2,
   Click1,
+  Death,
   Unkown
 };

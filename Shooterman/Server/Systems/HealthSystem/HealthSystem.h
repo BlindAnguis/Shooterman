@@ -3,6 +3,8 @@
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
 #include "../../../Common/Trace.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/Subscriber.h"
 
 class HealthSystem : Trace
 {
@@ -16,4 +18,5 @@ private:
   ComponentManager<HealthComponent>* mHealthComponentManager;
   ComponentManager<HealthChangerComponent>* mHealthChangerComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
+  Subscriber mSoundSubscriber;
 };

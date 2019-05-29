@@ -462,11 +462,19 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
 
     SoundMessage sm;
     int random = (int)rand() % 10;
+<<<<<<< Updated upstream
+    if (random < 7) {
+=======
     if (random < 7) { // TODO: Make this look better (more readable and so on).
+>>>>>>> Stashed changes
       sm.addSound(Sounds::SlashLong1);
     } else {
       sm.addSound(Sounds::SlashLong2);
     }
+<<<<<<< Updated upstream
+    sm.addSound(Sounds::Hit1);
+=======
+>>>>>>> Stashed changes
     mSoundSubscriber.reverseSendMessage(sm.pack());
 
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
