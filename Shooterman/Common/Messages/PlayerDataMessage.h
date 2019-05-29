@@ -10,14 +10,14 @@ struct GlobalBounds {
 
 struct PlayerData {
   bool hasHealth = false;
-  float currentHealth;
-  float maxHealth;
+  int currentHealth;
+  int maxHealth;
   bool hasStamina = false;
-  float currentStamina;
-  float maxStamina;
+  int currentStamina;
+  int maxStamina;
   bool hasMana = false;
-  float currentMana;
-  float maxMana;
+  int currentMana;
+  int maxMana;
   sf::Vector2f position;
   GlobalBounds globalBounds;
 };
@@ -34,7 +34,7 @@ public:
   void addPlayerData(PlayerData playerData);
   PlayerData getPlayerData(int position);
 
-  int getNumberOfPlayerData();
+  unsigned int getNumberOfPlayerData();
 
 private:
   int mNumberOfPlayerData = 0;

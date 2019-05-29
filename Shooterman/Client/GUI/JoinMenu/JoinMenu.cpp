@@ -15,6 +15,7 @@ JoinMenu::JoinMenu() {
 
   auto ipList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
   mIpText = std::make_shared<GuiText>(GuiComponentPosition::CENTER, "Enter IP");
+  mIpText->enableReceiveInput();
   ipList->addGuiComponent(mIpText);
   ipList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "     "));
   ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", [this](){
@@ -55,8 +56,9 @@ void JoinMenu::handleNewText(sf::Uint32 newChar) {
   if (newChar == 8) {
     // Backspace
     mIpString = mIpString.substr(0, mIpString.size() - 1);
+    mIpText->removeChar();
   } else if (mIpString.length() < 15) {
     mIpString += newChar;
+    mIpText->addChar(newChar);
   }
-  mIpText->setText(mIpString);
 }

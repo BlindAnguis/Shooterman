@@ -37,11 +37,11 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
     case PLAYER_DATA:
     {
       PlayerDataMessage pdm(playerDataMessage);
-      for (int i = 0; i < pdm.getNumberOfPlayerData(); ++i) {
+      for (unsigned int i = 0; i < pdm.getNumberOfPlayerData(); ++i) {
         PlayerData playerData = pdm.getPlayerData(i);
 
         while (pdm.getNumberOfPlayerData() > mHealthBars.size()) {
-          auto health = std::make_shared<GuiProgressBar>(0, 0, 32.f, 6.f, sf::Color::Green);
+          auto health = std::make_shared<GuiProgressBar>(0.0f, 0.0f, 32.f, 6.f, sf::Color::Green);
           mHealthBars.push_back(health);
           mGuiFrame->addGuiComponent(health);
           auto stamina = std::make_shared<GuiProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Yellow);

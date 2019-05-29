@@ -62,6 +62,6 @@ PlayerData PlayerDataMessage::getPlayerData(int position) {
   return mPlayerDatas[position];
 }
 
-int PlayerDataMessage::getNumberOfPlayerData() {
+unsigned int PlayerDataMessage::getNumberOfPlayerData() {
   return mPlayerDatas.size();
 }

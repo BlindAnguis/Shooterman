@@ -93,10 +93,12 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
   auto ipMessage = messages.front();
   ipMessage >> ID;
   if (ID != IP_MESSAGE) {
-    // Received unexpected message
-    TRACE_ERROR("Received unexpected message with ID: " << ID);
-    GameStateMessage gsm(GAME_STATE::PREVIOUS);
-    mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    if (ID != 0) { // 0 = shutdown req
+      // Received unexpected message
+      TRACE_ERROR("Received unexpected message with ID: " << ID);
+      GameStateMessage gsm(GAME_STATE::PREVIOUS);
+      mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    }
     MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
     return connectionStatus;
   }

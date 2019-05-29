@@ -4,8 +4,7 @@
 #include "../../../Common/MessageHandler/Interface.h"
 
 std::shared_ptr<GuiComponent> GCF::createHeader(GuiComponentPosition guiComponentPosition, std::string text) {
-  auto heading = std::make_shared<GuiText>(GuiComponentPosition::TOP, text);
-  heading->setTextSize(72);
+  auto heading = std::make_shared<GuiText>(GuiComponentPosition::TOP, text, 72);
   return heading;
 }
 
