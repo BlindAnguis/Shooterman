@@ -70,7 +70,7 @@ ClientMain::ClientMain() {
       }
       case GAME_STATE::CLIENT_LOBBY:
       {
-        break;
+       break;
       }
       case GAME_STATE::JOIN:
         if (!networkHandlerStarted) {

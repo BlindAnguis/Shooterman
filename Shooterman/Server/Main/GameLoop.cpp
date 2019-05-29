@@ -5,6 +5,7 @@
 
 #include "../Engine/Engine.h"
 #include "../Network/HostListener.h"
+#include "../../Common/Messages/ServerReadyMessage.h"
 
 GameLoop::GameLoop() {
   mName = "SERVER: GAME_LOOP";
@@ -94,12 +95,20 @@ void GameLoop::gameLoop() {
   mNetworkSystem->start();
   Engine world = Engine(gameMap1);
   sf::Clock c;
+  // send message to client, tell it to enable the button.
+  Subscriber serverReadySubscriber;
+  while (!MessageHandler::get().subscribeTo("ServerServerReady", &serverReadySubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  ServerReadyMessage srm;
+  serverReadySubscriber.reverseSendMessage(srm.pack());
   while (mRunning) {
     c.restart();
     state = InputSystem::get().getLatestGameStateMessage();
 
     switch (state) {
       case GAME_STATE::LOBBY:
+        //
         break;
 
       case GAME_STATE::SETUP_GAME:

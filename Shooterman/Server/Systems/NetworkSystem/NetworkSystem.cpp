@@ -3,6 +3,7 @@
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/Messages/GameStateMessage.h"
+#include "../../../Common/Messages/ServerReadyMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
 
@@ -34,6 +35,7 @@ void NetworkSystem::startup() {
   mRunning = true;
   Interface inputListInterface;
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
+  MessageHandler::get().publishInterface("ServerServerReady", &mServerServerReadyInterface);
   MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
   MessageHandler::get().publishInterface("ServerGameState", &mGameStateInterface);
   MessageHandler::get().publishInterface("ServerDebugMenu", &mDebugMenuInterface);
@@ -132,6 +134,26 @@ void NetworkSystem::startup() {
       }
     }
 
+    auto serverReadyQueue = mServerServerReadyInterface.getMessageQueue();
+    while (!serverReadyQueue.empty()) {
+      auto serverReadyPacket = serverReadyQueue.front();
+      serverReadyQueue.pop();
+      int id = -1;
+      serverReadyPacket >> id;
+
+      if (id == SERVER_READY) {
+        ServerReadyMessage srm;
+        for (auto clientSocket : mClientsSockets) {
+          sf::Packet srmPacket = srm.pack();
+          clientSocket.second->send(srmPacket);
+        }
+      }
+      else {
+        TRACE_WARNING("Received unhandled packet with id: " << id);
+      }
+    }
+    //handleServerReady();
+
     handlePlayerData();
     handleDebugMenu();
 
@@ -140,6 +162,7 @@ void NetworkSystem::startup() {
 
   TRACE_INFO("UNPUBLISHING");
   MessageHandler::get().unpublishInterface("ServerInputList");
+  MessageHandler::get().unpublishInterface("ServerServerReady");
   MessageHandler::get().unpublishInterface("ServerPlayerData");
   MessageHandler::get().unpublishInterface("ServerGameState");
   MessageHandler::get().unpublishInterface("ServerDebugMenu");

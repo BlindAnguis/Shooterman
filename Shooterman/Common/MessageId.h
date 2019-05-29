@@ -7,6 +7,7 @@
 #define ADD_DEBUG_BUTTON    3
 #define REMOVE_DEBUG_BUTTON 4
 #define TOGGLE_DEBUG_BUTTON 5
+#define SERVER_READY        6
 
 // Client to Server
 #define INPUT_KEYS          100

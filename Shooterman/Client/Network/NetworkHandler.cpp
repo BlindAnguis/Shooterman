@@ -9,6 +9,7 @@
 #include "../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/LobbyDataMessage.h"
+#include "../../Common/Messages/ServerReadyMessage.h"
 #include "../../Common/Messages/PlayerDataMessage.h"
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/SpriteCacheMessage.h"
@@ -61,6 +62,7 @@ void NetworkHandler::startup() {
 
 void NetworkHandler::setupSubscribersAndInterfaces() {
   MessageHandler::get().publishInterface("ClientLobby", &mLobbyInterface);
+  MessageHandler::get().publishInterface("ClientServerReady", &mServerReadyInterface);
 
   while (!setupDebugMessages("Client", "Network")) {
     sf::sleep(sf::milliseconds(5));
@@ -175,7 +177,11 @@ void NetworkHandler::handlePackets() {
         SoundMessage sm;
         sm.unpack(packet);
         mSoundListInterface.pushMessage(sm.pack());
-      } else {
+      } else if (id == SERVER_READY) {
+        ServerReadyMessage srm;
+        mServerReadyInterface.pushMessage(srm.pack());
+      }
+      else {
         TRACE_ERROR("Packet not known: " << id);
       }
     }
@@ -188,6 +194,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
 
   MessageHandler::get().unpublishInterface("ClientSpriteList");
   MessageHandler::get().unpublishInterface("ClientLobby");
+  MessageHandler::get().unpublishInterface("ClientServerReady");
   MessageHandler::get().unpublishInterface("ClientPlayerData");
   MessageHandler::get().unpublishInterface("ClientSoundList");
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);

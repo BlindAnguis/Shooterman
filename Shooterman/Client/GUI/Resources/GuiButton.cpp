@@ -42,7 +42,7 @@ bool GuiButton::checkMouse(sf::Vector2f mousePosition) {
   bool mousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
   if (mousePosition.x >= mXPosition && mousePosition.x < mXPosition + mWidth &&
     mousePosition.y >= mYPosition && mousePosition.y < mYPosition + mHeight) {
-    if (mousePressed) {
+    if (mousePressed && isEnabled()) {
       mCallback();
       return true;
     }
@@ -61,4 +61,16 @@ void GuiButton::renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosi
   window->draw(mBackgroundL);
   window->draw(mBackgroundM);
   window->draw(mBackgroundR);
+}
+
+void GuiButton::setEnabled() {
+  this->enabled = true;
+}
+
+void GuiButton::setDisabled() {
+  this->enabled = false;
+}
+
+bool GuiButton::isEnabled() {
+  return this->enabled;
 }

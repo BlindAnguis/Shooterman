@@ -175,6 +175,7 @@
     <ClCompile Include="Common\Messages\MouseMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
     <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
+    <ClCompile Include="Common\Messages\ServerReadyMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteCacheMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteMessage.cpp" />
     <ClCompile Include="Common\Messages\ToggleDebugButtonMessage.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
+    <ClInclude Include="Common\Messages\ServerReadyMessage.h" />
     <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
     <ClInclude Include="Common\Sounds.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />

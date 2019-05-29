@@ -21,6 +21,7 @@ private:
   Interface mSpriteListInterface;
   Interface mPlayerDataInterface;
   Interface mSoundListInterface;
+  Interface mServerReadyInterface;
   Subscriber mMessageSubscriber;
   Subscriber mGameStateSubscriber;
   Subscriber mServerDebugSubscriber;
