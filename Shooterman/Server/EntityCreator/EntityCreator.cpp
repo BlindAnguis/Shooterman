@@ -463,11 +463,11 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
     SoundMessage sm;
     int random = (int)rand() % 10;
     if (random < 7) {
-      //sm.addSound(Sounds::SlashLong1);
+      sm.addSound(Sounds::SlashLong1);
     } else {
-      //sm.addSound(Sounds::SlashLong2);
+      sm.addSound(Sounds::SlashLong2);
     }
-    sm.addSound(Sounds::Hit1);
+    //sm.addSound(Sounds::Hit1);
     mSoundSubscriber.reverseSendMessage(sm.pack());
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
     return bullet;
