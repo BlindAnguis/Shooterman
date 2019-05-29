@@ -18,6 +18,7 @@ public:
   void update();
 private:
   std::vector<sf::Sound> mPlayingSounds;
+  std::queue<sf::Sound> mPlayQueue;
   std::map<Sounds, sf::SoundBuffer> mSoundBuffers;
   bool mSubscribedToSounds = false;
   void loadSounds();

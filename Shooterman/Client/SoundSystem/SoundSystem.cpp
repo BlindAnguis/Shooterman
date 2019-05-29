@@ -38,6 +38,7 @@ void SoundSystem::update() {
 
   auto soundsToPlay = mSoundSubcription.getMessageQueue();
   while (!soundsToPlay.empty()) {
+    TRACE_INFO("Getting sound packet");
     int id = -1;
     auto soundPacket = soundsToPlay.front();
     soundsToPlay.pop();
@@ -46,22 +47,40 @@ void SoundSystem::update() {
       SoundMessage sm;
       sm.unpack(soundPacket);
       for (auto i = 0; i < sm.getSize(); i++) {
-        mPlayingSounds.emplace_back(sf::Sound());
-        mPlayingSounds.back().setBuffer(mSoundBuffers.at(sm.getSound(i)));
-        mPlayingSounds.back().play();
+        //TRACE_INFO("Creating sound: " << static_cast<int>(sm.getSound(i)));
+        mPlayQueue.push(sf::Sound());
+        mPlayQueue.back().setBuffer(mSoundBuffers.at(sm.getSound(i)));
+        mPlayQueue.back().play();
       }
     } else {
       TRACE_ERROR("Got the wrong message, got message with id: " << id << " but should have got id: " << SOUND_LIST);
     }    
   }
 
-  auto it = mPlayingSounds.begin();
-  
-  while (it != mPlayingSounds.end()) {
-    if (it->getStatus() == sf::Sound::Stopped) {
-      it = mPlayingSounds.erase(it);
-    } else {
-      ++it;
-    }
+  for (auto sound : mPlayingSounds) {
+    //TRACE_INFO("Sound again has status: " << sound.getStatus() << " currant duration is: " << (int)sound.getPlayingOffset().asMilliseconds() << " and total duration is: " << (int)sound.getBuffer()->getDuration().asMilliseconds());
+  }
+
+  while (!mPlayQueue.empty() && mPlayQueue.front().getStatus() == sf::Sound::Stopped) {
+    TRACE_INFO("Sound has stopped");
+    mPlayQueue.pop();
   }
 }
+
+class Audio {
+private:
+  sf::SoundBuffer mBuffer;
+  sf::Sound mSound;
+public:
+  void init(sf::SoundBuffer buffer) {        //Initialize audio
+    mBuffer = buffer;
+    mSound.setBuffer(mBuffer);
+  }
+  void play() {
+    mSound.play();       // Play queued audio
+  }
+  void stop() {
+    mSound.stop();
+  }
+  //void setVolume(), void setPitch() ....
+};
