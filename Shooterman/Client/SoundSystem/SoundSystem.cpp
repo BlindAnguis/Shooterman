@@ -29,12 +29,6 @@ void SoundSystem::loadSounds() {
     TRACE_ERROR("Couldn't load Client/Resources/Sounds/SoundEffects/fall.wav");
   }
   mSoundBuffers.emplace(Sounds::Hit1, hit1Buffer);
-
-  sf::SoundBuffer deathBuffer;
-  if (!deathBuffer.loadFromFile("Client/Resources/Sounds/SoundEffects/hit_2.wav")) {
-    TRACE_ERROR("Couldn't load Client/Resources/Sounds/SoundEffects/hit_2.wav");
-  }
-  mSoundBuffers.emplace(Sounds::Death, deathBuffer);
 }
 
 void SoundSystem::update() {
@@ -44,6 +38,7 @@ void SoundSystem::update() {
 
   auto soundsToPlay = mSoundSubcription.getMessageQueue();
   while (!soundsToPlay.empty()) {
+    TRACE_INFO("Getting sound packet");
     int id = -1;
     auto soundPacket = soundsToPlay.front();
     soundsToPlay.pop();
@@ -62,8 +57,30 @@ void SoundSystem::update() {
     }    
   }
 
+  for (auto sound : mPlayingSounds) {
+    //TRACE_INFO("Sound again has status: " << sound.getStatus() << " currant duration is: " << (int)sound.getPlayingOffset().asMilliseconds() << " and total duration is: " << (int)sound.getBuffer()->getDuration().asMilliseconds());
+  }
+
   while (!mPlayQueue.empty() && mPlayQueue.front().getStatus() == sf::Sound::Stopped) {
-    //TRACE_INFO("Sound has stopped");
+    TRACE_INFO("Sound has stopped");
     mPlayQueue.pop();
   }
 }
+
+class Audio {
+private:
+  sf::SoundBuffer mBuffer;
+  sf::Sound mSound;
+public:
+  void init(sf::SoundBuffer buffer) {        //Initialize audio
+    mBuffer = buffer;
+    mSound.setBuffer(mBuffer);
+  }
+  void play() {
+    mSound.play();       // Play queued audio
+  }
+  void stop() {
+    mSound.stop();
+  }
+  //void setVolume(), void setPitch() ....
+};

@@ -1,18 +1,13 @@
 #include "HealthSystem.h"
-#include "../../Common/Messages/SoundMessage.h"
 
 HealthSystem::HealthSystem() :
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()) {
   mName = "SERVER: HEALTH_SYSTEM";
-  MessageHandler::get().subscribeTo("ServerSoundList", &mSoundSubscriber);
 }
 
-HealthSystem::~HealthSystem() { 
-  TRACE_DEBUG1("Enter Destructor"); 
-  MessageHandler::get().unsubscribeTo("ServerSoundList", &mSoundSubscriber);
-}
+HealthSystem::~HealthSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 HealthSystem& HealthSystem::get() {
   static HealthSystem instance;
@@ -25,19 +20,11 @@ void HealthSystem::changeHealth(int entityId, int addedHealthEffect) {
     auto player = ComponentManager<PlayerComponent>::get().getComponent(entityId);
     if (health && (!player || !player->invinsible)) {
       health->currentHealth += addedHealthEffect;
-      if (player && addedHealthEffect < 0) {
-        SoundMessage sm;
-        sm.addSound(Sounds::Hit1);
-        mSoundSubscriber.reverseSendMessage(sm.pack());
-      }
       if (health->currentHealth > health->maxHealth) {
         health->currentHealth = health->maxHealth;
       } else if (health->currentHealth <= 0) {
         health->isAlive = false;
         health->currentHealth = 0;
-        SoundMessage sm;
-        sm.addSound(Sounds::Death);
-        mSoundSubscriber.reverseSendMessage(sm.pack());
       }
     }
   } else {
