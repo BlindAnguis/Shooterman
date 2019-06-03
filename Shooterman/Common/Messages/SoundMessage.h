@@ -11,6 +11,7 @@
 class SoundMessage : Message {
 public:
   SoundMessage();
+  SoundMessage(sf::Packet packet);
   ~SoundMessage();
 
   void addSound(Sounds sound);

@@ -1,6 +1,11 @@
 #include "SoundMessage.h"
 
 SoundMessage::SoundMessage() {}
+
+SoundMessage::SoundMessage(sf::Packet packet) {
+  unpack(packet);
+}
+
 SoundMessage::~SoundMessage() {}
 
 void SoundMessage::addSound(Sounds sound) {

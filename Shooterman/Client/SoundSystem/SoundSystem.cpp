@@ -44,8 +44,7 @@ void SoundSystem::update() {
     soundsToPlay.pop();
     soundPacket >> id;
     if (id == SOUND_LIST) {
-      SoundMessage sm;
-      sm.unpack(soundPacket);
+      SoundMessage sm(soundPacket);
       for (auto i = 0; i < sm.getSize(); i++) {
         //TRACE_INFO("Creating sound: " << static_cast<int>(sm.getSound(i)));
         mPlayQueue.push(sf::Sound());

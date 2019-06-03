@@ -5,6 +5,10 @@
 GameStateMessage::GameStateMessage() :
   mGameState(GAME_STATE::NO_STATE) { }
 
+GameStateMessage::GameStateMessage(sf::Packet packet) {
+  unpack(packet);
+}
+
 GameStateMessage::GameStateMessage(GAME_STATE newGameState) :
   mGameState(newGameState) { }
 

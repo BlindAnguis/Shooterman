@@ -5,6 +5,7 @@
 class MouseMessage : Message {
 public:
   MouseMessage();
+  MouseMessage(sf::Packet packet);
   MouseMessage(sf::Vector2i position);
   ~MouseMessage();
 

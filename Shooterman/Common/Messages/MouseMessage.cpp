@@ -1,6 +1,11 @@
 #include "MouseMessage.h"
 
 MouseMessage::MouseMessage() : mPosition(sf::Vector2i()) {}
+
+MouseMessage::MouseMessage(sf::Packet packet) {
+  unpack(packet);
+}
+
 MouseMessage::MouseMessage(sf::Vector2i position) : mPosition(position) {}
 MouseMessage::~MouseMessage() {}
 

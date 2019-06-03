@@ -86,9 +86,7 @@ void LobbyMenu::checkForLobbyMessages() {
     messages.pop();
     lobbyMessage >> messageID;
     if (messageID == LOBBY_DATA) {
-      LobbyDataMessage ldm;
-      ldm.unpack(lobbyMessage);
-
+      LobbyDataMessage ldm(lobbyMessage);
 
       mPlayersList->clear();
       for (auto playerName : ldm.getPlayerNames()) {

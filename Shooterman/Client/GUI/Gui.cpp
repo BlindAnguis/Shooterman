@@ -175,8 +175,7 @@ void Gui::handleGameStateMessages() {
     if (id == CHANGE_GAME_STATE) {
       gameStateMessageQueue.pop();
 
-      GameStateMessage gsm;
-      gsm.unpack(gameStateMessage);
+      GameStateMessage gsm(gameStateMessage);
       if (gsm.getGameState() != mCurrentGameState) {
         // Changed game state
         auto previousMenu = mMenuMap.find(mCurrentGameState);

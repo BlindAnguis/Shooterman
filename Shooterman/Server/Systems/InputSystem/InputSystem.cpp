@@ -64,7 +64,6 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
     mIsSubscribedToGameState = MessageHandler::get().subscribeTo("ServerGameState", &mGameStateSubscriber);
   }
 
-  GameStateMessage gsm;
   std::queue<sf::Packet> gameStateMessagesQueue = mGameStateSubscriber.getMessageQueue();
 
   if (!gameStateMessagesQueue.empty()) {
@@ -74,7 +73,7 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
     packet >> id;
 
     if (id == CHANGE_GAME_STATE) {
-      gsm.unpack(packet);
+      GameStateMessage gsm(packet);
       GAME_STATE gameState = gsm.getGameState();
 
       if (gameState != mCurrentGameState) {

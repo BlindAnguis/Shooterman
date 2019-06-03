@@ -156,24 +156,19 @@ void NetworkHandler::handlePackets() {
       int id = -1;
       packet >> id;
       if (id == SPRITE_LIST_CACHE) {
-        SpriteCacheMessage sm;
-        sm.unpack(packet);
+        SpriteCacheMessage sm(packet);
         mSpriteListInterface.pushMessage(sm.pack());
       } else if (id == SPRITE_LIST) {
-        SpriteMessage sm;
-        sm.unpack(packet);
+        SpriteMessage sm(packet);
         mSpriteListInterface.pushMessage(sm.pack());
       } else if (id == PLAYER_DATA) {
-        PlayerDataMessage pdm;
-        pdm.unpack(packet);
+        PlayerDataMessage pdm(packet);
         mPlayerDataInterface.pushMessage(pdm.pack());
       } else if (id == LOBBY_DATA) {
-        LobbyDataMessage ldm;
-        ldm.unpack(packet);
+        LobbyDataMessage ldm(packet);
         mLobbyInterface.pushMessage(ldm.pack());
       } else if (id == CHANGE_GAME_STATE) {
-        GameStateMessage gsm;
-        gsm.unpack(packet);
+        GameStateMessage gsm(packet);
         mGameStateSubscriber.reverseSendMessage(gsm.pack());
       } else if (id == ADD_DEBUG_BUTTON) {
         AddDebugButtonMessage adbm(packet);
@@ -183,8 +178,7 @@ void NetworkHandler::handlePackets() {
         RemoveDebugButtonMessage rdbm(packet);
         mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
       } else if (id == SOUND_LIST) {
-        SoundMessage sm;
-        sm.unpack(packet);
+        SoundMessage sm(packet);
         mSoundListInterface.pushMessage(sm.pack());
       } else if (id == SERVER_READY) {
         ServerReadyMessage srm;

@@ -7,6 +7,7 @@
 class SpriteCacheMessage : public SpriteMessage {
 public:
   SpriteCacheMessage();
+  SpriteCacheMessage(sf::Packet packet);
   ~SpriteCacheMessage();
 
   void addSpriteData(SpriteData data);

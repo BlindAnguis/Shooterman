@@ -18,6 +18,7 @@ typedef struct {
 class SpriteMessage : Message {
 public:
   SpriteMessage();
+  SpriteMessage(sf::Packet packet);
   ~SpriteMessage();
 
   void addSpriteData(SpriteData data);

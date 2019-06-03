@@ -7,6 +7,7 @@ enum GAME_STATE { NO_STATE, MAIN_MENU, DEBUG, LOBBY, CLIENT_LOBBY, PLAYING, SETU
 class GameStateMessage : Message {
 public:
 	GameStateMessage();
+  GameStateMessage(sf::Packet packet);
   GameStateMessage(GAME_STATE newGameState);
 
   sf::Packet pack();

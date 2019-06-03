@@ -8,6 +8,7 @@
 class LobbyDataMessage : Message {
 public:
   LobbyDataMessage();
+  LobbyDataMessage(sf::Packet packet);
 
   sf::Packet pack();
 

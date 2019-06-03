@@ -141,8 +141,7 @@ void ClientMain::handleGameStateMessages() {
     int id = -1;
     gameStateMessage >> id;
     if (id == CHANGE_GAME_STATE) {
-      GameStateMessage gsm;
-      gsm.unpack(gameStateMessage);
+      GameStateMessage gsm(gameStateMessage);
 
       if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
         mGameStateStack.pop();

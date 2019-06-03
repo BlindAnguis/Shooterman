@@ -1,6 +1,11 @@
 #include "SpriteMessage.h"
 
 SpriteMessage::SpriteMessage() {}
+
+SpriteMessage::SpriteMessage(sf::Packet packet) {
+  unpack(packet);
+}
+
 SpriteMessage::~SpriteMessage() {}
 
 void SpriteMessage::addSpriteData(SpriteData data) {

@@ -70,8 +70,7 @@ void NetworkSystem::startup() {
         case CHANGE_GAME_STATE: {
           // Check if it is the host
           if (client.first == HOST) {
-            GameStateMessage gsm;
-            gsm.unpack(packet);
+            GameStateMessage gsm(packet);
             mGameStateInterface.pushMessage(gsm.pack());
           }
           break;
@@ -110,8 +109,7 @@ void NetworkSystem::startup() {
       gameStatePacket >> id;
       
       if (id == CHANGE_GAME_STATE) {
-        GameStateMessage gsm;
-        gsm.unpack(gameStatePacket);
+        GameStateMessage gsm(gameStatePacket);
         for (auto clientSocket : mClientsSockets) {
           sf::Packet gsmPacket = gsm.pack();
           clientSocket.second->send(gsmPacket);
@@ -129,8 +127,7 @@ void NetworkSystem::startup() {
       soundListPacket >> id;
 
       if (id == SOUND_LIST) {
-        SoundMessage sm;
-        sm.unpack(soundListPacket);
+        SoundMessage sm(soundListPacket);
         for (auto clientSocket : mClientsSockets) {
           sf::Packet smPacket = sm.pack();
           clientSocket.second->send(smPacket);
@@ -230,8 +227,7 @@ void NetworkSystem::handlePlayerData() {
     switch (id) {
     case PLAYER_DATA:
     {
-      PlayerDataMessage pdm;
-      pdm.unpack(playerDataPacket);
+      PlayerDataMessage pdm(playerDataPacket);
 
       for (auto client : mClientsSockets) {
         sf::Packet packet = pdm.pack();

@@ -1,6 +1,11 @@
 #include "SpriteCacheMessage.h"
 
 SpriteCacheMessage::SpriteCacheMessage() {}
+
+SpriteCacheMessage::SpriteCacheMessage(sf::Packet packet) {
+  unpack(packet);
+}
+
 SpriteCacheMessage::~SpriteCacheMessage() {}
 
 void SpriteCacheMessage::addSpriteData(SpriteData data) {

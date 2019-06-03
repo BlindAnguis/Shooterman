@@ -142,8 +142,7 @@ void Input::handleGameStateMessages() {
     gameStateMessage >> id;
 
     if (id == CHANGE_GAME_STATE) {
-      GameStateMessage gsm;
-      gsm.unpack(gameStateMessage);
+      GameStateMessage gsm(gameStateMessage);
       mCurrentGameState = gsm.getGameState();
     } else {
       TRACE_WARNING("Received unexpected message with ID : " << id);
@@ -159,8 +158,7 @@ void Input::getLatestMousePosition() {
     mouseMessage = mouseMessageQueue.front();
     mouseMessageQueue.pop();
 
-    MouseMessage mm;
-    mm.unpack(mouseMessage);
+    MouseMessage mm(mouseMessage);
     if (mm.getPosition() != sf::Vector2i()) {
       mLastMousePosition = mm.getPosition();
     }

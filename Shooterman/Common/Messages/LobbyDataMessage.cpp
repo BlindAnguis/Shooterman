@@ -1,7 +1,8 @@
 #include "LobbyDataMessage.h"
 
-LobbyDataMessage::LobbyDataMessage() {
-
+LobbyDataMessage::LobbyDataMessage() { }
+LobbyDataMessage::LobbyDataMessage(sf::Packet packet) {
+  unpack(packet);
 }
 
 sf::Packet LobbyDataMessage::pack() {
