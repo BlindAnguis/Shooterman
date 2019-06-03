@@ -132,6 +132,13 @@ void NetworkHandler::handlePackets() {
       mSocket.send(packet);
     }
 
+    auto lobbyMessageQueue = mLobbyInterface.getMessageQueue();
+    while (!lobbyMessageQueue.empty()) {
+      sf::Packet packet = lobbyMessageQueue.front();
+      lobbyMessageQueue.pop();
+      mSocket.send(packet);
+    }
+
     auto debugMessageQueue = mServerDebugSubscriber.getMessageQueue();
     while (!debugMessageQueue.empty()) {
       sf::Packet packet = debugMessageQueue.front();

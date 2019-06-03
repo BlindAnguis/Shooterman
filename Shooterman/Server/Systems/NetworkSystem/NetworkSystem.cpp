@@ -2,10 +2,13 @@
 
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
+#include "../../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../../Common/Messages/GameStateMessage.h"
 #include "../../../Common/Messages/ServerReadyMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
+
+#define HOST 1
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
@@ -37,6 +40,7 @@ void NetworkSystem::startup() {
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
   MessageHandler::get().publishInterface("ServerServerReady", &mServerServerReadyInterface);
   MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
+  MessageHandler::get().publishInterface("ServerPlayerLobby", &mPlayerLobbyInterface);
   MessageHandler::get().publishInterface("ServerGameState", &mGameStateInterface);
   MessageHandler::get().publishInterface("ServerDebugMenu", &mDebugMenuInterface);
   MessageHandler::get().publishInterface("ServerSoundList", &mSoundInterface);
@@ -56,28 +60,31 @@ void NetworkSystem::startup() {
         packet >> packetId;
         switch (packetId)
         {
-        case INPUT_KEYS:
-        {
+        case INPUT_KEYS: {
           packet << client.first;
           inputListInterface.pushMessage(packet);
           break;
         }
         case SHUT_DOWN:
           break;
-        case CHANGE_GAME_STATE:
-        {
+        case CHANGE_GAME_STATE: {
           // Check if it is the host
-          if (client.first == 2) {
+          if (client.first == HOST) {
             GameStateMessage gsm;
             gsm.unpack(packet);
             mGameStateInterface.pushMessage(gsm.pack());
           }
           break;
         }
-        case ADD_DEBUG_BUTTON:
-        {
+        case ADD_DEBUG_BUTTON: {
           AddDebugButtonMessage adbm(packet);
           mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
+          break;
+        }
+        case NEW_USERNAME: {
+          ChangeUsernameMessage cum(packet);
+          cum.setId(client.first);
+          mPlayerLobbyInterface.pushMessage(cum.pack());
           break;
         }
         default:
@@ -254,7 +261,7 @@ void NetworkSystem::handleDebugMenu() {
 
       sf::Packet packet = adbm.pack();
       if (!mClientsSockets.empty()) {
-        mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
+        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 2 TODO: Fix?
       }
       break;
     }
@@ -263,7 +270,7 @@ void NetworkSystem::handleDebugMenu() {
       RemoveDebugButtonMessage rdbm(debugMenuMessage);
       sf::Packet packet = rdbm.pack();
       if (!mClientsSockets.empty()) {
-        mClientsSockets.at(2)->send(packet); // Send only to host, which is 2 TODO: Fix?
+        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 2 TODO: Fix?
       }
       break;
     }

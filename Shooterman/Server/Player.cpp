@@ -22,3 +22,11 @@ void Player::setEntity(Entity* newEntity) {
 Entity* Player::getEntity() {
   return mEntity;
 }
+
+void Player::setUsername(std::string username) {
+  mUsername = username;
+}
+
+std::string Player::getUsername() {
+  return mUsername;
+}

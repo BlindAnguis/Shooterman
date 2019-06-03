@@ -41,6 +41,7 @@ private:
   Interface mDebugMenuInterface;
   Interface mSoundInterface;
   Interface mServerServerReadyInterface;
+  Interface mPlayerLobbyInterface;
 
   void startup();
   void updateInternalMap();

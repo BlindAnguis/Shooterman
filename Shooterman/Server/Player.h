@@ -15,7 +15,11 @@ public:
   void setEntity(Entity* newEntity);
   Entity* getEntity();
 
+  void setUsername(std::string username);
+  std::string getUsername();
+
 private:
+  std::string mUsername;
   sf::TcpSocket* mSocket;
   Entity* mEntity;
 };

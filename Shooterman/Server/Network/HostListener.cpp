@@ -1,6 +1,8 @@
 #include "HostListener.h"
 
+#include "../../Common/MessageId.h"
 #include "../../Common/Messages/LobbyDataMessage.h"
+#include "../../Common/Messages/ChangeUsernameMessage.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 
 HostListener::HostListener() {
@@ -34,6 +36,9 @@ bool HostListener::isListening() {
 
 void HostListener::listen() {
   mConnectedClients = std::make_shared<std::map<int, Player*>>();
+  while (!MessageHandler::get().subscribeTo("ServerPlayerLobby", &mPlayerLobbyDataSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
   TRACE_INFO("Start to listen");
   //sf::TcpListener listener;
   sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
@@ -58,16 +63,14 @@ void HostListener::listen() {
       Player* player = new Player();
       player->setSocket(client);
       int playerId = getNextID();
+      player->setUsername("Player " + std::to_string(playerId));
       mConnectedClients->emplace(playerId, player);
-      //doSomethingWith(client);
-      // TODO: Add client to a list of clients?
       client = new sf::TcpSocket();
-
 
       // Send player names to all clients, to show in lobby
       LobbyDataMessage ldm;
       for (auto client : *mConnectedClients) {
-        ldm.addPlayerName("Dummy name " + std::to_string(client.first - 1));
+        ldm.addPlayerName(client.second->getUsername());
       }
 
       for (auto client : *mConnectedClients) {
@@ -78,6 +81,43 @@ void HostListener::listen() {
       networkSystem->addNewClientSocket(player->getSocket(), playerId);
     }
     sf::sleep(sf::milliseconds(5));
+    handlePlayerLobbyData();
   }
   delete client; // Delete unused client socket
+
+  MessageHandler::get().unsubscribeTo("ServerPlayerLobby", &mPlayerLobbyDataSubscriber);
+}
+
+void HostListener::handlePlayerLobbyData() {
+  auto playerLobbyDataMessages = mPlayerLobbyDataSubscriber.getMessageQueue();
+  while (playerLobbyDataMessages.size() > 0) {
+    auto playerLobbyDataPacket = playerLobbyDataMessages.front();
+    playerLobbyDataMessages.pop();
+
+    int id = -1;
+    playerLobbyDataPacket >> id;
+
+    switch (id) {
+    case NEW_USERNAME: {
+      ChangeUsernameMessage cum(playerLobbyDataPacket);
+      
+      (*mConnectedClients)[cum.getId()]->setUsername(cum.getUsername());
+
+      LobbyDataMessage ldm;
+      for (auto client : *mConnectedClients) {
+        ldm.addPlayerName((*mConnectedClients)[client.first]->getUsername());
+      }
+
+      for (auto client : *mConnectedClients) {
+        sf::Packet packet = ldm.pack();
+        client.second->getSocket()->send(packet);
+      }
+      break;
+    }
+    break;
+    default:
+      TRACE_ERROR("Received unknown message: " << id);
+      break;
+    }
+  }
 }

@@ -4,6 +4,7 @@
 #include <list>
 #include <SFML\Network.hpp>
 #include "../../Common/Trace.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Player.h"
 
@@ -20,10 +21,13 @@ private:
   int getNextID() {
     return ++lastID;
   }
-  int lastID = 1;
+  int lastID = 0;
   std::thread* mHostListenerThread;
   bool mRunning = false;
   sf::TcpListener* mListener;
+  Subscriber mPlayerLobbyDataSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
+
+  void handlePlayerLobbyData();
 };
 

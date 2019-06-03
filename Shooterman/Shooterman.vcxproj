@@ -168,6 +168,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
+    <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
     <ClCompile Include="Common\Messages\ClientInternal\IpMessage.cpp" />
     <ClCompile Include="Common\Messages\ClientMainAndNetworkHandlerMessages.cpp" />
     <ClCompile Include="Common\Messages\InputMessage.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
+    <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />

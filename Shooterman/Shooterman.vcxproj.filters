@@ -79,6 +79,7 @@
     <ClCompile Include="Common\Messages\SoundMessage.cpp" />
     <ClCompile Include="Client\SoundSystem\SoundSystem.cpp" />
     <ClCompile Include="Common\Messages\ServerReadyMessage.cpp" />
+    <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Common\Sounds.h" />
     <ClInclude Include="Client\SoundSystem\SoundSystem.h" />
     <ClInclude Include="Common\Messages\ServerReadyMessage.h" />
+    <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

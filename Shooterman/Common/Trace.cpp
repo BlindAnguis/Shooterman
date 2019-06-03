@@ -65,12 +65,13 @@ void Trace::handleDebugMessages() {
 }
 
 void Trace::teardownDebugMessages() {
-  RemoveDebugButtonMessage rdbm(mDebugSubscriber->getId());
-  sf::Packet packet = rdbm.pack();
-  mDebugSubscriber->reverseSendMessage(packet);
-
-  MessageHandler::get().unsubscribeTo(mCategory + "DebugMenu", mDebugSubscriber);
   if (mDebugSubscriber) {
+    RemoveDebugButtonMessage rdbm(mDebugSubscriber->getId());
+    sf::Packet packet = rdbm.pack();
+    mDebugSubscriber->reverseSendMessage(packet);
+
+    MessageHandler::get().unsubscribeTo(mCategory + "DebugMenu", mDebugSubscriber);
+
     delete mDebugSubscriber;
     mDebugSubscriber = false;
   }

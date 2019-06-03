@@ -3,6 +3,7 @@
 #include "../Resources/GuiText.h"
 #include "../Resources/GuiComponentFactory.h"
 #include "../../../Common/Messages/LobbyDataMessage.h"
+#include "../../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../../Common/MessageHandler/Subscriber.h"
 
 LobbyMenu::LobbyMenu(bool server) {
@@ -12,12 +13,32 @@ LobbyMenu::LobbyMenu(bool server) {
 
   mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Join Lobby"));
 
-  mPlayersList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::VERTICAL);
-  mPlayersList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, "Dummy value 1"));
-  mPlayersList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, "Dummy value 2"));
-  mGuiFrame->addGuiComponent(mPlayersList);
+  auto allPlayerList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::VERTICAL);
+  auto myPlayerList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::HORIZONTAL);
+  
+  auto changeUsernameButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Set username", [=]() {
+    while (!mSubscribedToLobby) {
+      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+    }
+    TRACE_INFO("Username: " << mUsername);
+    ChangeUsernameMessage cum(mUsername);
+    mLobbySubscriber.reverseSendMessage(cum.pack());
+  });
 
-  auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
+  myPlayerList->addGuiComponent(changeUsernameButton);
+  myPlayerList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "  "));
+  mUsernameText = std::make_shared<GuiText>(GuiComponentPosition::CENTER, "Username");
+  mUsernameText->enableReceiveInput();
+  myPlayerList->addGuiComponent(mUsernameText);
+
+  allPlayerList->addGuiComponent(myPlayerList);
+
+  mPlayersList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::VERTICAL);
+
+  allPlayerList->addGuiComponent(mPlayersList);
+  mGuiFrame->addGuiComponent(allPlayerList);
+
+  auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::BOTTOM, GuiListDirection::VERTICAL);
   if (server) {
     mStartGameButton = GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING, true);
     lobbyMenuList->addGuiComponent(mStartGameButton);
@@ -38,6 +59,17 @@ bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   }
   mGuiFrame->render(window);
   return true;
+}
+
+void LobbyMenu::handleNewText(sf::Uint32 newChar) {
+  if (newChar == 8) {
+    // Backspace
+    mUsername = mUsername.substr(0, mUsername.size() - 1);
+    mUsernameText->removeChar();
+  } else if (mUsername.length() < 15) {
+    mUsername += newChar;
+    mUsernameText->addChar(newChar);
+  }
 }
 
 void LobbyMenu::checkForLobbyMessages() {

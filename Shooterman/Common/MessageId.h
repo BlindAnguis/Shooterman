@@ -18,6 +18,7 @@
 #define SOUND_LIST          210
 #define PLAYER_DATA         220
 #define LOBBY_DATA          230
+#define NEW_USERNAME        231
 
 // Internal Client messages
 #define IP_MESSAGE          1000
