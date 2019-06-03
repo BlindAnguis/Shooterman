@@ -20,7 +20,7 @@ public:
 
   int getNumberOfComponents();
 
-  void clear();
+  virtual void clear();
 
 protected:
   int padding = 20;

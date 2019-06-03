@@ -69,10 +69,10 @@ void MessageHandler::tryToGiveId(Subscriber* subscriber) {
 
 void MessageHandler::publishInterface(std::string name, Interface* pc) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  auto it = mPublishedComms.find(name);
-  if (it == mPublishedComms.end()) {
+  auto it = mPublishedInterfacesMap.find(name);
+  if (it == mPublishedInterfacesMap.end()) {
     pc->setMName(name);
-    mPublishedComms.emplace(name, pc);
+    mPublishedInterfacesMap.emplace(name, pc);
     TRACE_DEBUG1("Interface: " << name << " published");
   } else {
     TRACE_ERROR("Interface: " << name << " is already published");
@@ -81,20 +81,20 @@ void MessageHandler::publishInterface(std::string name, Interface* pc) {
 
 void MessageHandler::unpublishInterface(std::string name) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  auto interface = mPublishedComms.find(name);
-  if (interface != mPublishedComms.end()) {
+  auto interface = mPublishedInterfacesMap.find(name);
+  if (interface != mPublishedInterfacesMap.end()) {
     while (interface->second->getSubscribers().size() > 0) {
       interface->second->unsubscribe(interface->second->getSubscribers().front());
     }
-    mPublishedComms.erase(interface);
+    mPublishedInterfacesMap.erase(interface);
     TRACE_DEBUG1("Interface: " << name << " unpublished");
   }
 }
 
 bool MessageHandler::subscribeTo(std::string name, Subscriber* s) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  auto it = mPublishedComms.find(name);
-  if (it != mPublishedComms.end()) {
+  auto it = mPublishedInterfacesMap.find(name);
+  if (it != mPublishedInterfacesMap.end()) {
     it->second->subscribe(s);
     return true;
   }
@@ -103,10 +103,21 @@ bool MessageHandler::subscribeTo(std::string name, Subscriber* s) {
 
 void MessageHandler::unsubscribeTo(std::string name, Subscriber* s) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
-  auto it = mPublishedComms.find(name);
-  if (it != mPublishedComms.end()) {
+  auto it = mPublishedInterfacesMap.find(name);
+  if (it != mPublishedInterfacesMap.end()) {
     it->second->unsubscribe(s);
   } else {
     TRACE_WARNING("Could not find " << name);
   }
+}
+
+std::list<std::string> MessageHandler::getPublishedInterfaces() {
+  std::list<std::string> interfaceList;
+
+  for (auto publishedInterface : mPublishedInterfacesMap) {
+    std::string interfaceInfo = publishedInterface.first +  "(" + std::to_string(publishedInterface.second->getSubscribers().size()) +")";
+    interfaceList.push_back(interfaceInfo);
+  }
+
+  return interfaceList;
 }

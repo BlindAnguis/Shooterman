@@ -16,5 +16,8 @@ private:
   std::shared_ptr<GuiList> mGuiList;
   std::map<std::string, std::shared_ptr<GuiExpandableList>> mCategoriesMap;
   std::map<int, std::shared_ptr<GuiComponent>> mSubscirberToComponentMap;
+  sf::Clock mInterfaceFetchTimer;
+
+  void handleNewDebugButtons();
 };
 

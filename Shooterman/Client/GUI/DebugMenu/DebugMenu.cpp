@@ -13,6 +13,11 @@ DebugMenu::DebugMenu() {
   mGuiList = std::make_shared<GuiList>(GuiComponentPosition::TOP_LEFT, GuiListDirection::VERTICAL);
   mGuiFrame->addGuiComponent(mGuiList);
   MessageHandler::get().publishInterface("ClientDebugMenu", &mIf);
+  mInterfaceFetchTimer.restart();
+
+  auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, "Interfaces");
+  mCategoriesMap["Interfaces"] = expandableList;
+  mGuiList->addGuiComponent(expandableList);
 }
 
 DebugMenu::~DebugMenu() {
@@ -20,6 +25,21 @@ DebugMenu::~DebugMenu() {
 }
 
 bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
+  handleNewDebugButtons();
+
+  if (mInterfaceFetchTimer.getElapsedTime() > sf::milliseconds(1000)) {
+    mInterfaceFetchTimer.restart();
+
+    mCategoriesMap["Interfaces"]->clear();
+    for (std::string interfaceInfo : MessageHandler::get().getPublishedInterfaces()) {
+      mCategoriesMap["Interfaces"]->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, interfaceInfo, 20));
+    }
+  }
+
+  return MenuBase::render(window, mousePosition);
+}
+
+void DebugMenu::handleNewDebugButtons() {
   std::queue<sf::Packet> messageQueue = mIf.getMessageQueue();
   while (!messageQueue.empty()) {
     int messageId;
@@ -143,5 +163,4 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
       TRACE_WARNING("Received unhandeled message with id: " << messageId);
     }
   }
-  return MenuBase::render(window, mousePosition);
 }

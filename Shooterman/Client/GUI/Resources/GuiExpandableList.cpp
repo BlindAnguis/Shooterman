@@ -49,6 +49,12 @@ void GuiExpandableList::render(std::shared_ptr<sf::RenderWindow> window, int xPo
   }
 }
 
+void GuiExpandableList::clear() {
+  auto header = mGuiComponentList.front();
+  mGuiComponentList.clear();
+  mGuiComponentList.emplace_back(header);
+}
+
 bool GuiExpandableList::checkMouse(sf::Vector2f mousePosition) {
   for (const auto &component : mGuiComponentList) {
     component->checkMouse(mousePosition);
