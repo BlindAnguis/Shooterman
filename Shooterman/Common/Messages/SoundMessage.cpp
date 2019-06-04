@@ -34,9 +34,7 @@ void SoundMessage::unpack(sf::Packet packet) {
   mSounds.clear();
   packet >> mSize;
   for (int i = 0; i < mSize; i++) {
-    int textureId;
     int soundAsInt;
-    Sounds sound;
     packet >> soundAsInt;
     mSounds.push_back(static_cast<Sounds>(soundAsInt));
   }

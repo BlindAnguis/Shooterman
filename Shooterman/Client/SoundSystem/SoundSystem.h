@@ -16,6 +16,11 @@ public:
   SoundSystem();
   ~SoundSystem();
   void update();
+  void setBackgroundMusic(Sounds backgroundMusic);
+  void stopBackgroundMusic();
+  void pauseBackgroundMusic();
+  void startBackGroundMusic();
+  bool isBackgroundMusicPlaying(Sounds backgroundMusic);
 private:
   std::vector<sf::Sound> mPlayingSounds;
   std::queue<sf::Sound> mPlayQueue;
@@ -23,5 +28,8 @@ private:
   bool mSubscribedToSounds = false;
   void loadSounds();
   Subscriber mSoundSubcription;
+  sf::Music mBackgroundMusic;
+  Sounds mCurrentBackgroundMusic;
+  std::map<Sounds, std::string> mPathsToBackgroundMusic;
 };
 

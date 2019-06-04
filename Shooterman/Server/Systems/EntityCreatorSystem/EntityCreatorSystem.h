@@ -33,5 +33,5 @@ public:
   Entity* createEntity(EntityType type, sf::Vector2f pos, std::set<int> immuneEntityIds);
 private:
   std::vector<EntityToCreate> mEntitiesToCreate;
-  EntityCreator mEntityCreator;
+  EntityCreator* mEntityCreator;
 };

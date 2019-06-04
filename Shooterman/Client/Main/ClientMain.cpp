@@ -46,6 +46,11 @@ ClientMain::ClientMain() {
           networkHandlerStarted = false;
         }
         sentIpMessage = false;
+        if (!soundSystem.isBackgroundMusicPlaying(Sounds::MainMenuBackgroundSong)) {
+          soundSystem.stopBackgroundMusic();
+          soundSystem.setBackgroundMusic(Sounds::MainMenuBackgroundSong);
+          soundSystem.startBackGroundMusic();
+        }
         break; 
       }
       case GAME_STATE::LOBBY: {
@@ -66,10 +71,20 @@ ClientMain::ClientMain() {
           MessageHandler::get().unpublishInterface("ClientIpList");
           sentIpMessage = true;
         }
+        if (!soundSystem.isBackgroundMusicPlaying(Sounds::LobbyBackgroundSong)) {
+          soundSystem.stopBackgroundMusic();
+          soundSystem.setBackgroundMusic(Sounds::LobbyBackgroundSong);
+          soundSystem.startBackGroundMusic();
+        }
         break; 
       }
       case GAME_STATE::CLIENT_LOBBY:
       {
+        if (!soundSystem.isBackgroundMusicPlaying(Sounds::LobbyBackgroundSong)) {
+          soundSystem.stopBackgroundMusic();
+          soundSystem.setBackgroundMusic(Sounds::LobbyBackgroundSong);
+          soundSystem.startBackGroundMusic();
+        }
        break;
       }
       case GAME_STATE::JOIN:
@@ -79,6 +94,11 @@ ClientMain::ClientMain() {
         }
         break;
 	    case GAME_STATE::PLAYING: {
+        if (!soundSystem.isBackgroundMusicPlaying(Sounds::PlayingBackgroundSong)) {
+          soundSystem.stopBackgroundMusic();
+          soundSystem.setBackgroundMusic(Sounds::PlayingBackgroundSong);
+          soundSystem.startBackGroundMusic();
+        }
 		    break;
 	      }
       case GAME_STATE::OPTIONS: {

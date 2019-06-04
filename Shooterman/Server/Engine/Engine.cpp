@@ -34,6 +34,7 @@ Engine::Engine() :
   mInputSystem->attach(mMovementSystem);
   mInputSystem->setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { });
   srand((int)time(0));
+  mEntityCreatorSystem->reset();
 }
 
 Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
@@ -79,6 +80,7 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
     }
   });
   srand((int)time(0));
+  mEntityCreatorSystem->reset(); // "Init" the system.
 }
 
 Engine::~Engine() {

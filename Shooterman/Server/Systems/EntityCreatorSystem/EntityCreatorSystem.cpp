@@ -1,7 +1,7 @@
 #include "EntityCreatorSystem.h"
 
 EntityCreatorSystem::EntityCreatorSystem() :
-  mEntityCreator(EntityCreator())
+  mEntityCreator(new EntityCreator())
 {
   mName = "SERVER: ENTITY_CREATOR_SYSTEM";
 }
@@ -9,6 +9,8 @@ EntityCreatorSystem::EntityCreatorSystem() :
 EntityCreatorSystem::~EntityCreatorSystem()
 {
   TRACE_DEBUG1("Enter Destructor");
+  if (mEntityCreator != nullptr)
+    delete(mEntityCreator);
 }
 
 EntityCreatorSystem& EntityCreatorSystem::get() {
@@ -17,6 +19,11 @@ EntityCreatorSystem& EntityCreatorSystem::get() {
 }
 
 void EntityCreatorSystem::reset() {
+  if (mEntityCreator != nullptr) {
+    delete(mEntityCreator);
+    mEntityCreator = new EntityCreator();
+  }
+    
   mEntitiesToCreate.clear();
 }
 
@@ -41,19 +48,19 @@ Entity* EntityCreatorSystem::createEntity(EntityType type, sf::Vector2f pos, std
   switch (type)
   {
   case EntityType::PlayerMage:
-    return mEntityCreator.createPlayer(PlayerClass::Mage, pos);
+    return mEntityCreator->createPlayer(PlayerClass::Mage, pos);
   case EntityType::PlayerKnight:
-    return mEntityCreator.createPlayer(PlayerClass::Knight, pos);
+    return mEntityCreator->createPlayer(PlayerClass::Knight, pos);
   case EntityType::PlayerSpearman:
-    return mEntityCreator.createPlayer(PlayerClass::Spearman, pos);
+    return mEntityCreator->createPlayer(PlayerClass::Spearman, pos);
   case EntityType::Bullet:
     break;
   case EntityType::LightningBolt:
     break;
   case EntityType::LightningStrike:
-    return mEntityCreator.createLightningStrike(pos, immuneEntityIds);
+    return mEntityCreator->createLightningStrike(pos, immuneEntityIds);
   case EntityType::RandomPickup:
-    return mEntityCreator.createRandomPickup();
+    return mEntityCreator->createRandomPickup();
   default:
     break;
   }
