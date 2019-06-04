@@ -21,6 +21,7 @@ public:
   void pauseBackgroundMusic();
   void startBackGroundMusic();
   bool isBackgroundMusicPlaying(Sounds backgroundMusic);
+  void unsubscribeToSoundList();
 private:
   std::vector<sf::Sound> mPlayingSounds;
   std::queue<sf::Sound> mPlayQueue;

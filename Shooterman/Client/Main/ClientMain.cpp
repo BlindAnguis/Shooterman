@@ -44,6 +44,7 @@ ClientMain::ClientMain() {
         if (networkHandlerStarted) {
           networkHandler.shutDown();
           networkHandlerStarted = false;
+          soundSystem.unsubscribeToSoundList();
         }
         sentIpMessage = false;
         if (!soundSystem.isBackgroundMusicPlaying(Sounds::MainMenuBackgroundSong)) {

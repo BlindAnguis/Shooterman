@@ -15,6 +15,13 @@ SoundSystem::~SoundSystem()
   MessageHandler::get().unpublishInterface("ClientSoundList");
 }
 
+void SoundSystem::unsubscribeToSoundList() {
+  if (mSubscribedToSounds) {
+    MessageHandler::get().unsubscribeTo("ClientSoundList", &mSoundSubcription);
+    mSubscribedToSounds = false;
+  }
+}
+
 void SoundSystem::loadSounds() {
   sf::SoundBuffer slashLong1Buffer;
   if (!slashLong1Buffer.loadFromFile("Client/Resources/Sounds/SoundEffects/swish_2.wav")) {
