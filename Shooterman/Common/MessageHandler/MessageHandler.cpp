@@ -112,10 +112,11 @@ void MessageHandler::unsubscribeTo(std::string name, Subscriber* s) {
 }
 
 std::list<std::string> MessageHandler::getPublishedInterfaces() {
+  std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
   std::list<std::string> interfaceList;
 
   for (auto publishedInterface : mPublishedInterfacesMap) {
-    std::string interfaceInfo = publishedInterface.first +  "(" + std::to_string(publishedInterface.second->getSubscribers().size()) +")";
+    std::string interfaceInfo = publishedInterface.first +  " (" + std::to_string(publishedInterface.second->getSubscribers().size()) +")";
     interfaceList.push_back(interfaceInfo);
   }
 

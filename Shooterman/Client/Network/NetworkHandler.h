@@ -10,6 +10,7 @@
 class NetworkHandler : Trace {
 public:
   NetworkHandler();
+  ~NetworkHandler();
 
   void start();
   void shutDown();
@@ -27,7 +28,7 @@ private:
   Subscriber mServerDebugSubscriber;
   sf::TcpSocket mSocket;
 
-  void startup();
+  void run();
   void setupSubscribersAndInterfaces();
   sf::Socket::Status setupSocketConnection();
   void handlePackets();

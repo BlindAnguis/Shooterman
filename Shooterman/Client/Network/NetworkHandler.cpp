@@ -18,23 +18,28 @@
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
-  mDebugEnabled1 = true;
+}
+
+NetworkHandler::~NetworkHandler() {
+  TRACE_FUNC_ENTER();
+  TRACE_FUNC_EXIT();
 }
 
 void NetworkHandler::start() {
   TRACE_INFO("Starting module...");
-  mNetworkHandlerThread = std::make_unique<std::thread>(&NetworkHandler::startup, this);
+  mNetworkHandlerThread = std::make_unique<std::thread>(&NetworkHandler::run, this);
   TRACE_INFO("Starting module done");
 }
 
-void NetworkHandler::startup() {
+void NetworkHandler::run() {
+  TRACE_FUNC_ENTER();
   setupSubscribersAndInterfaces();
 
   sf::Socket::Status connectionStatus = setupSocketConnection();
 
   // Failed to connect to server
   if (connectionStatus != sf::Socket::Status::Done) {
-    TRACE_INFO("Connection failed! " << connectionStatus);
+    TRACE_ERROR("Connection failed! " << connectionStatus);
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
     MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
@@ -55,12 +60,13 @@ void NetworkHandler::startup() {
 
   handlePackets();
  
-  TRACE_INFO("Not running any more");
   mSocket.disconnect();
   teardownSubscribersAndInterfaces();
+  TRACE_FUNC_EXIT();
 }
 
 void NetworkHandler::setupSubscribersAndInterfaces() {
+  TRACE_FUNC_ENTER();
   MessageHandler::get().publishInterface("ClientLobby", &mLobbyInterface);
   MessageHandler::get().publishInterface("ClientServerReady", &mServerReadyInterface);
 
@@ -75,9 +81,11 @@ void NetworkHandler::setupSubscribersAndInterfaces() {
   while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
+  TRACE_FUNC_EXIT();
 }
 
 sf::Socket::Status NetworkHandler::setupSocketConnection() {
+  TRACE_FUNC_ENTER();
   sf::Socket::Status connectionStatus = sf::Socket::Status::Disconnected;
 
   // Wait for IP address
@@ -113,10 +121,12 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
     sf::sleep(sf::milliseconds(500));
   }
 
+  TRACE_FUNC_EXIT();
   return connectionStatus;
 }
 
 void NetworkHandler::handlePackets() {
+  TRACE_FUNC_ENTER();
   while (mRunning) {
     auto systemMessageQueue = mMessageSubscriber.getMessageQueue();
     while (!systemMessageQueue.empty()) {
@@ -190,9 +200,11 @@ void NetworkHandler::handlePackets() {
     }
     sf::sleep(sf::milliseconds(1));
   }
+  TRACE_FUNC_EXIT();
 }
 
 void NetworkHandler::teardownSubscribersAndInterfaces() {
+  TRACE_FUNC_ENTER();
   teardownDebugMessages();
 
   MessageHandler::get().unpublishInterface("ClientSpriteList");
@@ -203,6 +215,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+  TRACE_FUNC_EXIT()
 }
 
 void NetworkHandler::shutDown() {

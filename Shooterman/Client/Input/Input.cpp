@@ -13,19 +13,21 @@
 Input::Input() {
   mName = "CLIENT: INPUT";
   TRACE_INFO("Starting module...");
-  mInputThread = std::make_unique<std::thread>(&Input::readInput, this);
+  mInputThread = std::make_unique<std::thread>(&Input::run, this);
   TRACE_INFO("Starting module done");
 }
 Input::~Input() {
+  TRACE_FUNC_ENTER();
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
+  TRACE_FUNC_EXIT();
 }
 
-void Input::readInput() {
+void Input::run() {
+  TRACE_FUNC_ENTER();
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
-  Interface clientInputInterface;
-  MessageHandler::get().publishInterface("ClientInputList", &clientInputInterface);
+  MessageHandler::get().publishInterface("ClientInputList", &mClientInputInterface);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   while (!setupDebugMessages("Client", "Input")) {
     sf::sleep(sf::milliseconds(5));
@@ -50,6 +52,7 @@ void Input::readInput() {
         recentlyChangedState = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PLAYING);
+          TRACE_SEND("New Game State: PLAYING");
 		      mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
           recentlyChangedState = true;
         }
@@ -82,10 +85,11 @@ void Input::readInput() {
 
         getLatestMousePosition();
         InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
-        clientInputInterface.pushMessage(im.pack());
+        mClientInputInterface.pushMessage(im.pack());
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
           GameStateMessage gsm(GAME_STATE::PAUSE);
+          TRACE_SEND("New Game State: PAUSE");
           mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
           recentlyChangedState = true;
         }
@@ -109,9 +113,11 @@ void Input::readInput() {
   teardownDebugMessages();
   MessageHandler::get().unpublishInterface("ClientInputList");
   MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+  TRACE_FUNC_EXIT();
 }
 
 void Input::handleSystemMessages() {
+  TRACE_FUNC_ENTER();
   std::queue<sf::Packet> systemMessageQueue = mSystemMessageSubscriber.getMessageQueue();
   sf::Packet systemMessage;
   while (!systemMessageQueue.empty()) {
@@ -129,9 +135,11 @@ void Input::handleSystemMessages() {
       TRACE_WARNING("Unknown system message : " << messageId);
     }
   }
+  TRACE_FUNC_EXIT();
 }
 
 void Input::handleGameStateMessages() {
+  TRACE_FUNC_ENTER();
   std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
   sf::Packet gameStateMessage;
   while (!gameStateMessageQueue.empty()) {
@@ -144,13 +152,16 @@ void Input::handleGameStateMessages() {
     if (id == CHANGE_GAME_STATE) {
       GameStateMessage gsm(gameStateMessage);
       mCurrentGameState = gsm.getGameState();
+      TRACE_REC("New Game State: " << gsm.getGameStateAsString());
     } else {
       TRACE_WARNING("Received unexpected message with ID : " << id);
     }
   }
+  TRACE_FUNC_EXIT();
 }
 
 void Input::getLatestMousePosition() {
+  TRACE_FUNC_ENTER();
   std::queue<sf::Packet> mouseMessageQueue = mMouseMessageSubscriber.getMessageQueue();
   sf::Packet mouseMessage;
 
@@ -162,7 +173,8 @@ void Input::getLatestMousePosition() {
     if (mm.getPosition() != sf::Vector2i()) {
       mLastMousePosition = mm.getPosition();
     }
-  }  
+  }
+  TRACE_FUNC_EXIT();
 }
 
 void Input::shutDown() {

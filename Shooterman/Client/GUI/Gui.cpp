@@ -19,17 +19,15 @@
 Gui::Gui() {
   mName = "CLIENT: GUI";
   TRACE_INFO("Starting module...");
-  mGuiThread = std::make_unique<std::thread>(&Gui::init, this);
+  mGuiThread = std::make_unique<std::thread>(&Gui::run, this);
   TRACE_INFO("Starting module done");
 }
 
-void Gui::init() {
+void Gui::run() {
   TRACE_FUNC_ENTER();
   MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
   MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().publishInterface("MousePosition", &mMouseInterface);
-
-  Interface pc;
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
   mMenuMap.emplace(GAME_STATE::LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
@@ -60,6 +58,7 @@ void Gui::init() {
   MessageHandler::get().unpublishInterface("MousePosition");
 
   GuiResourceManager::getInstance().clear();
+  TRACE_FUNC_EXIT();
 }
 
 void Gui::render() {
@@ -87,6 +86,7 @@ void Gui::render() {
     }
   }
   mWindowOpen = false;
+  TRACE_FUNC_EXIT();
 }
 
 void Gui::handleWindowEvents() {
@@ -130,6 +130,7 @@ void Gui::handleWindowEvents() {
   } else {
     mF1KeyAlreadyPressed = false;
   }
+  TRACE_FUNC_EXIT();
 }
 
 bool Gui::renderGameState(GAME_STATE gameState) {
@@ -160,6 +161,7 @@ bool Gui::renderGameState(GAME_STATE gameState) {
       return mRenderNeeded;
     }
   }
+  TRACE_FUNC_EXIT();
   return mRenderNeeded;
 }
 
@@ -176,6 +178,7 @@ void Gui::handleGameStateMessages() {
       gameStateMessageQueue.pop();
 
       GameStateMessage gsm(gameStateMessage);
+      TRACE_REC("New Game State: " << gsm.getGameStateAsString());
       if (gsm.getGameState() != mCurrentGameState) {
         // Changed game state
         auto previousMenu = mMenuMap.find(mCurrentGameState);
@@ -210,6 +213,7 @@ void Gui::handleGameStateMessages() {
       TRACE_WARNING("Received unexpected message with ID: " << id);
     }
   }
+  TRACE_FUNC_EXIT();
 }
 
 void Gui::handleSystemMessages() {
@@ -231,12 +235,13 @@ void Gui::handleSystemMessages() {
       TRACE_WARNING("Unknown system message : " << messageId);
     }
   }
+  TRACE_FUNC_EXIT();
 }
 
 void Gui::shutDown() {
-  TRACE_FUNC_ENTER();
   TRACE_INFO("Shutdown of module requested...");
   while (mWindowOpen) {
+    sf::sleep(sf::milliseconds(5));
     // Wait for GUI to close window
   }
   mGuiThread->join();

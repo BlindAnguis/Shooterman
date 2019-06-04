@@ -15,6 +15,7 @@ public:
   void unpack(sf::Packet packet);
 
   GAME_STATE getGameState();
+  std::string getGameStateAsString();
 
 private:
   GAME_STATE mGameState;

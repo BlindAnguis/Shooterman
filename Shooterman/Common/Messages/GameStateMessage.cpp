@@ -28,3 +28,37 @@ void  GameStateMessage::unpack(sf::Packet packet) {
 GAME_STATE GameStateMessage::getGameState() {
   return mGameState; 
 }
+
+std::string GameStateMessage::getGameStateAsString() {
+  switch (mGameState) {
+  case NO_STATE:
+    return "NO_STATE";
+  case MAIN_MENU:
+    return "MAIN_MENU";
+  case DEBUG:
+    return "DEBUG";
+  case LOBBY:
+    return "LOBBY";
+  case CLIENT_LOBBY:
+    return "CLIENT_LOBBY";
+  case PLAYING:
+    return "PLAYING";
+  case SETUP_GAME:
+    return "SETUP_GAME";
+  case GAME_OVER:
+    return "GAME_OVER";
+  case JOIN:
+    return "JOIN";
+  case EXIT:
+    return "EXIT";
+  case OPTIONS:
+    return "OPTIONS";
+  case PAUSE:
+    return "PAUSE";
+  case PREVIOUS:
+    return "PREVIOUS";
+  default:
+    return std::to_string(mGameState) + " not added to GameStateMessage.cpp";
+    break;
+  }
+}

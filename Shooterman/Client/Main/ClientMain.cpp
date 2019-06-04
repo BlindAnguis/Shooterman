@@ -171,9 +171,12 @@ void ClientMain::handleGameStateMessages() {
         mGameStateStack.push(GAME_STATE::MAIN_MENU);
       } else if (mGameStateStack.top() != gsm.getGameState()) {
         mGameStateStack.push(gsm.getGameState());
+      } else {
+        return;
       }
 
       gsm = GameStateMessage(mGameStateStack.top());
+      TRACE_INFO(gsm.getGameStateAsString());
       gameStateInterface.pushMessage(gsm.pack());
     } else {
       TRACE_WARNING("Received unhandeled message with ID: " << id);

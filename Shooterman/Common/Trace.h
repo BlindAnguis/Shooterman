@@ -64,13 +64,13 @@ private:
 
 #define TRACE_SEND(msg) { \
   if (mSendRecEnabled) { \
-    TRACE("SEND:", msg); \
+    TRACE("SEND", msg); \
   } \
 }
 
 #define TRACE_REC(msg) { \
   if (mSendRecEnabled) { \
-    TRACE("REC:", msg); \
+    TRACE("REC", msg); \
   } \
 }
 

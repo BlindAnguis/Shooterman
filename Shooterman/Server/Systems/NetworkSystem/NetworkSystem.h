@@ -43,7 +43,7 @@ private:
   Interface mServerServerReadyInterface;
   Interface mPlayerLobbyInterface;
 
-  void startup();
+  void run();
   void updateInternalMap();
   std::shared_ptr<SpriteMessage> getRenderData();
   void handlePlayerData();

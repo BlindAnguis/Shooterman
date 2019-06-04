@@ -58,5 +58,6 @@ unsigned int Interface::getNumberOfSubscribers() {
 }
 
 std::list<Subscriber*> Interface::getSubscribers() {
+  std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   return mSubscriberList;
 }

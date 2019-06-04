@@ -30,11 +30,11 @@ NetworkSystem& NetworkSystem::get() {
 
 void NetworkSystem::start() {
   TRACE_INFO("Starting module...");
-  mNetworkSystemThread = std::make_unique<std::thread>(&NetworkSystem::startup, this);
+  mNetworkSystemThread = std::make_unique<std::thread>(&NetworkSystem::run, this);
   TRACE_INFO("Starting module done");
 }
 
-void NetworkSystem::startup() {
+void NetworkSystem::run() {
   mRunning = true;
   Interface inputListInterface;
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);

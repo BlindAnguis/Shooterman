@@ -19,10 +19,11 @@ private:
   Subscriber mSystemMessageSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Subscriber mMouseMessageSubscriber;
+  Interface mClientInputInterface;
   GAME_STATE mCurrentGameState;
   sf::Vector2i mLastMousePosition;
 
-  void readInput();
+  void run();
   void handleSystemMessages();
   void handleGameStateMessages();
   void getLatestMousePosition();

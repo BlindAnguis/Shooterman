@@ -34,7 +34,7 @@ private:
   std::map<GAME_STATE, std::list<std::shared_ptr<MenuBase>>> mMenuMap;
   sf::Clock mRenderClock;
 
-  void init();
+  void run();
   void render();
   void handleWindowEvents();
   bool renderGameState(GAME_STATE gameState);
