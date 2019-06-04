@@ -172,6 +172,7 @@ void ClientMain::handleGameStateMessages() {
       } else if (mGameStateStack.top() != gsm.getGameState()) {
         mGameStateStack.push(gsm.getGameState());
       } else {
+        TRACE_DEBUG1("Already in game state " << gsm.getGameStateAsString());
         return;
       }
 
