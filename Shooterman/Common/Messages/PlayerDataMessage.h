@@ -18,6 +18,7 @@ struct PlayerData {
   bool hasMana = false;
   int currentMana;
   int maxMana;
+  std::string username;
   sf::Vector2f position;
   GlobalBounds globalBounds;
 };

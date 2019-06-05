@@ -2,6 +2,7 @@
 
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiProgressBar.h"
+#include "../Resources/GuiText.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
 class Hud : public MenuBase {
@@ -16,7 +17,8 @@ public:
 private:
   bool mSubscribedToPlayerData = false;
   Subscriber mPlayerDataSubscriber;
+  std::vector<std::shared_ptr<GuiText>> mUsernames;
   std::vector<std::shared_ptr<GuiProgressBar>> mHealthBars;
-  std::vector<std::shared_ptr<GuiProgressBar>> mStaminaBars;
-  std::vector<std::shared_ptr<GuiProgressBar>> mManaBars;
+  std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mStaminaBars;
+  std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mManaBars;
 };

@@ -263,6 +263,8 @@ void Engine::collectPlayerData() {
     PlayerData playerData;
     int playerId = player.second->getEntity()->id;
 
+    playerData.username = player.second->getUsername();
+
     auto renderComponent = mRenderComponentManager->getComponent(playerId);
     if (renderComponent) {
       sf::Vector2f position = renderComponent->sprite.getPosition();

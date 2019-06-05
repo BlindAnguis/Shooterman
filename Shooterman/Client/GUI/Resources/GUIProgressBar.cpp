@@ -1,6 +1,18 @@
 #include "GuiProgressBar.h"
 
-GuiProgressBar::GuiProgressBar(GuiComponentPosition guiComponentPosition) {}
+GuiProgressBar::GuiProgressBar(GuiComponentPosition guiComponentPosition, float xPosition, float yPosition, float height, float width, sf::Color color) 
+  : GuiComponent(guiComponentPosition) {
+  mFrame.setFillColor(sf::Color::Black);
+  mFrame.setOutlineColor(sf::Color::Black);
+  mFrame.setOutlineThickness(1);
+  mFrame.setPosition(xPosition, yPosition);
+  mFrame.setSize(sf::Vector2f(height, width));
+
+  mBar.setFillColor(color);
+  mBar.setOutlineColor(sf::Color::Black);
+  mBar.setPosition(xPosition, yPosition);
+  mBar.setSize(sf::Vector2f(height, width));
+}
 
 GuiProgressBar::GuiProgressBar(float xPosition, float yPosition, float height, float width, sf::Color color) {
   mFrame.setFillColor(sf::Color::Black);
@@ -17,6 +29,11 @@ GuiProgressBar::GuiProgressBar(float xPosition, float yPosition, float height, f
 
 
 void GuiProgressBar::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {
+  calculatePosition(xPosition, yPosition, width, height);
+  mFrame.setPosition((float)mXPosition, (float)mYPosition);
+  mBar.setPosition((float)mXPosition, (float)mYPosition);
+  mWidth = (int)mBar.getLocalBounds().width;
+
   window->draw(mFrame);
 
   float percentage = mCurrentValue / mMaxValue;
@@ -25,8 +42,8 @@ void GuiProgressBar::render(std::shared_ptr<sf::RenderWindow> window, int xPosit
 }
 
 void GuiProgressBar::setPosition(float xPosition, float yPosition) {
-  mFrame.setPosition(xPosition, yPosition);
-  mBar.setPosition(xPosition, yPosition);
+  mXFixedPosition = xPosition;
+  mYFixedPosition = yPosition;
 }
 
 void GuiProgressBar::setMaxValue(int value) {

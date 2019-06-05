@@ -73,3 +73,14 @@ void GuiText::enableReceiveInput() {
 void GuiText::disableReceiveInput() {
   mReceiveInputEnabled = false;
 }
+
+void GuiText::setPosition(float xPosition, float yPosition) {
+  mXFixedPosition = xPosition;
+  mYFixedPosition = yPosition;
+}
+
+void GuiText::setOutlineColor(sf::Color newColor) {
+  mText.setFillColor(sf::Color::White);
+  mText.setOutlineColor(newColor);
+  mText.setOutlineThickness(1);
+}

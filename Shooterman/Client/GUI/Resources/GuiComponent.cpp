@@ -70,6 +70,10 @@ void GuiComponent::calculatePosition(int xPosition, int yPosition, int width, in
     mXPosition = (xPosition + width - mPadding) - mWidth;
     mYPosition = (yPosition + height - mPadding) - mHeight;
     break;
+  case FIXED_CENTER:
+    mXPosition = mXFixedPosition - (mWidth / 2);
+    mYPosition = mYFixedPosition - (mHeight / 2);
+    break;
   }
 }
 

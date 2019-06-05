@@ -12,6 +12,7 @@ Hud::~Hud() { }
 
 void Hud::reset() {
   mSubscribedToPlayerData = false;
+  mUsernames.clear();
   mHealthBars.clear();
   mStaminaBars.clear();
   mManaBars.clear();
@@ -40,34 +41,46 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
       for (unsigned int i = 0; i < pdm.getNumberOfPlayerData(); ++i) {
         PlayerData playerData = pdm.getPlayerData(i);
 
-        while (pdm.getNumberOfPlayerData() > mHealthBars.size()) {
-          auto health = std::make_shared<GuiProgressBar>(0.0f, 0.0f, 32.f, 6.f, sf::Color::Green);
+        if (i >= mUsernames.size()) {
+          auto username = std::make_shared<GuiText>(GuiComponentPosition::FIXED_CENTER, "", 18);
+          username->setOutlineColor(sf::Color::Black);
+          mUsernames.push_back(username);
+          mGuiFrame->addGuiComponent(username);
+        }
+        mUsernames[i]->setText(playerData.username);
+        mUsernames[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height - 10);
+
+
+        if (i >= mHealthBars.size()) {
+          auto health = std::make_shared<GuiProgressBar>(GuiComponentPosition::FIXED_CENTER, 0.0f, 0.0f, 32.f, 6.f, sf::Color::Green);
           mHealthBars.push_back(health);
           mGuiFrame->addGuiComponent(health);
-          auto stamina = std::make_shared<GuiProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Yellow);
-          mStaminaBars.push_back(stamina);
-          mGuiFrame->addGuiComponent(stamina);
-          auto mana = std::make_shared<GuiProgressBar>(-300.f, 300.f, 32.f, 6.f, sf::Color::Blue);
-          mManaBars.push_back(mana);
-          mGuiFrame->addGuiComponent(mana);
         }
-
         mHealthBars[i]->setMaxValue(playerData.maxHealth);
         mHealthBars[i]->setCurrentValue(playerData.currentHealth);
-        mHealthBars[i]->setPosition(playerData.position.x - (playerData.globalBounds.width / 4), playerData.position.y - playerData.globalBounds.height + 5);
+        mHealthBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 5);
 
         if (playerData.hasMana) {
-          mHealthBars[i]->setMaxValue(playerData.maxMana);
-          mHealthBars[i]->setCurrentValue(playerData.currentMana);
-          mHealthBars[i]->setPosition(playerData.position.x - (playerData.globalBounds.width / 4), playerData.position.y - playerData.globalBounds.height + 15);
+          if (mManaBars.find(i) == mManaBars.end()) {
+            auto stamina = std::make_shared<GuiProgressBar>(GuiComponentPosition::FIXED_CENTER, -300.f, 300.f, 32.f, 6.f, sf::Color::Blue);
+            mManaBars.emplace(i, stamina);
+            mGuiFrame->addGuiComponent(stamina);
+          }
+          mManaBars[i]->setMaxValue(playerData.maxMana);
+          mManaBars[i]->setCurrentValue(playerData.currentMana);
+          mManaBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 15);
         }
 
         if (playerData.hasStamina) {
+          if (mStaminaBars.find(i) == mStaminaBars.end()) {
+            auto mana = std::make_shared<GuiProgressBar>(GuiComponentPosition::FIXED_CENTER, -300.f, 300.f, 32.f, 6.f, sf::Color::Yellow);
+            mStaminaBars.emplace(i, mana);
+            mGuiFrame->addGuiComponent(mana);
+          }
           mStaminaBars[i]->setMaxValue(playerData.maxStamina);
           mStaminaBars[i]->setCurrentValue(playerData.currentStamina);
-          mStaminaBars[i]->setPosition(playerData.position.x - (playerData.globalBounds.width / 4), playerData.position.y - playerData.globalBounds.height + 15);
+          mStaminaBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 15);
         }
-
       }
     }
       break;

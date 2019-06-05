@@ -21,6 +21,9 @@ public:
   void enableReceiveInput();
   void disableReceiveInput();
 
+  void setPosition(float xPosition, float yPosition);
+  void setOutlineColor(sf::Color newColor);
+
 protected:
   bool mReceiveInputEnabled = false;
   bool mReceiveInput = false;

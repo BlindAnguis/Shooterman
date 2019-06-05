@@ -14,6 +14,7 @@ sf::Packet PlayerDataMessage::pack() {
   packet << mPlayerDatas.size();
 
   for (PlayerData playerData : mPlayerDatas) {
+    packet << playerData.username;
     packet << playerData.hasHealth;
     packet << playerData.currentHealth;
     packet << playerData.maxHealth;
@@ -37,6 +38,7 @@ void PlayerDataMessage::unpack(sf::Packet packet) {
 
   for (int i = 0; i < mNumberOfPlayerData; ++i) {
     PlayerData playerData;
+    packet >> playerData.username;
     packet >> playerData.hasHealth;
     packet >> playerData.currentHealth;
     packet >> playerData.maxHealth;

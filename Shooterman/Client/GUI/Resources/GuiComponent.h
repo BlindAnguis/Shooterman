@@ -5,7 +5,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
-enum GuiComponentPosition { CENTER, TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT };
+enum GuiComponentPosition { CENTER, TOP, BOTTOM, LEFT, RIGHT, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, FIXED_CENTER };
 
 class GuiComponent {
 public:
@@ -30,6 +30,8 @@ protected:
   GuiComponentPosition mGuiComponentPosition;
   int mXPosition = 0;
   int mYPosition = 0;
+  int mXFixedPosition = 0;
+  int mYFixedPosition = 0;
   int mWidth = 0;
   int mHeight = 0;
   int mPadding = 20;
