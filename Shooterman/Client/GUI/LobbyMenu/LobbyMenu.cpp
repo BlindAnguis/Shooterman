@@ -72,6 +72,10 @@ void LobbyMenu::handleNewText(sf::Uint32 newChar) {
   }
 }
 
+void LobbyMenu::init() {
+  mPlayersList->clear();
+}
+
 void LobbyMenu::checkForLobbyMessages() {
   if (!mSubscribedToLobby) {
     mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);

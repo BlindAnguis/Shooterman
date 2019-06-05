@@ -32,7 +32,7 @@ void GuiProgressBar::render(std::shared_ptr<sf::RenderWindow> window, int xPosit
   calculatePosition(xPosition, yPosition, width, height);
   mFrame.setPosition((float)mXPosition, (float)mYPosition);
   mBar.setPosition((float)mXPosition, (float)mYPosition);
-  mWidth = (int)mBar.getLocalBounds().width;
+  mWidth = (int)mFrame.getLocalBounds().width;
 
   window->draw(mFrame);
 
@@ -42,8 +42,8 @@ void GuiProgressBar::render(std::shared_ptr<sf::RenderWindow> window, int xPosit
 }
 
 void GuiProgressBar::setPosition(float xPosition, float yPosition) {
-  mXFixedPosition = xPosition;
-  mYFixedPosition = yPosition;
+  mXFixedPosition = (int)xPosition;
+  mYFixedPosition = (int)yPosition;
 }
 
 void GuiProgressBar::setMaxValue(int value) {
