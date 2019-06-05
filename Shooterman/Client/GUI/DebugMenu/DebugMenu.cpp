@@ -30,7 +30,12 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   if (mInterfaceFetchTimer.getElapsedTime() > sf::milliseconds(1000)) {
     mInterfaceFetchTimer.restart();
 
-    mCategoriesMap["Interfaces"]->clear();
+    if (mCategoriesMap["Interfaces"]->getNumberOfComponents() <= 1) {
+      mCategoriesMap["Interfaces"]->addGuiComponent(mGuiList);
+    } else {
+      mCategoriesMap["Interfaces"]->clear();
+    }
+
     for (std::string interfaceInfo : MessageHandler::get().getPublishedInterfaces()) {
       mCategoriesMap["Interfaces"]->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, interfaceInfo, 20));
     }

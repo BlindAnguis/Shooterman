@@ -14,10 +14,9 @@ JoinMenu::JoinMenu() {
   auto joinMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
 
   auto ipList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
-  mIpText = std::make_shared<GuiText>(GuiComponentPosition::CENTER, "Enter IP");
+  mIpText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Enter IP");
   mIpText->enableReceiveInput();
   ipList->addGuiComponent(mIpText);
-  ipList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "     "));
   ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", [this](){
     while (mPc.getNumberOfSubscribers() == 0) {
       sf::sleep(sf::milliseconds(5));

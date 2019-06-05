@@ -87,10 +87,6 @@ Engine::~Engine() {
   for (auto entity : mEntityManager->getAllEntities()) {
     destroyEntity(entity.second->id);
   }
-  mRenderSystem->resetSystem();
-  mGridSystem->resetGridSystem();
-  mCollisionSystem->resetSystem();
-  mEntityCreatorSystem->reset();
   ComponentManager<ComponentType>::get().clearManager();
   ComponentManager<PlayerState>::get().clearManager();
   ComponentManager<PlayerClass>::get().clearManager();
@@ -110,6 +106,10 @@ Engine::~Engine() {
 }
 
 void Engine::shutDown() {
+  mRenderSystem->resetSystem();
+  mGridSystem->resetGridSystem();
+  mCollisionSystem->resetSystem();
+  mEntityCreatorSystem->reset();
   teardownDebugMessages();
   MessageHandler::get().unsubscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
 }

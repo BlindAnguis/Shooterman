@@ -160,6 +160,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiComponent.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiComponentFactory.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiFrame.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiInputText.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiList.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiExpandableList.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiProgressBar.cpp" />
@@ -229,6 +230,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiInputText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiResourceManager.h" />
     <ClInclude Include="Client\GUI\Resources\GuiButton.h" />
     <ClInclude Include="Client\GUI\Resources\GuiComponent.h" />

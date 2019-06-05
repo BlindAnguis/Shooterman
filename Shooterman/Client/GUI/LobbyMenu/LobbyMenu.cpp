@@ -27,7 +27,7 @@ LobbyMenu::LobbyMenu(bool server) {
 
   myPlayerList->addGuiComponent(changeUsernameButton);
   myPlayerList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "  "));
-  mUsernameText = std::make_shared<GuiText>(GuiComponentPosition::CENTER, "Username");
+  mUsernameText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Username");
   mUsernameText->enableReceiveInput();
   myPlayerList->addGuiComponent(mUsernameText);
 
@@ -47,7 +47,6 @@ LobbyMenu::LobbyMenu(bool server) {
   mGuiFrame->addGuiComponent(lobbyMenuList);
 
   mSubscribedToLobby = false;
-
 }
 
 LobbyMenu::~LobbyMenu() { }
@@ -74,6 +73,7 @@ void LobbyMenu::handleNewText(sf::Uint32 newChar) {
 
 void LobbyMenu::init() {
   mPlayersList->clear();
+  mSubscribedToLobby = false;
 }
 
 void LobbyMenu::checkForLobbyMessages() {

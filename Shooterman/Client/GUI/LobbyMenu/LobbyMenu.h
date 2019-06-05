@@ -3,6 +3,7 @@
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiButton.h"
+#include "../Resources/GuiInputText.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
 class LobbyMenu : public MenuBase {
@@ -24,7 +25,7 @@ private:
   Subscriber mServerReadySubscriber;
   std::shared_ptr<GuiList> mPlayersList;
   std::shared_ptr<GuiButton> mStartGameButton;
-  std::shared_ptr<GuiText> mUsernameText;
+  std::shared_ptr<GuiInputText> mUsernameText;
 
   void checkForLobbyMessages();
   void checkForServerReadyMessage();
