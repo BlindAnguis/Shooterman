@@ -9,7 +9,7 @@
 #include "../../../Common/Trace.h"
 
 enum FONT { COURIER, MORRIS };
-enum GUI_TEXTURE { BUTTON, BUTTON_LEFT, BUTTON_RIGHT };
+enum GUI_TEXTURE { BUTTON, BUTTON_LEFT, BUTTON_RIGHT, BUTTON_PRESSED, BUTTON_LEFT_PRESSED, BUTTON_RIGHT_PRESSED };
 
 class GuiResourceManager : public Trace {
 public:

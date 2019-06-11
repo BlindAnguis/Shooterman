@@ -20,6 +20,9 @@ GuiResourceManager::GuiResourceManager() {
   loadGuiTexture(GUI_TEXTURE::BUTTON, "ButtonM");
   loadGuiTexture(GUI_TEXTURE::BUTTON_LEFT, "ButtonL");
   loadGuiTexture(GUI_TEXTURE::BUTTON_RIGHT, "ButtonR");
+  loadGuiTexture(GUI_TEXTURE::BUTTON_PRESSED, "ButtonMPressed");
+  loadGuiTexture(GUI_TEXTURE::BUTTON_LEFT_PRESSED, "ButtonLPressed");
+  loadGuiTexture(GUI_TEXTURE::BUTTON_RIGHT_PRESSED, "ButtonRPressed");
 
   /////////////////////////
   // Sprite textures

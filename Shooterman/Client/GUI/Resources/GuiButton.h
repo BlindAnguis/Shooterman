@@ -18,8 +18,13 @@ private:
   sf::Sprite mBackgroundL;
   sf::Sprite mBackgroundM;
   sf::Sprite mBackgroundR;
+  sf::Sprite mBackgroundLP;
+  sf::Sprite mBackgroundMP;
+  sf::Sprite mBackgroundRP;
   float mYOffset = 0;
   bool enabled = true;
+  bool firstAnimationFrame = true;
+  sf::Clock animationClock;
 
   void renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height);
 };
