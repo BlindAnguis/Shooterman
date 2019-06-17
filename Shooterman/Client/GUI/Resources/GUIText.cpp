@@ -29,8 +29,8 @@ void GuiText::setText(std::string newText) {
 }
 
 void GuiText::setPosition(float xPosition, float yPosition) {
-  mXFixedPosition = xPosition;
-  mYFixedPosition = yPosition;
+  mXFixedPosition = (int)xPosition;
+  mYFixedPosition = (int)yPosition;
 }
 
 void GuiText::setOutlineColor(sf::Color newColor) {

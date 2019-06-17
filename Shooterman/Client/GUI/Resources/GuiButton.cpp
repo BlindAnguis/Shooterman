@@ -69,9 +69,9 @@ void GuiButton::renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosi
 
     double s = sin(timeThatFitInSin - (3.14 / 2));  // Move the sine wave back PI/2 so we start at -1, since we add 1 in the next step
 
-    int alpha = (s + 1) * 127.5;  // Add 1 so we don't get negative values, multiply by 127.5 so we get values between 0 and 255 (s+1 is between 0 and 2)
+    double alpha = (s + 1) * 127.5;  // Add 1 so we don't get negative values, multiply by 127.5 so we get values between 0 and 255 (s+1 is between 0 and 2)
 
-    mText.setOutlineColor(sf::Color(0, 120, 180, alpha));
+    mText.setOutlineColor(sf::Color(0, 120, 180, (int)alpha));
   } else {
     animationClock.restart();
 

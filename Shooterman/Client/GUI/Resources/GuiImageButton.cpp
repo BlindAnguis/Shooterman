@@ -45,13 +45,13 @@ void GuiImageButton::unselect() {
 }
 
 void GuiImageButton::renderImage(std::shared_ptr<sf::RenderWindow> window) {
-  float boundingBoxXCenter = mXPosition + (mWidth / 2);
+  float boundingBoxXCenter = (float)(mXPosition + (mWidth / 2));
   mImage.setPosition(boundingBoxXCenter - (mImage.getLocalBounds().width / 2), (float)mYPosition);
   window->draw(mImage);
 }
 
 void GuiImageButton::renderText(std::shared_ptr<sf::RenderWindow> window) {
-  float boundingBoxXCenter = mXPosition + (mWidth / 2);
+  float boundingBoxXCenter = (float)(mXPosition + (mWidth / 2));
   mText.setPosition(boundingBoxXCenter - (mText.getLocalBounds().width / 2), mYPosition + mImage.getLocalBounds().height + 10);
 
   if (mIsSelected) {
