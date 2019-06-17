@@ -197,8 +197,10 @@ void NetworkHandler::handlePackets() {
       } else if (id == SERVER_READY) {
         ServerReadyMessage srm;
         mServerReadyInterface.pushMessage(srm.pack());
-      }
-      else {
+      } else if (id == HEARTBEAT) {
+        packet << HEARTBEAT;
+        mSocket.send(packet);
+      } else {
         TRACE_ERROR("Packet not known: " << id);
       }
     }

@@ -5,6 +5,7 @@
 #include "../../Common/Messages/PlayableCharactersMessage.h"
 #include "../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../Common/Messages/CharacterChoosenMessage.h"
+#include "../../Common/Messages/ServerInternal/ClientDisconnectedMessage.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 
 HostListener::HostListener() {
@@ -91,8 +92,9 @@ void HostListener::listen() {
 
       networkSystem->addNewClientSocket(player->getSocket(), playerId);
     }
-    sf::sleep(sf::milliseconds(5));
     handlePlayerLobbyData();
+
+    sf::sleep(sf::milliseconds(5));
   }
   delete client; // Delete unused client socket
 
@@ -129,8 +131,23 @@ void HostListener::handlePlayerLobbyData() {
     case CHARACTER_CHOOSEN: {
       CharacherChoosenMessage ccm(lobbyPacket);
       (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
+      break;
     }
-    break;
+    case CLIENT_DISCONNECTED: {
+      ClientDisconnectedMessage cdm(lobbyPacket);
+      mConnectedClients->erase(cdm.getId());
+
+      LobbyDataMessage ldm;
+      for (auto client : *mConnectedClients) {
+        ldm.addPlayerName(client.second->getUsername());
+      }
+
+      for (auto client : *mConnectedClients) {
+        sf::Packet packet = ldm.pack();
+        client.second->getSocket()->send(packet);
+      }
+      break;
+    }
     default:
       TRACE_ERROR("Received unknown message: " << id);
       break;

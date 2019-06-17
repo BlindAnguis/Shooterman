@@ -84,6 +84,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiImageButton.cpp" />
     <ClCompile Include="Common\Messages\PlayableCharactersMessage.cpp" />
     <ClCompile Include="Common\Messages\CharacterChoosenMessage.cpp" />
+    <ClCompile Include="Common\Messages\ServerInternal\ClientDisconnectedMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiImageButton.h" />
     <ClInclude Include="Common\Messages\PlayableCharactersMessage.h" />
     <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
+    <ClInclude Include="Common\Messages\ServerInternal\ClientDisconnectedMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

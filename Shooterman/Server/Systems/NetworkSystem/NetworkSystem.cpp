@@ -8,6 +8,7 @@
 #include "../../../Common/Messages/ServerReadyMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
+#include "../../../Common/Messages/ServerInternal/ClientDisconnectedMessage.h"
 
 #define HOST 1
 
@@ -49,13 +50,30 @@ void NetworkSystem::run() {
   mDebugMenuInterface.getMessageQueue(); // Empty old queue.
   while (mRunning) {
     updateInternalMap();
+
+    if (mHeartbeatTimer.getElapsedTime() > sf::milliseconds(1000)) {
+      mHeartbeatTimer.restart();
+      for (auto client : mClientsSockets) {
+        sf::Packet packet;
+        packet << HEARTBEAT;
+        sf::Socket::Status socketStatus = client.second->send(packet);
+        if (socketStatus != sf::Socket::Done) {
+          TRACE_WARNING("Lost connection to client");
+
+          ClientDisconnectedMessage cdm(client.first);
+          mPlayerLobbyInterface.pushMessage(cdm.pack());
+
+          removeClientSocket(client.first);
+          mClientsSockets.erase(client.first);
+          break;
+        }
+      }
+    }
+
+
     for (auto client : mClientsSockets) {
-      client.second->setBlocking(false);
       sf::Packet packet;
-      if (client.second->receive(packet) != sf::Socket::Done) {
-        //TRACE_ERROR("Could not read socket data");
-        //removeClientSocket(client.first);
-      } else {
+      if (client.second->receive(packet) == sf::Socket::Done) {
         int packetId = -1;
         packet >> packetId;
         switch (packetId)
@@ -90,8 +108,12 @@ void NetworkSystem::run() {
           CharacherChoosenMessage ccm(packet);
           ccm.setId(client.first);
           mPlayerLobbyInterface.pushMessage(ccm.pack());
+          break;
         }
-        break;
+        case HEARTBEAT: {
+          // TODO: React to heartbeat, or rather missing heartbeat
+          break;
+        }
         default:
           TRACE_ERROR("Received unhandled packet with ID: " << packetId);
           break;
@@ -174,9 +196,11 @@ void NetworkSystem::run() {
   MessageHandler::get().unpublishInterface("ServerInputList");
   MessageHandler::get().unpublishInterface("ServerServerReady");
   MessageHandler::get().unpublishInterface("ServerPlayerData");
+  MessageHandler::get().unpublishInterface("ServerPlayerLobby");
   MessageHandler::get().unpublishInterface("ServerGameState");
   MessageHandler::get().unpublishInterface("ServerDebugMenu");
   MessageHandler::get().unpublishInterface("ServerSoundList");
+
   for (auto client : mClientsSockets) {
     client.second->disconnect();
     delete client.second;
@@ -194,6 +218,7 @@ void NetworkSystem::shutDown() {
 
 void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
+  socket->setBlocking(false);
   mNewClientsSockets.emplace(ID, socket);
   TRACE_DEBUG1("Added new client");
 }
@@ -263,7 +288,7 @@ void NetworkSystem::handleDebugMenu() {
 
       sf::Packet packet = adbm.pack();
       if (!mClientsSockets.empty()) {
-        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 2 TODO: Fix?
+        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 1 TODO: Fix?
       }
       break;
     }
@@ -272,7 +297,7 @@ void NetworkSystem::handleDebugMenu() {
       RemoveDebugButtonMessage rdbm(debugMenuMessage);
       sf::Packet packet = rdbm.pack();
       if (!mClientsSockets.empty()) {
-        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 2 TODO: Fix?
+        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 1 TODO: Fix?
       }
       break;
     }

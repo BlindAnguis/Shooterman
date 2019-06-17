@@ -42,6 +42,7 @@ private:
   Interface mSoundInterface;
   Interface mServerServerReadyInterface;
   Interface mPlayerLobbyInterface;
+  sf::Clock mHeartbeatTimer;
 
   void run();
   void updateInternalMap();
