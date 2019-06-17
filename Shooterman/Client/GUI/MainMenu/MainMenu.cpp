@@ -2,7 +2,9 @@
 
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiButton.h"
+#include "../Resources/GuiImageButton.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../Resources/GuiResourceManager.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
@@ -25,7 +27,7 @@ MainMenu::MainMenu() {
     shutdownMessage << SHUT_DOWN;
     MessageHandler::get().pushSystemMessage(shutdownMessage);
   }));
-
+  
   mGuiFrame->addGuiComponent(mainMenuList);
 }
 

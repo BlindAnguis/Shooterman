@@ -57,6 +57,11 @@ int GuiList::getNumberOfComponents() {
   return mGuiComponentList.size();
 }
 
+std::shared_ptr<GuiComponent> GuiList::getComponent(int index) {
+  auto it = mGuiComponentList.begin();
+  return *std::next(it, index);
+}
+
 void GuiList::clear() {
   mGuiComponentList.clear();
 }

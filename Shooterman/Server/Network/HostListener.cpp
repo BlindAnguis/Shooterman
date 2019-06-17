@@ -2,7 +2,9 @@
 
 #include "../../Common/MessageId.h"
 #include "../../Common/Messages/LobbyDataMessage.h"
+#include "../../Common/Messages/PlayableCharactersMessage.h"
 #include "../../Common/Messages/ChangeUsernameMessage.h"
+#include "../../Common/Messages/CharacterChoosenMessage.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 
 HostListener::HostListener() {
@@ -67,6 +69,15 @@ void HostListener::listen() {
       mConnectedClients->emplace(playerId, player);
       client = new sf::TcpSocket();
 
+      // Send playable characters to new client
+      PlayableCharactersMessage pcm;
+      pcm.addPlayerClass(PlayerClass::Archer);
+      pcm.addPlayerClass(PlayerClass::Knight);
+      pcm.addPlayerClass(PlayerClass::Mage);
+      pcm.addPlayerClass(PlayerClass::Spearman);
+      sf::Packet pcmPacket = pcm.pack();
+      player->getSocket()->send(pcmPacket);
+
       // Send player names to all clients, to show in lobby
       LobbyDataMessage ldm;
       for (auto client : *mConnectedClients) {
@@ -91,15 +102,15 @@ void HostListener::listen() {
 void HostListener::handlePlayerLobbyData() {
   auto playerLobbyDataMessages = mPlayerLobbyDataSubscriber.getMessageQueue();
   while (playerLobbyDataMessages.size() > 0) {
-    auto playerLobbyDataPacket = playerLobbyDataMessages.front();
+    sf::Packet lobbyPacket = playerLobbyDataMessages.front();
     playerLobbyDataMessages.pop();
 
     int id = -1;
-    playerLobbyDataPacket >> id;
+    lobbyPacket >> id;
 
     switch (id) {
     case NEW_USERNAME: {
-      ChangeUsernameMessage cum(playerLobbyDataPacket);
+      ChangeUsernameMessage cum(lobbyPacket);
       
       (*mConnectedClients)[cum.getId()]->setUsername(cum.getUsername());
 
@@ -113,6 +124,11 @@ void HostListener::handlePlayerLobbyData() {
         client.second->getSocket()->send(packet);
       }
       break;
+    }
+    break;
+    case CHARACTER_CHOOSEN: {
+      CharacherChoosenMessage ccm(lobbyPacket);
+      (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
     }
     break;
     default:

@@ -19,6 +19,7 @@ public:
   void removeGuiComponent(std::shared_ptr<GuiComponent> guiComponent);
 
   int getNumberOfComponents();
+  std::shared_ptr<GuiComponent> getComponent(int index);
 
   virtual void clear();
 

@@ -30,3 +30,11 @@ void Player::setUsername(std::string username) {
 std::string Player::getUsername() {
   return mUsername;
 }
+
+void Player::setPlayerClass(PlayerClass playerClass) {
+  mPlayerClass = playerClass;
+}
+
+PlayerClass Player::getPlayerClass() {
+  return mPlayerClass;
+}

@@ -3,6 +3,7 @@
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/Messages/ChangeUsernameMessage.h"
+#include "../../../Common/Messages/CharacterChoosenMessage.h"
 #include "../../../Common/Messages/GameStateMessage.h"
 #include "../../../Common/Messages/ServerReadyMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
@@ -12,7 +13,6 @@
 
 NetworkSystem::NetworkSystem() {
   mName = "SERVER: NETWORK_SYSTEM";
-  mDebugEnabled1 = true;
   mMapLock = new std::mutex();
   mRenderLock = new std::mutex();
 }
@@ -86,6 +86,12 @@ void NetworkSystem::run() {
           mPlayerLobbyInterface.pushMessage(cum.pack());
           break;
         }
+        case CHARACTER_CHOOSEN: {
+          CharacherChoosenMessage ccm(packet);
+          ccm.setId(client.first);
+          mPlayerLobbyInterface.pushMessage(ccm.pack());
+        }
+        break;
         default:
           TRACE_ERROR("Received unhandled packet with ID: " << packetId);
           break;

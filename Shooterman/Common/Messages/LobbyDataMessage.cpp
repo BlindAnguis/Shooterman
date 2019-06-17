@@ -7,7 +7,7 @@ LobbyDataMessage::LobbyDataMessage(sf::Packet packet) {
 
 sf::Packet LobbyDataMessage::pack() {
   sf::Packet packet;
-  packet << LOBBY_DATA;
+  packet << PLAYER_USERNAMES;
   packet << mPlayerNames.size();
   for (auto playerName : mPlayerNames) {
     packet << playerName;

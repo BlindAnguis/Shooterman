@@ -38,7 +38,7 @@ void GuiButton::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, 
 bool GuiButton::checkMouse(sf::Vector2f mousePosition) {
   bool mousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
   if (mousePosition.x >= mXPosition - mBackgroundL.getLocalBounds().width && mousePosition.x < mXPosition + mWidth + mBackgroundR.getLocalBounds().width &&
-      mousePosition.y >= mYPosition && mousePosition.y < mYPosition + mHeight) {
+      mousePosition.y >= mBackgroundM.getPosition().y && mousePosition.y < mBackgroundM.getPosition().y + mBackgroundM.getLocalBounds().height) {
     if (mousePressed && isEnabled()) {
       mCallback();
       return true;
@@ -50,8 +50,8 @@ bool GuiButton::checkMouse(sf::Vector2f mousePosition) {
 void GuiButton::renderButton(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) {
   sf::Vector2i mousePosition = sf::Mouse::getPosition(*window);
 
-  if (mousePosition.x >= mBackgroundLP.getPosition().x && mousePosition.x < mBackgroundRP.getPosition().x + mBackgroundRP.getLocalBounds().width &&
-      mousePosition.y >= mBackgroundMP.getPosition().y && mousePosition.y < mBackgroundMP.getPosition().y + mBackgroundMP.getLocalBounds().height) {
+  if (mousePosition.x >= mXPosition - mBackgroundL.getLocalBounds().width && mousePosition.x < mXPosition + mWidth + mBackgroundR.getLocalBounds().width &&
+      mousePosition.y >= mBackgroundM.getPosition().y && mousePosition.y < mBackgroundM.getPosition().y + mBackgroundM.getLocalBounds().height) {
     mBackgroundLP.setPosition((float)xPosition - (float)mBackgroundLP.getLocalBounds().width, (float)yPosition + mYOffset);
 
     mBackgroundMP.setScale(sf::Vector2f((float)width / (float)mBackgroundMP.getTexture()->getSize().x, 1));

@@ -9,6 +9,7 @@
 #include "../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
 #include "../../Common/Messages/GameStateMessage.h"
 #include "../../Common/Messages/LobbyDataMessage.h"
+#include "../../Common/Messages/PlayableCharactersMessage.h"
 #include "../../Common/Messages/ServerReadyMessage.h"
 #include "../../Common/Messages/PlayerDataMessage.h"
 #include "../../Common/Messages/SpriteMessage.h"
@@ -174,9 +175,12 @@ void NetworkHandler::handlePackets() {
       } else if (id == PLAYER_DATA) {
         PlayerDataMessage pdm(packet);
         mPlayerDataInterface.pushMessage(pdm.pack());
-      } else if (id == LOBBY_DATA) {
+      } else if (id == PLAYER_USERNAMES) {
         LobbyDataMessage ldm(packet);
         mLobbyInterface.pushMessage(ldm.pack());
+      } else if (id == PLAYABLE_CHARACTERS) {
+        PlayableCharactersMessage pcm(packet);
+        mLobbyInterface.pushMessage(pcm.pack());
       } else if (id == CHANGE_GAME_STATE) {
         GameStateMessage gsm(packet);
         mGameStateSubscriber.reverseSendMessage(gsm.pack());

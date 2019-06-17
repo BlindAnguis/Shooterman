@@ -160,6 +160,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiComponent.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiComponentFactory.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiFrame.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiImageButton.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiInputText.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiList.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiExpandableList.cpp" />
@@ -170,11 +171,13 @@
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
+    <ClCompile Include="Common\Messages\CharacterChoosenMessage.cpp" />
     <ClCompile Include="Common\Messages\ClientInternal\IpMessage.cpp" />
     <ClCompile Include="Common\Messages\ClientMainAndNetworkHandlerMessages.cpp" />
     <ClCompile Include="Common\Messages\InputMessage.cpp" />
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
     <ClCompile Include="Common\Messages\MouseMessage.cpp" />
+    <ClCompile Include="Common\Messages\PlayableCharactersMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
     <ClCompile Include="Common\Messages\RemoveDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ServerReadyMessage.cpp" />
@@ -230,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiImageButton.h" />
     <ClInclude Include="Client\GUI\Resources\GuiInputText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiResourceManager.h" />
     <ClInclude Include="Client\GUI\Resources\GuiButton.h" />
@@ -242,7 +246,9 @@
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
     <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
+    <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
+    <ClInclude Include="Common\Messages\PlayableCharactersMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
     <ClInclude Include="Common\Messages\ServerReadyMessage.h" />

@@ -208,20 +208,18 @@ void Engine::update() {
 void Engine::createPlayers() {
   float xPos = 100;
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
-    int id = (rand() % 3);
-    id = 1;
-    switch (id)
-    {
-      case 0:
+
+    switch (it->second->getPlayerClass()) {
+      case PlayerClass::Mage:
         it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerMage, sf::Vector2f(xPos, 100), {}));
         break;
-      case 1:
+      case PlayerClass::Knight:
         it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerKnight, sf::Vector2f(xPos, 100), {}));
         break;
-      case 2:
+      case PlayerClass::Spearman:
         it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerSpearman, sf::Vector2f(xPos, 100), {}));
         break;
-      case 3:
+      case PlayerClass::Archer:
         //it->second->setEntity(mEntityCreator.createPlayer(PlayerClass::Archer, sf::Vector2f(xPos, 100)));
         break;
       default:

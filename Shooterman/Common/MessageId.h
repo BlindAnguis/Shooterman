@@ -17,8 +17,10 @@
 #define SPRITE_LIST         201
 #define SOUND_LIST          210
 #define PLAYER_DATA         220
-#define LOBBY_DATA          230
+#define PLAYER_USERNAMES    230
 #define NEW_USERNAME        231
+#define PLAYABLE_CHARACTERS 232
+#define CHARACTER_CHOOSEN   233
 
 // Internal Client messages
 #define IP_MESSAGE          1000

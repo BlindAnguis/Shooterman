@@ -81,6 +81,9 @@
     <ClCompile Include="Common\Messages\ServerReadyMessage.cpp" />
     <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiInputText.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiImageButton.cpp" />
+    <ClCompile Include="Common\Messages\PlayableCharactersMessage.cpp" />
+    <ClCompile Include="Common\Messages\CharacterChoosenMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -177,6 +180,9 @@
     <ClInclude Include="Common\Messages\ServerReadyMessage.h" />
     <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
     <ClInclude Include="Client\GUI\Resources\GuiInputText.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiImageButton.h" />
+    <ClInclude Include="Common\Messages\PlayableCharactersMessage.h" />
+    <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
