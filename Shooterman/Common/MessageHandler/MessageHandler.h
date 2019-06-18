@@ -20,22 +20,13 @@ public:
     return instance;
   }
 
-  void subscribeToSystemMessages(Subscriber* newSubscriber);
-  void unSubscribeToSystemMessages(Subscriber* newSubscriber);
-  void pushSystemMessage(sf::Packet message);
-
-  void subscribeToSoundMessages(Subscriber* newSubscriber);
-  void unSubscribeToSoundMessages(Subscriber* newSubscriber);
-  void pushSoundMessage(sf::Packet message);
-
-  void unsubscribeAll(Subscriber* subscriber);
   void tryToGiveId(Subscriber* subscriber);
 
-  void publishInterface(std::string name, Interface* pc);
+  void publishInterface(std::string name, Interface* interface);
   void unpublishInterface(std::string name);
 
-  bool subscribeTo(std::string name, Subscriber* s);
-  void unsubscribeTo(std::string name, Subscriber* s);
+  bool subscribeTo(std::string name, Subscriber* subscriber);
+  void unsubscribeTo(std::string name, Subscriber* subscriber);
 
   std::list<std::string> getPublishedInterfaces();
 

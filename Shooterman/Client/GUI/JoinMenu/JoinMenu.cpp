@@ -18,12 +18,12 @@ JoinMenu::JoinMenu() {
   mIpText->enableReceiveInput();
   ipList->addGuiComponent(mIpText);
   ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", [this](){
-    while (mPc.getNumberOfSubscribers() == 0) {
+    while (mIpInterface.getNumberOfSubscribers() == 0) {
       sf::sleep(sf::milliseconds(5));
     }
 
     IpMessage ipm(mIpString, 1337);
-    mPc.pushMessage(ipm.pack());
+    mIpInterface.pushMessage(ipm.pack());
 
     GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
     Subscriber gameStateSubscriber;
@@ -41,13 +41,13 @@ JoinMenu::JoinMenu() {
 JoinMenu::~JoinMenu() { uninit(); }
 
 void JoinMenu::init() {
-  MessageHandler::get().publishInterface("ClientIpList", &mPc);
+  MessageHandler::get().publishInterface("ClientIpList", &mIpInterface);
 }
 
 void JoinMenu::uninit() {
   sf::Packet shutdownRequest;
   shutdownRequest << 0;
-  mPc.pushMessage(shutdownRequest);
+  mIpInterface.pushMessage(shutdownRequest);
   MessageHandler::get().unpublishInterface("ClientIpList");
 }
 

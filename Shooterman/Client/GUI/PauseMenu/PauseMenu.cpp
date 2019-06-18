@@ -31,7 +31,10 @@ PauseMenu::PauseMenu() {
       sf::sleep(sf::milliseconds(100));
       sf::Packet shutdownMessage;
       shutdownMessage << SHUT_DOWN;
-      MessageHandler::get().pushSystemMessage(shutdownMessage);
+      Subscriber s;
+      MessageHandler::get().subscribeTo("ClientSystemMessage", &s);
+      s.reverseSendMessage(shutdownMessage);
+      MessageHandler::get().unsubscribeTo("ClientSystemMessage", &s);
     }));
 
     mGuiFrame->addGuiComponent(pauseMenuList);

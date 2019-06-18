@@ -25,7 +25,10 @@ MainMenu::MainMenu() {
   mainMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", []() {
     sf::Packet shutdownMessage;
     shutdownMessage << SHUT_DOWN;
-    MessageHandler::get().pushSystemMessage(shutdownMessage);
+    Subscriber s;
+    MessageHandler::get().subscribeTo("ClientSystemMessage", &s);
+    s.reverseSendMessage(shutdownMessage);
+    MessageHandler::get().unsubscribeTo("ClientSystemMessage", &s);
   }));
   
   mGuiFrame->addGuiComponent(mainMenuList);

@@ -25,7 +25,7 @@ Gui::Gui() {
 
 void Gui::run() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().subscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
   MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().publishInterface("MousePosition", &mMouseInterface);
 
@@ -53,7 +53,7 @@ void Gui::run() {
 
   teardownDebugMessages();
 
-  MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   MessageHandler::get().unpublishInterface("MousePosition");
 
@@ -97,7 +97,10 @@ void Gui::handleWindowEvents() {
     if (event.type == sf::Event::Closed) {
       sf::Packet shutdownMessage;
       shutdownMessage << SHUT_DOWN;
-      MessageHandler::get().pushSystemMessage(shutdownMessage);
+      Subscriber s;
+      MessageHandler::get().subscribeTo("ClientSystemMessage", &s);
+      s.reverseSendMessage(shutdownMessage);
+      MessageHandler::get().unsubscribeTo("ClientSystemMessage", &s);
     }
     if (event.type == sf::Event::MouseMoved) {
       MouseMessage mm(sf::Mouse::getPosition(*mWindow));

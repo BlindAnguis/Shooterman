@@ -24,7 +24,7 @@ Input::~Input() {
 
 void Input::run() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().subscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
   MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
   bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
   MessageHandler::get().publishInterface("ClientInputList", &mClientInputInterface);
@@ -112,7 +112,7 @@ void Input::run() {
 
   teardownDebugMessages();
   MessageHandler::get().unpublishInterface("ClientInputList");
-  MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+  MessageHandler::get().unsubscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
   TRACE_FUNC_EXIT();
 }
 

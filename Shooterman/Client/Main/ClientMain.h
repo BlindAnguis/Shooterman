@@ -13,7 +13,7 @@ public:
 private:
   bool mRunning = true;
   Interface gameStateInterface;
-  Subscriber mSystemMessageSubscriber;
+  Interface systemMessageInterface;
   bool mServerStarted;
   std::stack<GAME_STATE> mGameStateStack;
 

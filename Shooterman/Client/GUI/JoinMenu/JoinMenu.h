@@ -18,5 +18,5 @@ public:
 private:
   std::string mIpString;
   std::shared_ptr<GuiInputText> mIpText;
-  Interface mPc;
+  Interface mIpInterface;
 };

@@ -16,7 +16,7 @@ ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
   TRACE_INFO("Starting...");
   MessageHandler::get().publishInterface("ClientGameState", &gameStateInterface);
-  MessageHandler::get().subscribeToSystemMessages(&mSystemMessageSubscriber);
+  MessageHandler::get().publishInterface("ClientSystemMessage", &systemMessageInterface);
   Input input;
   Gui gui;
   std::shared_ptr<GameLoop> server;
@@ -26,7 +26,7 @@ ClientMain::ClientMain() {
   mServerStarted = false;
   bool networkHandlerStarted = false;
   mGameStateStack.push(GAME_STATE::MAIN_MENU);
-  Interface pc;
+  Interface ipInterface;
   bool sentIpMessage = false;
 
   TRACE_INFO("Starting complete");
@@ -62,13 +62,13 @@ ClientMain::ClientMain() {
           mServerStarted = true;
         }
         if (!networkHandlerStarted) {
-          MessageHandler::get().publishInterface("ClientIpList", &pc);
+          MessageHandler::get().publishInterface("ClientIpList", &ipInterface);
           networkHandler.start();
           networkHandlerStarted = true;
         }
-        if (!sentIpMessage && pc.getNumberOfSubscribers() > 0) {
+        if (!sentIpMessage && ipInterface.getNumberOfSubscribers() > 0) {
           IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), 1337);
-          pc.pushMessage(ipm.pack());
+          ipInterface.pushMessage(ipm.pack());
           MessageHandler::get().unpublishInterface("ClientIpList");
           sentIpMessage = true;
         }
@@ -127,13 +127,13 @@ ClientMain::ClientMain() {
     server->stop();
     server = nullptr;
   }
-  MessageHandler::get().unsubscribeAll(&mSystemMessageSubscriber);
+
   MessageHandler::get().unpublishInterface("ClientGameState");
   TRACE_INFO("Shutting down complete");
 }
 
 void ClientMain::handleSystemMessages() {
-  std::queue<sf::Packet> systemMessageQueue = mSystemMessageSubscriber.getMessageQueue();
+  std::queue<sf::Packet> systemMessageQueue = systemMessageInterface.getMessageQueue();
   sf::Packet systemMessage;
   while (!systemMessageQueue.empty()) {
     systemMessage = systemMessageQueue.front();
@@ -142,10 +142,15 @@ void ClientMain::handleSystemMessages() {
     auto messageId = 0;
     systemMessage >> messageId;
     switch (messageId) {
-    case SHUT_DOWN:
+    case SHUT_DOWN: {
+      sf::Packet packet;
+      packet << SHUT_DOWN;
+      systemMessageInterface.pushMessage(packet);
+
       TRACE_INFO("Shutting down...");
       mRunning = false;
       break;
+    }
     default:
       TRACE_WARNING("Unknown system message: " << messageId);
     }
