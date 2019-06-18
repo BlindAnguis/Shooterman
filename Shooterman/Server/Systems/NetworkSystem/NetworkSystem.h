@@ -33,8 +33,8 @@ private:
   std::mutex* mMapLock;
   std::mutex* mRenderLock;
   std::unique_ptr<std::thread> mNetworkSystemThread;
-  std::map<int, std::pair<sf::TcpSocket*, sf::Clock>> mClientsSockets;
-  std::map<int, std::pair<sf::TcpSocket*, sf::Clock>> mNewClientsSockets;
+  std::map<int, std::pair<sf::TcpSocket*, std::shared_ptr<sf::Clock>>> mClientsSockets;
+  std::map<int, std::pair<sf::TcpSocket*, std::shared_ptr<sf::Clock>>> mNewClientsSockets;
   std::shared_ptr<SpriteMessage> mSpriteMessage;
   Interface mPlayerDataInterface;
   Interface mGameStateInterface;

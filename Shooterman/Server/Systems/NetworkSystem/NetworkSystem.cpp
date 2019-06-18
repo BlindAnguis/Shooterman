@@ -54,7 +54,7 @@ void NetworkSystem::run() {
     if (mHeartbeatTimer.getElapsedTime() > sf::milliseconds(1000)) {
       mHeartbeatTimer.restart();
       for (auto client : mClientsSockets) {
-        if (client.second.second.getElapsedTime() > sf::milliseconds(30000)) {
+        if (client.second.second->getElapsedTime() > sf::milliseconds(30000)) {
           // No heartbeat response for 30 seconds, we lost contact
           TRACE_WARNING("Received no heartbeat for 30 seconds. Lost connection to client!");
 
@@ -123,7 +123,7 @@ void NetworkSystem::run() {
           break;
         }
         case HEARTBEAT: {
-          client.second.second.restart();
+          client.second.second->restart();
           break;
         }
         default:
@@ -231,7 +231,7 @@ void NetworkSystem::shutDown() {
 void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
   socket->setBlocking(false);
-  mNewClientsSockets.emplace(ID, std::make_pair(socket, sf::Clock()));
+  mNewClientsSockets.emplace(ID, std::make_pair(socket, std::make_shared<sf::Clock>()));
   TRACE_DEBUG1("Added new client");
 }
 
