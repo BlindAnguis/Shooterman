@@ -60,6 +60,8 @@ GuiResourceManager::GuiResourceManager() {
   loadSpriteTexture(Textures::Ammo, "Potions/pt4Small");
 }
 
+GuiResourceManager::~GuiResourceManager() { }
+
 sf::Font& GuiResourceManager::getFont(FONT font) {
   return mFontMap[font];
 }

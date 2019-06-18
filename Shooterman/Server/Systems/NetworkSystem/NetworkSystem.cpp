@@ -54,11 +54,23 @@ void NetworkSystem::run() {
     if (mHeartbeatTimer.getElapsedTime() > sf::milliseconds(1000)) {
       mHeartbeatTimer.restart();
       for (auto client : mClientsSockets) {
+        if (client.second.second.getElapsedTime() > sf::milliseconds(30000)) {
+          // No heartbeat response for 30 seconds, we lost contact
+          TRACE_WARNING("Received no heartbeat for 30 seconds. Lost connection to client!");
+
+          ClientDisconnectedMessage cdm(client.first);
+          mPlayerLobbyInterface.pushMessage(cdm.pack());
+
+          removeClientSocket(client.first);
+          mClientsSockets.erase(client.first);
+          break;
+        }
+
         sf::Packet packet;
         packet << HEARTBEAT;
-        sf::Socket::Status socketStatus = client.second->send(packet);
+        sf::Socket::Status socketStatus = client.second.first->send(packet);
         if (socketStatus != sf::Socket::Done) {
-          TRACE_WARNING("Lost connection to client");
+          TRACE_WARNING("Could not send heartbeat to client. Lost connection to client!");
 
           ClientDisconnectedMessage cdm(client.first);
           mPlayerLobbyInterface.pushMessage(cdm.pack());
@@ -73,7 +85,7 @@ void NetworkSystem::run() {
 
     for (auto client : mClientsSockets) {
       sf::Packet packet;
-      if (client.second->receive(packet) == sf::Socket::Done) {
+      if (client.second.first->receive(packet) == sf::Socket::Done) {
         int packetId = -1;
         packet >> packetId;
         switch (packetId)
@@ -111,7 +123,7 @@ void NetworkSystem::run() {
           break;
         }
         case HEARTBEAT: {
-          // TODO: React to heartbeat, or rather missing heartbeat
+          client.second.second.restart();
           break;
         }
         default:
@@ -125,7 +137,7 @@ void NetworkSystem::run() {
     if (spriteData) {
       for (auto clientSocket : mClientsSockets) {
         sf::Packet spriteDataPacket = spriteData->pack();
-        clientSocket.second->send(spriteDataPacket);
+        clientSocket.second.first->send(spriteDataPacket);
       }
     }
 
@@ -140,7 +152,7 @@ void NetworkSystem::run() {
         GameStateMessage gsm(gameStatePacket);
         for (auto clientSocket : mClientsSockets) {
           sf::Packet gsmPacket = gsm.pack();
-          clientSocket.second->send(gsmPacket);
+          clientSocket.second.first->send(gsmPacket);
         }
       } else {
         TRACE_WARNING("Received unhandled packet with id: " << id);
@@ -158,7 +170,7 @@ void NetworkSystem::run() {
         SoundMessage sm(soundListPacket);
         for (auto clientSocket : mClientsSockets) {
           sf::Packet smPacket = sm.pack();
-          clientSocket.second->send(smPacket);
+          clientSocket.second.first->send(smPacket);
         }
       }
       else {
@@ -177,7 +189,7 @@ void NetworkSystem::run() {
         ServerReadyMessage srm;
         for (auto clientSocket : mClientsSockets) {
           sf::Packet srmPacket = srm.pack();
-          clientSocket.second->send(srmPacket);
+          clientSocket.second.first->send(srmPacket);
         }
       }
       else {
@@ -202,8 +214,8 @@ void NetworkSystem::run() {
   MessageHandler::get().unpublishInterface("ServerSoundList");
 
   for (auto client : mClientsSockets) {
-    client.second->disconnect();
-    delete client.second;
+    client.second.first->disconnect();
+    delete client.second.first;
   }
 }
 
@@ -219,7 +231,7 @@ void NetworkSystem::shutDown() {
 void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
   socket->setBlocking(false);
-  mNewClientsSockets.emplace(ID, socket);
+  mNewClientsSockets.emplace(ID, std::make_pair(socket, sf::Clock()));
   TRACE_DEBUG1("Added new client");
 }
 
@@ -262,7 +274,7 @@ void NetworkSystem::handlePlayerData() {
 
       for (auto client : mClientsSockets) {
         sf::Packet packet = pdm.pack();
-        client.second->send(packet);
+        client.second.first->send(packet);
       }
     }
       break;
@@ -288,7 +300,7 @@ void NetworkSystem::handleDebugMenu() {
 
       sf::Packet packet = adbm.pack();
       if (!mClientsSockets.empty()) {
-        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 1 TODO: Fix?
+        mClientsSockets.at(HOST).first->send(packet); // Send only to host, which is 1 TODO: Fix?
       }
       break;
     }
@@ -297,7 +309,7 @@ void NetworkSystem::handleDebugMenu() {
       RemoveDebugButtonMessage rdbm(debugMenuMessage);
       sf::Packet packet = rdbm.pack();
       if (!mClientsSockets.empty()) {
-        mClientsSockets.at(HOST)->send(packet); // Send only to host, which is 1 TODO: Fix?
+        mClientsSockets.at(HOST).first->send(packet); // Send only to host, which is 1 TODO: Fix?
       }
       break;
     }

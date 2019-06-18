@@ -30,6 +30,7 @@ private:
   std::map<Textures, sf::Texture> mSpriteTextureMap;
 
   GuiResourceManager();
+  ~GuiResourceManager();
 
   void loadFont(FONT fontType, std::string fileName);
   void loadGuiTexture(GUI_TEXTURE guiTexture, std::string fileName);
