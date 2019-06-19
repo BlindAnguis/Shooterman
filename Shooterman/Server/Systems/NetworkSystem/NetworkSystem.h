@@ -29,7 +29,8 @@ public:
   void setRenderData(std::shared_ptr<SpriteMessage> spriteMessage);
 
 private:
-  bool mRunning = true;
+  bool mRunning;
+  bool mNumberOfPlayerChanged;
   std::mutex* mMapLock;
   std::mutex* mRenderLock;
   std::unique_ptr<std::thread> mNetworkSystemThread;
@@ -47,6 +48,9 @@ private:
   void run();
   void updateInternalMap();
   std::shared_ptr<SpriteMessage> getRenderData();
+  void handleServerReady();
   void handlePlayerData();
   void handleDebugMenu();
+  void handleSoundList();
+  void handleGameState();
 };

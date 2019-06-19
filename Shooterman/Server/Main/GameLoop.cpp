@@ -93,7 +93,6 @@ void GameLoop::gameLoop() {
   HostListener hostListener = HostListener();
   hostListener.startListening();
   mNetworkSystem->start();
-  Engine world = Engine(gameMap1);
   sf::Clock c;
   // send message to client, tell it to enable the button.
   Subscriber serverReadySubscriber;
@@ -102,6 +101,7 @@ void GameLoop::gameLoop() {
   }
   ServerReadyMessage srm;
   serverReadySubscriber.reverseSendMessage(srm.pack());
+  Engine world = Engine(gameMap1);
   while (mRunning) {
     c.restart();
     state = InputSystem::get().getLatestGameStateMessage();

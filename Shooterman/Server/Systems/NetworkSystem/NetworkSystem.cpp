@@ -37,6 +37,7 @@ void NetworkSystem::start() {
 
 void NetworkSystem::run() {
   mRunning = true;
+  mNumberOfPlayerChanged = false;
   Interface inputListInterface;
   MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
   MessageHandler::get().publishInterface("ServerServerReady", &mServerServerReadyInterface);
@@ -55,7 +56,6 @@ void NetworkSystem::run() {
       mHeartbeatTimer.restart();
       for (auto client : mClientsSockets) {
         if (client.second.second->getElapsedTime() > sf::milliseconds(30000)) {
-          // No heartbeat response for 30 seconds, we lost contact
           TRACE_WARNING("Received no heartbeat for 30 seconds. Lost connection to client!");
 
           ClientDisconnectedMessage cdm(client.first);
@@ -88,47 +88,46 @@ void NetworkSystem::run() {
       if (client.second.first->receive(packet) == sf::Socket::Done) {
         int packetId = -1;
         packet >> packetId;
-        switch (packetId)
-        {
-        case INPUT_KEYS: {
-          packet << client.first;
-          inputListInterface.pushMessage(packet);
-          break;
-        }
-        case SHUT_DOWN:
-          break;
-        case CHANGE_GAME_STATE: {
-          // Check if it is the host
-          if (client.first == HOST) {
-            GameStateMessage gsm(packet);
-            mGameStateInterface.pushMessage(gsm.pack());
+        switch (packetId) {
+          case INPUT_KEYS: {
+            packet << client.first;
+            inputListInterface.pushMessage(packet);
+            break;
           }
-          break;
-        }
-        case ADD_DEBUG_BUTTON: {
-          AddDebugButtonMessage adbm(packet);
-          mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
-          break;
-        }
-        case NEW_USERNAME: {
-          ChangeUsernameMessage cum(packet);
-          cum.setId(client.first);
-          mPlayerLobbyInterface.pushMessage(cum.pack());
-          break;
-        }
-        case CHARACTER_CHOOSEN: {
-          CharacherChoosenMessage ccm(packet);
-          ccm.setId(client.first);
-          mPlayerLobbyInterface.pushMessage(ccm.pack());
-          break;
-        }
-        case HEARTBEAT: {
-          client.second.second->restart();
-          break;
-        }
-        default:
-          TRACE_ERROR("Received unhandled packet with ID: " << packetId);
-          break;
+          case SHUT_DOWN:
+            break;
+          case CHANGE_GAME_STATE: {
+            // Check if it is the host
+            if (client.first == HOST) {
+              GameStateMessage gsm(packet);
+              mGameStateInterface.pushMessage(gsm.pack());
+            }
+            break;
+          }
+          case ADD_DEBUG_BUTTON: {
+            AddDebugButtonMessage adbm(packet);
+            mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
+            break;
+          }
+          case NEW_USERNAME: {
+            ChangeUsernameMessage cum(packet);
+            cum.setId(client.first);
+            mPlayerLobbyInterface.pushMessage(cum.pack());
+            break;
+          }
+          case CHARACTER_CHOOSEN: {
+            CharacherChoosenMessage ccm(packet);
+            ccm.setId(client.first);
+            mPlayerLobbyInterface.pushMessage(ccm.pack());
+            break;
+          }
+          case HEARTBEAT: {
+            client.second.second->restart();
+            break;
+          }
+          default:
+            TRACE_ERROR("Received unhandled packet with ID: " << packetId);
+            break;
         }
       }
     }
@@ -141,65 +140,11 @@ void NetworkSystem::run() {
       }
     }
 
-    auto gameStateQueue = mGameStateInterface.getMessageQueue();
-    while (!gameStateQueue.empty()) {
-      auto gameStatePacket = gameStateQueue.front();
-      gameStateQueue.pop();
-      int id = -1;
-      gameStatePacket >> id;
-      
-      if (id == CHANGE_GAME_STATE) {
-        GameStateMessage gsm(gameStatePacket);
-        for (auto clientSocket : mClientsSockets) {
-          sf::Packet gsmPacket = gsm.pack();
-          clientSocket.second.first->send(gsmPacket);
-        }
-      } else {
-        TRACE_WARNING("Received unhandled packet with id: " << id);
-      }
-    }
-
-    auto soundListQueue = mSoundInterface.getMessageQueue();
-    while (!soundListQueue.empty()) {
-      auto soundListPacket = soundListQueue.front();
-      soundListQueue.pop();
-      int id = -1;
-      soundListPacket >> id;
-
-      if (id == SOUND_LIST) {
-        SoundMessage sm(soundListPacket);
-        for (auto clientSocket : mClientsSockets) {
-          sf::Packet smPacket = sm.pack();
-          clientSocket.second.first->send(smPacket);
-        }
-      }
-      else {
-        TRACE_WARNING("Received unhandled packet with id: " << id);
-      }
-    }
-
-    auto serverReadyQueue = mServerServerReadyInterface.getMessageQueue();
-    while (!serverReadyQueue.empty()) {
-      auto serverReadyPacket = serverReadyQueue.front();
-      serverReadyQueue.pop();
-      int id = -1;
-      serverReadyPacket >> id;
-
-      if (id == SERVER_READY) {
-        ServerReadyMessage srm;
-        for (auto clientSocket : mClientsSockets) {
-          sf::Packet srmPacket = srm.pack();
-          clientSocket.second.first->send(srmPacket);
-        }
-      }
-      else {
-        TRACE_WARNING("Received unhandled packet with id: " << id);
-      }
-    }
-    //handleServerReady();
-
+    handleServerReady();
     handlePlayerData();
     handleDebugMenu();
+    handleSoundList();
+    handleGameState();
 
     sf::sleep(sf::milliseconds(1));
   }
@@ -230,6 +175,7 @@ void NetworkSystem::shutDown() {
 
 void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
+  mNumberOfPlayerChanged = true;
   socket->setBlocking(false);
   mNewClientsSockets.emplace(ID, std::make_pair(socket, std::make_shared<sf::Clock>()));
   TRACE_DEBUG1("Added new client");
@@ -237,6 +183,7 @@ void NetworkSystem::addNewClientSocket(sf::TcpSocket* socket, int ID) {
 
 void NetworkSystem::removeClientSocket(int ID) {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
+  mNumberOfPlayerChanged = true;
   mNewClientsSockets.erase(ID);
 }
 
@@ -254,8 +201,36 @@ std::shared_ptr<SpriteMessage> NetworkSystem::getRenderData() {
 
 void NetworkSystem::updateInternalMap() {
   std::lock_guard<std::mutex> lockGuard(*mMapLock);
-  mClientsSockets.clear();
-  mClientsSockets.insert(mNewClientsSockets.begin(), mNewClientsSockets.end());
+  if (mNumberOfPlayerChanged) {
+    mClientsSockets.clear();
+    mClientsSockets.insert(mNewClientsSockets.begin(), mNewClientsSockets.end());
+    mNumberOfPlayerChanged = false;
+  }
+}
+
+void NetworkSystem::handleServerReady() {
+  if (mClientsSockets.empty()) {
+    // We have no clients, no host, so dont check the server ready message since we cant send it.
+    return;
+  }
+
+  auto serverReadyQueue = mServerServerReadyInterface.getMessageQueue();
+  while (!serverReadyQueue.empty()) {
+    auto serverReadyPacket = serverReadyQueue.front();
+    serverReadyQueue.pop();
+    int id = -1;
+    serverReadyPacket >> id;
+
+    if (id == SERVER_READY) {
+      ServerReadyMessage srm;
+      for (auto clientSocket : mClientsSockets) {
+        sf::Packet srmPacket = srm.pack();
+        clientSocket.second.first->send(srmPacket);
+      }
+    } else {
+      TRACE_WARNING("Received unhandled packet with id: " << id);
+    }
+  }
 }
 
 void NetworkSystem::handlePlayerData() {
@@ -268,19 +243,18 @@ void NetworkSystem::handlePlayerData() {
     playerDataPacket >> id;
 
     switch (id) {
-    case PLAYER_DATA:
-    {
-      PlayerDataMessage pdm(playerDataPacket);
+      case PLAYER_DATA: {
+        PlayerDataMessage pdm(playerDataPacket);
 
-      for (auto client : mClientsSockets) {
-        sf::Packet packet = pdm.pack();
-        client.second.first->send(packet);
+        for (auto client : mClientsSockets) {
+          sf::Packet packet = pdm.pack();
+          client.second.first->send(packet);
+        }
       }
-    }
-      break;
-    default:
-      TRACE_ERROR("Received unknown message: " << id);
-      break;
+        break;
+      default:
+        TRACE_ERROR("Received unknown message: " << id);
+        break;
     }
   }
 }
@@ -295,27 +269,66 @@ void NetworkSystem::handleDebugMenu() {
     debugMenuMessage >> id;
 
     switch (id) {
-    case ADD_DEBUG_BUTTON: {
-      AddDebugButtonMessage adbm(debugMenuMessage);
+      case ADD_DEBUG_BUTTON: {
+        AddDebugButtonMessage adbm(debugMenuMessage);
 
-      sf::Packet packet = adbm.pack();
-      if (!mClientsSockets.empty()) {
-        mClientsSockets.at(HOST).first->send(packet); // Send only to host, which is 1 TODO: Fix?
+        sf::Packet packet = adbm.pack();
+        if (!mClientsSockets.empty()) {
+          mClientsSockets.at(HOST).first->send(packet); // Send only to host, which is 1 TODO: Fix?
+        }
+        break;
       }
-      break;
-    }
-    case REMOVE_DEBUG_BUTTON:
-    {
-      RemoveDebugButtonMessage rdbm(debugMenuMessage);
-      sf::Packet packet = rdbm.pack();
-      if (!mClientsSockets.empty()) {
-        mClientsSockets.at(HOST).first->send(packet); // Send only to host, which is 1 TODO: Fix?
+      case REMOVE_DEBUG_BUTTON: {
+        RemoveDebugButtonMessage rdbm(debugMenuMessage);
+        sf::Packet packet = rdbm.pack();
+        if (!mClientsSockets.empty()) {
+          mClientsSockets.at(HOST).first->send(packet); // Send only to host, which is 1 TODO: Fix?
+        }
+        break;
       }
-      break;
+      default:
+        TRACE_ERROR("Received unknown message: " << id);
+        break;
+      }
+  }
+}
+
+void NetworkSystem::handleSoundList() {
+  auto soundListQueue = mSoundInterface.getMessageQueue();
+  while (!soundListQueue.empty()) {
+    auto soundListPacket = soundListQueue.front();
+    soundListQueue.pop();
+    int id = -1;
+    soundListPacket >> id;
+
+    if (id == SOUND_LIST) {
+      SoundMessage sm(soundListPacket);
+      for (auto clientSocket : mClientsSockets) {
+        sf::Packet smPacket = sm.pack();
+        clientSocket.second.first->send(smPacket);
+      }
+    } else {
+      TRACE_WARNING("Received unhandled packet with id: " << id);
     }
-    default:
-      TRACE_ERROR("Received unknown message: " << id);
-      break;
+  }
+}
+
+void NetworkSystem::handleGameState() {
+  auto gameStateQueue = mGameStateInterface.getMessageQueue();
+  while (!gameStateQueue.empty()) {
+    auto gameStatePacket = gameStateQueue.front();
+    gameStateQueue.pop();
+    int id = -1;
+    gameStatePacket >> id;
+
+    if (id == CHANGE_GAME_STATE) {
+      GameStateMessage gsm(gameStatePacket);
+      for (auto clientSocket : mClientsSockets) {
+        sf::Packet gsmPacket = gsm.pack();
+        clientSocket.second.first->send(gsmPacket);
+      }
+    } else {
+      TRACE_WARNING("Received unhandled packet with id: " << id);
     }
   }
 }

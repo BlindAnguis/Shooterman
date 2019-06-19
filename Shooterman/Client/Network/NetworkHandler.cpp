@@ -102,7 +102,7 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
   auto ipMessage = messages.front();
   ipMessage >> ID;
   if (ID != IP_MESSAGE) {
-    if (ID != 0) { // 0 = shutdown req
+    if (ID != SHUT_DOWN) {
       // Received unexpected message
       TRACE_ERROR("Received unexpected message with ID: " << ID);
       GameStateMessage gsm(GAME_STATE::PREVIOUS);

@@ -3,8 +3,6 @@
 #include "../../Common/Messages/PlayerDataMessage.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
-#include <stdlib.h>
-#include <time.h>
 
 Engine::Engine() :
   mInputSystem(&InputSystem::get()),
@@ -33,7 +31,6 @@ Engine::Engine() :
   mName = "SERVER: ENGINE";
   mInputSystem->attach(mMovementSystem);
   mInputSystem->setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { });
-  srand((int)time(0));
   mEntityCreatorSystem->reset();
 }
 
@@ -79,7 +76,6 @@ Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
       }
     }
   });
-  srand((int)time(0));
   mEntityCreatorSystem->reset(); // "Init" the system.
 }
 
