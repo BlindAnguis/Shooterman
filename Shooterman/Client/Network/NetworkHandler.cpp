@@ -128,6 +128,9 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
 
 void NetworkHandler::handlePackets() {
   TRACE_FUNC_ENTER();
+
+  mHeartbeatClock.restart();
+
   while (mRunning) {
     auto systemMessageQueue = mMessageSubscriber.getMessageQueue();
     while (!systemMessageQueue.empty()) {
@@ -199,12 +202,25 @@ void NetworkHandler::handlePackets() {
         mServerReadyInterface.pushMessage(srm.pack());
       } else if (id == HEARTBEAT) {
         packet << HEARTBEAT;
+        //mHeartbeatClock.restart();
         mSocket.send(packet);
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
+    } else {
+      TRACE_ERROR("Lost connection to server!");
+      mRunning = false;
+      GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+      mGameStateSubscriber.reverseSendMessage(gsm.pack());
     }
     sf::sleep(sf::milliseconds(1));
+
+    if (mHeartbeatClock.getElapsedTime() > sf::milliseconds(30000)) {
+      TRACE_ERROR("Received no heartbeat for 30 seconds. Lost connection to server!");
+      mRunning = false;
+      GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+      mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    }
   }
   TRACE_FUNC_EXIT();
 }

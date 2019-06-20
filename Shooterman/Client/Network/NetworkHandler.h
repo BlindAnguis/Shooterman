@@ -27,6 +27,7 @@ private:
   Subscriber mGameStateSubscriber;
   Subscriber mServerDebugSubscriber;
   sf::TcpSocket mSocket;
+  sf::Clock mHeartbeatClock;
 
   void run();
   void setupSubscribersAndInterfaces();

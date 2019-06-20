@@ -82,7 +82,6 @@ void NetworkSystem::run() {
       }
     }
 
-
     for (auto client : mClientsSockets) {
       sf::Packet packet;
       if (client.second.first->receive(packet) == sf::Socket::Done) {
