@@ -202,7 +202,7 @@ void NetworkHandler::handlePackets() {
         mServerReadyInterface.pushMessage(srm.pack());
       } else if (id == HEARTBEAT) {
         packet << HEARTBEAT;
-        //mHeartbeatClock.restart();
+        mHeartbeatClock.restart();
         mSocket.send(packet);
       } else {
         TRACE_ERROR("Packet not known: " << id);
