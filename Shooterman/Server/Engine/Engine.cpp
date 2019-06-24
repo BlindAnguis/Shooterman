@@ -34,7 +34,7 @@ Engine::Engine() :
   mEntityCreatorSystem->reset();
 }
 
-Engine::Engine(std::array<std::array<int, 32>, 32> gameMap) :
+Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap) :
   mInputSystem(&InputSystem::get()),
   mEntityManager(&EntityManager::get()),
   mNetworkSystem(&NetworkSystem::get()),
@@ -99,6 +99,7 @@ Engine::~Engine() {
   ComponentManager<ClockComponent>::get().clearManager();
   ComponentManager<PlayerComponent>::get().clearManager();
   ComponentManager<PickupComponent>::get().clearManager();
+  teardownDebugMessages();
 }
 
 void Engine::shutDown() {
@@ -223,13 +224,17 @@ void Engine::createPlayers() {
     }
     xPos += 100;
   }
-
-  MessageHandler::get().subscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
+  
   setupDebugMessages("Server", "Engine");
+  MessageHandler::get().subscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
 }
 
 void Engine::createMap() {
   mMapCreator.createMap(mGameMap);
+}
+
+void Engine::setMap(std::array<std::array<Textures, 32>, 32> map) {
+  mGameMap = map;
 }
 
 void Engine::destroyEntity(int entityId) {

@@ -14,7 +14,9 @@ void Frame::render(std::shared_ptr<sf::RenderWindow> window) {
 
 bool Frame::checkMouse(sf::Vector2f mousePosition) {
   for (const auto &component : mComponents) {
-    component->checkMouse(mousePosition);
+    if (component->checkMouse(mousePosition)) {
+      return true;
+    }
   }
   return false;
 }

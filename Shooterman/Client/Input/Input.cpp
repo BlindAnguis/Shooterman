@@ -97,6 +97,8 @@ void Input::run() {
       }
       case GAME_STATE::OPTIONS:
         break;
+      case GAME_STATE::MAP_EDITOR:
+        break;
       default:
         TRACE_ERROR("Unknown game state: " << mCurrentGameState);
     }

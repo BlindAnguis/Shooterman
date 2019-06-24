@@ -4,6 +4,7 @@
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../../Common/Messages/CharacterChoosenMessage.h"
+#include "../../../Common/Messages/MapMessage.h"
 #include "../../../Common/Messages/GameStateMessage.h"
 #include "../../../Common/Messages/ServerReadyMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
@@ -119,6 +120,10 @@ void NetworkSystem::run() {
             ccm.setId(client.first);
             mPlayerLobbyInterface.pushMessage(ccm.pack());
             break;
+          }
+          case MAP_DATA: {
+            MapMessage mm(packet);
+            mPlayerLobbyInterface.pushMessage(mm.pack());
           }
           case HEARTBEAT: {
             client.second.second->restart();

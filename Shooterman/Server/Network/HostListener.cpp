@@ -5,6 +5,7 @@
 #include "../../Common/Messages/PlayableCharactersMessage.h"
 #include "../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../Common/Messages/CharacterChoosenMessage.h"
+#include "../../Common/Messages/MapMessage.h"
 #include "../../Common/Messages/ServerInternal/ClientDisconnectedMessage.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 
@@ -148,9 +149,41 @@ void HostListener::handlePlayerLobbyData() {
       }
       break;
     }
+    case MAP_DATA: {
+      MapMessage mm(lobbyPacket);
+      mMapData = mm.getData();
+      break;
+    }
     default:
       TRACE_ERROR("Received unknown message: " << id);
       break;
     }
   }
+}
+
+bool HostListener::hasMapData() {
+  return mMapData.size() > 1;
+}
+
+std::array<std::array<Textures, 32>, 32> HostListener::getMapData() {
+  std::array<std::array<Textures, 32>, 32> map = std::array<std::array<Textures, 32>, 32>();
+
+  int x = 0;
+  int y = 0;
+
+  std::stringstream lineSs(mMapData);
+  std::string line;
+
+  while (std::getline(lineSs, line, '\n')) {
+    std::stringstream idSs(line);
+    std::string idAsString;
+    while (std::getline(idSs, idAsString, ' ')) {
+      map[y][x] = (Textures)std::stoi(idAsString);
+      ++x;
+    }
+    x = 0;
+    ++y;
+  }
+
+  return map;
 }

@@ -55,6 +55,8 @@ std::string GameStateMessage::getGameStateAsString() {
     return "OPTIONS";
   case PAUSE:
     return "PAUSE";
+  case MAP_EDITOR:
+    return "MAP_EDITOR";
   case PREVIOUS:
     return "PREVIOUS";
   default:

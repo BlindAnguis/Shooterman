@@ -24,22 +24,22 @@ MapCreator::~MapCreator()
 {
 }
 
-void MapCreator::createMap(std::array<std::array<int, 32>, 32> gameMap) {
+void MapCreator::createMap(std::array<std::array<Textures, 32>, 32> gameMap) {
   auto verticalWallTexture = mTextures[static_cast<int>(Textures::VerticalWall1)];
   auto horizontalWallTexture = mTextures[static_cast<int>(Textures::HorizontalWall1)];
   for (unsigned int i = 0; i < gameMap.size(); i++) {
     auto row = gameMap[i];
     for (unsigned int j = 0; j < row.size(); j++) {
-      int tile = row[j];
-      if (tile == 1 || tile == 2) {
+      Textures textureId = row[j];
+      if (textureId == Textures::HorizontalWall1) {
         createHorizontalWall((float)(j * horizontalWallTexture->getSize().x), (float)(i * horizontalWallTexture->getSize().y));
-      } else if (tile == 3) {
+      } else if (textureId == Textures::VerticalWall1) {
         createVerticalWall((float)(j * verticalWallTexture->getSize().x), (float)(i * verticalWallTexture->getSize().y));
-      } else if (tile == 4) {
+      } else if (textureId == Textures::FloorWhole) {
         createFloor(Textures::FloorWhole, sf::Vector2f(j * 32.0f, i * 32.0f), sf::IntRect(32 * 2, 32 * 1, 32, 32));
-      } else if (tile == 5) {
+      } else if (textureId == Textures::FloorCracked) {
         createFloor(Textures::FloorCracked, sf::Vector2f(j * 32.0f, i * 32.0f), sf::IntRect(32 * 3, 32 * 1, 32, 32));
-      } else if (tile == 6) {
+      } else if (textureId == Textures::FloorSpikes) {
         createFloorSpikes(sf::Vector2f(j * 32.0f, i * 32.0f));
       }
     }

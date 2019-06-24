@@ -1,5 +1,10 @@
 #include "LobbyMenu.h"
 
+#include <string>
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+
 #include "../Resources/GuiText.h"
 #include "../Resources/GuiImageButton.h"
 #include "../Resources/GuiComponentFactory.h"
@@ -7,6 +12,7 @@
 #include "../../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../../Common/Messages/CharacterChoosenMessage.h"
 #include "../../../Common/Messages/PlayableCharactersMessage.h"
+#include "../../../Common/Messages/MapMessage.h"
 #include "../../../Common/MessageHandler/Subscriber.h"
 
 LobbyMenu::LobbyMenu(bool server) {
@@ -23,7 +29,6 @@ LobbyMenu::LobbyMenu(bool server) {
     while (!mSubscribedToLobby) {
       mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
     }
-    TRACE_INFO("Username: " << mUsername);
     ChangeUsernameMessage cum(mUsername);
     mLobbySubscriber.reverseSendMessage(cum.pack());
   });
@@ -40,9 +45,18 @@ LobbyMenu::LobbyMenu(bool server) {
   allPlayerList->addGuiComponent(mPlayersList);
   mGuiFrame->addGuiComponent(allPlayerList);
 
+  auto rightList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::VERTICAL);
   mPlayableCharactersList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::HORIZONTAL);
+  rightList->addGuiComponent(mPlayableCharactersList);
+  rightList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, "Levels:", 50));
 
-  mGuiFrame->addGuiComponent(mPlayableCharactersList);
+  if (server) {
+    mFileList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::VERTICAL);
+    rightList->addGuiComponent(mFileList);
+  }
+
+  mGuiFrame->addGuiComponent(rightList);
+
 
   auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::BOTTOM, GuiListDirection::VERTICAL);
   if (server) {
@@ -71,6 +85,13 @@ void LobbyMenu::handleNewText(sf::Uint32 newChar) {
     // Backspace
     mUsername = mUsername.substr(0, mUsername.size() - 1);
     mUsernameText->removeChar();
+  } else if (newChar == 13) {
+    // Enter
+    while (!mSubscribedToLobby) {
+      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+    }
+    ChangeUsernameMessage cum(mUsername);
+    mLobbySubscriber.reverseSendMessage(cum.pack());
   } else if (mUsername.length() < 15) {
     mUsername += newChar;
     mUsernameText->addChar(newChar);
@@ -84,6 +105,44 @@ void LobbyMenu::init() {
   if (mServer) {
     mSubscribedToServerReady = false;
     mStartGameButton->setDisabled();
+  }
+
+  if (mServer) {
+    mFileList->clear();
+    mFileButtonList.clear();
+    for (const auto& entry : std::filesystem::directory_iterator("")) {
+      if (entry.path().string().find(".level") != std::string::npos) {
+        auto newButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, entry.path().string());
+        mFileButtonList.push_back(newButton);
+        newButton->setCallback([=]() {
+          for (auto button : mFileButtonList) {
+            button->unselect();
+          }
+          newButton->select();
+
+          // Load file
+          std::ifstream saveFile;
+          saveFile.open("test.level");
+          std::string data;
+          std::string line;
+          if (saveFile.is_open()) {
+            while (!saveFile.eof()) {
+              std::getline(saveFile, line);
+              data += line;
+              data += "\n";
+            }
+
+            MapMessage mm(data);
+            mLobbySubscriber.reverseSendMessage(mm.pack());
+
+          } else {
+            TRACE_ERROR("Failed to open file");
+          }
+          saveFile.close();
+        });
+        mFileList->addGuiComponent(newButton);
+      }
+    }
   }
 }
 
@@ -127,15 +186,12 @@ void LobbyMenu::checkForLobbyMessages() {
         } else if (playerClass == PlayerClass::Knight) {
           playerClassName = "Knight";
           image = GuiResourceManager::getInstance().createSprite(Textures::CharacterKnight);
-          image.setTextureRect(sf::IntRect(0, 64 * 10 + 14, 64, 50));
         } else if (playerClass == PlayerClass::Mage) {
           playerClassName = "Mage";
           image = GuiResourceManager::getInstance().createSprite(Textures::CharacterMage);
-          image.setTextureRect(sf::IntRect(0, 64 * 10 + 14, 64, 50));
         } else if (playerClass == PlayerClass::Spearman) {
           playerClassName = "Spearman";
           image = GuiResourceManager::getInstance().createSprite(Textures::CharacterSpearman);
-          image.setTextureRect(sf::IntRect(0, 64 * 10 + 14, 64, 50));
         }
 
         // First create button

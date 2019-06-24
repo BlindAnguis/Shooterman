@@ -28,6 +28,7 @@ private:
   std::map<FONT, sf::Font> mFontMap;
   std::map<GUI_TEXTURE, sf::Texture> mGuiTextureMap;
   std::map<Textures, sf::Texture> mSpriteTextureMap;
+  std::map<Textures, sf::IntRect> mSpriteTextureRectMap;
 
   GuiResourceManager();
   ~GuiResourceManager();

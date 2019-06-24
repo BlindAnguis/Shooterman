@@ -7,8 +7,7 @@ void MenuBase::uninit() { }
 void MenuBase::reset() { }
 
 bool MenuBase::checkMouse(sf::Vector2f mousePosition) {
-  mGuiFrame->checkMouse(mousePosition);
-  return false;
+  return mGuiFrame->checkMouse(mousePosition);
 }
 
 bool MenuBase::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {

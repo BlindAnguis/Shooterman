@@ -25,6 +25,8 @@ private:
   Subscriber mServerReadySubscriber;
   std::shared_ptr<GuiList> mPlayersList;
   std::shared_ptr<GuiList> mPlayableCharactersList;
+  std::shared_ptr<GuiList> mFileList;
+  std::list<std::shared_ptr<GuiButton>> mFileButtonList;
   std::shared_ptr<GuiButton> mStartGameButton;
   std::shared_ptr<GuiInputText> mUsernameText;
 

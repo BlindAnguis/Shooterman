@@ -56,6 +56,20 @@ void JoinMenu::handleNewText(sf::Uint32 newChar) {
     // Backspace
     mIpString = mIpString.substr(0, mIpString.size() - 1);
     mIpText->removeChar();
+  } else if (newChar == 13) {
+    // Enter
+    while (mIpInterface.getNumberOfSubscribers() == 0) {
+      sf::sleep(sf::milliseconds(5));
+    }
+
+    IpMessage ipm(mIpString, 1337);
+    mIpInterface.pushMessage(ipm.pack());
+
+    GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
+    Subscriber gameStateSubscriber;
+    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+    gameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
   } else if (mIpString.length() < 15) {
     mIpString += newChar;
     mIpText->addChar(newChar);

@@ -23,6 +23,7 @@
 #define PLAYER_DATA         220
 #define PLAYER_USERNAMES    230
 #define PLAYABLE_CHARACTERS 231
+#define MAP_DATA            232
 
 // Internal Client messages
 #define IP_MESSAGE          1000

@@ -12,7 +12,7 @@ public:
   MapCreator(EntityManager *entityManager, GridSystem *gridSystem);
   ~MapCreator();
 
-  void createMap(std::array<std::array<int, 32>, 32> gameMap);
+  void createMap(std::array<std::array<Textures, 32>, 32> gameMap);
 
 private:
   EntityManager *mEntityManager;

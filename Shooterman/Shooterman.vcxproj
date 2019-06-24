@@ -92,6 +92,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\SFML\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Client\GUI\Hud\Hud.cpp" />
+    <ClCompile Include="Client\GUI\MapEditor\MapEditor.cpp" />
     <ClCompile Include="Client\GUI\InfoOverlay\InfoOverlay.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiButton.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiComponent.cpp" />
@@ -169,6 +171,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiText.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
+    <ClCompile Include="Client\Map.cpp" />
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
@@ -178,6 +181,7 @@
     <ClCompile Include="Common\Messages\InfoMessage.cpp" />
     <ClCompile Include="Common\Messages\InputMessage.cpp" />
     <ClCompile Include="Common\Messages\LobbyDataMessage.cpp" />
+    <ClCompile Include="Common\Messages\MapMessage.cpp" />
     <ClCompile Include="Common\Messages\MouseMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayableCharactersMessage.cpp" />
     <ClCompile Include="Common\Messages\PlayerDataMessage.cpp" />
@@ -237,6 +241,7 @@
   <ItemGroup>
     <ClInclude Include="Client\GUI\Hud\Hud.h" />
     <ClInclude Include="Client\GUI\InfoOverlay\InfoOverlay.h" />
+    <ClInclude Include="Client\GUI\MapEditor\MapEditor.h" />
     <ClInclude Include="Client\GUI\Resources\GuiImageButton.h" />
     <ClInclude Include="Client\GUI\Resources\GuiInputText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiResourceManager.h" />
@@ -249,10 +254,12 @@
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
+    <ClInclude Include="Client\Map.h" />
     <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
     <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
     <ClInclude Include="Common\Messages\InfoMessage.h" />
     <ClInclude Include="Common\Messages\LobbyDataMessage.h" />
+    <ClInclude Include="Common\Messages\MapMessage.h" />
     <ClInclude Include="Common\Messages\PlayableCharactersMessage.h" />
     <ClInclude Include="Common\Messages\PlayerDataMessage.h" />
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />

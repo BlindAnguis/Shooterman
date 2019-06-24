@@ -25,7 +25,7 @@
 class Engine : Trace {
 public:
   Engine();
-  Engine(std::array<std::array<int, 32>, 32> gameMap);
+  Engine(std::array<std::array<Textures, 32>, 32> gameMap);
   ~Engine();
   void update();
   // EntityFactory entityFactory;
@@ -36,6 +36,8 @@ public:
     mInputSystem->setPlayers(mConnectedClients); 
     mMovementSystem->setPlayers(mConnectedClients);
   }
+  void setMap(std::array<std::array<Textures, 32>, 32> map);
+
   std::shared_ptr<std::map<int, Player*>> getConnectedClients() { return mConnectedClients; }
 
   void collectPlayerData();
@@ -72,7 +74,7 @@ private:
 
   Subscriber mPlayerDataSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
-  std::array<std::array<int, 32>, 32> mGameMap;
+  std::array<std::array<Textures, 32>, 32> mGameMap;
   std::array<sf::Texture*, 99> mTextures;
 
   void destroyEntity(int entityId);

@@ -14,7 +14,9 @@ GuiComponent::GuiComponent(GuiComponentPosition guiComponentPosition)
   mBoundingBox.setFillColor(sf::Color::Transparent);
 }
 
-bool GuiComponent::checkMouse(sf::Vector2f mousePosition) { return false; }
+bool GuiComponent::checkMouse(sf::Vector2f mousePosition) { 
+  return false; 
+}
 
 int GuiComponent::getXPosition() {
   return mXPosition;

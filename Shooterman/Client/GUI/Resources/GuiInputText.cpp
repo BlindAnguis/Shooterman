@@ -37,18 +37,16 @@ void GuiInputText::render(std::shared_ptr<sf::RenderWindow> window, int xPositio
 }
 
 bool GuiInputText::checkMouse(sf::Vector2f mousePosition) {
-  bool mousePressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
-  if (mousePosition.x >= mXPosition && mousePosition.x < mXPosition + mWidth &&
-    mousePosition.y >= mYPosition && mousePosition.y < mYPosition + mHeight) {
-    if (mousePressed) {
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+    if (mousePosition.x >= mXPosition && mousePosition.x < mXPosition + mWidth &&
+      mousePosition.y >= mYPosition && mousePosition.y < mYPosition + mHeight) {
       if (mReceiveInputEnabled) {
         mReceiveInput = true;
       }
       return true;
+    } else if (mReceiveInputEnabled) {
+      mReceiveInput = false;
     }
-  }
-  if (mReceiveInputEnabled) {
-    mReceiveInput = false;
   }
   return false;
 }

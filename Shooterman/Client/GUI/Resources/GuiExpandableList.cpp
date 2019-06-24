@@ -7,18 +7,16 @@ GuiExpandableList::GuiExpandableList(GuiComponentPosition guiComponentPosition, 
 
   mList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::HORIZONTAL);
 
-  mExpandButton = std::make_shared<GuiButton>(GuiComponentPosition::LEFT, "+", [this]() {
+  mExpandButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "+ " + header, [=]() {
     mExpanded = !mExpanded;
     if (mExpanded) {
-      mExpandButton->setText("-");
+      mExpandButton->setText("- " + header);
     } else {
-      mExpandButton->setText("+");
+      mExpandButton->setText("+ " + header);
     }
   }, 36, font);
 
-  mHeader = std::make_shared<GuiText>(GuiComponentPosition::LEFT, header, 36, font);
   mList->addGuiComponent(mExpandButton);
-  mList->addGuiComponent(mHeader);
   mGuiComponentList.emplace_back(mList);
 
 }
@@ -57,7 +55,10 @@ void GuiExpandableList::clear() {
 
 bool GuiExpandableList::checkMouse(sf::Vector2f mousePosition) {
   for (const auto &component : mGuiComponentList) {
-    component->checkMouse(mousePosition);
+    bool pressed = component->checkMouse(mousePosition);
+    if (pressed) {
+      return true;
+    }
     if (!mExpanded) {
       break;
     }

@@ -39,10 +39,13 @@ void GuiList::render(std::shared_ptr<sf::RenderWindow> window, int xPosition, in
 }
 
 bool GuiList::checkMouse(sf::Vector2f mousePosition) {
+  bool pressed = false;
   for (const auto &component : mGuiComponentList) {
-    component->checkMouse(mousePosition);
+    if (component->checkMouse(mousePosition)) {
+      pressed = true;
+    }
   }
-  return false;
+  return pressed;
 }
 
 void GuiList::addGuiComponent(std::shared_ptr<GuiComponent> guiComponent) {

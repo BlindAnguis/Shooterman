@@ -36,11 +36,15 @@ GuiResourceManager::GuiResourceManager() {
   loadSpriteTexture(Textures::CharacterLeatherCap, "CharacterLeatherCap");
   loadSpriteTexture(Textures::CharacterMetalHelmet, "CharacterMetalHelmet");
   loadSpriteTexture(Textures::CharacterMage, "mage");
+  mSpriteTextureRectMap[Textures::CharacterMage] = sf::IntRect(0, 64 * 10 + 14, 64, 50);
   loadSpriteTexture(Textures::CharacterKnight, "knight3");
+  mSpriteTextureRectMap[Textures::CharacterKnight] = sf::IntRect(0, 64 * 10 + 14, 64, 50);
   loadSpriteTexture(Textures::CharacterSpearman, "spearman");
+  mSpriteTextureRectMap[Textures::CharacterSpearman] = sf::IntRect(0, 64 * 10 + 14, 64, 50);
 
   // Walls
   loadSpriteTexture(Textures::HorizontalWall1, "wall1");
+  mSpriteTextureRectMap[Textures::HorizontalWall1] = sf::IntRect(0, 0, 32, 32);
   loadSpriteTexture(Textures::VerticalWall1, "verticalWall1");
 
   // Ammo
@@ -50,8 +54,11 @@ GuiResourceManager::GuiResourceManager() {
 
   // Floors
   loadSpriteTexture(Textures::FloorWhole, "fantasy-tileset");
+  mSpriteTextureRectMap[Textures::FloorWhole] = sf::IntRect(32 * 2, 32 * 1, 32, 32);
   loadSpriteTexture(Textures::FloorCracked, "fantasy-tileset");
+  mSpriteTextureRectMap[Textures::FloorCracked] = sf::IntRect(32 * 3, 32 * 1, 32, 32);
   loadSpriteTexture(Textures::FloorSpikes, "fantasy-tileset");
+  mSpriteTextureRectMap[Textures::FloorSpikes] = sf::IntRect(32 * 3, 32 * 3, 32, 32);
 
   // Other
   loadSpriteTexture(Textures::Tombstone, "Tombstone");
@@ -73,6 +80,9 @@ sf::Sprite GuiResourceManager::createSprite(GUI_TEXTURE texture) {
 
 sf::Sprite GuiResourceManager::createSprite(Textures texture) {
   sf::Sprite sprite(mSpriteTextureMap[texture]);
+  if (mSpriteTextureRectMap.find(texture) != mSpriteTextureRectMap.end()) {
+    sprite.setTextureRect(mSpriteTextureRectMap[texture]);
+  }
   return sprite;
 }
 

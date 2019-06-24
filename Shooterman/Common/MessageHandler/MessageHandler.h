@@ -35,14 +35,7 @@ private:
   
   int mCurrentId;
   std::mutex mIdGeneratorLock;
-  std::mutex mSystemSubscriberLock;
-  std::mutex mInputSubscriberLock;
   std::mutex mGameStateSubscriberLock;
-  std::mutex mSoundSubscriberLock;
-  std::list<Subscriber*> mSystemSubscriberList;
-  std::list<Subscriber*> mInputSubscriberList;
-  std::list<Subscriber*> mGameStateSubscriberList;
-  std::list<Subscriber*> mSoundSubscriberList;
 
   std::map<std::string, Interface*> mPublishedInterfacesMap;
 };

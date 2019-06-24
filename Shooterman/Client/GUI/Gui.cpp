@@ -9,6 +9,7 @@
 #include "OptionsMenu/OptionsMenu.h" 
 #include "DebugMenu/DebugMenu.h"
 #include "PauseMenu/PauseMenu.h"
+#include "MapEditor/MapEditor.h"
 #include "../../Common/Constants.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
@@ -37,9 +38,10 @@ void Gui::run() {
   mMenuMap.emplace(GAME_STATE::OPTIONS, std::list<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>() });
   mMenuMap.emplace(GAME_STATE::PAUSE, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>() });
   mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
+  mMenuMap.emplace(GAME_STATE::MAP_EDITOR, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MapEditor>() });
 
   // This needs to be after the DebugMenu is created
-  while(!setupDebugMessages("Client", "Gui")) {
+  while (!setupDebugMessages("Client", "Gui")) {
     sf::sleep(sf::milliseconds(5));
   }
 
@@ -83,6 +85,7 @@ void Gui::render() {
       sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS - currentFrameLength));
     } else {
       // No need to sleep, frame took to long
+      TRACE_DEBUG3("Frame length: " << currentFrameLength << " ms");
     }
   }
   mWindowOpen = false;
@@ -150,13 +153,13 @@ bool Gui::renderGameState(GAME_STATE gameState) {
   mWindow->clear(sf::Color::White);
   sf::Vector2f mousePosition = mWindow->mapPixelToCoords(sf::Mouse::getPosition(*mWindow));
   for (auto menu : it->second) {
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && mWindow->hasFocus()) {
+    if (mWindow->hasFocus()) {
       if (!mLeftButtonAlreadyPressed) {
-        menu->checkMouse(mousePosition);
+        mLeftButtonAlreadyPressed = menu->checkMouse(mousePosition);
       }
-      mLeftButtonAlreadyPressed = true;
-    } else {
-      mLeftButtonAlreadyPressed = false;
+      if (!sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        mLeftButtonAlreadyPressed = false;
+      }
     }
     mRenderNeeded = menu->render(mWindow, mousePosition);
     mInfoOverlay.render(mWindow, mousePosition);

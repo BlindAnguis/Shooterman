@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <list>
+#include <array>
 #include <SFML\Network.hpp>
 #include "../../Common/Trace.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
@@ -16,6 +17,10 @@ public:
   void startListening();
   std::shared_ptr<std::map<int, Player*>> stopListening();
   bool isListening();
+
+  bool hasMapData();
+  std::array<std::array<Textures, 32>, 32> getMapData();
+
 private:
   void listen();
   int getNextID() {
@@ -27,6 +32,7 @@ private:
   sf::TcpListener* mListener;
   Subscriber mPlayerLobbyDataSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
+  std::string mMapData;
 
   void handlePlayerLobbyData();
 };

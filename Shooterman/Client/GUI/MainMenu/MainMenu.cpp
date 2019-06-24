@@ -20,6 +20,7 @@ MainMenu::MainMenu() {
 
   mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Host Game", GAME_STATE::LOBBY));
   mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Join Game", GAME_STATE::JOIN));
+  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Map Editor", GAME_STATE::MAP_EDITOR));
   mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS));
 
   mainMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", []() {

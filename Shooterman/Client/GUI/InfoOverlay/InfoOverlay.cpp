@@ -51,7 +51,7 @@ void InfoOverlay::handleInfoMessages() {
 
 bool InfoOverlay::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   handleInfoMessages();
-  if (mClock.getElapsedTime() < sf::seconds(mNumberOfSecToShowMsg)) {
+  if (mClock.getElapsedTime() < sf::seconds((float)mNumberOfSecToShowMsg)) {
     mGuiFrame->render(window);
   }
   return true;

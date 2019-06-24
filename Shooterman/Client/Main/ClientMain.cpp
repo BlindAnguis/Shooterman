@@ -102,11 +102,11 @@ ClientMain::ClientMain() {
         }
 		    break;
 	      }
-      case GAME_STATE::OPTIONS: {
-        //TRACE_INFO("Setting GAME_STATE to GAME_STATE::OPTIONS");
+      case GAME_STATE::OPTIONS:
 		    break;
-	      }
       case GAME_STATE::PAUSE: {
+        break;
+      case GAME_STATE::MAP_EDITOR:
         break;
       }
       default:
@@ -170,7 +170,9 @@ void ClientMain::handleGameStateMessages() {
       GameStateMessage gsm(gameStateMessage);
 
       if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
-        mGameStateStack.pop();
+        if (mGameStateStack.size() > 1) {
+          mGameStateStack.pop();
+        }
       } else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
         mGameStateStack = std::stack<GAME_STATE>();
         mGameStateStack.push(GAME_STATE::MAIN_MENU);
