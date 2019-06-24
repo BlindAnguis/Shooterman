@@ -159,7 +159,7 @@ bool Gui::renderGameState(GAME_STATE gameState) {
       mLeftButtonAlreadyPressed = false;
     }
     mRenderNeeded = menu->render(mWindow, mousePosition);
-
+    mInfoOverlay.render(mWindow, mousePosition);
     if (!mRenderNeeded) {
       return mRenderNeeded;
     }

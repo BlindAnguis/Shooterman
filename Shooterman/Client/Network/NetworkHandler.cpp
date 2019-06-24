@@ -16,6 +16,7 @@
 #include "../../Common/Messages/SpriteCacheMessage.h"
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
 #include "../../Common/Messages/SoundMessage.h"
+#include "../../Common/Messages/InfoMessage.h"
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
@@ -41,6 +42,9 @@ void NetworkHandler::run() {
   // Failed to connect to server
   if (connectionStatus != sf::Socket::Status::Done) {
     TRACE_ERROR("Connection failed! " << connectionStatus);
+    InfoMessage msg("Connection failed.");
+    mInfoMessageSubscriber.reverseSendMessage(msg.pack());
+    
     GameStateMessage gsm(GAME_STATE::JOIN);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
     MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
@@ -80,6 +84,9 @@ void NetworkHandler::setupSubscribersAndInterfaces() {
   }
 
   while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  while (!MessageHandler::get().subscribeTo("InfoMessage", &mInfoMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   TRACE_FUNC_EXIT();
@@ -232,6 +239,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo("InfoMessage", &mInfoMessageSubscriber);
   TRACE_FUNC_EXIT()
 }
 

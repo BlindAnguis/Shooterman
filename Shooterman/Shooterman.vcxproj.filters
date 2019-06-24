@@ -85,6 +85,8 @@
     <ClCompile Include="Common\Messages\PlayableCharactersMessage.cpp" />
     <ClCompile Include="Common\Messages\CharacterChoosenMessage.cpp" />
     <ClCompile Include="Common\Messages\ServerInternal\ClientDisconnectedMessage.cpp" />
+    <ClCompile Include="Client\GUI\InfoOverlay\InfoOverlay.cpp" />
+    <ClCompile Include="Common\Messages\InfoMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -185,6 +187,8 @@
     <ClInclude Include="Common\Messages\PlayableCharactersMessage.h" />
     <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
     <ClInclude Include="Common\Messages\ServerInternal\ClientDisconnectedMessage.h" />
+    <ClInclude Include="Client\GUI\InfoOverlay\InfoOverlay.h" />
+    <ClInclude Include="Common\Messages\InfoMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

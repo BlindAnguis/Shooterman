@@ -26,6 +26,7 @@
 
 // Internal Client messages
 #define IP_MESSAGE          1000
+#define INFO_MESSAGE        1001
 
 // Internal Server messages
 #define CLIENT_DISCONNECTED 2000

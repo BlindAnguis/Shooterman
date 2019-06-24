@@ -21,3 +21,10 @@ std::shared_ptr<GuiButton> GCF::createGameStateButton(GuiComponentPosition guiCo
   }
   return gameStateButton;
 }
+
+
+std::shared_ptr<GuiText> GCF::createTextBox(GuiComponentPosition guiComponentPosition, std::string text) {
+  auto heading = std::make_shared<GuiText>(guiComponentPosition, text, 42);
+  heading->setOutlineColor(sf::Color::Red);
+  return heading;
+}

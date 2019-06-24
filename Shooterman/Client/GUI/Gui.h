@@ -11,6 +11,7 @@
 #include "../../Common/MessageHandler/Subscriber.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Messages/GameStateMessage.h"
+#include "InfoOverlay/InfoOverlay.h"
 
 class Gui : Trace {
 public:
@@ -32,6 +33,7 @@ private:
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
   std::map<GAME_STATE, std::list<std::shared_ptr<MenuBase>>> mMenuMap;
+  InfoOverlay mInfoOverlay;
   sf::Clock mRenderClock;
 
   void run();
