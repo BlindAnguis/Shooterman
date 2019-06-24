@@ -46,7 +46,7 @@ void JoinMenu::init() {
 
 void JoinMenu::uninit() {
   sf::Packet shutdownRequest;
-  shutdownRequest << 0;
+  shutdownRequest << SHUT_DOWN;
   mIpInterface.pushMessage(shutdownRequest);
   MessageHandler::get().unpublishInterface("ClientIpList");
 }
