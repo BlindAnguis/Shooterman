@@ -207,11 +207,6 @@ void NetworkHandler::handlePackets() {
       } else {
         TRACE_ERROR("Packet not known: " << id);
       }
-    } else {
-      TRACE_ERROR("Lost connection to server!");
-      mRunning = false;
-      GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-      mGameStateSubscriber.reverseSendMessage(gsm.pack());
     }
     sf::sleep(sf::milliseconds(1));
 
