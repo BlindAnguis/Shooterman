@@ -4,12 +4,20 @@
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
 #include "../../Common/Messages/SoundMessage.h"
 
-#define MAGE_MAX_VELOCITY 4.5f
 #define KNIGHT_MAX_VELOCITY 4.8f
+#define KNIGHT_MAX_HEALTH 200
+#define KNIGHT_MAX_STAMINA 100
+#define KNIGHT_ATTACK_SPEED 400
+
 #define SPEARMAN_MAX_VELOCITY 4.65f
+
+#define MAGE_MAX_VELOCITY 4.5f
+#define MAGE_MAX_HEALTH 100
+#define MAGE_MAX_MANA 100
 #define MAGE_MANA_COST 20
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
+#define MAGE_ATTACK_SPEED 500
 
 EntityCreator::EntityCreator() :
   mEntityManager(&EntityManager::get()),
@@ -139,10 +147,18 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
   auto cc = mClockComponentManager->addComponent(player->id);
 
   auto hc = mHealthComponentManager->addComponent(player->id);
+  hc->maxHealth = health;
+  hc->currentHealth = hc->maxHealth;
+  hc->isAlive = true;
 
   auto pc = mPlayerComponentManager->addComponent(player->id);
   pc->attackSpeed = attackSpeed;
+  pc->invinsible = false;
+  pc->nrOfDeaths = 0;
+  pc->nrOfKills = 0;
+  pc->score = 0;
   pc->state = PlayerState::Idle;
+  pc->superAttacks = 0;
 
   mGridSystem->addEntity(player->id, (sf::Vector2i)rc->sprite.getPosition());
 
@@ -151,17 +167,15 @@ Entity* EntityCreator::createPlayerBase(float maxVelocity, Textures textureType,
 
 Entity* EntityCreator::createMage(sf::Vector2f position) {
   
-  Entity* mage = createPlayerBase(MAGE_MAX_VELOCITY, Textures::CharacterMage, position, 100, 500);
+  Entity* mage = createPlayerBase(MAGE_MAX_VELOCITY, Textures::CharacterMage, position, MAGE_MAX_HEALTH, MAGE_ATTACK_SPEED);
   
   auto rc = mRenderComponentManager->getComponent(mage->id);
   auto ac = mAnimationComponentManager->getComponent(mage->id);
-  auto hc = mHealthComponentManager->getComponent(mage->id);
-  hc->maxHealth = 100;
-  hc->currentHealth = hc->maxHealth;
-  hc->isAlive = true;
   auto mc = ComponentManager<ManaComponent>::get().addComponent(mage->id);
-  mc->maxMana = 100;
+  mc->maxMana = MAGE_MAX_MANA;
   mc->currentMana = mc->maxMana;
+  auto pc = mPlayerComponentManager->getComponent(mage->id);
+  pc->playerClass = PlayerClass::Mage;
   
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
@@ -192,7 +206,9 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
     TRACE_INFO("Super attack finished");
     auto player = mPlayerComponentManager->getComponent(entityId);
     player->invinsible = false;
-    player->superAttacks--;
+    if (player->superAttacks >= 0) {
+      player->superAttacks--;
+    }
     player->state = PlayerState::Idle;
     ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
   };
@@ -477,17 +493,15 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
 
 Entity* EntityCreator::createKnight(sf::Vector2f position) {
 
-  Entity* knight = createPlayerBase(KNIGHT_MAX_VELOCITY, Textures::CharacterKnight, position, 100, 400);
+  Entity* knight = createPlayerBase(KNIGHT_MAX_VELOCITY, Textures::CharacterKnight, position, KNIGHT_MAX_HEALTH, KNIGHT_ATTACK_SPEED);
 
   auto rc = mRenderComponentManager->getComponent(knight->id);
   auto ac = mAnimationComponentManager->getComponent(knight->id);
-  auto hc = mHealthComponentManager->getComponent(knight->id);
-  hc->maxHealth = 200;
-  hc->currentHealth = hc->maxHealth;
-  hc->isAlive = true;
   auto sc = ComponentManager<StaminaComponent>::get().addComponent(knight->id);
-  sc->maxStamina = 100;
+  sc->maxStamina = KNIGHT_MAX_STAMINA;
   sc->currentStamina = sc->maxStamina;
+  auto pc = mPlayerComponentManager->getComponent(knight->id);
+  pc->playerClass = PlayerClass::Knight;
 
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
