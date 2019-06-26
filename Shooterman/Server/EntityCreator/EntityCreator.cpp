@@ -4,21 +4,6 @@
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
 #include "../../Common/Messages/SoundMessage.h"
 
-#define KNIGHT_MAX_VELOCITY 4.8f
-#define KNIGHT_MAX_HEALTH 200
-#define KNIGHT_MAX_STAMINA 100
-#define KNIGHT_ATTACK_SPEED 400
-
-#define SPEARMAN_MAX_VELOCITY 4.65f
-
-#define MAGE_MAX_VELOCITY 4.5f
-#define MAGE_MAX_HEALTH 100
-#define MAGE_MAX_MANA 100
-#define MAGE_MANA_COST 20
-#define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
-#define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
-#define MAGE_ATTACK_SPEED 500
-
 EntityCreator::EntityCreator() :
   mEntityManager(&EntityManager::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
@@ -603,18 +588,16 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
 }
 
 Entity* EntityCreator::createSpearman(sf::Vector2f position) {
-
-  Entity* spearman = createPlayerBase(SPEARMAN_MAX_VELOCITY, Textures::CharacterSpearman, position, 100, 450);
+  Entity* spearman = createPlayerBase(SPEARMAN_MAX_VELOCITY, Textures::CharacterSpearman, position, SPEARMAN_MAX_HEALTH, SPEARMAN_ATTACK_SPEED);
 
   auto rc = mRenderComponentManager->getComponent(spearman->id);
   auto ac = mAnimationComponentManager->getComponent(spearman->id);
   auto hc = mHealthComponentManager->getComponent(spearman->id);
-  hc->maxHealth = 150;
-  hc->currentHealth = hc->maxHealth;
-  hc->isAlive = true;
   auto sc = ComponentManager<StaminaComponent>::get().addComponent(spearman->id);
-  sc->maxStamina = 100;
+  sc->maxStamina = SPEARMAN_MAX_STAMINA;
   sc->currentStamina = sc->maxStamina;
+  auto pc = mPlayerComponentManager->getComponent(spearman->id);
+  pc->playerClass = PlayerClass::Spearman;
 
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
@@ -723,13 +706,15 @@ Entity* EntityCreator::createRandomPickup() {
   TRACE_DEBUG1("Creating a pickup of type: " << static_cast<int>(type) << " with id: " << pickup->id);
   auto pc = ComponentManager<PickupComponent>::get().addComponent(pickup->id);
   pc->type = type;
-  pc->addedEffect = 50;
 
   auto cc = ComponentManager<CollisionComponent>::get().addComponent(pickup->id);
   cc->collided = false;
   cc->destroyOnCollision = true;
 
   auto rc = ComponentManager<RenderComponent>::get().addComponent(pickup->id);
+  rc->visible = true;
+  rc->isDynamic = true;
+
   switch (pc->type)
   {
   case PickupType::HealthPotion: {
@@ -738,12 +723,14 @@ Entity* EntityCreator::createRandomPickup() {
     rc->sprite = sf::Sprite(*mTextures[rc->textureId]);
     auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(pickup->id);
     hcc->healthChange = pc->addedEffect;
+    pc->addedEffect = HEALTH_POTION_EFFECT;
     break;
   }
   case PickupType::ManaPotion: {
     TRACE_DEBUG1("Creating mana potion created! Type: " << static_cast<int>(pc->type) << " id: " << pickup->id);
     rc->textureId = Textures::ManaPotion;
     rc->sprite = sf::Sprite(*mTextures[rc->textureId]);
+    pc->addedEffect = MANA_POTION_EFFECT;
     break;
   }
   case PickupType::Ammo: {
@@ -753,10 +740,9 @@ Entity* EntityCreator::createRandomPickup() {
     break;
   }
   default:
+    TRACE_ERROR("Created a pickup of unknown type: " << (int)pc->type);
     break;
   }
-  rc->visible = true;
-  rc->isDynamic = true;
 
   auto gridPositions = mGridSystem->getEmptyGridPositions();
   if (gridPositions.size() == 0) {
