@@ -15,6 +15,7 @@ private:
   sf::Clock mClock;
   Interface mInfoMessageInterface;
   std::shared_ptr<GuiText> mTextBox;
+  int mNumberOfSecToShowMsg;
   void publishInfoMessagesInterface();
 };
 

@@ -42,7 +42,7 @@ void NetworkHandler::run() {
   // Failed to connect to server
   if (connectionStatus != sf::Socket::Status::Done) {
     TRACE_ERROR("Connection failed! " << connectionStatus);
-    InfoMessage msg("Connection failed.");
+    InfoMessage msg("Connection failed.", 3);
     mInfoMessageSubscriber.reverseSendMessage(msg.pack());
     
     GameStateMessage gsm(GAME_STATE::JOIN);

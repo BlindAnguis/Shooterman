@@ -38,6 +38,7 @@ void InfoOverlay::handleInfoMessages() {
     if (id == INFO_MESSAGE) {
       InfoMessage msg(infoMessage);
       mTextBox->setText(msg.getMessage());
+      mNumberOfSecToShowMsg = msg.getMsgDuration();
       mClock.restart();
 	  
     }
@@ -50,7 +51,7 @@ void InfoOverlay::handleInfoMessages() {
 
 bool InfoOverlay::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   handleInfoMessages();
-  if (mClock.getElapsedTime() < sf::seconds(3)) {
+  if (mClock.getElapsedTime() < sf::seconds(mNumberOfSecToShowMsg)) {
     mGuiFrame->render(window);
   }
   return true;
