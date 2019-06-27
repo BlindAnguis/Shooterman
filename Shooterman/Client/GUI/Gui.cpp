@@ -60,6 +60,7 @@ void Gui::run() {
   MessageHandler::get().unpublishInterface("MousePosition");
 
   GuiResourceManager::getInstance().clear();
+  mMenuMap.clear();
   TRACE_FUNC_EXIT();
 }
 

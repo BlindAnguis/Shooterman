@@ -21,6 +21,8 @@ private:
   bool mIsSubscribed;
   sf::Packet mLatestSpriteMessage;
   std::vector<sf::Sprite> mCachedSprites;
+  sf::RenderTexture mRenderTexture;
+  sf::Sprite mCachedSprite;
 
   void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData);
   void buildSpriteCache();

@@ -57,9 +57,7 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
   }
 
   if (messageID == SPRITE_LIST) {
-    for (auto cachedSprite : mCachedSprites) {
-      window->draw(cachedSprite);
-    }
+    window->draw(mCachedSprite);
 
     int position = mSpriteListMessage.getSize() - 1;
     SpriteData spriteData = mSpriteListMessage.getSpriteData(position);
@@ -101,4 +99,17 @@ void PlayWindow::buildSpriteCache() {
     cachedSpriteListPosition--;
     spriteData = mSpriteListCacheMessage.getSpriteData(cachedSpriteListPosition);
   }
+
+  if (!mRenderTexture.create(1024, 1024)) {
+    TRACE_ERROR("Could not create Render Texture!");
+    return;
+  }
+
+  mRenderTexture.clear();
+  for (auto sprite : mCachedSprites) {
+    mRenderTexture.draw(sprite);
+  }
+  mRenderTexture.display();
+
+  mCachedSprite = sf::Sprite(mRenderTexture.getTexture());
 }
