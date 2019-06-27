@@ -4,8 +4,6 @@
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
 #include "../../Common/Messages/SoundMessage.h"
 
-<<<<<<< Updated upstream
-=======
 #define MAGE_MAX_VELOCITY 4.5f
 #define KNIGHT_MAX_VELOCITY 4.8f
 #define SPEARMAN_MAX_VELOCITY 4.65f
@@ -14,7 +12,6 @@
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
 
->>>>>>> Stashed changes
 EntityCreator::EntityCreator() :
   mEntityManager(&EntityManager::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
@@ -672,12 +669,8 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
 }
 
 Entity* EntityCreator::createSpearman(sf::Vector2f position) {
-<<<<<<< Updated upstream
   Entity* spearman = createPlayerBase(SPEARMAN_MAX_VELOCITY, Textures::CharacterSpearman, position, SPEARMAN_MAX_HEALTH, SPEARMAN_ATTACK_SPEED);
-=======
-  
-  Entity* spearman = createPlayerBase(SPEARMAN_MAX_VELOCITY, Textures::CharacterSpearman, position, 100, 450);
->>>>>>> Stashed changes
+
 
   auto rc = mRenderComponentManager->getComponent(spearman->id);
   auto ac = mAnimationComponentManager->getComponent(spearman->id);

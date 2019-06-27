@@ -40,12 +40,9 @@ GuiResourceManager::GuiResourceManager() {
   loadSpriteTexture(Textures::CharacterKnight, "knight3");
   mSpriteTextureRectMap[Textures::CharacterKnight] = sf::IntRect(0, 64 * 10 + 14, 64, 50);
   loadSpriteTexture(Textures::CharacterSpearman, "spearman");
-<<<<<<< Updated upstream
   mSpriteTextureRectMap[Textures::CharacterSpearman] = sf::IntRect(0, 64 * 10 + 14, 64, 50);
-=======
   loadSpriteTexture(Textures::CharacterArcher, "archer");
->>>>>>> Stashed changes
-
+  mSpriteTextureRectMap[Textures::CharacterArcher] = sf::IntRect(0, 64 * 10 + 14, 64, 50);
   // Walls
   loadSpriteTexture(Textures::HorizontalWall1, "wall1");
   mSpriteTextureRectMap[Textures::HorizontalWall1] = sf::IntRect(0, 0, 32, 32);
