@@ -42,6 +42,8 @@ JoinMenu::~JoinMenu() { uninit(); }
 
 void JoinMenu::init() {
   MessageHandler::get().publishInterface("ClientIpList", &mIpInterface);
+  mIpString = "";
+  mIpText->setText("");
 }
 
 void JoinMenu::uninit() {

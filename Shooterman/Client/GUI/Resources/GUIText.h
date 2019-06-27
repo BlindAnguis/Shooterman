@@ -13,7 +13,7 @@ public:
 
   virtual void render(std::shared_ptr<sf::RenderWindow> window, int xPosition, int yPosition, int width, int height) override;
   
-  void setText(std::string newText);
+  virtual void setText(std::string newText);
 
   void setPosition(float xPosition, float yPosition);
   void setOutlineColor(sf::Color newColor);

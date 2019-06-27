@@ -51,6 +51,11 @@ bool GuiInputText::checkMouse(sf::Vector2f mousePosition) {
   return false;
 }
 
+void GuiInputText::setText(std::string newText) {
+  mText.setString(newText);
+  mCurrentText = newText;
+}
+
 void GuiInputText::addChar(sf::Uint32 newChar) {
   if (mReceiveInput) {
     mCurrentText += newChar;

@@ -37,10 +37,15 @@ void NetworkHandler::run() {
   TRACE_FUNC_ENTER();
   setupSubscribersAndInterfaces();
 
-  sf::Socket::Status connectionStatus = setupSocketConnection();
+  CONNECTION_STATUS connectionStatus = setupSocketConnection();
+
+  if (connectionStatus == CONNECTION_STATUS::Cancel) {
+    MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+    return;
+  }
 
   // Failed to connect to server
-  if (connectionStatus != sf::Socket::Status::Done) {
+  if (connectionStatus != CONNECTION_STATUS::Done) {
     TRACE_ERROR("Connection failed! " << connectionStatus);
     InfoMessage msg("Connection failed.", 3);
     mInfoMessageSubscriber.reverseSendMessage(msg.pack());
@@ -92,9 +97,9 @@ void NetworkHandler::setupSubscribersAndInterfaces() {
   TRACE_FUNC_EXIT();
 }
 
-sf::Socket::Status NetworkHandler::setupSocketConnection() {
+CONNECTION_STATUS NetworkHandler::setupSocketConnection() {
   TRACE_FUNC_ENTER();
-  sf::Socket::Status connectionStatus = sf::Socket::Status::Disconnected;
+  CONNECTION_STATUS connectionStatus = CONNECTION_STATUS::Cancel;
 
   // Wait for IP address
   std::queue<sf::Packet> messages;
@@ -124,13 +129,37 @@ sf::Socket::Status NetworkHandler::setupSocketConnection() {
   int connectionAttempts = 10;
   // Try to connect multiple times
   while (connectionStatus != sf::Socket::Status::Done && connectionAttempts > 0) {
-    connectionStatus = mSocket.connect(sf::IpAddress(ipm.getIp()), ipm.getPort(), sf::milliseconds(100));
+    connectionStatus = (CONNECTION_STATUS)mSocket.connect(sf::IpAddress(ipm.getIp()), ipm.getPort(), sf::milliseconds(100));
     connectionAttempts--;
     sf::sleep(sf::milliseconds(500));
+
+    if (!checkIfConnectionIsCancelled()) {
+      return CONNECTION_STATUS::Cancel;
+    }
   }
 
   TRACE_FUNC_EXIT();
   return connectionStatus;
+}
+
+bool NetworkHandler::checkIfConnectionIsCancelled() {
+  auto gameStateMessageQueue = mGameStateSubscriber.getMessageQueue();
+  sf::Packet packet;
+  while (!gameStateMessageQueue.empty()) {
+    packet = gameStateMessageQueue.front();
+    gameStateMessageQueue.pop();
+  }
+  if (packet.getDataSize() > 0) {
+    int id;
+    packet >> id;
+    if (id == CHANGE_GAME_STATE) {
+      GameStateMessage gsm(packet);
+      if (gsm.getGameState() != GAME_STATE::CLIENT_LOBBY) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 void NetworkHandler::handlePackets() {

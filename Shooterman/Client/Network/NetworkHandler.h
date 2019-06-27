@@ -7,6 +7,8 @@
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/Trace.h"
 
+enum CONNECTION_STATUS { Done, NotReady, Partial, Disconnected, Error, Cancel };
+
 class NetworkHandler : Trace {
 public:
   NetworkHandler();
@@ -32,7 +34,8 @@ private:
 
   void run();
   void setupSubscribersAndInterfaces();
-  sf::Socket::Status setupSocketConnection();
+  CONNECTION_STATUS setupSocketConnection();
+  bool checkIfConnectionIsCancelled();
   void handlePackets();
   void teardownSubscribersAndInterfaces();
 };
