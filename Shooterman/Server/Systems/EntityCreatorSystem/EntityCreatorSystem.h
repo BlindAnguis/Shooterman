@@ -8,6 +8,7 @@ enum class EntityType {
   PlayerMage,
   PlayerKnight,
   PlayerSpearman,
+  PlayerArcher,
   Bullet,
   LightningBolt,
   LightningStrike,

@@ -66,8 +66,10 @@ private:
   Entity* createMage(sf::Vector2f position);
   Entity* createKnight(sf::Vector2f position);
   Entity* createSpearman(sf::Vector2f position);
+  Entity* createArcher(sf::Vector2f position);
   void loadTexture(Textures textureId, std::string fileName);
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
+  Entity* createArrow(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createRandomLightningBolts();
   Subscriber mSoundSubscriber;

@@ -53,6 +53,8 @@ Entity* EntityCreatorSystem::createEntity(EntityType type, sf::Vector2f pos, std
     return mEntityCreator->createPlayer(PlayerClass::Knight, pos);
   case EntityType::PlayerSpearman:
     return mEntityCreator->createPlayer(PlayerClass::Spearman, pos);
+  case EntityType::PlayerArcher:
+    return mEntityCreator->createPlayer(PlayerClass::Archer, pos);
   case EntityType::Bullet:
     break;
   case EntityType::LightningBolt:

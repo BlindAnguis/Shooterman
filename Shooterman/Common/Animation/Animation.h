@@ -33,7 +33,10 @@ public:
     mCurrentAnimationFrame = 0;
   }
 
-  void setAttackCallback(const std::function<void(int entityId)>& attack) { mAttackCallback = attack; }
+  void setAttackCallback(const std::function<void(int entityId)>& attack, int attackFrame = 3) { 
+    mAttackCallback = attack;
+    mAttackingFrame = attackFrame;
+  }
   void setAttackFinishedCallback(const std::function<void(int entityId)>& attackFinished) { mAttackFinishedCallback = attackFinished; }
 
 private:
@@ -46,5 +49,6 @@ private:
   int mEntityId;
   std::function<void(int entityId)> mAttackCallback = nullptr;
   std::function<void(int entityId)> mAttackFinishedCallback = nullptr;
+  int mAttackingFrame;
 };
 

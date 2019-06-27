@@ -217,6 +217,7 @@ void Engine::createPlayers() {
         it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerSpearman, sf::Vector2f(xPos, 100), {}));
         break;
       case PlayerClass::Archer:
+        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerArcher, sf::Vector2f(xPos, 100), {}));
         //it->second->setEntity(mEntityCreator.createPlayer(PlayerClass::Archer, sf::Vector2f(xPos, 100)));
         break;
       default:

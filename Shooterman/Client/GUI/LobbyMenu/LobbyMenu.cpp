@@ -176,13 +176,12 @@ void LobbyMenu::checkForLobbyMessages() {
       for (auto playerClass : pcm.getPlayerClasses()) {
         sf::Sprite image;
         std::string playerClassName = "";
-
+        
         // Choose the correct image and name of player class
         if (playerClass == PlayerClass::Archer) {
           playerClassName = "Archer";
-          image = GuiResourceManager::getInstance().createSprite(Textures::Tombstone); // TODO: Change to archer when added
+          image = GuiResourceManager::getInstance().createSprite(Textures::CharacterArcher);
           image.setTextureRect(sf::IntRect(0, 64 * 10 + 14, 64, 50));
-          continue; // TODO: Remove when archer is added 
         } else if (playerClass == PlayerClass::Knight) {
           playerClassName = "Knight";
           image = GuiResourceManager::getInstance().createSprite(Textures::CharacterKnight);

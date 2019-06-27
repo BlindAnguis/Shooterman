@@ -31,7 +31,7 @@ void Animation::play() {
       mSprite.setTextureRect(af.animationFrame);
       mSprite.setOrigin(af.originPosition);
 
-      if (mCurrentAnimationFrame == 3 && mAttackCallback != nullptr) {
+      if (mCurrentAnimationFrame == mAttackingFrame && mAttackCallback != nullptr) {
         mAttackCallback(mEntityId);
       }
 
