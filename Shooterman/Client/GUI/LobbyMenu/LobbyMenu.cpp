@@ -38,7 +38,7 @@ LobbyMenu::LobbyMenu(bool server) {
   myPlayerList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "  "));
   mUsernameText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Username", [=]() {
     while (!mSubscribedToLobby) {
-      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+      mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
     }
     ChangeUsernameMessage cum(mUsernameText->getText());
     mLobbySubscriber.reverseSendMessage(cum.pack());

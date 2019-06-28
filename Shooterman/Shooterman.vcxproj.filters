@@ -197,6 +197,7 @@
     <ClInclude Include="Client\Map.h" />
     <ClInclude Include="Common\Messages\MapMessage.h" />
     <ClInclude Include="Client\GUI\Resources\GuiFrameComponent.h" />
+    <ClInclude Include="Common\Interfaces.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
