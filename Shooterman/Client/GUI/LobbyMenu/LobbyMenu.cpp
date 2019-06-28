@@ -66,6 +66,9 @@ LobbyMenu::LobbyMenu(bool server) {
   lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
   mGuiFrame->addGuiComponent(lobbyMenuList);
 
+  mLevelDirectories.emplace_back("Levels/UserCreated/");
+  mLevelDirectories.emplace_back("Levels/DefaultLevels/");
+
   mSubscribedToLobby = false;
 }
 
@@ -110,37 +113,46 @@ void LobbyMenu::init() {
   if (mServer) {
     mFileList->clear();
     mFileButtonList.clear();
-    for (const auto& entry : std::filesystem::directory_iterator("")) {
-      if (entry.path().string().find(".level") != std::string::npos) {
-        auto newButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, entry.path().string());
-        mFileButtonList.push_back(newButton);
-        newButton->setCallback([=]() {
-          for (auto button : mFileButtonList) {
-            button->unselect();
-          }
-          newButton->select();
-
-          // Load file
-          std::ifstream saveFile;
-          saveFile.open("test.level");
-          std::string data;
-          std::string line;
-          if (saveFile.is_open()) {
-            while (!saveFile.eof()) {
-              std::getline(saveFile, line);
-              data += line;
-              data += "\n";
+    for (auto levelDirectory : mLevelDirectories) {
+      for (const auto& entry : std::filesystem::directory_iterator(levelDirectory)) {
+        if (entry.path().string().find(".level") != std::string::npos) {
+          std::string pathAsString = entry.path().string();
+          int pos = pathAsString.find_last_of("/") + 1;
+          auto fileName = pathAsString.substr(pos, pathAsString.length() - pos);
+          pos = fileName.find_last_of(".");
+          fileName = fileName.substr(0, pos);
+          auto newButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, fileName);
+          mFileButtonList.push_back(newButton);
+          newButton->setCallback([=]() {
+            for (auto button : mFileButtonList) {
+              button->unselect();
             }
+            newButton->select();
 
-            MapMessage mm(data);
-            mLobbySubscriber.reverseSendMessage(mm.pack());
+            // Load file
+            std::ifstream saveFile;
+            std::string saveFileName(levelDirectory + newButton->getText() + ".level");
+            saveFile.open(saveFileName);
+            std::string data;
+            std::string line;
+            if (saveFile.is_open()) {
+              while (!saveFile.eof()) {
+                std::getline(saveFile, line);
+                data += line;
+                data += "\n";
+              }
 
-          } else {
-            TRACE_ERROR("Failed to open file");
-          }
-          saveFile.close();
-        });
-        mFileList->addGuiComponent(newButton);
+              MapMessage mm(data);
+              mLobbySubscriber.reverseSendMessage(mm.pack());
+
+            }
+            else {
+              TRACE_ERROR("Failed to open file: " << saveFileName);
+            }
+            saveFile.close();
+          });
+          mFileList->addGuiComponent(newButton);
+        }
       }
     }
   }

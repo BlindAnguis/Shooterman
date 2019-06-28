@@ -29,6 +29,7 @@ private:
   std::list<std::shared_ptr<GuiButton>> mFileButtonList;
   std::shared_ptr<GuiButton> mStartGameButton;
   std::shared_ptr<GuiInputText> mUsernameText;
+  std::vector<std::string> mLevelDirectories;
 
   void checkForLobbyMessages();
   void checkForServerReadyMessage();

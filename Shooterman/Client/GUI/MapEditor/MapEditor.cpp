@@ -24,7 +24,7 @@ MapEditor::MapEditor() {
   }));
   filesList1->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Load", [=]() {
     std::ifstream saveFile;
-    saveFile.open("test.level");
+    saveFile.open("Levels/UserCreated/test.level");
     std::string data;
     std::string line;
     if (saveFile.is_open()) {
@@ -44,7 +44,7 @@ MapEditor::MapEditor() {
   auto filesList2 = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
   filesList2->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Save", [=]() {
     std::ofstream saveFile;
-    saveFile.open("test.level");
+    saveFile.open("Levels/UserCreated/test.level");
     if (saveFile.is_open()) {
       saveFile << mMap.toString();
     } else {

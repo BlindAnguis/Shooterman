@@ -19,6 +19,8 @@ public:
   void select();
   void unselect();
 
+  std::string getText();
+
 private:
   bool mIsSelected = false;
   std::function<void(void)> mCallback;
