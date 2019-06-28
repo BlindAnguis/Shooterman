@@ -14,8 +14,22 @@ JoinMenu::JoinMenu() {
   auto joinMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
 
   auto ipList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
-  mIpText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Enter IP");
+  mIpText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Enter IP", [=]() {
+    while (mIpInterface.getNumberOfSubscribers() == 0) {
+      sf::sleep(sf::milliseconds(5));
+    }
+  
+    IpMessage ipm(mIpString, 1337);
+    mIpInterface.pushMessage(ipm.pack());
+  
+    GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
+    Subscriber gameStateSubscriber;
+    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+    gameStateSubscriber.reverseSendMessage(gsm.pack());
+    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+  });
   mIpText->enableReceiveInput();
+  addTextListener(mIpText);
   ipList->addGuiComponent(mIpText);
   ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", [this](){
     while (mIpInterface.getNumberOfSubscribers() == 0) {
@@ -51,29 +65,4 @@ void JoinMenu::uninit() {
   shutdownRequest << SHUT_DOWN;
   mIpInterface.pushMessage(shutdownRequest);
   MessageHandler::get().unpublishInterface("ClientIpList");
-}
-
-void JoinMenu::handleNewText(sf::Uint32 newChar) {
-  if (newChar == 8) {
-    // Backspace
-    mIpString = mIpString.substr(0, mIpString.size() - 1);
-    mIpText->removeChar();
-  } else if (newChar == 13) {
-    // Enter
-    while (mIpInterface.getNumberOfSubscribers() == 0) {
-      sf::sleep(sf::milliseconds(5));
-    }
-
-    IpMessage ipm(mIpString, 1337);
-    mIpInterface.pushMessage(ipm.pack());
-
-    GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
-    Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
-    gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
-  } else if (mIpString.length() < 15) {
-    mIpString += newChar;
-    mIpText->addChar(newChar);
-  }
 }

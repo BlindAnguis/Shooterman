@@ -29,14 +29,21 @@ LobbyMenu::LobbyMenu(bool server) {
     while (!mSubscribedToLobby) {
       mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
     }
-    ChangeUsernameMessage cum(mUsername);
+    ChangeUsernameMessage cum(mUsernameText->getText());
     mLobbySubscriber.reverseSendMessage(cum.pack());
   });
 
   myPlayerList->addGuiComponent(changeUsernameButton);
   myPlayerList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "  "));
-  mUsernameText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Username");
+  mUsernameText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Username", [=]() {
+    while (!mSubscribedToLobby) {
+      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+    }
+    ChangeUsernameMessage cum(mUsernameText->getText());
+    mLobbySubscriber.reverseSendMessage(cum.pack());
+  });
   mUsernameText->enableReceiveInput();
+  addTextListener(mUsernameText);
   
   myPlayerList->addGuiComponent(mUsernameText);
   allPlayerList->addGuiComponent(myPlayerList);
@@ -81,24 +88,6 @@ bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   }
   mGuiFrame->render(window);
   return true;
-}
-
-void LobbyMenu::handleNewText(sf::Uint32 newChar) {
-  if (newChar == 8) {
-    // Backspace
-    mUsername = mUsername.substr(0, mUsername.size() - 1);
-    mUsernameText->removeChar();
-  } else if (newChar == 13) {
-    // Enter
-    while (!mSubscribedToLobby) {
-      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
-    }
-    ChangeUsernameMessage cum(mUsername);
-    mLobbySubscriber.reverseSendMessage(cum.pack());
-  } else if (mUsername.length() < 15) {
-    mUsername += newChar;
-    mUsernameText->addChar(newChar);
-  }
 }
 
 void LobbyMenu::init() {
@@ -231,7 +220,6 @@ void LobbyMenu::checkForLobbyMessages() {
     }
   }
 }
-
 
 void LobbyMenu::checkForServerReadyMessage() {
   if (!mSubscribedToServerReady) {

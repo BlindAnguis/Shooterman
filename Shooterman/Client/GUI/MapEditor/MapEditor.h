@@ -14,7 +14,6 @@ public:
 
   bool checkMouse(sf::Vector2f mousePosition) override;
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
-  void handleNewText(sf::Uint32 newChar) override;
 
 private:
   std::list<std::shared_ptr<GuiImageButton>> mTextureButtons;

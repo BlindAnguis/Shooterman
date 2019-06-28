@@ -2,8 +2,8 @@
 
 #include <SFML/Window/Mouse.hpp>
 
-GuiInputText::GuiInputText(GuiComponentPosition guiComponentPosition, std::string text, int fontSize, FONT font)
-  : GuiText(guiComponentPosition, text, fontSize, font) {
+GuiInputText::GuiInputText(GuiComponentPosition guiComponentPosition, std::string text, const std::function<void(void)>& callback, int fontSize, FONT font)
+  : GuiText(guiComponentPosition, text, fontSize, font), mCallback(callback) {
   mName = "GuiInputText";
   mDefaultText = text;
   mText.setString("XXXXXXXXXXXXXXX");
@@ -57,15 +57,30 @@ void GuiInputText::setText(std::string newText) {
 }
 
 void GuiInputText::addChar(sf::Uint32 newChar) {
-  if (mReceiveInput) {
-    mCurrentText += newChar;
+  if (!mReceiveInput) {
+    // Not receiving input
+    return;
   }
-}
-
-void GuiInputText::removeChar() {
-  if (mReceiveInput) {
+  if (newChar == 27) {
+    // Esc key
+    mReceiveInput = false;
+    return;
+  }
+  if (newChar == 13) {
+    // Enter key
+    mCallback();
+    return;
+  }
+  if (newChar == 8) {
+    // Backspace
     mCurrentText = mCurrentText.substr(0, mCurrentText.size() - 1);
+    return;
   }
+  if (mCurrentText.length() > 15) {
+    // String to long
+    return;
+  }
+  mCurrentText += newChar;
 }
 
 void GuiInputText::enableReceiveInput() {

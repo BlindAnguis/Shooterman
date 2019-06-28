@@ -77,6 +77,7 @@ MapEditor::MapEditor() {
   auto filesList3 = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
   mSavePopupInput = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Filename");
   mSavePopupInput->enableReceiveInput();
+  addTextListener(mSavePopupInput);
   filesList3->addGuiComponent(mSavePopupInput);
   filesList3->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Save", [=]() {
     std::ofstream saveFile;
@@ -148,14 +149,4 @@ std::shared_ptr<GuiImageButton> MapEditor::addButton(Textures texture, std::stri
   });
 
   return button;
-}
-
-void MapEditor::handleNewText(sf::Uint32 newChar) {
-  if (newChar == 8) {
-    // Backspace
-    mSavePopupInput->removeChar();
-  }
-  else if (mSavePopupInput->getText().length() < 15) {
-    mSavePopupInput->addChar(newChar);
-  }
 }
