@@ -12,7 +12,7 @@ RemoveDebugButtonMessage::RemoveDebugButtonMessage(sf::Packet packet) {
 
 sf::Packet RemoveDebugButtonMessage::pack() {
   sf::Packet packet;
-  packet << REMOVE_DEBUG_BUTTON;
+  packet << MessageId::REMOVE_DEBUG_BUTTON;
   packet << mSubscruberId;
   return packet;
 }

@@ -2,6 +2,7 @@
 
 #include "GuiButton.h"
 #include "../../../Common/MessageHandler/Interface.h"
+#include "../../../Common/Interfaces.h"
 
 std::shared_ptr<GuiComponent> GCF::createHeader(GuiComponentPosition guiComponentPosition, std::string text) {
   auto heading = std::make_shared<GuiText>(GuiComponentPosition::TOP, text, 72);
@@ -12,9 +13,9 @@ std::shared_ptr<GuiButton> GCF::createGameStateButton(GuiComponentPosition guiCo
   auto gameStateButton = std::make_shared<GuiButton>(guiComponentPosition, text, [gameState] {
     GameStateMessage gsm(gameState);
     Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+    MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
     gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
   });
   if (disabled) {
     gameStateButton->setDisabled();

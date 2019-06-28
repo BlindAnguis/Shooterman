@@ -13,7 +13,7 @@ InfoMessage::InfoMessage(sf::Packet packet) {
 
 sf::Packet InfoMessage::pack() {
   sf::Packet packet;
-  packet << INFO_MESSAGE;
+  packet << MessageId::INFO_MESSAGE;
   packet << mMessage;
   packet << mId;
   packet << mMsgDuration;

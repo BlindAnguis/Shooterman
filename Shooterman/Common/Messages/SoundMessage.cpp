@@ -21,7 +21,7 @@ Sounds SoundMessage::getSound(unsigned int position) {
 
 sf::Packet SoundMessage::pack() {
   sf::Packet packet;
-  packet << SOUND_LIST;
+  packet << MessageId::SOUND_LIST;
   packet << mSounds.size();
 
   for (auto sound : mSounds) {

@@ -10,7 +10,7 @@ PlayerDataMessage::~PlayerDataMessage() { }
 
 sf::Packet PlayerDataMessage::pack() {
   sf::Packet packet;
-  packet << PLAYER_DATA;
+  packet << MessageId::PLAYER_DATA;
   packet << mPlayerDatas.size();
 
   for (PlayerData playerData : mPlayerDatas) {

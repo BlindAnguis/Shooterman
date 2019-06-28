@@ -2,6 +2,7 @@
 #include "../Systems/CollisionSystem/Collision.h"
 #include "../Systems/ManaSystem/ManaSystem.h"
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
+#include "../../Common/Interfaces.h"
 #include "../../Common/Messages/SoundMessage.h"
 
 #define MAGE_MAX_VELOCITY 4.5f
@@ -46,11 +47,11 @@ EntityCreator::EntityCreator() :
   loadTexture(Textures::HealthPotion, "Potions/pt1Small.png");
   loadTexture(Textures::ManaPotion, "Potions/pt2Small.png");
   loadTexture(Textures::Ammo, "Potions/pt4Small.png");
-  MessageHandler::get().subscribeTo("ServerSoundList", &mSoundSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 EntityCreator::~EntityCreator() {
-  MessageHandler::get().unsubscribeTo("ServerSoundList", &mSoundSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f position) {

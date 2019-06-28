@@ -20,7 +20,7 @@ void PlayableCharactersMessage::unpack(sf::Packet packet) {
 
 sf::Packet PlayableCharactersMessage::pack() {
   sf::Packet packet;
-  packet << PLAYABLE_CHARACTERS;
+  packet << MessageId::PLAYABLE_CHARACTERS;
   packet << mPlayerClasses.size();
   for (auto playerClass : mPlayerClasses) {
     packet << (sf::Int16)playerClass;

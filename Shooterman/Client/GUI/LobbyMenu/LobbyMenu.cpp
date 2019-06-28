@@ -8,6 +8,7 @@
 #include "../Resources/GuiText.h"
 #include "../Resources/GuiImageButton.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/Messages/LobbyDataMessage.h"
 #include "../../../Common/Messages/ChangeUsernameMessage.h"
 #include "../../../Common/Messages/CharacterChoosenMessage.h"
@@ -27,7 +28,7 @@ LobbyMenu::LobbyMenu(bool server) {
   
   auto changeUsernameButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Set username", [=]() {
     while (!mSubscribedToLobby) {
-      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+      mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
     }
     ChangeUsernameMessage cum(mUsername);
     mLobbySubscriber.reverseSendMessage(cum.pack());
@@ -88,7 +89,7 @@ void LobbyMenu::handleNewText(sf::Uint32 newChar) {
   } else if (newChar == 13) {
     // Enter
     while (!mSubscribedToLobby) {
-      mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+      mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
     }
     ChangeUsernameMessage cum(mUsername);
     mLobbySubscriber.reverseSendMessage(cum.pack());
@@ -148,7 +149,7 @@ void LobbyMenu::init() {
 
 void LobbyMenu::checkForLobbyMessages() {
   if (!mSubscribedToLobby) {
-    mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+    mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
   }
 
   auto messages = mLobbySubscriber.getMessageQueue();
@@ -159,7 +160,7 @@ void LobbyMenu::checkForLobbyMessages() {
     packet = messages.front();
     messages.pop();
     packet >> messageID;
-    if (messageID == PLAYER_USERNAMES) {
+    if (messageID == MessageId::PLAYER_USERNAMES) {
       TRACE_REC("PLAYER_USERNAMES");
       LobbyDataMessage ldm(packet);
 
@@ -168,7 +169,7 @@ void LobbyMenu::checkForLobbyMessages() {
         mPlayersList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, playerName));
       }
 
-    } else if (messageID == PLAYABLE_CHARACTERS) {
+    } else if (messageID == MessageId::PLAYABLE_CHARACTERS) {
       TRACE_REC("PLAYABLE_CHARACTERS");
       mPlayableCharactersList->clear();
       PlayableCharactersMessage pcm(packet);
@@ -206,7 +207,7 @@ void LobbyMenu::checkForLobbyMessages() {
           newImageButton->select();
 
           while (!mSubscribedToLobby) {
-            mSubscribedToLobby = MessageHandler::get().subscribeTo("ClientLobby", &mLobbySubscriber);
+            mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
           }
 
           CharacherChoosenMessage ccm(playerClass);
@@ -223,7 +224,7 @@ void LobbyMenu::checkForLobbyMessages() {
 
 void LobbyMenu::checkForServerReadyMessage() {
   if (!mSubscribedToServerReady) {
-    mSubscribedToServerReady = MessageHandler::get().subscribeTo("ClientServerReady", &mServerReadySubscriber);
+    mSubscribedToServerReady = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
   }
 
   auto messages = mServerReadySubscriber.getMessageQueue();
@@ -234,7 +235,7 @@ void LobbyMenu::checkForServerReadyMessage() {
     serverReadyMessage = messages.front();
     messages.pop();
     serverReadyMessage >> messageID;
-    if (messageID == SERVER_READY) {
+    if (messageID == MessageId::SERVER_READY) {
       TRACE_REC("SERVER_READY");
       // when server is ready we activate the start game button
       mStartGameButton->setEnabled();

@@ -18,7 +18,7 @@ void ChangeUsernameMessage::unpack(sf::Packet packet) {
 
 sf::Packet ChangeUsernameMessage::pack() {
   sf::Packet packet;
-  packet << NEW_USERNAME;
+  packet << MessageId::NEW_USERNAME;
   packet << mUsername;
   packet << mId;
   return packet;

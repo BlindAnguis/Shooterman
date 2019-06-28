@@ -11,6 +11,7 @@
 #include "PauseMenu/PauseMenu.h"
 #include "MapEditor/MapEditor.h"
 #include "../../Common/Constants.h"
+#include "../../Common/Interfaces.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
@@ -26,9 +27,9 @@ Gui::Gui() {
 
 void Gui::run() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().subscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
-  MessageHandler::get().publishInterface("MousePosition", &mMouseInterface);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+  MessageHandler::get().publishInterface(Interfaces::MOUSE_POSITION, &mMouseInterface);
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
   mMenuMap.emplace(GAME_STATE::LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
@@ -55,9 +56,9 @@ void Gui::run() {
 
   teardownDebugMessages();
 
-  MessageHandler::get().unsubscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
-  MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
-  MessageHandler::get().unpublishInterface("MousePosition");
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+  MessageHandler::get().unpublishInterface(Interfaces::MOUSE_POSITION);
 
   GuiResourceManager::getInstance().clear();
   mMenuMap.clear();
@@ -100,11 +101,11 @@ void Gui::handleWindowEvents() {
   while (mWindow->pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       sf::Packet shutdownMessage;
-      shutdownMessage << SHUT_DOWN;
+      shutdownMessage << MessageId::SHUT_DOWN;
       Subscriber s;
-      MessageHandler::get().subscribeTo("ClientSystemMessage", &s);
+      MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
       s.reverseSendMessage(shutdownMessage);
-      MessageHandler::get().unsubscribeTo("ClientSystemMessage", &s);
+      MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
     }
     if (event.type == sf::Event::MouseMoved) {
       MouseMessage mm(sf::Mouse::getPosition(*mWindow));
@@ -181,7 +182,7 @@ void Gui::handleGameStateMessages() {
     int id = -1;
     gameStateMessage >> id;
 
-    if (id == CHANGE_GAME_STATE) {
+    if (id == MessageId::CHANGE_GAME_STATE) {
       gameStateMessageQueue.pop();
 
       GameStateMessage gsm(gameStateMessage);
@@ -234,7 +235,7 @@ void Gui::handleSystemMessages() {
     auto messageId = 0;
     systemMessage >> messageId;
     switch (messageId) {
-    case SHUT_DOWN:
+    case MessageId::SHUT_DOWN:
       TRACE_INFO("Closing GUI window");
       mWindow->close();
       break;

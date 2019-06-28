@@ -5,6 +5,7 @@
 #include "../Resources/GuiImageButton.h"
 #include "../Resources/GuiComponentFactory.h"
 #include "../Resources/GuiResourceManager.h"
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
@@ -25,11 +26,11 @@ MainMenu::MainMenu() {
 
   mainMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", []() {
     sf::Packet shutdownMessage;
-    shutdownMessage << SHUT_DOWN;
+    shutdownMessage << MessageId::SHUT_DOWN;
     Subscriber s;
-    MessageHandler::get().subscribeTo("ClientSystemMessage", &s);
+    MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
     s.reverseSendMessage(shutdownMessage);
-    MessageHandler::get().unsubscribeTo("ClientSystemMessage", &s);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
   }));
   
   mGuiFrame->addGuiComponent(mainMenuList);

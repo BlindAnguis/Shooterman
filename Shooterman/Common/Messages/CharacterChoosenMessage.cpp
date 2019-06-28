@@ -16,7 +16,7 @@ void CharacherChoosenMessage::unpack(sf::Packet packet) {
 
 sf::Packet CharacherChoosenMessage::pack() {
   sf::Packet packet;
-  packet << CHARACTER_CHOOSEN;
+  packet << MessageId::CHARACTER_CHOOSEN;
   packet << (sf::Int16)mPlayerClass;
   packet << mId;
   return packet;

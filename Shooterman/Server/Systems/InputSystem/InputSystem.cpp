@@ -1,5 +1,6 @@
 #include "InputSystem.h"
 #include <stdio.h>
+#include "../../../Common/Interfaces.h"
 
 InputSystem::InputSystem() { 
   mCurrentGameState = GAME_STATE::LOBBY;
@@ -8,15 +9,15 @@ InputSystem::InputSystem() {
 }
 
 InputSystem::~InputSystem() {
-  MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
-  MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
   TRACE_DEBUG1("Enter Destructor");
 }
 
 void InputSystem::resetSystem() {
-  MessageHandler::get().unsubscribeTo("ServerInputList", &mInputSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
   mIsSubscribedToInput = false;
-  MessageHandler::get().unsubscribeTo("ServerGameState", &mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
   mGameStateSubscriber.getMessageQueue(); // Empty the queues
   mInputSubscriber.getMessageQueue(); // Empty the queues
   mIsSubscribedToGameState = false;
@@ -32,7 +33,7 @@ InputSystem& InputSystem::get() {
 
 std::queue<sf::Packet> InputSystem::getInput() {
   if (!mIsSubscribedToInput) {
-    mIsSubscribedToInput = MessageHandler::get().subscribeTo("ServerInputList", &mInputSubscriber);
+    mIsSubscribedToInput = MessageHandler::get().subscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
   }
   return mInputSubscriber.getMessageQueue();
 }
@@ -61,7 +62,7 @@ InputMessage InputSystem::getLatestInput() {
 
 GAME_STATE InputSystem::getLatestGameStateMessage() {
   if (!mIsSubscribedToGameState) {
-    mIsSubscribedToGameState = MessageHandler::get().subscribeTo("ServerGameState", &mGameStateSubscriber);
+    mIsSubscribedToGameState = MessageHandler::get().subscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
   }
 
   std::queue<sf::Packet> gameStateMessagesQueue = mGameStateSubscriber.getMessageQueue();
@@ -72,7 +73,7 @@ GAME_STATE InputSystem::getLatestGameStateMessage() {
     int id = -1;
     packet >> id;
 
-    if (id == CHANGE_GAME_STATE) {
+    if (id == MessageId::CHANGE_GAME_STATE) {
       GameStateMessage gsm(packet);
       GAME_STATE gameState = gsm.getGameState();
 

@@ -23,7 +23,7 @@ SpriteData SpriteMessage::getSpriteData(unsigned int position) {
 
 sf::Packet SpriteMessage::pack() {
   sf::Packet packet;
-  packet << SPRITE_LIST;
+  packet << MessageId::SPRITE_LIST;
   packet << mSpriteData.size();
 
   for (SpriteData data : mSpriteData) {

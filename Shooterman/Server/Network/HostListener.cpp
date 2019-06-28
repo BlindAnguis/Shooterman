@@ -1,5 +1,6 @@
 #include "HostListener.h"
 
+#include "../../Common/Interfaces.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Messages/LobbyDataMessage.h"
 #include "../../Common/Messages/PlayableCharactersMessage.h"
@@ -40,7 +41,7 @@ bool HostListener::isListening() {
 
 void HostListener::listen() {
   mConnectedClients = std::make_shared<std::map<int, Player*>>();
-  while (!MessageHandler::get().subscribeTo("ServerPlayerLobby", &mPlayerLobbyDataSubscriber)) {
+  while (!MessageHandler::get().subscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyDataSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   TRACE_INFO("Start to listen");
@@ -99,7 +100,7 @@ void HostListener::listen() {
   }
   delete client; // Delete unused client socket
 
-  MessageHandler::get().unsubscribeTo("ServerPlayerLobby", &mPlayerLobbyDataSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyDataSubscriber);
 }
 
 void HostListener::handlePlayerLobbyData() {
@@ -112,7 +113,7 @@ void HostListener::handlePlayerLobbyData() {
     lobbyPacket >> id;
 
     switch (id) {
-    case NEW_USERNAME: {
+    case MessageId::NEW_USERNAME: {
       ChangeUsernameMessage cum(lobbyPacket);
       
       (*mConnectedClients)[cum.getId()]->setUsername(cum.getUsername());
@@ -129,12 +130,12 @@ void HostListener::handlePlayerLobbyData() {
       break;
     }
     break;
-    case CHARACTER_CHOOSEN: {
+    case MessageId::CHARACTER_CHOOSEN: {
       CharacherChoosenMessage ccm(lobbyPacket);
       (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
       break;
     }
-    case CLIENT_DISCONNECTED: {
+    case MessageId::CLIENT_DISCONNECTED: {
       ClientDisconnectedMessage cdm(lobbyPacket);
       mConnectedClients->erase(cdm.getId());
 
@@ -149,7 +150,7 @@ void HostListener::handlePlayerLobbyData() {
       }
       break;
     }
-    case MAP_DATA: {
+    case MessageId::MAP_DATA: {
       MapMessage mm(lobbyPacket);
       mMapData = mm.getData();
       break;

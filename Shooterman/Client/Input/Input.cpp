@@ -5,6 +5,7 @@
 
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Constants.h"
+#include "../../Common/Interfaces.h"
 #include "../../Common/Messages/MouseMessage.h"
 #include "../../Common/Messages/InputMessage.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
@@ -18,16 +19,16 @@ Input::Input() {
 }
 Input::~Input() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateMessageSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
   TRACE_FUNC_EXIT();
 }
 
 void Input::run() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().subscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo("ClientGameState", &mGameStateMessageSubscriber);
-  bool subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
-  MessageHandler::get().publishInterface("ClientInputList", &mClientInputInterface);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+  bool subscribedToMouse = MessageHandler::get().subscribeTo(Interfaces::MOUSE_POSITION, &mMouseMessageSubscriber);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_INPUT_LIST, &mClientInputInterface);
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   while (!setupDebugMessages("Client", "Input")) {
     sf::sleep(sf::milliseconds(5));
@@ -108,13 +109,13 @@ void Input::run() {
     handleSystemMessages();
     handleDebugMessages();
     if (!subscribedToMouse) {
-      subscribedToMouse = MessageHandler::get().subscribeTo("MousePosition", &mMouseMessageSubscriber);
+      subscribedToMouse = MessageHandler::get().subscribeTo(Interfaces::MOUSE_POSITION, &mMouseMessageSubscriber);
     }
   }
 
   teardownDebugMessages();
-  MessageHandler::get().unpublishInterface("ClientInputList");
-  MessageHandler::get().unsubscribeTo("ClientSystemMessage", &mSystemMessageSubscriber);
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_INPUT_LIST);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageSubscriber);
   TRACE_FUNC_EXIT();
 }
 
@@ -129,7 +130,7 @@ void Input::handleSystemMessages() {
     int messageId = 0;
     systemMessage >> messageId;
     switch (messageId) {
-    case SHUT_DOWN:
+    case MessageId::SHUT_DOWN:
       mRunning = false;
       TRACE_INFO("Preparing to shut down");
       break;
@@ -151,7 +152,7 @@ void Input::handleGameStateMessages() {
     int id = -1;
     gameStateMessage >> id;
 
-    if (id == CHANGE_GAME_STATE) {
+    if (id == MessageId::CHANGE_GAME_STATE) {
       GameStateMessage gsm(gameStateMessage);
       mCurrentGameState = gsm.getGameState();
       TRACE_REC("New Game State: " << gsm.getGameStateAsString());

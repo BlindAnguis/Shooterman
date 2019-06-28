@@ -1,5 +1,6 @@
 #include "Hud.h"
 
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
@@ -22,7 +23,7 @@ void Hud::reset() {
 
 bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   if (!mSubscribedToPlayerData) {
-    mSubscribedToPlayerData = MessageHandler::get().subscribeTo("ClientPlayerData", &mPlayerDataSubscriber);
+    mSubscribedToPlayerData = MessageHandler::get().subscribeTo(Interfaces::CLIENT_PLAYER_DATA, &mPlayerDataSubscriber);
   }
 
   auto playerDataMessages = mPlayerDataSubscriber.getMessageQueue();
@@ -35,7 +36,7 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
     playerDataMessage >> id;
 
     switch (id) {
-    case PLAYER_DATA:
+    case MessageId::PLAYER_DATA:
     {
       PlayerDataMessage pdm(playerDataMessage);
       for (unsigned int i = 0; i < pdm.getNumberOfPlayerData(); ++i) {

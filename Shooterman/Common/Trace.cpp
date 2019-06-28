@@ -38,7 +38,7 @@ void Trace::handleDebugMessages() {
     int id = -1;
     debugMessage >> id;
 
-    if (id == TOGGLE_DEBUG_BUTTON) {
+    if (id == MessageId::TOGGLE_DEBUG_BUTTON) {
       ToggleDebugButtonMessage tdbm(debugMessage);
       switch (tdbm.getTraceLevel()) {
       case TRACE_LEVEL::DEB_1:

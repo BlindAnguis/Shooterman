@@ -7,7 +7,7 @@ ServerReadyMessage::~ServerReadyMessage() {}
 
 sf::Packet ServerReadyMessage::pack() {
   sf::Packet packet;
-  packet << SERVER_READY;
+  packet << MessageId::SERVER_READY;
   return packet;
 }
 

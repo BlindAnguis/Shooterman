@@ -14,7 +14,7 @@ void MapMessage::unpack(sf::Packet packet) {
 
 sf::Packet MapMessage::pack() {
   sf::Packet packet;
-  packet << MAP_DATA;
+  packet << MessageId::MAP_DATA;
   packet << mMapData;
   return packet;
 }

@@ -1,4 +1,5 @@
 #include "SoundSystem.h"
+#include "../../Common/Interfaces.h"
 
 SoundSystem::SoundSystem()
 {
@@ -17,7 +18,7 @@ SoundSystem::~SoundSystem()
 
 void SoundSystem::unsubscribeToSoundList() {
   if (mSubscribedToSounds) {
-    MessageHandler::get().unsubscribeTo("ClientSoundList", &mSoundSubcription);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
     mSubscribedToSounds = false;
   }
 }
@@ -50,7 +51,7 @@ void SoundSystem::loadSounds() {
 
 void SoundSystem::update() {
   if (!mSubscribedToSounds) {
-    mSubscribedToSounds = MessageHandler::get().subscribeTo("ClientSoundList", &mSoundSubcription);
+    mSubscribedToSounds = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
   }
 
   auto soundsToPlay = mSoundSubcription.getMessageQueue();
@@ -59,7 +60,7 @@ void SoundSystem::update() {
     auto soundPacket = soundsToPlay.front();
     soundsToPlay.pop();
     soundPacket >> id;
-    if (id == SOUND_LIST) {
+    if (id == MessageId::SOUND_LIST) {
       SoundMessage sm;
       sm.unpack(soundPacket);
       for (auto i = 0; i < sm.getSize(); i++) {
@@ -69,7 +70,7 @@ void SoundSystem::update() {
         mPlayQueue.back().play();
       }
     } else {
-      TRACE_ERROR("Got the wrong message, got message with id: " << id << " but should have got id: " << SOUND_LIST);
+      TRACE_ERROR("Got the wrong message, got message with id: " << id << " but should have got id: " << MessageId::SOUND_LIST);
     }    
   }
 

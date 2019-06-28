@@ -15,7 +15,7 @@ AddDebugButtonMessage::~AddDebugButtonMessage() {
 
 sf::Packet AddDebugButtonMessage::pack() {
   sf::Packet packet;
-  packet << ADD_DEBUG_BUTTON;
+  packet << MessageId::ADD_DEBUG_BUTTON;
   packet << mSubscruberId;
   packet << mSecondarySubscriberId;
   packet << mButtonText;

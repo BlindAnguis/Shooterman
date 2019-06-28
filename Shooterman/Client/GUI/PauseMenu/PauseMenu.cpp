@@ -3,6 +3,7 @@
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiButton.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
@@ -24,17 +25,17 @@ PauseMenu::PauseMenu() {
       GameStateMessage gsm(GAME_STATE::MAIN_MENU);
 
       Subscriber gameStateSubscriber;
-      MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+      MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
       gameStateSubscriber.reverseSendMessage(gsm.pack());
-      MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+      MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
 
       sf::sleep(sf::milliseconds(100));
       sf::Packet shutdownMessage;
-      shutdownMessage << SHUT_DOWN;
+      shutdownMessage << MessageId::SHUT_DOWN;
       Subscriber s;
-      MessageHandler::get().subscribeTo("ClientSystemMessage", &s);
+      MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
       s.reverseSendMessage(shutdownMessage);
-      MessageHandler::get().unsubscribeTo("ClientSystemMessage", &s);
+      MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
     }));
 
     mGuiFrame->addGuiComponent(pauseMenuList);

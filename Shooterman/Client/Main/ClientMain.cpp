@@ -6,6 +6,7 @@
 #include "../Network/NetworkHandler.h"
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
 #include "../../Server/Main/GameLoop.h"
+#include "../../Common/Interfaces.h"
 #include "../../Common/Sounds.h"
 #include "../../Common/Messages/SoundMessage.h"
 #include "../SoundSystem/SoundSystem.h"
@@ -15,8 +16,8 @@
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
   TRACE_INFO("Starting...");
-  MessageHandler::get().publishInterface("ClientGameState", &gameStateInterface);
-  MessageHandler::get().publishInterface("ClientSystemMessage", &systemMessageInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_GAME_STATE, &gameStateInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_SYSTEM_MESSAGE, &systemMessageInterface);
   Input input;
   Gui gui;
   std::shared_ptr<GameLoop> server;
@@ -62,14 +63,14 @@ ClientMain::ClientMain() {
           mServerStarted = true;
         }
         if (!networkHandlerStarted) {
-          MessageHandler::get().publishInterface("ClientIpList", &ipInterface);
+          MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &ipInterface);
           networkHandler.start();
           networkHandlerStarted = true;
         }
         if (!sentIpMessage && ipInterface.getNumberOfSubscribers() > 0) {
           IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), 1337);
           ipInterface.pushMessage(ipm.pack());
-          MessageHandler::get().unpublishInterface("ClientIpList");
+          MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
           sentIpMessage = true;
         }
         if (!soundSystem.isBackgroundMusicPlaying(Sounds::LobbyBackgroundSong)) {
@@ -142,9 +143,9 @@ void ClientMain::handleSystemMessages() {
     auto messageId = 0;
     systemMessage >> messageId;
     switch (messageId) {
-    case SHUT_DOWN: {
+    case MessageId::SHUT_DOWN: {
       sf::Packet packet;
-      packet << SHUT_DOWN;
+      packet << MessageId::SHUT_DOWN;
       systemMessageInterface.pushMessage(packet);
 
       TRACE_INFO("Shutting down...");
@@ -166,7 +167,7 @@ void ClientMain::handleGameStateMessages() {
 
     int id = -1;
     gameStateMessage >> id;
-    if (id == CHANGE_GAME_STATE) {
+    if (id == MessageId::CHANGE_GAME_STATE) {
       GameStateMessage gsm(gameStateMessage);
 
       if (gsm.getGameState() == GAME_STATE::PREVIOUS) {

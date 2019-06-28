@@ -3,6 +3,7 @@
 #include "../../Common/Messages/PlayerDataMessage.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
+#include "../../Common/Interfaces.h"
 
 Engine::Engine() :
   mInputSystem(&InputSystem::get()),
@@ -108,7 +109,7 @@ void Engine::shutDown() {
   mCollisionSystem->resetSystem();
   mEntityCreatorSystem->reset();
   teardownDebugMessages();
-  MessageHandler::get().unsubscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
 }
 
 void Engine::update() {
@@ -227,7 +228,7 @@ void Engine::createPlayers() {
   }
   
   setupDebugMessages("Server", "Engine");
-  MessageHandler::get().subscribeTo("ServerPlayerData", &mPlayerDataSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
 }
 
 void Engine::createMap() {

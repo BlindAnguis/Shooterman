@@ -3,6 +3,7 @@
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Constants.h"
 #include "../../Common/MessageId.h"
+#include "../../Common/Interfaces.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
@@ -40,7 +41,7 @@ void NetworkHandler::run() {
   CONNECTION_STATUS connectionStatus = setupSocketConnection();
 
   if (connectionStatus == CONNECTION_STATUS::Cancel) {
-    MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
     return;
   }
 
@@ -52,18 +53,18 @@ void NetworkHandler::run() {
     
     GameStateMessage gsm(GAME_STATE::JOIN);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
     teardownDebugMessages();
     return;
   }
 
   TRACE_INFO("Connected!");
 
-  MessageHandler::get().publishInterface("ClientSpriteList", &mSpriteListInterface);
-  MessageHandler::get().publishInterface("ClientPlayerData", &mPlayerDataInterface);
-  MessageHandler::get().publishInterface("ClientSoundList", &mSoundListInterface);
-  MessageHandler::get().subscribeTo("ClientInputList", &mMessageSubscriber);
-  MessageHandler::get().subscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_PLAYER_DATA, &mPlayerDataInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_SOUND_LIST, &mSoundListInterface);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_INPUT_LIST, &mMessageSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
 
   mSocket.setBlocking(false);
   mRunning = true;
@@ -77,21 +78,21 @@ void NetworkHandler::run() {
 
 void NetworkHandler::setupSubscribersAndInterfaces() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().publishInterface("ClientLobby", &mLobbyInterface);
-  MessageHandler::get().publishInterface("ClientServerReady", &mServerReadyInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_LOBBY, &mLobbyInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_SERVER_READY, &mServerReadyInterface);
 
   while (!setupDebugMessages("Client", "Network")) {
     sf::sleep(sf::milliseconds(5));
   }
 
-  while (!MessageHandler::get().subscribeTo("ClientGameState", &mGameStateSubscriber)) {
+  while (!MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
 
-  while (!MessageHandler::get().subscribeTo("ClientIpList", &mMessageSubscriber)) {
+  while (!MessageHandler::get().subscribeTo(Interfaces::CLIENT_IP_LIST, &mMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
-  while (!MessageHandler::get().subscribeTo("InfoMessage", &mInfoMessageSubscriber)) {
+  while (!MessageHandler::get().subscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   TRACE_FUNC_EXIT();
@@ -108,19 +109,19 @@ CONNECTION_STATUS NetworkHandler::setupSocketConnection() {
     sf::sleep(sf::milliseconds(5));
   }
   // We have the IP, no need to be subscribed
-  MessageHandler::get().unsubscribeTo("ClientIpList", &mMessageSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_IP_LIST, &mMessageSubscriber);
 
   int ID = -1;
   auto ipMessage = messages.front();
   ipMessage >> ID;
-  if (ID != IP_MESSAGE) {
-    if (ID != SHUT_DOWN) {
+  if (ID != MessageId::IP_MESSAGE) {
+    if (ID != MessageId::SHUT_DOWN) {
       // Received unexpected message
       TRACE_ERROR("Received unexpected message with ID: " << ID);
       GameStateMessage gsm(GAME_STATE::PREVIOUS);
       mGameStateSubscriber.reverseSendMessage(gsm.pack());
     }
-    MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
     return connectionStatus;
   }
 
@@ -152,7 +153,7 @@ bool NetworkHandler::checkIfConnectionIsCancelled() {
   if (packet.getDataSize() > 0) {
     int id;
     packet >> id;
-    if (id == CHANGE_GAME_STATE) {
+    if (id == MessageId::CHANGE_GAME_STATE) {
       GameStateMessage gsm(packet);
       if (gsm.getGameState() != GAME_STATE::CLIENT_LOBBY) {
         return false;
@@ -205,39 +206,39 @@ void NetworkHandler::handlePackets() {
     if (mSocket.receive(packet) == sf::Socket::Done) {
       int id = -1;
       packet >> id;
-      if (id == SPRITE_LIST_CACHE) {
+      if (id == MessageId::SPRITE_LIST_CACHE) {
         SpriteCacheMessage sm(packet);
         mSpriteListInterface.pushMessage(sm.pack());
-      } else if (id == SPRITE_LIST) {
+      } else if (id == MessageId::SPRITE_LIST) {
         SpriteMessage sm(packet);
         mSpriteListInterface.pushMessage(sm.pack());
-      } else if (id == PLAYER_DATA) {
+      } else if (id == MessageId::PLAYER_DATA) {
         PlayerDataMessage pdm(packet);
         mPlayerDataInterface.pushMessage(pdm.pack());
-      } else if (id == PLAYER_USERNAMES) {
+      } else if (id == MessageId::PLAYER_USERNAMES) {
         LobbyDataMessage ldm(packet);
         mLobbyInterface.pushMessage(ldm.pack());
-      } else if (id == PLAYABLE_CHARACTERS) {
+      } else if (id == MessageId::PLAYABLE_CHARACTERS) {
         PlayableCharactersMessage pcm(packet);
         mLobbyInterface.pushMessage(pcm.pack());
-      } else if (id == CHANGE_GAME_STATE) {
+      } else if (id == MessageId::CHANGE_GAME_STATE) {
         GameStateMessage gsm(packet);
         mGameStateSubscriber.reverseSendMessage(gsm.pack());
-      } else if (id == ADD_DEBUG_BUTTON) {
+      } else if (id == MessageId::ADD_DEBUG_BUTTON) {
         AddDebugButtonMessage adbm(packet);
         AddDebugButtonMessage adbm2(adbm.getSubscriberId(), adbm.getButtonText(), adbm.getCategoryText(), mServerDebugSubscriber.getId());
         mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
-      } else if (id == REMOVE_DEBUG_BUTTON) {
+      } else if (id == MessageId::REMOVE_DEBUG_BUTTON) {
         RemoveDebugButtonMessage rdbm(packet);
         mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
-      } else if (id == SOUND_LIST) {
+      } else if (id == MessageId::SOUND_LIST) {
         SoundMessage sm(packet);
         mSoundListInterface.pushMessage(sm.pack());
-      } else if (id == SERVER_READY) {
+      } else if (id == MessageId::SERVER_READY) {
         ServerReadyMessage srm;
         mServerReadyInterface.pushMessage(srm.pack());
-      } else if (id == HEARTBEAT) {
-        packet << HEARTBEAT;
+      } else if (id == MessageId::HEARTBEAT) {
+        packet << MessageId::HEARTBEAT;
         mHeartbeatClock.restart();
         mSocket.send(packet);
       } else {
@@ -260,15 +261,15 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   TRACE_FUNC_ENTER();
   teardownDebugMessages();
 
-  MessageHandler::get().unpublishInterface("ClientSpriteList");
-  MessageHandler::get().unpublishInterface("ClientLobby");
-  MessageHandler::get().unpublishInterface("ClientServerReady");
-  MessageHandler::get().unpublishInterface("ClientPlayerData");
-  MessageHandler::get().unpublishInterface("ClientSoundList");
-  MessageHandler::get().unsubscribeTo("ClientInputList", &mMessageSubscriber);
-  MessageHandler::get().unsubscribeTo("ClientDebugMenu", &mServerDebugSubscriber);
-  MessageHandler::get().unsubscribeTo("ClientGameState", &mGameStateSubscriber);
-  MessageHandler::get().unsubscribeTo("InfoMessage", &mInfoMessageSubscriber);
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SPRITE_LIST);
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_LOBBY);
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SERVER_READY);
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_PLAYER_DATA);
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SOUND_LIST);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_INPUT_LIST, &mMessageSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
   TRACE_FUNC_EXIT()
 }
 

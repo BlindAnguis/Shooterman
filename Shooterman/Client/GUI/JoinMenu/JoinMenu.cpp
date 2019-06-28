@@ -4,6 +4,7 @@
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiComponentFactory.h"
 #include "../../../Common/Messages/ClientInternal/IpMessage.h"
+#include "../../../Common/Interfaces.h"
 
 JoinMenu::JoinMenu() {
   mName = "CLIENT: JOIN_MENU";
@@ -27,9 +28,9 @@ JoinMenu::JoinMenu() {
 
     GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
     Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+    MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
     gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
   }));
 
   joinMenuList->addGuiComponent(ipList);
@@ -41,16 +42,16 @@ JoinMenu::JoinMenu() {
 JoinMenu::~JoinMenu() { uninit(); }
 
 void JoinMenu::init() {
-  MessageHandler::get().publishInterface("ClientIpList", &mIpInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &mIpInterface);
   mIpString = "";
   mIpText->setText("");
 }
 
 void JoinMenu::uninit() {
   sf::Packet shutdownRequest;
-  shutdownRequest << SHUT_DOWN;
+  shutdownRequest << MessageId::SHUT_DOWN;
   mIpInterface.pushMessage(shutdownRequest);
-  MessageHandler::get().unpublishInterface("ClientIpList");
+  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
 }
 
 void JoinMenu::handleNewText(sf::Uint32 newChar) {
@@ -69,9 +70,9 @@ void JoinMenu::handleNewText(sf::Uint32 newChar) {
 
     GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
     Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+    MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
     gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
   } else if (mIpString.length() < 15) {
     mIpString += newChar;
     mIpText->addChar(newChar);

@@ -1,6 +1,7 @@
 #include "DebugMenu.h"
 
 #include "../Resources/GuiToggleButton.h"
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/ToggleDebugButtonMessage.h"
@@ -12,7 +13,7 @@ DebugMenu::DebugMenu() {
   mGuiFrame = std::make_shared<Frame>();
   mGuiList = std::make_shared<GuiList>(GuiComponentPosition::TOP_LEFT, GuiListDirection::VERTICAL);
   mGuiFrame->addGuiComponent(mGuiList);
-  MessageHandler::get().publishInterface("ClientDebugMenu", &mIf);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_DEBUG_MENU, &mIf);
   mInterfaceFetchTimer.restart();
 
   auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, "Interfaces");
@@ -52,7 +53,7 @@ void DebugMenu::handleNewDebugButtons() {
     messageQueue.pop();
     message >> messageId;
 
-    if (messageId == ADD_DEBUG_BUTTON) {
+    if (messageId == MessageId::ADD_DEBUG_BUTTON) {
       AddDebugButtonMessage debMess(message);
       TRACE_DEBUG1("New button added for " << debMess.getSubscriberId());
       int subscriberId = debMess.getSubscriberId();
@@ -151,7 +152,7 @@ void DebugMenu::handleNewDebugButtons() {
       }
       mCategoriesMap[debMess.getCategoryText()]->addGuiComponent(list);
 
-    } else if (messageId == REMOVE_DEBUG_BUTTON) {
+    } else if (messageId == MessageId::REMOVE_DEBUG_BUTTON) {
       RemoveDebugButtonMessage rdbm(message);
 
       auto it = mCategoriesMap.begin();

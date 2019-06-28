@@ -1,4 +1,5 @@
 #include "HealthSystem.h"
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/Messages/SoundMessage.h"
 
 HealthSystem::HealthSystem() :
@@ -6,12 +7,12 @@ HealthSystem::HealthSystem() :
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()) {
   mName = "SERVER: HEALTH_SYSTEM";
-  MessageHandler::get().subscribeTo("ServerSoundList", &mSoundSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 HealthSystem::~HealthSystem() {
   TRACE_DEBUG1("Enter Destructor");
-  MessageHandler::get().unsubscribeTo("ServerSoundList", &mSoundSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 HealthSystem& HealthSystem::get() {

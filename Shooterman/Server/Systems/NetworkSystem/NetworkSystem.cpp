@@ -1,5 +1,6 @@
 #include "NetworkSystem.h"
 
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/Messages/ChangeUsernameMessage.h"
@@ -40,13 +41,13 @@ void NetworkSystem::run() {
   mRunning = true;
   mNumberOfPlayerChanged = false;
   Interface inputListInterface;
-  MessageHandler::get().publishInterface("ServerInputList", &inputListInterface);
-  MessageHandler::get().publishInterface("ServerServerReady", &mServerServerReadyInterface);
-  MessageHandler::get().publishInterface("ServerPlayerData", &mPlayerDataInterface);
-  MessageHandler::get().publishInterface("ServerPlayerLobby", &mPlayerLobbyInterface);
-  MessageHandler::get().publishInterface("ServerGameState", &mGameStateInterface);
-  MessageHandler::get().publishInterface("ServerDebugMenu", &mDebugMenuInterface);
-  MessageHandler::get().publishInterface("ServerSoundList", &mSoundInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_INPUT_LIST, &inputListInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_SERVER_READY, &mServerServerReadyInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_GAME_STATE, &mGameStateInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuInterface);
+  MessageHandler::get().publishInterface(Interfaces::SERVER_SOUND_LIST, &mSoundInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   mDebugMenuInterface.getMessageQueue(); // Empty old queue.
@@ -68,7 +69,7 @@ void NetworkSystem::run() {
         }
 
         sf::Packet packet;
-        packet << HEARTBEAT;
+        packet << MessageId::HEARTBEAT;
         sf::Socket::Status socketStatus = client.second.first->send(packet);
         if (socketStatus != sf::Socket::Done) {
           TRACE_WARNING("Could not send heartbeat to client. Lost connection to client!");
@@ -89,14 +90,14 @@ void NetworkSystem::run() {
         int packetId = -1;
         packet >> packetId;
         switch (packetId) {
-          case INPUT_KEYS: {
+          case MessageId::INPUT_KEYS: {
             packet << client.first;
             inputListInterface.pushMessage(packet);
             break;
           }
-          case SHUT_DOWN:
+          case MessageId::SHUT_DOWN:
             break;
-          case CHANGE_GAME_STATE: {
+          case MessageId::CHANGE_GAME_STATE: {
             // Check if it is the host
             if (client.first == HOST) {
               GameStateMessage gsm(packet);
@@ -104,28 +105,28 @@ void NetworkSystem::run() {
             }
             break;
           }
-          case ADD_DEBUG_BUTTON: {
+          case MessageId::ADD_DEBUG_BUTTON: {
             AddDebugButtonMessage adbm(packet);
             mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
             break;
           }
-          case NEW_USERNAME: {
+          case MessageId::NEW_USERNAME: {
             ChangeUsernameMessage cum(packet);
             cum.setId(client.first);
             mPlayerLobbyInterface.pushMessage(cum.pack());
             break;
           }
-          case CHARACTER_CHOOSEN: {
+          case MessageId::CHARACTER_CHOOSEN: {
             CharacherChoosenMessage ccm(packet);
             ccm.setId(client.first);
             mPlayerLobbyInterface.pushMessage(ccm.pack());
             break;
           }
-          case MAP_DATA: {
+          case MessageId::MAP_DATA: {
             MapMessage mm(packet);
             mPlayerLobbyInterface.pushMessage(mm.pack());
           }
-          case HEARTBEAT: {
+          case MessageId::HEARTBEAT: {
             client.second.second->restart();
             break;
           }
@@ -154,13 +155,13 @@ void NetworkSystem::run() {
   }
 
   TRACE_INFO("UNPUBLISHING");
-  MessageHandler::get().unpublishInterface("ServerInputList");
-  MessageHandler::get().unpublishInterface("ServerServerReady");
-  MessageHandler::get().unpublishInterface("ServerPlayerData");
-  MessageHandler::get().unpublishInterface("ServerPlayerLobby");
-  MessageHandler::get().unpublishInterface("ServerGameState");
-  MessageHandler::get().unpublishInterface("ServerDebugMenu");
-  MessageHandler::get().unpublishInterface("ServerSoundList");
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_INPUT_LIST);
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_SERVER_READY);
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_PLAYER_DATA);
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_PLAYER_LOBBY);
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_GAME_STATE);
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_DEBUG_MENU);
+  MessageHandler::get().unpublishInterface(Interfaces::SERVER_SOUND_LIST);
 
   for (auto client : mClientsSockets) {
     client.second.first->disconnect();
@@ -225,7 +226,7 @@ void NetworkSystem::handleServerReady() {
     int id = -1;
     serverReadyPacket >> id;
 
-    if (id == SERVER_READY) {
+    if (id == MessageId::SERVER_READY) {
       ServerReadyMessage srm;
       for (auto clientSocket : mClientsSockets) {
         sf::Packet srmPacket = srm.pack();
@@ -247,7 +248,7 @@ void NetworkSystem::handlePlayerData() {
     playerDataPacket >> id;
 
     switch (id) {
-      case PLAYER_DATA: {
+      case MessageId::PLAYER_DATA: {
         PlayerDataMessage pdm(playerDataPacket);
 
         for (auto client : mClientsSockets) {
@@ -273,7 +274,7 @@ void NetworkSystem::handleDebugMenu() {
     debugMenuMessage >> id;
 
     switch (id) {
-      case ADD_DEBUG_BUTTON: {
+      case MessageId::ADD_DEBUG_BUTTON: {
         AddDebugButtonMessage adbm(debugMenuMessage);
 
         sf::Packet packet = adbm.pack();
@@ -282,7 +283,7 @@ void NetworkSystem::handleDebugMenu() {
         }
         break;
       }
-      case REMOVE_DEBUG_BUTTON: {
+      case MessageId::REMOVE_DEBUG_BUTTON: {
         RemoveDebugButtonMessage rdbm(debugMenuMessage);
         sf::Packet packet = rdbm.pack();
         if (!mClientsSockets.empty()) {
@@ -305,7 +306,7 @@ void NetworkSystem::handleSoundList() {
     int id = -1;
     soundListPacket >> id;
 
-    if (id == SOUND_LIST) {
+    if (id == MessageId::SOUND_LIST) {
       SoundMessage sm(soundListPacket);
       for (auto clientSocket : mClientsSockets) {
         sf::Packet smPacket = sm.pack();
@@ -325,7 +326,7 @@ void NetworkSystem::handleGameState() {
     int id = -1;
     gameStatePacket >> id;
 
-    if (id == CHANGE_GAME_STATE) {
+    if (id == MessageId::CHANGE_GAME_STATE) {
       GameStateMessage gsm(gameStatePacket);
       for (auto clientSocket : mClientsSockets) {
         sf::Packet gsmPacket = gsm.pack();

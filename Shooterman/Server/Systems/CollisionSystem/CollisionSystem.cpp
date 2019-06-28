@@ -1,5 +1,6 @@
 #include "CollisionSystem.h"
 
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
 
@@ -21,7 +22,7 @@ CollisionSystem::~CollisionSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
 void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
   if (!mDebugMenuSubscribed) {
-    mDebugMenuSubscribed = MessageHandler::get().subscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
+    mDebugMenuSubscribed = MessageHandler::get().subscribeTo(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuSubscriber);
     if (mDebugMenuSubscribed) {
       AddDebugButtonMessage debMess(mDebugMenuSubscriber.getId(), "Collision debug traces", "Server");
       mDebugMenuSubscriber.reverseSendMessage(debMess.pack());
@@ -109,7 +110,7 @@ void CollisionSystem::resetSystem() {
   RemoveDebugButtonMessage rdbm(mDebugMenuSubscriber.getId());
   sf::Packet packet = rdbm.pack();
   mDebugMenuSubscriber.reverseSendMessage(packet);
-  MessageHandler::get().unsubscribeTo("ServerDebugMenu", &mDebugMenuSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuSubscriber);
   mDebugMenuSubscribed = false;
   mDebugEnabled1 = false;
 }

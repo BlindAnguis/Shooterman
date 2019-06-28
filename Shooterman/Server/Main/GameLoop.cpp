@@ -6,6 +6,7 @@
 #include "../Engine/Engine.h"
 #include "../Network/HostListener.h"
 #include "../../Common/Messages/ServerReadyMessage.h"
+#include "../../Common/Interfaces.h"
 
 GameLoop::GameLoop() {
   mName = "SERVER: GAME_LOOP";
@@ -78,7 +79,7 @@ void GameLoop::gameLoop() {
   sf::Clock c;
   // send message to client, tell it to enable the button.
   Subscriber serverReadySubscriber;
-  while (!MessageHandler::get().subscribeTo("ServerServerReady", &serverReadySubscriber)) {
+  while (!MessageHandler::get().subscribeTo(Interfaces::SERVER_SERVER_READY, &serverReadySubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   ServerReadyMessage srm;

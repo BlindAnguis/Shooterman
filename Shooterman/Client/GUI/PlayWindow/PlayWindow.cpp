@@ -2,6 +2,7 @@
 
 #include "../Resources/GuiResourceManager.h"
 #include "../../../Common/Messages/SpriteMessage.h"
+#include "../../../Common/Interfaces.h"
 
 PlayWindow::PlayWindow() {
   mName = "CLIENT: PLAY_WINDOW";
@@ -10,7 +11,7 @@ PlayWindow::PlayWindow() {
 }
 
 PlayWindow::~PlayWindow() {
-  MessageHandler::get().unsubscribeTo("ClientSpriteList", &mSpriteListSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
   mIsSubscribed = false;
 }
 
@@ -28,7 +29,7 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
   bool renderNeeded = false;
 
   if (!mIsSubscribed) {
-    mIsSubscribed = MessageHandler::get().subscribeTo("ClientSpriteList", &mSpriteListSubscriber);
+    mIsSubscribed = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
     if (!mIsSubscribed) {
       return false;
     }
@@ -47,16 +48,16 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
     spriteMessage = spriteMessageQueue.front();
     spriteMessageQueue.pop();
     spriteMessage >> messageID;
-    if (messageID == SPRITE_LIST_CACHE) {
+    if (messageID == MessageId::SPRITE_LIST_CACHE) {
       mCachedSprites.clear();
       mSpriteListCacheMessage.unpack(spriteMessage);
       buildSpriteCache();
-    } else if (messageID == SPRITE_LIST) {
+    } else if (messageID == MessageId::SPRITE_LIST) {
       mSpriteListMessage.unpack(spriteMessage);
     }
   }
 
-  if (messageID == SPRITE_LIST) {
+  if (messageID == MessageId::SPRITE_LIST) {
     window->draw(mCachedSprite);
 
     int position = mSpriteListMessage.getSize() - 1;

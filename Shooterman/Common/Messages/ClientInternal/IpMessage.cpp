@@ -12,7 +12,7 @@ IpMessage::~IpMessage() {}
 
 sf::Packet IpMessage::pack() {
   sf::Packet packet;
-  packet << IP_MESSAGE;
+  packet << MessageId::IP_MESSAGE;
   packet << mIp;
   packet << mPort;
   return packet;

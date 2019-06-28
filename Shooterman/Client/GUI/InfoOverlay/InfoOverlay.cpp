@@ -2,6 +2,7 @@
 
 #include "../Resources/GuiList.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/InfoMessage.h"
 
@@ -20,7 +21,7 @@ InfoOverlay::~InfoOverlay() { }
 void InfoOverlay::publishInfoMessagesInterface() {
   TRACE_FUNC_ENTER();
   TRACE_INFO("publishing infomessageInterface");
-  MessageHandler::get().publishInterface("InfoMessage", &mInfoMessageInterface);
+  MessageHandler::get().publishInterface(Interfaces::INFO_MESSAGE, &mInfoMessageInterface);
   TRACE_FUNC_EXIT();
 }
 
@@ -35,7 +36,7 @@ void InfoOverlay::handleInfoMessages() {
     int id = -1;
     infoMessage >> id;
 
-    if (id == INFO_MESSAGE) {
+    if (id == MessageId::INFO_MESSAGE) {
       InfoMessage msg(infoMessage);
       mTextBox->setText(msg.getMessage());
       mNumberOfSecToShowMsg = msg.getMsgDuration();

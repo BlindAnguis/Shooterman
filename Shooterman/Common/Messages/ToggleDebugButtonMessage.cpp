@@ -14,7 +14,7 @@ ToggleDebugButtonMessage::~ToggleDebugButtonMessage() { }
 
 sf::Packet ToggleDebugButtonMessage::pack() {
   sf::Packet packet;
-  packet << TOGGLE_DEBUG_BUTTON;
+  packet << MessageId::TOGGLE_DEBUG_BUTTON;
   packet << mTraceLevel;
   return packet;
 }

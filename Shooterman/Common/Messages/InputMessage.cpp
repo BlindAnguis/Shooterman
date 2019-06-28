@@ -15,7 +15,7 @@ InputMessage::~InputMessage() {}
 
 sf::Packet InputMessage::pack() {
   sf::Packet packet;
-  packet << INPUT_KEYS;
+  packet << MessageId::INPUT_KEYS;
   packet << mKeyboardBitMask;
   packet << mMouseX;
   packet << mMouseY;

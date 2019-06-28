@@ -10,7 +10,7 @@ ClientDisconnectedMessage::~ClientDisconnectedMessage() {}
 
 sf::Packet ClientDisconnectedMessage::pack() {
   sf::Packet packet;
-  packet << CLIENT_DISCONNECTED;
+  packet << MessageId::CLIENT_DISCONNECTED;
   packet << mId;
   return packet;
 }
