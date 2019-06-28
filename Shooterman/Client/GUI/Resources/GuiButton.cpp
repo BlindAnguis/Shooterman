@@ -130,7 +130,3 @@ void GuiButton::select() {
 void GuiButton::unselect() {
   mIsSelected = false;
 }
-
-std::string GuiButton::getText() {
-  return mText.getString();
-}

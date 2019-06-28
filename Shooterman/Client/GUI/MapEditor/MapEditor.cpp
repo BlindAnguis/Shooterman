@@ -43,20 +43,14 @@ MapEditor::MapEditor() {
 
   auto filesList2 = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
   filesList2->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Save", [=]() {
-    std::ofstream saveFile;
-    saveFile.open("Levels/UserCreated/test.level");
-    if (saveFile.is_open()) {
-      saveFile << mMap.toString();
-    } else {
-      TRACE_ERROR("Failed to open file");
-    }
-    saveFile.close();
+    // Open new popup
+    mRenderSavePopup = true;
   }));
+
   filesList2->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Button", [=]() {
     TRACE_INFO("Why are you pressing this button?");
   }));
   toolbar->addGuiComponent(filesList2);
-
 
   auto floorList = std::make_shared<GuiExpandableList>(GuiComponentPosition::CENTER, "Floors");
   floorList->addGuiComponent(addButton(Textures::FloorWhole, "Floor"));
@@ -75,11 +69,38 @@ MapEditor::MapEditor() {
 
   toolbar->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Close Editor", GAME_STATE::PREVIOUS));
   mGuiFrame->addGuiComponent(toolbar);
+
+  // Create save popup
+  mPopupFrame = std::make_shared<Frame>();
+  auto saveHeadline = std::make_shared<GuiText>(GuiComponentPosition::TOP, "Save map");
+  mPopupFrame->addGuiComponent(saveHeadline);
+  auto filesList3 = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
+  mSavePopupInput = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Filename");
+  mSavePopupInput->enableReceiveInput();
+  filesList3->addGuiComponent(mSavePopupInput);
+  filesList3->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Save", [=]() {
+    std::ofstream saveFile;
+    std::string mapPath("Levels/UserCreated/" + mSavePopupInput->getText() + ".level");
+    saveFile.open(mapPath);
+    if (saveFile.is_open()) {
+      saveFile << mMap.toString();
+    }
+    else {
+      TRACE_ERROR("Failed to open file: " << mapPath);
+    }
+    saveFile.close();
+    mRenderSavePopup = false;
+  }));
+  mPopupFrame->addGuiComponent(filesList3);
 }
 
 MapEditor::~MapEditor() { }
 
 bool MapEditor::checkMouse(sf::Vector2f mousePosition) {
+  if (mRenderSavePopup && mPopupFrame->checkMouse(mousePosition)) {
+    return true;
+  }
+
   if (mGuiFrame->checkMouse(mousePosition)) {
     return true;
   }
@@ -107,6 +128,9 @@ bool MapEditor::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   }
 
   mGuiFrame->render(window);
+  if (mRenderSavePopup) {
+    mPopupFrame->render(window);
+  }
   return true;
 }
 
@@ -124,4 +148,14 @@ std::shared_ptr<GuiImageButton> MapEditor::addButton(Textures texture, std::stri
   });
 
   return button;
+}
+
+void MapEditor::handleNewText(sf::Uint32 newChar) {
+  if (newChar == 8) {
+    // Backspace
+    mSavePopupInput->removeChar();
+  }
+  else if (mSavePopupInput->getText().length() < 15) {
+    mSavePopupInput->addChar(newChar);
+  }
 }
