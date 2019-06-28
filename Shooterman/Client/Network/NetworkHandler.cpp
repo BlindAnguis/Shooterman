@@ -42,6 +42,7 @@ void NetworkHandler::run() {
 
   if (connectionStatus == CONNECTION_STATUS::Cancel) {
     MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
+    teardownSubscribersAndInterfaces();
     return;
   }
 
@@ -270,6 +271,8 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
+
+  mGameStateSubscriber.getMessageQueue();
   TRACE_FUNC_EXIT()
 }
 

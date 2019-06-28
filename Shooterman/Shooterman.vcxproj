@@ -256,6 +256,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
     <ClInclude Include="Client\Map.h" />
+    <ClInclude Include="Common\Interfaces.h" />
     <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
     <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
     <ClInclude Include="Common\Messages\InfoMessage.h" />
