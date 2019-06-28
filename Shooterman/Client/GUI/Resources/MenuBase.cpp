@@ -15,4 +15,12 @@ bool MenuBase::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mou
   return true;
 }
 
-void MenuBase::handleNewText(sf::Uint32 newChar) { }
+void MenuBase::handleNewText(sf::Uint32 newChar) {
+  for (auto textListener : mTextListeners) {
+    textListener->addChar(newChar);
+  }
+}
+
+void MenuBase::addTextListener(std::shared_ptr<GuiInputText> textListener) {
+  mTextListeners.push_back(textListener);
+}

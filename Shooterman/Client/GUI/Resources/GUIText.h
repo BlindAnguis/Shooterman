@@ -17,6 +17,7 @@ public:
 
   void setPosition(float xPosition, float yPosition);
   void setOutlineColor(sf::Color newColor);
+  std::string getText();
 
 protected:
   sf::Text mText;

@@ -4,6 +4,7 @@
 
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiImageButton.h"
+#include "../Resources/GuiInputText.h"
 #include "../../Map.h"
 
 class MapEditor : public MenuBase {
@@ -20,7 +21,9 @@ private:
   Textures mCurrentTileId;
   sf::Sprite mCurrentSprite;
   std::string tmpMap;
-
+  std::shared_ptr<Frame> mPopupFrame;
+  std::shared_ptr<GuiInputText> mSavePopupInput;
   std::shared_ptr<GuiImageButton> addButton(Textures texture, std::string name);
+  bool mRenderSavePopup = false;
 };
 

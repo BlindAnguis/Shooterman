@@ -38,3 +38,7 @@ void GuiText::setOutlineColor(sf::Color newColor) {
   mText.setOutlineColor(newColor);
   mText.setOutlineThickness(1);
 }
+
+std::string GuiText::getText() {
+  return mText.getString();
+}
