@@ -42,6 +42,10 @@ void Animation::play() {
           mAttackFinishedCallback(mEntityId);
         }
       } else {
+        if (mAttackIntervall > 0 && mCurrentAnimationFrame % mAttackIntervall == 0 && mSuperAttackIntervallCallback != nullptr)
+        {
+          mSuperAttackIntervallCallback(mEntityId);
+        }
         mCurrentAnimationFrame++;
       }
       //TRACE_INFO("mCurrentAnimationFrameAfter: " << mCurrentAnimationFrame);

@@ -50,6 +50,7 @@ GuiResourceManager::GuiResourceManager() {
 
   // Ammo
   loadSpriteTexture(Textures::Bullet, "lightningBall");
+  loadSpriteTexture(Textures::Arrow, "arrow");
   loadSpriteTexture(Textures::SwordSlash, "SwordSlash");
   loadSpriteTexture(Textures::LightningStrike, "lightningBolt");
 

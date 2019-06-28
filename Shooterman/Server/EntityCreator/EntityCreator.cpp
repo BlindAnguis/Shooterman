@@ -413,7 +413,7 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 }
 
 Entity* EntityCreator::createArrow(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible) {
-  TRACE_DEBUG2("Creating an arow for entity: " << entityId);
+  TRACE_DEBUG2("Creating an arrow for entity: " << entityId);
   auto playerShootClockComponent = mClockComponentManager->getComponent(entityId);
   auto player = mPlayerComponentManager->getComponent(entityId);
   auto animation = mAnimationComponentManager->getComponent(entityId);
@@ -423,7 +423,6 @@ Entity* EntityCreator::createArrow(int entityId, std::uint32_t input, sf::Vector
     auto playerPositionComponent = mRenderComponentManager->getComponent(entityId);
     float originXPos = playerPositionComponent->sprite.getPosition().x;
     float originYPos = playerPositionComponent->sprite.getPosition().y;
-
     sf::Vector2f arrowVelocity((float)(mousePosition.x - originXPos), (float)(mousePosition.y - originYPos));
 
     // Normalize velocity to avoid huge speeds, and multiply for extra speed
@@ -456,7 +455,7 @@ Entity* EntityCreator::createArrow(int entityId, std::uint32_t input, sf::Vector
     rc->visible = visible;
     rc->isDynamic = true;
     //rc->sprite = sf::Sprite(rc->texture, sf::IntRect(0, 0, 28, 20));
-    rc->sprite = sf::Sprite(*mTextures[Textures::Arrow], sf::IntRect(0, 0, 56, 65));
+    rc->sprite = sf::Sprite(*mTextures[Textures::Arrow], sf::IntRect(0, 0, 32, 32));
     rc->sprite.setOrigin(0, 0);
     rc->sprite.setPosition(originXPos, originYPos);
     rc->sprite.setRotation(angle);
@@ -472,7 +471,7 @@ Entity* EntityCreator::createArrow(int entityId, std::uint32_t input, sf::Vector
     auto ac = mAnimationComponentManager->addComponent(arrow->id);
     Animation attackAnimation(rc->sprite, false, arrow->id);
 
-    attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 0, 56, 65), 40, sf::Vector2f(0, 0) });
+    attackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(0, 0, 32, 32), 40, sf::Vector2f(0, 0) });
 
     ac->animations.emplace(AnimationType::Attacking, attackAnimation);
     ac->currentAnimation = AnimationType::Attacking;
@@ -773,8 +772,19 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
 
   auto superAttackFinishedCallback = [this](int entityId) {
     handleFinishedSuperAttack(entityId);
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    sf::Vector2i randomMousePosition;
+    randomMousePosition.x = (int)rand() % 1024;
+    randomMousePosition.y = (int)rand() % 1024;
+    createArrow(entityId, 0, randomMousePosition);
   };
-
+  auto superAttackRandomShootCallback = [this](int entityId) {
+    auto player = mPlayerComponentManager->getComponent(entityId);
+    sf::Vector2i randomMousePosition;
+    randomMousePosition.x = (int)rand() % 1024;
+    randomMousePosition.y = (int)rand() % 1024;
+    createArrow(entityId, 0, randomMousePosition);
+  };
   sf::Vector2f originPosition(32, 25);
   Animation shootUpAnimation(rc->sprite, true, archer->id);
   for (int i = 0; i < 13; i++) {
@@ -803,56 +813,22 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
   ac->animations.emplace(AnimationType::AttackingRight, shootRightAnimation);
 
   
-  Animation superAttackUpAnimation(rc->sprite, true, archer->id);
+  Animation superAttackAnimation(rc->sprite, true, archer->id);
+
   int superAttackSpeed = 60;
-  superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
-  for (int i = 0; i < 2; i++) {
-    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
-    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
-    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
-    superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
+  for (int i = 0; i < 13; i++) {
+    int randomDirection = (int)rand() % 4;
+    superAttackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, (64 * (16 + randomDirection)) + 14, 64, 50), 50, originPosition });
+    superAttackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, (64 * (16 + randomDirection)) + 14, 64, 50), 50, originPosition });
+    superAttackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, (64 * (16 + randomDirection)) + 14, 64, 50), 50, originPosition });
+    superAttackAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(i * 64, (64 * (16 + randomDirection)) + 14, 64, 50), 50, originPosition });
   }
-  //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
-  //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(11, 87) }); // Up no slash
-  superAttackUpAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
-
-  Animation superAttackRightAnimation(rc->sprite, true, archer->id);
-  superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
-  for (int i = 0; i < 2; i++) {
-    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
-    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
-    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
-    superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
-  }
-  //superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
-  superAttackRightAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
-
-  Animation superAttackDownAnimation(rc->sprite, true, archer->id);
-  superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
-  for (int i = 0; i < 2; i++) {
-    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
-    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
-    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
-    superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
-  }
-  //superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
-  superAttackDownAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
-
-  Animation superAttackLeftAnimation(rc->sprite, true, archer->id);
-  superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
-  for (int i = 0; i < 2; i++) {
-    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1173, 1579, 97, 86), superAttackSpeed, sf::Vector2f(48, 43) }); // Left slash
-    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
-    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
-    superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
-  }
-  //superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
-  superAttackLeftAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
-
-  ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
-  ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackDownAnimation);
-  ac->animations.emplace(AnimationType::SuperAttackingLeft, superAttackLeftAnimation);
-  ac->animations.emplace(AnimationType::SuperAttackingRight, superAttackRightAnimation);
+  superAttackAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
+  superAttackAnimation.setSuperAttackIntervallCallback(superAttackRandomShootCallback, 1);
+  ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingLeft, superAttackAnimation);
+  ac->animations.emplace(AnimationType::SuperAttackingRight, superAttackAnimation);
   
   return archer;
 }

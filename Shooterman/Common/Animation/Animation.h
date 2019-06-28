@@ -37,7 +37,13 @@ public:
     mAttackCallback = attack;
     mAttackingFrame = attackFrame;
   }
-  void setAttackFinishedCallback(const std::function<void(int entityId)>& attackFinished) { mAttackFinishedCallback = attackFinished; }
+  void setAttackFinishedCallback(const std::function<void(int entityId)>& attackFinished) { 
+    mAttackFinishedCallback = attackFinished; 
+  }
+  void setSuperAttackIntervallCallback(const std::function<void(int entityId)>& superAttackIntervallCallback, int attackIntevall = 0) {
+    mSuperAttackIntervallCallback = superAttackIntervallCallback;
+    mAttackIntervall = attackIntevall;
+  }
 
 private:
   int mCurrentAnimationFrame;
@@ -49,6 +55,8 @@ private:
   int mEntityId;
   std::function<void(int entityId)> mAttackCallback = nullptr;
   std::function<void(int entityId)> mAttackFinishedCallback = nullptr;
+  std::function<void(int entityId)> mSuperAttackIntervallCallback = nullptr;
   int mAttackingFrame;
+  int mAttackIntervall;
 };
 
