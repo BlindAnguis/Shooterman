@@ -11,16 +11,6 @@
 
 #include <array>
 
-#define KNIGHT_MAX_VELOCITY 4.8f
-#define KNIGHT_MAX_HEALTH 200
-#define KNIGHT_MAX_STAMINA 150
-#define KNIGHT_ATTACK_SPEED 400
-
-#define SPEARMAN_MAX_VELOCITY 4.65f
-#define SPEARMAN_MAX_HEALTH 150
-#define SPEARMAN_MAX_STAMINA 100
-#define SPEARMAN_ATTACK_SPEED 450
-
 #define MAGE_MAX_VELOCITY 4.5f
 #define MAGE_MAX_HEALTH 100
 #define MAGE_MAX_MANA 100
@@ -28,6 +18,21 @@
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
 #define MAGE_ATTACK_SPEED 500
+
+#define KNIGHT_MAX_VELOCITY 4.8f
+#define KNIGHT_MAX_HEALTH 200
+#define KNIGHT_MAX_STAMINA 150
+#define KNIGHT_ATTACK_SPEED 400
+
+#define SPEARMAN_MAX_VELOCITY 4.65f
+#define SPEARMAN_MAX_HEALTH 150
+#define SPEARMAN_MAX_STAMINA 125
+#define SPEARMAN_ATTACK_SPEED 450
+
+#define ARCHER_MAX_VELOCITY 5.1f
+#define ARCHER_MAX_HEALTH 125
+#define ARCHER_MAX_STAMINA 100
+#define ARCHER_ATTACK_SPEED 450
 
 #define HEALTH_POTION_EFFECT 50
 #define MANA_POTION_EFFECT 50
@@ -60,6 +65,7 @@ private:
   
   GridSystem *mGridSystem;
 
+  Subscriber mSoundSubscriber;
   std::map<Textures, sf::Texture*> mTextures;
 
   Entity* createPlayerBase(float maxVelocity, Textures textureType, sf::Vector2f position, int health, int attackSpeed);
@@ -72,5 +78,5 @@ private:
   Entity* createArrow(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
   void createRandomLightningBolts();
-  Subscriber mSoundSubscriber;
+  void handleFinishedSuperAttack(int entityId);
 };

@@ -198,14 +198,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
-    TRACE_INFO("Super attack finished");
-    auto player = mPlayerComponentManager->getComponent(entityId);
-    player->invinsible = false;
-    if (player->superAttacks >= 0) {
-      player->superAttacks--;
-    }
-    player->state = PlayerState::Idle;
-    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
+    handleFinishedSuperAttack(entityId);
   };
   
   sf::Vector2f originPosition(32, 25);
@@ -346,7 +339,7 @@ void EntityCreator::createRandomLightningBolts() {
 }
 
 Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible) {
-  //std::cout << "Creating bullet" << std::endl;
+  TRACE_DEBUG2("Creating a lightningbolt for entity: " << entityId);
   auto playerShootClockComponent = mClockComponentManager->getComponent(entityId);
   auto player = mPlayerComponentManager->getComponent(entityId);
   auto animation = mAnimationComponentManager->getComponent(entityId);
@@ -419,10 +412,10 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 }
 
 Entity* EntityCreator::createArrow(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible) {
+  TRACE_DEBUG2("Creating an arow for entity: " << entityId);
   auto playerShootClockComponent = mClockComponentManager->getComponent(entityId);
   auto player = mPlayerComponentManager->getComponent(entityId);
   auto animation = mAnimationComponentManager->getComponent(entityId);
-  TRACE_INFO("SKAPAR PIL!!");
   //animation->animations.at(animation->currentAnimation);
   auto currentFrame = animation->animations.at(animation->currentAnimation).getCurrentAnimationFrame();
   if (playerShootClockComponent->clock.getElapsedTime() >= sf::milliseconds(player->attackSpeed)) {
@@ -575,13 +568,8 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     createMelee(entityId, 0, player->nextAttackMousePosition);
   };
 
-  auto attackFinishedCallback = [this](int entityId) {
-    TRACE_INFO("Attack finished");
-    auto player = mPlayerComponentManager->getComponent(entityId);
-    player->invinsible = false;
-    player->superAttacks--;
-    player->state = PlayerState::Idle;
-    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
+  auto superAttackFinishedCallback = [this](int entityId) {
+    handleFinishedSuperAttack(entityId);
   };
 
   sf::Vector2f originPosition(32, 25);
@@ -625,7 +613,7 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
   }
   //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
   //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(11, 87) }); // Up no slash
-  superAttackUpAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackUpAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackRightAnimation(rc->sprite, true, knight->id);
   superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
@@ -636,7 +624,7 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
   }
   //superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
-  superAttackRightAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackRightAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackDownAnimation(rc->sprite, true, knight->id);
   superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
@@ -647,7 +635,7 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
   }
   //superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
-  superAttackDownAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackDownAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackLeftAnimation(rc->sprite, true, knight->id);
   superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
@@ -658,7 +646,7 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash        
   }
   //superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
-  superAttackLeftAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackLeftAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
   ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackDownAnimation);
@@ -674,7 +662,6 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 
   auto rc = mRenderComponentManager->getComponent(spearman->id);
   auto ac = mAnimationComponentManager->getComponent(spearman->id);
-  auto hc = mHealthComponentManager->getComponent(spearman->id);
   auto sc = ComponentManager<StaminaComponent>::get().addComponent(spearman->id);
   sc->maxStamina = SPEARMAN_MAX_STAMINA;
   sc->currentStamina = sc->maxStamina;
@@ -687,13 +674,8 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
     createMelee(entityId, 0, player->nextAttackMousePosition);
   };
 
-  auto attackFinishedCallback = [this](int entityId) {
-    TRACE_INFO("Attack finished");
-    auto player = mPlayerComponentManager->getComponent(entityId);
-    player->invinsible = false;
-    player->superAttacks--;
-    player->state = PlayerState::Idle;
-    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
+  auto superAttackFinishedCallback = [this](int entityId) {
+    handleFinishedSuperAttack(entityId);
   };
 
   sf::Vector2f originPosition(32, 25);
@@ -730,7 +712,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
   }
   //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
   //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(11, 87) }); // Up no slash
-  superAttackUpAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackUpAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackRightAnimation(rc->sprite, true, spearman->id);
   superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
@@ -741,7 +723,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
     superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
   }
   //superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
-  superAttackRightAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackRightAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackDownAnimation(rc->sprite, true, spearman->id);
   superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
@@ -752,7 +734,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
     superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
   }
   //superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
-  superAttackDownAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackDownAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackLeftAnimation(rc->sprite, true, spearman->id);
   superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
@@ -763,7 +745,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
     superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
   }
   //superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
-  superAttackLeftAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackLeftAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
   ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackDownAnimation);
@@ -774,33 +756,22 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
 }
 
 Entity* EntityCreator::createArcher(sf::Vector2f position) {
-  Entity* archer = createPlayerBase(ARCHER_MAX_VELOCITY, Textures::CharacterArcher, position, 100, 450);
+  Entity* archer = createPlayerBase(ARCHER_MAX_VELOCITY, Textures::CharacterArcher, position, ARCHER_MAX_HEALTH, ARCHER_ATTACK_SPEED);
 
   auto rc = mRenderComponentManager->getComponent(archer->id);
   auto ac = mAnimationComponentManager->getComponent(archer->id);
-  auto hc = mHealthComponentManager->getComponent(archer->id);
-  hc->maxHealth = 100;
-  hc->currentHealth = hc->maxHealth;
-  hc->isAlive = true;
   auto sc = ComponentManager<StaminaComponent>::get().addComponent(archer->id);
-  sc->maxStamina = 100;
+  sc->maxStamina = ARCHER_MAX_STAMINA;
   sc->currentStamina = sc->maxStamina;
 
   auto attackCallback = [this](int entityId) {
     //TRACE_INFO("ATTACKING");
     auto player = mPlayerComponentManager->getComponent(entityId);
-    
     createArrow(entityId, 0, player->nextAttackMousePosition);
-
   };
 
-  auto attackFinishedCallback = [this](int entityId) {
-    TRACE_INFO("Attack finished");
-    auto player = mPlayerComponentManager->getComponent(entityId);
-    player->invinsible = false;
-    player->superAttacks--;
-    player->state = PlayerState::Idle;
-    ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
+  auto superAttackFinishedCallback = [this](int entityId) {
+    handleFinishedSuperAttack(entityId);
   };
 
   sf::Vector2f originPosition(32, 25);
@@ -842,7 +813,7 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
   }
   //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(15, 55) }); // Up no slash
   //superAttackUpAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1045, 1363, 30, 110), superAttackSpeed, sf::Vector2f(11, 87) }); // Up no slash
-  superAttackUpAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackUpAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackRightAnimation(rc->sprite, true, archer->id);
   superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
@@ -853,7 +824,7 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
     superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1237, 1371, 80, 102), superAttackSpeed, sf::Vector2f(40, 51) }); // Up slash
   }
   //superAttackRightAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1038, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Right no slash
-  superAttackRightAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackRightAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackDownAnimation(rc->sprite, true, archer->id);
   superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
@@ -864,7 +835,7 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
     superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1226, 1997, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) }); // Right slash
   }
   //superAttackDownAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1042, 1805, 56, 98), superAttackSpeed, sf::Vector2f(28, 49) });  // Down no slash
-  superAttackDownAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackDownAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   Animation superAttackLeftAnimation(rc->sprite, true, archer->id);
   superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
@@ -875,7 +846,7 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
     superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(1185, 1798, 75, 98), superAttackSpeed, sf::Vector2f(37, 49) }); // Down slash
   }
   //superAttackLeftAnimation.addAnimationFrame(AnimationFrame{ sf::IntRect(977, 1613, 97, 52), superAttackSpeed, sf::Vector2f(48, 26) });  // Left no slash
-  superAttackLeftAnimation.setAttackFinishedCallback(attackFinishedCallback);
+  superAttackLeftAnimation.setAttackFinishedCallback(superAttackFinishedCallback);
 
   ac->animations.emplace(AnimationType::SuperAttackingUp, superAttackUpAnimation);
   ac->animations.emplace(AnimationType::SuperAttackingDown, superAttackDownAnimation);
@@ -961,4 +932,16 @@ void EntityCreator::loadTexture(Textures textureId, std::string fileName) {
     TRACE_ERROR("Could not load file: Client/Resource/Sprites/" << fileName);
   }
   mTextures[textureId] = texture;
+}
+
+void EntityCreator::handleFinishedSuperAttack(int entityId)
+{
+  TRACE_DEBUG1("Super attack finished");
+  auto player = mPlayerComponentManager->getComponent(entityId);
+  player->invinsible = false;
+  if (player->superAttacks >= 0) {
+    player->superAttacks--;
+  }
+  player->state = PlayerState::Idle;
+  ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
 }
