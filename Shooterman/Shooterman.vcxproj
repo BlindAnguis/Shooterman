@@ -192,6 +192,7 @@
     <ClCompile Include="Common\Messages\SpriteMessage.cpp" />
     <ClCompile Include="Common\Messages\ToggleDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Trace.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiFrameComponent.cpp" />
     <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="Common\Messages\ServerReadyMessage.h" />
     <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
     <ClInclude Include="Common\Sounds.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiFrameComponent.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

@@ -14,7 +14,7 @@ MapEditor::MapEditor() {
   mMap.clear();
   mMap.createDefaultMap();
   mGuiFrame = std::make_shared<Frame>();
-  
+  mSavePopupBackground = std::make_shared<GuiFrameComponent>(GuiComponentPosition::CENTER, sf::RectangleShape(sf::Vector2f(520, 520)));
   auto toolbar = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::VERTICAL);
 
   auto filesList1 = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
@@ -72,8 +72,9 @@ MapEditor::MapEditor() {
 
   // Create save popup
   mPopupFrame = std::make_shared<Frame>();
+  mPopupFrame->addGuiComponent(mSavePopupBackground);
   auto saveHeadline = std::make_shared<GuiText>(GuiComponentPosition::TOP, "Save map");
-  mPopupFrame->addGuiComponent(saveHeadline);
+  mSavePopupBackground->addGuiComponent(saveHeadline);
   auto filesList3 = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
   mSavePopupInput = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Filename");
   mSavePopupInput->enableReceiveInput();
@@ -92,16 +93,23 @@ MapEditor::MapEditor() {
     saveFile.close();
     mRenderSavePopup = false;
   }));
-  mPopupFrame->addGuiComponent(filesList3);
+  mSavePopupBackground->addGuiComponent(filesList3);
 }
 
 MapEditor::~MapEditor() { }
 
 bool MapEditor::checkMouse(sf::Vector2f mousePosition) {
-  if (mRenderSavePopup && mPopupFrame->checkMouse(mousePosition)) {
-    return true;
+  if (mRenderSavePopup) {
+    if (mSavePopupBackground->isMouseClickInsideFrame(mousePosition)) {
+      if (mPopupFrame->checkMouse(mousePosition)) {
+        return true;
+      }
+    } else {
+      mRenderSavePopup = false;
+    }
+    return false;
   }
-
+  
   if (mGuiFrame->checkMouse(mousePosition)) {
     return true;
   }

@@ -8,6 +8,7 @@
 
 class Frame {
 public:
+  explicit Frame(sf::RectangleShape frameSize);
   explicit Frame();
 
   void addGuiComponent(std::shared_ptr<GuiComponent> component);
@@ -17,4 +18,5 @@ public:
 
 private:
   std::vector<std::shared_ptr<GuiComponent>> mComponents;
+  sf::RectangleShape mFrameSize;
 };

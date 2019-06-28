@@ -6,6 +6,7 @@
 #include "../Resources/GuiImageButton.h"
 #include "../Resources/GuiInputText.h"
 #include "../../Map.h"
+#include "../Resources/GuiFrameComponent.h"
 
 class MapEditor : public MenuBase {
 public:
@@ -25,5 +26,6 @@ private:
   std::shared_ptr<GuiInputText> mSavePopupInput;
   std::shared_ptr<GuiImageButton> addButton(Textures texture, std::string name);
   bool mRenderSavePopup = false;
+  std::shared_ptr<GuiFrameComponent> mSavePopupBackground;
 };
 

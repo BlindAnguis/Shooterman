@@ -1,5 +1,9 @@
 #include "GuiFrame.h"
 
+Frame::Frame(sf::RectangleShape frameSize) {
+
+}
+
 Frame::Frame() = default;
 
 void Frame::addGuiComponent(std::shared_ptr<GuiComponent> component) {

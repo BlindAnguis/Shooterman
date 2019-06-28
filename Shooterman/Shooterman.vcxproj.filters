@@ -90,6 +90,7 @@
     <ClCompile Include="Client\GUI\MapEditor\MapEditor.cpp" />
     <ClCompile Include="Client\Map.cpp" />
     <ClCompile Include="Common\Messages\MapMessage.cpp" />
+    <ClCompile Include="Client\GUI\Resources\GuiFrameComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -195,6 +196,7 @@
     <ClInclude Include="Client\GUI\MapEditor\MapEditor.h" />
     <ClInclude Include="Client\Map.h" />
     <ClInclude Include="Common\Messages\MapMessage.h" />
+    <ClInclude Include="Client\GUI\Resources\GuiFrameComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
