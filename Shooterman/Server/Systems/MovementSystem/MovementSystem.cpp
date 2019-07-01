@@ -39,17 +39,19 @@ void MovementSystem::update(InputMessage inputMessage)
       angle += 360;
     }
 
-    if (angle >= 315 || angle < 45) {
-      animation->currentAnimation = AnimationType::IdleUp;
-    }
-    else if (angle >= 45 && angle < 135) {
-      animation->currentAnimation = AnimationType::IdleRight;
-    }
-    else if (angle >= 135 && angle < 225) {
-      animation->currentAnimation = AnimationType::IdleDown;
-    }
-    else if (angle >= 225 && angle < 315) {
-      animation->currentAnimation = AnimationType::IdleLeft;
+    if (player->state != PlayerState::SuperAttacking) {
+      if (angle >= 315 || angle < 45) {
+        animation->currentAnimation = AnimationType::IdleUp;
+      }
+      else if (angle >= 45 && angle < 135) {
+        animation->currentAnimation = AnimationType::IdleRight;
+      }
+      else if (angle >= 135 && angle < 225) {
+        animation->currentAnimation = AnimationType::IdleDown;
+      }
+      else if (angle >= 225 && angle < 315) {
+        animation->currentAnimation = AnimationType::IdleLeft;
+      }
     }
 
     bool velocityUpdated = false;
@@ -100,16 +102,16 @@ void MovementSystem::update(InputMessage inputMessage)
         animation->currentAnimation = AnimationType::AttackingRight;
       }
     } else if (player->state == PlayerState::SuperAttacking) {
-      if (animation->currentAnimation == AnimationType::IdleUp) {
+      if (animation->currentAnimation == AnimationType::IdleUp || animation->currentAnimation == AnimationType::RunningUp) {
         animation->currentAnimation = AnimationType::SuperAttackingUp;
       }
-      else if (animation->currentAnimation == AnimationType::IdleDown) {
+      else if (animation->currentAnimation == AnimationType::IdleDown || animation->currentAnimation == AnimationType::RunningDown) {
         animation->currentAnimation = AnimationType::SuperAttackingDown;
       }
-      else if (animation->currentAnimation == AnimationType::IdleLeft) {
+      else if (animation->currentAnimation == AnimationType::IdleLeft || animation->currentAnimation == AnimationType::RunningLeft) {
         animation->currentAnimation = AnimationType::SuperAttackingLeft;
       }
-      else if (animation->currentAnimation == AnimationType::IdleRight) {
+      else if (animation->currentAnimation == AnimationType::IdleRight || animation->currentAnimation == AnimationType::RunningRight) {
         animation->currentAnimation = AnimationType::SuperAttackingRight;
       }
     }

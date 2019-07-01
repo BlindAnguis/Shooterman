@@ -181,6 +181,8 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
       if (mc->currentMana >= MAGE_MANA_COST) {
         createBullet(entityId, 0, player->nextAttackMousePosition);
         ManaSystem::get().changeMana(entityId, -MAGE_MANA_COST);
+        auto attackClock = mClockComponentManager->getComponent(entityId);
+        attackClock->clock.restart();
       }
     } else {
       TRACE_ERROR("Mage with id: " << entityId << " has no mana component!");
@@ -406,7 +408,6 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
     ac->animations.emplace(AnimationType::Attacking, attackAnimation);
     ac->currentAnimation = AnimationType::Attacking;
     mGridSystem->addEntity(bullet->id, (sf::Vector2i)rc->sprite.getPosition());
-
     return bullet;
   }
   return nullptr;
@@ -566,6 +567,8 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     //TRACE_INFO("ATTACKING");
     auto player = mPlayerComponentManager->getComponent(entityId);
     createMelee(entityId, 0, player->nextAttackMousePosition);
+    auto attackClock = mClockComponentManager->getComponent(entityId);
+    attackClock->clock.restart();
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -672,6 +675,8 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
     //TRACE_INFO("ATTACKING");
     auto player = mPlayerComponentManager->getComponent(entityId);
     createMelee(entityId, 0, player->nextAttackMousePosition);
+    auto attackClock = mClockComponentManager->getComponent(entityId);
+    attackClock->clock.restart();
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -768,6 +773,8 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
     //TRACE_INFO("ATTACKING");
     auto player = mPlayerComponentManager->getComponent(entityId);
     createArrow(entityId, 0, player->nextAttackMousePosition);
+    auto attackClock = mClockComponentManager->getComponent(entityId);
+    attackClock->clock.restart();
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -919,6 +926,7 @@ void EntityCreator::handleFinishedSuperAttack(int entityId)
   if (player->superAttacks >= 0) {
     player->superAttacks--;
   }
-  player->state = PlayerState::Idle;
+  auto attackClock = mClockComponentManager->getComponent(entityId);
+  attackClock->clock.restart();
   ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
 }

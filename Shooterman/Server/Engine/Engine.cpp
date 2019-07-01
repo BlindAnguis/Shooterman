@@ -67,13 +67,16 @@ Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap) :
     auto attackClock = mClockComponentManager->getComponent(entityId);
     if (attackClock->clock.getElapsedTime().asMilliseconds() >= player->attackSpeed) {
       //TRACE_INFO("Setting attack mouse info to, x: " << mousePosition.x << ", y: " << mousePosition.y);
-      player->state = PlayerState::Attacking;
       player->nextAttackMousePosition = mousePosition;
       if (player->superAttacks > 0) {
+        TRACE_DEBUG2("----------------- START SUPER ATTACK -------------------------");
         player->state = PlayerState::SuperAttacking;
         player->invinsible = true;
         auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(entityId);
         hcc->healthChange = -30;
+      } else {
+        TRACE_DEBUG2("----------------- START REGULAR ATTACK -------------------------");
+        player->state = PlayerState::Attacking;
       }
     }
   });
@@ -131,11 +134,11 @@ void Engine::update() {
         player.second->state = PlayerState::Idle;
         animation->currentAnimation = AnimationType::IdleDown;
         currentAnimation.reset();
+        TRACE_DEBUG2("----------------- ATTACK FINISHED -------------------------");
       }
     }
   }
   c.restart();
-
 
   // Update
   mInputSystem->handleInput();
