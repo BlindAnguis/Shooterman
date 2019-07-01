@@ -182,7 +182,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
         createBullet(entityId, 0, player->nextAttackMousePosition);
         ManaSystem::get().changeMana(entityId, -MAGE_MANA_COST);
         auto attackClock = mClockComponentManager->getComponent(entityId);
-        attackClock->clock.restart();
+        //attackClock->clock.restart();
       }
     } else {
       TRACE_ERROR("Mage with id: " << entityId << " has no mana component!");
@@ -568,7 +568,7 @@ Entity* EntityCreator::createKnight(sf::Vector2f position) {
     auto player = mPlayerComponentManager->getComponent(entityId);
     createMelee(entityId, 0, player->nextAttackMousePosition);
     auto attackClock = mClockComponentManager->getComponent(entityId);
-    attackClock->clock.restart();
+    //attackClock->clock.restart();
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -676,7 +676,7 @@ Entity* EntityCreator::createSpearman(sf::Vector2f position) {
     auto player = mPlayerComponentManager->getComponent(entityId);
     createMelee(entityId, 0, player->nextAttackMousePosition);
     auto attackClock = mClockComponentManager->getComponent(entityId);
-    attackClock->clock.restart();
+    //attackClock->clock.restart();
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -774,7 +774,7 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
     auto player = mPlayerComponentManager->getComponent(entityId);
     createArrow(entityId, 0, player->nextAttackMousePosition);
     auto attackClock = mClockComponentManager->getComponent(entityId);
-    attackClock->clock.restart();
+    //attackClock->clock.restart();
   };
 
   auto superAttackFinishedCallback = [this](int entityId) {
@@ -927,6 +927,6 @@ void EntityCreator::handleFinishedSuperAttack(int entityId)
     player->superAttacks--;
   }
   auto attackClock = mClockComponentManager->getComponent(entityId);
-  attackClock->clock.restart();
+  //attackClock->clock.restart();
   ComponentManager<HealthChangerComponent>::get().removeComponent(entityId);
 }
