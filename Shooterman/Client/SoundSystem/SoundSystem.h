@@ -10,8 +10,7 @@
 #include <vector>
 #include <map>
 
-class SoundSystem : Trace
-{
+class SoundSystem : Trace {
 public:
   SoundSystem();
   ~SoundSystem();
@@ -27,10 +26,12 @@ private:
   std::queue<sf::Sound> mPlayQueue;
   std::map<Sounds, sf::SoundBuffer> mSoundBuffers;
   bool mSubscribedToSounds = false;
-  void loadSounds();
   Subscriber mSoundSubcription;
   sf::Music mBackgroundMusic;
   Sounds mCurrentBackgroundMusic;
   std::map<Sounds, std::string> mPathsToBackgroundMusic;
+
+  void loadSounds();
+  void handleSoundListMessage(sf::Packet message);
 };
 

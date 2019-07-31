@@ -4,12 +4,14 @@
 #include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
-#include "../../../Common/Messages/ToggleDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
 #include "../../../Common/MessageHandler/Interface.h"
 
 DebugMenu::DebugMenu() {
   mName = "CLIENT: DEBUG_MENU";
+  mIf.addSignalCallback(MessageId::ADD_DEBUG_BUTTON, std::bind(&DebugMenu::handleAddDebugButtonMessage, this, std::placeholders::_1));
+  mIf.addSignalCallback(MessageId::REMOVE_DEBUG_BUTTON, std::bind(&DebugMenu::handleRemoveDebugButtonMessage, this, std::placeholders::_1));
+
   mGuiFrame = std::make_shared<Frame>();
   mGuiList = std::make_shared<GuiList>(GuiComponentPosition::TOP_LEFT, GuiListDirection::VERTICAL);
   mGuiFrame->addGuiComponent(mGuiList);
@@ -26,7 +28,7 @@ DebugMenu::~DebugMenu() {
 }
 
 bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  handleNewDebugButtons();
+  mIf.handleMessages();
 
   if (mInterfaceFetchTimer.getElapsedTime() > sf::milliseconds(1000)) {
     mInterfaceFetchTimer.restart();
@@ -45,128 +47,63 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   return MenuBase::render(window, mousePosition);
 }
 
-void DebugMenu::handleNewDebugButtons() {
-  std::queue<sf::Packet> messageQueue = mIf.getMessageQueue();
-  while (!messageQueue.empty()) {
-    int messageId;
-    auto message = messageQueue.front();
-    messageQueue.pop();
-    message >> messageId;
+void DebugMenu::handleAddDebugButtonMessage(sf::Packet message) {
+  AddDebugButtonMessage debMess(message);
+  TRACE_DEBUG1("New button added for " << debMess.getSubscriberId());
+  int subscriberId = debMess.getSubscriberId();
+  int secondarySubscriberId = debMess.getSecondarySubscriberId();
 
-    if (messageId == MessageId::ADD_DEBUG_BUTTON) {
-      AddDebugButtonMessage debMess(message);
-      TRACE_DEBUG1("New button added for " << debMess.getSubscriberId());
-      int subscriberId = debMess.getSubscriberId();
-      int secondarySubscriberId = debMess.getSecondarySubscriberId();
+  auto list = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::HORIZONTAL);
+  auto text = std::make_shared<GuiText>(GuiComponentPosition::LEFT, debMess.getButtonText() + ":");
 
-      auto list = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::HORIZONTAL);
-      auto text = std::make_shared<GuiText>(GuiComponentPosition::LEFT, debMess.getButtonText() + ":");
+  auto button1 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb1", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_1, subscriberId, secondarySubscriberId));
+  auto button2 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb2", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_2, subscriberId, secondarySubscriberId));
+  auto button3 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb3", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_3, subscriberId, secondarySubscriberId));
+  auto button4 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb4", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_4, subscriberId, secondarySubscriberId));
+  auto buttonSR = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Send/Rec", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::SEND_REC, subscriberId, secondarySubscriberId));
+  auto buttonF = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Fucntion", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::FUNC, subscriberId, secondarySubscriberId));
 
-      auto callback1 = [=]() {
-        AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
-        ToggleDebugButtonMessage tdbm(TRACE_LEVEL::DEB_1);
-        if (secondarySubscriberId == -1) {
-          mIf.pushMessageTo(tdbm.pack(), subscriberId);
-        } else {
-          mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
-        }
-        TRACE_SEND("Send to " << subscriberId);
-      };
-      auto button1 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb1", callback1);
+  list->addGuiComponent(text);
+  list->addGuiComponent(button1);
+  list->addGuiComponent(button2);
+  list->addGuiComponent(button3);
+  list->addGuiComponent(button4);
+  list->addGuiComponent(buttonSR);
+  list->addGuiComponent(buttonF);
 
-      auto callback2 = [=]() {
-        AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
-        ToggleDebugButtonMessage tdbm(TRACE_LEVEL::DEB_2);
-        if (secondarySubscriberId == -1) {
-          mIf.pushMessageTo(tdbm.pack(), subscriberId);
-        } else {
-          mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
-        }
-        TRACE_SEND("Send to " << subscriberId);
-      };
-      auto button2 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb2", callback2);
+  mSubscirberToComponentMap[subscriberId] = list;
 
-      auto callback3 = [=]() {
-        AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
-        ToggleDebugButtonMessage tdbm(TRACE_LEVEL::DEB_3);
-        if (secondarySubscriberId == -1) {
-          mIf.pushMessageTo(tdbm.pack(), subscriberId);
-        } else {
-          mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
-        }
-        TRACE_SEND("Send to " << subscriberId);
-      };
-      auto button3 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb3", callback3);
+  auto it = mCategoriesMap.find(debMess.getCategoryText());
+  if (it == mCategoriesMap.end()) {
+    auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, debMess.getCategoryText());
+    mCategoriesMap[debMess.getCategoryText()] = expandableList;
+    mGuiList->addGuiComponent(expandableList);
+  }
+  mCategoriesMap[debMess.getCategoryText()]->addGuiComponent(list);
+}
 
-      auto callback4 = [=]() {
-        AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
-        ToggleDebugButtonMessage tdbm(TRACE_LEVEL::DEB_4);
-        if (secondarySubscriberId == -1) {
-          mIf.pushMessageTo(tdbm.pack(), subscriberId);
-        } else {
-          mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
-        }
-        TRACE_SEND("Send to " << subscriberId);
-      };
-      auto button4 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb4", callback4);
+void DebugMenu::handleRemoveDebugButtonMessage(sf::Packet message) {
+  RemoveDebugButtonMessage rdbm(message);
 
-      auto callbackSR = [=]() {
-        AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
-        ToggleDebugButtonMessage tdbm(TRACE_LEVEL::SEND_REC);
-        if (secondarySubscriberId == -1) {
-          mIf.pushMessageTo(tdbm.pack(), subscriberId);
-        } else {
-          mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
-        }
-        TRACE_SEND("Send to " << subscriberId);
-      };
-      auto buttonSR = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Send/Rec", callbackSR);
-
-      auto callbackF = [=]() {
-        AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
-        ToggleDebugButtonMessage tdbm(TRACE_LEVEL::FUNC);
-        if (secondarySubscriberId == -1) {
-          mIf.pushMessageTo(tdbm.pack(), subscriberId);
-        } else {
-          mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
-        }
-        TRACE_SEND("Send to " << subscriberId);
-      };
-      auto buttonF = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Fucntion", callbackF);
-
-      list->addGuiComponent(text);
-      list->addGuiComponent(button1);
-      list->addGuiComponent(button2);
-      list->addGuiComponent(button3);
-      list->addGuiComponent(button4);
-      list->addGuiComponent(buttonSR);
-      list->addGuiComponent(buttonF);
-
-      mSubscirberToComponentMap[subscriberId] = list;
-
-      auto it = mCategoriesMap.find(debMess.getCategoryText());
-      if (it == mCategoriesMap.end()) {
-        auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, debMess.getCategoryText());
-        mCategoriesMap[debMess.getCategoryText()] = expandableList;
-        mGuiList->addGuiComponent(expandableList);
-      }
-      mCategoriesMap[debMess.getCategoryText()]->addGuiComponent(list);
-
-    } else if (messageId == MessageId::REMOVE_DEBUG_BUTTON) {
-      RemoveDebugButtonMessage rdbm(message);
-
-      auto it = mCategoriesMap.begin();
-      while (it != mCategoriesMap.end()) {
-        it->second->removeGuiComponent(mSubscirberToComponentMap[rdbm.getSubscriberId()]);
-        if (it->second->getNumberOfComponents() == 1) {
-          mGuiList->removeGuiComponent(it->second);
-          it = mCategoriesMap.erase(it);
-        } else {
-          ++it;
-        }
-      }
+  auto it = mCategoriesMap.begin();
+  while (it != mCategoriesMap.end()) {
+    it->second->removeGuiComponent(mSubscirberToComponentMap[rdbm.getSubscriberId()]);
+    if (it->second->getNumberOfComponents() == 1) {
+      mGuiList->removeGuiComponent(it->second);
+      it = mCategoriesMap.erase(it);
     } else {
-      TRACE_WARNING("Received unhandeled message with id: " << messageId);
+      ++it;
     }
   }
+}
+
+void DebugMenu::onToggleButton(TRACE_LEVEL traceLevel, int subscriberId, int secondarySubscriberId) {
+  AddDebugButtonMessage returnMess(subscriberId, "", "", secondarySubscriberId);
+  ToggleDebugButtonMessage tdbm(traceLevel);
+  if (secondarySubscriberId == -1) {
+    mIf.pushMessageTo(tdbm.pack(), subscriberId);
+  } else {
+    mIf.pushMessageTo(tdbm.pack(), secondarySubscriberId);
+  }
+  TRACE_SEND("Send to " << subscriberId);
 }

@@ -12,11 +12,11 @@ public:
 
 private:
   bool mRunning = true;
-  Interface gameStateInterface;
-  Interface systemMessageInterface;
+  Interface mGameStateInterface;
+  Interface mSystemMessageInterface;
   bool mServerStarted;
   std::stack<GAME_STATE> mGameStateStack;
 
-  void handleSystemMessages();
-  void handleGameStateMessages();
+  void handleChangeGameStateMessage(sf::Packet message);
+  void handleShutdownMessage(sf::Packet message);
 };

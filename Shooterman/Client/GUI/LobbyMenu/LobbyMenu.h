@@ -29,6 +29,7 @@ private:
   std::shared_ptr<GuiInputText> mUsernameText;
   std::vector<std::string> mLevelDirectories;
 
-  void checkForLobbyMessages();
-  void checkForServerReadyMessage();
+  void handlePlayerUsernameMessage(sf::Packet message);
+  void handlePlayableCharactersMessage(sf::Packet message);
+  void handleServerReadyMessage(sf::Packet message);
 };

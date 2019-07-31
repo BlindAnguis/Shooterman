@@ -3,6 +3,7 @@
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiExpandableList.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
+#include "../../../Common/Messages/ToggleDebugButtonMessage.h"
 
 class DebugMenu : public MenuBase {
 public:
@@ -18,6 +19,9 @@ private:
   std::map<int, std::shared_ptr<GuiComponent>> mSubscirberToComponentMap;
   sf::Clock mInterfaceFetchTimer;
 
-  void handleNewDebugButtons();
+  void handleAddDebugButtonMessage(sf::Packet message);
+  void handleRemoveDebugButtonMessage(sf::Packet message);
+  
+  void onToggleButton(TRACE_LEVEL traceLevel, int subscriberId, int secondarySubscriberId);
 };
 

@@ -13,18 +13,18 @@ public:
   void shutDown();
 
 private:
-  bool mRunning = true;
+  bool mRunning;
   bool recentlyChangedState = true;
   std::unique_ptr<std::thread> mInputThread;
-  Subscriber mSystemMessageSubscriber;
+  Subscriber mSubscriber;
   Subscriber mGameStateMessageSubscriber;
-  Subscriber mMouseMessageSubscriber;
   Interface mClientInputInterface;
   GAME_STATE mCurrentGameState;
   sf::Vector2i mLastMousePosition;
 
   void run();
-  void handleSystemMessages();
-  void handleGameStateMessages();
-  void getLatestMousePosition();
+
+  void handleShutdownMessage(sf::Packet message);
+  void handleChangeGameStateMessage(sf::Packet message);
+  void handleMousePositionMessage(sf::Packet message);
 };

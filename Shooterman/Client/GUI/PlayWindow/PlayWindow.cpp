@@ -8,6 +8,12 @@ PlayWindow::PlayWindow() {
   mName = "CLIENT: PLAY_WINDOW";
   mIsSubscribed = false;
   mGuiFrame = std::make_shared<Frame>();
+
+  auto handleSpriteListCacheMessageCallback = std::bind(&PlayWindow::handleSpriteListCacheMessage, this, std::placeholders::_1);
+  mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST_CACHE, handleSpriteListCacheMessageCallback);
+
+  auto handleSpriteListMessageCallback = std::bind(&PlayWindow::handleSpriteListMessage, this, std::placeholders::_1);
+  mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST, handleSpriteListMessageCallback);
 }
 
 PlayWindow::~PlayWindow() {
@@ -17,7 +23,7 @@ PlayWindow::~PlayWindow() {
 
 void PlayWindow::uninit() {
   // This will clear the queue in case there is crap left over from previous game
-  mSpriteListSubscriber.getMessageQueue();
+  mSpriteListSubscriber.clearMessages();
 }
 
 void PlayWindow::reset() {
@@ -26,7 +32,8 @@ void PlayWindow::reset() {
 }
 
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  bool renderNeeded = false;
+  mWindow = window;
+  mIsRenderNeeded = false;
 
   if (!mIsSubscribed) {
     mIsSubscribed = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
@@ -35,43 +42,9 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
     }
   }
 
-  std::queue<sf::Packet> spriteMessageQueue = mSpriteListSubscriber.getMessageQueue();
+  mSpriteListSubscriber.handleMessages();
 
-  if (!spriteMessageQueue.empty()) {
-    window->clear(sf::Color::White);
-    renderNeeded = true;
-  }
-
-  sf::Packet spriteMessage;
-  int messageID = 0;
-  while (!spriteMessageQueue.empty()) {
-    spriteMessage = spriteMessageQueue.front();
-    spriteMessageQueue.pop();
-    spriteMessage >> messageID;
-    if (messageID == MessageId::SPRITE_LIST_CACHE) {
-      mCachedSprites.clear();
-      mSpriteListCacheMessage.unpack(spriteMessage);
-      buildSpriteCache();
-    } else if (messageID == MessageId::SPRITE_LIST) {
-      mSpriteListMessage.unpack(spriteMessage);
-    }
-  }
-
-  if (messageID == MessageId::SPRITE_LIST) {
-    window->draw(mCachedSprite);
-
-    int position = mSpriteListMessage.getSize() - 1;
-    SpriteData spriteData = mSpriteListMessage.getSpriteData(position);
-    //TRACE_DEBUG1("SpriteID: " << static_cast<int>(spriteData.textureId));
-    while (spriteData.textureId != Textures::Unknown) {
-      renderSpriteData(window, spriteData);
-      position--;
-      spriteData = mSpriteListMessage.getSpriteData(position);
-    }
-  } else {
-    TRACE_DEBUG1("Found no message");
-  }
-  return renderNeeded;
+  return mIsRenderNeeded;
 }
 
 void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData) {
@@ -113,4 +86,27 @@ void PlayWindow::buildSpriteCache() {
   mRenderTexture.display();
 
   mCachedSprite = sf::Sprite(mRenderTexture.getTexture());
+}
+
+void PlayWindow::handleSpriteListMessage(sf::Packet message) {
+  mWindow->clear(sf::Color::White);
+  mIsRenderNeeded = true;
+
+  mWindow->draw(mCachedSprite);
+
+  mSpriteListMessage.unpack(message);
+  int position = mSpriteListMessage.getSize() - 1;
+  SpriteData spriteData = mSpriteListMessage.getSpriteData(position);
+  //TRACE_DEBUG1("SpriteID: " << static_cast<int>(spriteData.textureId));
+  while (spriteData.textureId != Textures::Unknown) {
+    renderSpriteData(mWindow, spriteData);
+    position--;
+    spriteData = mSpriteListMessage.getSpriteData(position);
+  }
+}
+
+void PlayWindow::handleSpriteListCacheMessage(sf::Packet message) {
+  mCachedSprites.clear();
+  mSpriteListCacheMessage.unpack(message);
+  buildSpriteCache();
 }

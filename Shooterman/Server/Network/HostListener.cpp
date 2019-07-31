@@ -40,8 +40,13 @@ bool HostListener::isListening() {
 }
 
 void HostListener::listen() {
+  mSubscriber.addSignalCallback(MessageId::NEW_USERNAME, std::bind(&HostListener::handleNewUsernameMessage, this, std::placeholders::_1));
+  mSubscriber.addSignalCallback(MessageId::CHARACTER_CHOOSEN, std::bind(&HostListener::handleCharacterChoosenMessage, this, std::placeholders::_1));
+  mSubscriber.addSignalCallback(MessageId::CLIENT_DISCONNECTED, std::bind(&HostListener::handleClientDisconnectedMessage, this, std::placeholders::_1));
+  mSubscriber.addSignalCallback(MessageId::MAP_DATA, std::bind(&HostListener::handleMapDataMessage, this, std::placeholders::_1));
+
   mConnectedClients = std::make_shared<std::map<int, Player*>>();
-  while (!MessageHandler::get().subscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyDataSubscriber)) {
+  while (!MessageHandler::get().subscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   TRACE_INFO("Start to listen");
@@ -94,72 +99,54 @@ void HostListener::listen() {
 
       networkSystem->addNewClientSocket(player->getSocket(), playerId);
     }
-    handlePlayerLobbyData();
+    mSubscriber.handleMessages();
 
     sf::sleep(sf::milliseconds(5));
   }
   delete client; // Delete unused client socket
 
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyDataSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber);
 }
 
-void HostListener::handlePlayerLobbyData() {
-  auto playerLobbyDataMessages = mPlayerLobbyDataSubscriber.getMessageQueue();
-  while (playerLobbyDataMessages.size() > 0) {
-    sf::Packet lobbyPacket = playerLobbyDataMessages.front();
-    playerLobbyDataMessages.pop();
+void HostListener::handleNewUsernameMessage(sf::Packet message) {
+  ChangeUsernameMessage cum(message);
 
-    int id = -1;
-    lobbyPacket >> id;
+  (*mConnectedClients)[cum.getId()]->setUsername(cum.getUsername());
 
-    switch (id) {
-    case MessageId::NEW_USERNAME: {
-      ChangeUsernameMessage cum(lobbyPacket);
-      
-      (*mConnectedClients)[cum.getId()]->setUsername(cum.getUsername());
-
-      LobbyDataMessage ldm;
-      for (auto client : *mConnectedClients) {
-        ldm.addPlayerName((*mConnectedClients)[client.first]->getUsername());
-      }
-
-      for (auto client : *mConnectedClients) {
-        sf::Packet packet = ldm.pack();
-        client.second->getSocket()->send(packet);
-      }
-      break;
-    }
-    break;
-    case MessageId::CHARACTER_CHOOSEN: {
-      CharacherChoosenMessage ccm(lobbyPacket);
-      (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
-      break;
-    }
-    case MessageId::CLIENT_DISCONNECTED: {
-      ClientDisconnectedMessage cdm(lobbyPacket);
-      mConnectedClients->erase(cdm.getId());
-
-      LobbyDataMessage ldm;
-      for (auto client : *mConnectedClients) {
-        ldm.addPlayerName(client.second->getUsername());
-      }
-
-      for (auto client : *mConnectedClients) {
-        sf::Packet packet = ldm.pack();
-        client.second->getSocket()->send(packet);
-      }
-      break;
-    }
-    case MessageId::MAP_DATA: {
-      MapMessage mm(lobbyPacket);
-      mMapData = mm.getData();
-      break;
-    }
-    default:
-      TRACE_ERROR("Received unknown message: " << id);
-      break;
-    }
+  LobbyDataMessage ldm;
+  for (auto client : *mConnectedClients) {
+    ldm.addPlayerName((*mConnectedClients)[client.first]->getUsername());
   }
+
+  for (auto client : *mConnectedClients) {
+    sf::Packet packet = ldm.pack();
+    client.second->getSocket()->send(packet);
+  }
+}
+
+void HostListener::handleCharacterChoosenMessage(sf::Packet message) {
+  CharacherChoosenMessage ccm(message);
+  (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
+}
+
+void HostListener::handleClientDisconnectedMessage(sf::Packet message) {
+  ClientDisconnectedMessage cdm(message);
+  mConnectedClients->erase(cdm.getId());
+
+  LobbyDataMessage ldm;
+  for (auto client : *mConnectedClients) {
+    ldm.addPlayerName(client.second->getUsername());
+  }
+
+  for (auto client : *mConnectedClients) {
+    sf::Packet packet = ldm.pack();
+    client.second->getSocket()->send(packet);
+  }
+}
+
+void HostListener::handleMapDataMessage(sf::Packet message) {
+  MapMessage mm(message);
+  mMapData = mm.getData();
 }
 
 bool HostListener::hasMapData() {

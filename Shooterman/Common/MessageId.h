@@ -29,6 +29,7 @@ namespace MessageId{
 // Internal Client messages
   const int IP_MESSAGE = 1000;
   const int INFO_MESSAGE = 1001;
+  const int MOUSE_MESSAGE = 1002;
 
 // Internal Server messages
   const int CLIENT_DISCONNECTED = 2000;

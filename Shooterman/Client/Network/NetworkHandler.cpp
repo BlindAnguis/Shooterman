@@ -272,7 +272,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
 
-  mGameStateSubscriber.getMessageQueue();
+  mGameStateSubscriber.clearMessages();
   TRACE_FUNC_EXIT()
 }
 

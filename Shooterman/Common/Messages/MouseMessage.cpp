@@ -11,6 +11,7 @@ MouseMessage::~MouseMessage() {}
 
 sf::Packet MouseMessage::pack() {
   sf::Packet packet;
+  packet << MessageId::MOUSE_MESSAGE;
   packet << mPosition.x;
   packet << mPosition.y;
   return packet;

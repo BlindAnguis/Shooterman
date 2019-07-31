@@ -16,9 +16,11 @@ public:
 
 private:
   bool mSubscribedToPlayerData = false;
-  Subscriber mPlayerDataSubscriber;
+  Subscriber mSubscriber;
   std::vector<std::shared_ptr<GuiText>> mUsernames;
   std::vector<std::shared_ptr<GuiProgressBar>> mHealthBars;
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mStaminaBars;
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mManaBars;
+
+  void handlePlayerData(sf::Packet message);
 };

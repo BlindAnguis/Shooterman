@@ -9,9 +9,11 @@
 InfoOverlay::InfoOverlay() {
   mName = "CLIENT: INFO_OVERLAY";
   mDebugEnabled1 = true;
-  publishInfoMessagesInterface();
-  mGuiFrame = std::make_shared<Frame>();
+  mInfoMessageInterface.addSignalCallback(MessageId::INFO_MESSAGE, std::bind(&InfoOverlay::handleInfoMessage, this, std::placeholders::_1));
 
+  publishInfoMessagesInterface();
+
+  mGuiFrame = std::make_shared<Frame>();
   mTextBox = GCF::createTextBox(GuiComponentPosition::BOTTOM_LEFT, "Test infobox");
   mGuiFrame->addGuiComponent(mTextBox);
 }
@@ -25,33 +27,17 @@ void InfoOverlay::publishInfoMessagesInterface() {
   TRACE_FUNC_EXIT();
 }
 
-void InfoOverlay::handleInfoMessages() {
+void InfoOverlay::handleInfoMessage(sf::Packet message) {
   TRACE_FUNC_ENTER();
-  std::queue<sf::Packet> infoMessageQueue = mInfoMessageInterface.getMessageQueue();
-  sf::Packet infoMessage;
-  while (!infoMessageQueue.empty()) {
-    infoMessage = infoMessageQueue.front();
-    infoMessageQueue.pop();
-
-    int id = -1;
-    infoMessage >> id;
-
-    if (id == MessageId::INFO_MESSAGE) {
-      InfoMessage msg(infoMessage);
-      mTextBox->setText(msg.getMessage());
-      mNumberOfSecToShowMsg = msg.getMsgDuration();
-      mClock.restart();
-	  
-    }
-    else {
-      TRACE_WARNING("Received unexpected message with ID : " << id);
-    }
-  }
+  InfoMessage msg(message);
+  mTextBox->setText(msg.getMessage());
+  mNumberOfSecToShowMsg = msg.getMsgDuration();
+  mClock.restart();
   TRACE_FUNC_EXIT();
 }
 
 bool InfoOverlay::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  handleInfoMessages();
+  mInfoMessageInterface.handleMessages();
   if (mClock.getElapsedTime() < sf::seconds((float)mNumberOfSecToShowMsg)) {
     mGuiFrame->render(window);
   }

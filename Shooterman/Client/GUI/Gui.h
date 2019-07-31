@@ -25,8 +25,7 @@ private:
   bool mF1KeyAlreadyPressed = false;
   std::unique_ptr<std::thread> mGuiThread;
   std::shared_ptr<sf::RenderWindow> mWindow;
-  Subscriber mSystemMessageSubscriber;
-  Subscriber mGameStateMessageSubscriber;
+  Subscriber mSubscriber;
   Interface mMouseInterface;
   GAME_STATE mCurrentGameState;
   GAME_STATE mPreviousGameState;
@@ -40,6 +39,6 @@ private:
   void render();
   void handleWindowEvents();
   bool renderGameState(GAME_STATE gameState);
-  void handleSystemMessages();
-  void handleGameStateMessages();
+  void handleShutdownMessage(sf::Packet message);
+  void handleChangedGameStateMessage(sf::Packet message);
 };

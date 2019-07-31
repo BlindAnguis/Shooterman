@@ -27,8 +27,12 @@ Gui::Gui() {
 
 void Gui::run() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageSubscriber);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+
+  mSubscriber.addSignalCallback(MessageId::SHUT_DOWN, std::bind(&Gui::handleShutdownMessage, this, std::placeholders::_1));
+  mSubscriber.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&Gui::handleChangedGameStateMessage, this, std::placeholders::_1));
+
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
   MessageHandler::get().publishInterface(Interfaces::MOUSE_POSITION, &mMouseInterface);
 
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
@@ -56,8 +60,8 @@ void Gui::run() {
 
   teardownDebugMessages();
 
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageSubscriber);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
   MessageHandler::get().unpublishInterface(Interfaces::MOUSE_POSITION);
 
   GuiResourceManager::getInstance().clear();
@@ -78,8 +82,7 @@ void Gui::render() {
       mWindow->display();
     }
 
-    handleGameStateMessages();
-    handleSystemMessages();
+    mSubscriber.handleMessages();
     handleDebugMessages();
 
     auto currentFrameLength = mRenderClock.getElapsedTime().asMilliseconds();
@@ -173,77 +176,43 @@ bool Gui::renderGameState(GAME_STATE gameState) {
   return mRenderNeeded;
 }
 
-void Gui::handleGameStateMessages() {
-  TRACE_FUNC_ENTER();
-  std::queue<sf::Packet> gameStateMessageQueue = mGameStateMessageSubscriber.getMessageQueue();
-  sf::Packet gameStateMessage;
-  while (!gameStateMessageQueue.empty()) {
-    gameStateMessage = gameStateMessageQueue.front();
-    int id = -1;
-    gameStateMessage >> id;
-
-    if (id == MessageId::CHANGE_GAME_STATE) {
-      gameStateMessageQueue.pop();
-
-      GameStateMessage gsm(gameStateMessage);
-      TRACE_REC("New Game State: " << gsm.getGameStateAsString());
-      if (gsm.getGameState() != mCurrentGameState) {
-        // Changed game state
-        auto previousMenu = mMenuMap.find(mCurrentGameState);
-        if (previousMenu != mMenuMap.end()) {
-          for (auto menu : previousMenu->second) {
-            menu->uninit();
-          }
-        }
-
-        mPreviousGameState = mCurrentGameState;
-        mCurrentGameState = gsm.getGameState();
-        auto newMenu = mMenuMap.find(mCurrentGameState);
-        if (newMenu != mMenuMap.end()) {
-          for (auto menu : newMenu->second) {
-            menu->init();
-          }
-        }
-
-        mWindow->clear(sf::Color::White);
-        mWindow->display();
-      }
-
-      if (mCurrentGameState == GAME_STATE::MAIN_MENU) {
-        for (auto menuList : mMenuMap) {
-          for (auto menu : menuList.second) {
-            menu->reset();
-          }
-        }
-      }
-
-    } else {
-      TRACE_WARNING("Received unexpected message with ID: " << id);
-    }
-  }
-  TRACE_FUNC_EXIT();
+void Gui::handleShutdownMessage(sf::Packet message) {
+  TRACE_INFO("Closing GUI window");
+  mWindow->close();
 }
 
-void Gui::handleSystemMessages() {
-  TRACE_FUNC_ENTER();
-  std::queue<sf::Packet> systemMessageQueue = mSystemMessageSubscriber.getMessageQueue();
-  sf::Packet systemMessage;
-  while (!systemMessageQueue.empty()) {
-    systemMessage = systemMessageQueue.front();
-    systemMessageQueue.pop();
+void Gui::handleChangedGameStateMessage(sf::Packet message) {
+  GameStateMessage gsm(message);
+  TRACE_REC("New Game State: " << gsm.getGameStateAsString());
+  if (gsm.getGameState() != mCurrentGameState) {
+    // Changed game state
+    auto previousMenu = mMenuMap.find(mCurrentGameState);
+    if (previousMenu != mMenuMap.end()) {
+      for (auto menu : previousMenu->second) {
+        menu->uninit();
+      }
+    }
 
-    auto messageId = 0;
-    systemMessage >> messageId;
-    switch (messageId) {
-    case MessageId::SHUT_DOWN:
-      TRACE_INFO("Closing GUI window");
-      mWindow->close();
-      break;
-    default:
-      TRACE_WARNING("Unknown system message : " << messageId);
+    mPreviousGameState = mCurrentGameState;
+    mCurrentGameState = gsm.getGameState();
+    auto newMenu = mMenuMap.find(mCurrentGameState);
+    if (newMenu != mMenuMap.end()) {
+      for (auto menu : newMenu->second) {
+        menu->init();
+      }
+    }
+
+    mWindow->clear(sf::Color::White);
+    mWindow->display();
+  }
+
+  if (mCurrentGameState == GAME_STATE::MAIN_MENU) {
+    for (auto menuList : mMenuMap) {
+      for (auto menu : menuList.second) {
+        menu->reset();
+      }
     }
   }
-  TRACE_FUNC_EXIT();
 }
 
 void Gui::shutDown() {

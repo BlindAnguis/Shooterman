@@ -18,8 +18,8 @@ void InputSystem::resetSystem() {
   MessageHandler::get().unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
   mIsSubscribedToInput = false;
   MessageHandler::get().unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
-  mGameStateSubscriber.getMessageQueue(); // Empty the queues
-  mInputSubscriber.getMessageQueue(); // Empty the queues
+  mGameStateSubscriber.clearMessages();
+  mInputSubscriber.clearMessages();
   mIsSubscribedToGameState = false;
   mCurrentGameState = GAME_STATE::LOBBY;
   mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};

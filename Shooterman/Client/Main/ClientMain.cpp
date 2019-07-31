@@ -16,8 +16,12 @@
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
   TRACE_INFO("Starting...");
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_GAME_STATE, &gameStateInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_SYSTEM_MESSAGE, &systemMessageInterface);
+
+  mSystemMessageInterface.addSignalCallback(MessageId::SHUT_DOWN, std::bind(&ClientMain::handleShutdownMessage, this, std::placeholders::_1));
+  mGameStateInterface.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&ClientMain::handleChangeGameStateMessage, this, std::placeholders::_1));
+
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_GAME_STATE, &mGameStateInterface);
+  MessageHandler::get().publishInterface(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageInterface);
   Input input;
   Gui gui;
   std::shared_ptr<GameLoop> server;
@@ -115,8 +119,8 @@ ClientMain::ClientMain() {
     }
     soundSystem.update();
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
-    handleGameStateMessages();
-    handleSystemMessages();
+    mGameStateInterface.handleMessages();
+    mSystemMessageInterface.handleMessages();
 
   }
   input.shutDown();
@@ -133,62 +137,33 @@ ClientMain::ClientMain() {
   TRACE_INFO("Shutting down complete");
 }
 
-void ClientMain::handleSystemMessages() {
-  std::queue<sf::Packet> systemMessageQueue = systemMessageInterface.getMessageQueue();
-  sf::Packet systemMessage;
-  while (!systemMessageQueue.empty()) {
-    systemMessage = systemMessageQueue.front();
-    systemMessageQueue.pop();
+void ClientMain::handleChangeGameStateMessage(sf::Packet message) {
+  GameStateMessage gsm(message);
 
-    auto messageId = 0;
-    systemMessage >> messageId;
-    switch (messageId) {
-    case MessageId::SHUT_DOWN: {
-      sf::Packet packet;
-      packet << MessageId::SHUT_DOWN;
-      systemMessageInterface.pushMessage(packet);
-
-      TRACE_INFO("Shutting down...");
-      mRunning = false;
-      break;
+  if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
+    if (mGameStateStack.size() > 1) {
+      mGameStateStack.pop();
     }
-    default:
-      TRACE_WARNING("Unknown system message: " << messageId);
-    }
+  } else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
+    mGameStateStack = std::stack<GAME_STATE>();
+    mGameStateStack.push(GAME_STATE::MAIN_MENU);
+  } else if (mGameStateStack.top() != gsm.getGameState()) {
+    mGameStateStack.push(gsm.getGameState());
+  } else {
+    TRACE_DEBUG1("Already in game state " << gsm.getGameStateAsString());
+    return;
   }
+
+  gsm = GameStateMessage(mGameStateStack.top());
+  TRACE_INFO(gsm.getGameStateAsString());
+  mGameStateInterface.pushMessage(gsm.pack());
 }
 
-void ClientMain::handleGameStateMessages() {
-  std::queue<sf::Packet> gameStateMessageQueue = gameStateInterface.getMessageQueue();
-  sf::Packet gameStateMessage;
-  while (!gameStateMessageQueue.empty()) {
-    gameStateMessage = gameStateMessageQueue.front();
-    gameStateMessageQueue.pop();
+void ClientMain::handleShutdownMessage(sf::Packet message) {
+  sf::Packet packet;
+  packet << MessageId::SHUT_DOWN;
+  mSystemMessageInterface.pushMessage(packet);
 
-    int id = -1;
-    gameStateMessage >> id;
-    if (id == MessageId::CHANGE_GAME_STATE) {
-      GameStateMessage gsm(gameStateMessage);
-
-      if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
-        if (mGameStateStack.size() > 1) {
-          mGameStateStack.pop();
-        }
-      } else if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
-        mGameStateStack = std::stack<GAME_STATE>();
-        mGameStateStack.push(GAME_STATE::MAIN_MENU);
-      } else if (mGameStateStack.top() != gsm.getGameState()) {
-        mGameStateStack.push(gsm.getGameState());
-      } else {
-        TRACE_DEBUG1("Already in game state " << gsm.getGameStateAsString());
-        return;
-      }
-
-      gsm = GameStateMessage(mGameStateStack.top());
-      TRACE_INFO(gsm.getGameStateAsString());
-      gameStateInterface.pushMessage(gsm.pack());
-    } else {
-      TRACE_WARNING("Received unhandeled message with ID: " << id);
-    }
-  }
+  TRACE_INFO("Shutting down...");
+  mRunning = false;
 }

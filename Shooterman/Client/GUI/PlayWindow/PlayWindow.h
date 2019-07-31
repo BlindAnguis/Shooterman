@@ -19,11 +19,16 @@ private:
   SpriteCacheMessage mSpriteListCacheMessage;
   SpriteMessage mSpriteListMessage;
   bool mIsSubscribed;
+  bool mIsRenderNeeded;
   sf::Packet mLatestSpriteMessage;
   std::vector<sf::Sprite> mCachedSprites;
   sf::RenderTexture mRenderTexture;
   sf::Sprite mCachedSprite;
+  std::shared_ptr<sf::RenderWindow> mWindow;
 
   void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData);
   void buildSpriteCache();
+
+  void handleSpriteListMessage(sf::Packet message);
+  void handleSpriteListCacheMessage(sf::Packet message);
 };

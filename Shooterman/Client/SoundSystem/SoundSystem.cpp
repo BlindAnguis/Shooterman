@@ -1,9 +1,10 @@
 #include "SoundSystem.h"
 #include "../../Common/Interfaces.h"
 
-SoundSystem::SoundSystem()
-{
+SoundSystem::SoundSystem() {
   mName = "CLIENT: SOUND_SYSTEM";
+  mSoundSubcription.addSignalCallback(MessageId::SOUND_LIST, std::bind(&SoundSystem::handleSoundListMessage, this, std::placeholders::_1));
+
   loadSounds();
   mPathsToBackgroundMusic.emplace(Sounds::MainMenuBackgroundSong, "Client/Resources/Sounds/Music/mainMenu.wav");
   mPathsToBackgroundMusic.emplace(Sounds::LobbyBackgroundSong, "Client/Resources/Sounds/Music/Lobby_Heroic_Demise_New.ogg");
@@ -11,8 +12,7 @@ SoundSystem::SoundSystem()
   mCurrentBackgroundMusic = Sounds::Unkown;
 }
 
-SoundSystem::~SoundSystem()
-{
+SoundSystem::~SoundSystem() {
   MessageHandler::get().unpublishInterface("ClientSoundList");
 }
 
@@ -49,30 +49,22 @@ void SoundSystem::loadSounds() {
   mSoundBuffers.emplace(Sounds::Death, deathBuffer);
 }
 
+void SoundSystem::handleSoundListMessage(sf::Packet message) {
+  SoundMessage sm;
+  sm.unpack(message);
+  for (auto i = 0; i < sm.getSize(); i++) {
+    //TRACE_INFO("Creating sound: " << static_cast<int>(sm.getSound(i)));
+    mPlayQueue.push(sf::Sound());
+    mPlayQueue.back().setBuffer(mSoundBuffers.at(sm.getSound(i)));
+    mPlayQueue.back().play();
+  }
+}
+
 void SoundSystem::update() {
   if (!mSubscribedToSounds) {
     mSubscribedToSounds = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
   }
-
-  auto soundsToPlay = mSoundSubcription.getMessageQueue();
-  while (!soundsToPlay.empty()) {
-    int id = -1;
-    auto soundPacket = soundsToPlay.front();
-    soundsToPlay.pop();
-    soundPacket >> id;
-    if (id == MessageId::SOUND_LIST) {
-      SoundMessage sm;
-      sm.unpack(soundPacket);
-      for (auto i = 0; i < sm.getSize(); i++) {
-        //TRACE_INFO("Creating sound: " << static_cast<int>(sm.getSound(i)));
-        mPlayQueue.push(sf::Sound());
-        mPlayQueue.back().setBuffer(mSoundBuffers.at(sm.getSound(i)));
-        mPlayQueue.back().play();
-      }
-    } else {
-      TRACE_ERROR("Got the wrong message, got message with id: " << id << " but should have got id: " << MessageId::SOUND_LIST);
-    }    
-  }
+  mSoundSubcription.handleMessages();
 
   while (!mPlayQueue.empty() && mPlayQueue.front().getStatus() == sf::Sound::Stopped) {
     //TRACE_INFO("Sound has stopped");
