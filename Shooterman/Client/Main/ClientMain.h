@@ -17,6 +17,6 @@ private:
   bool mServerStarted;
   std::stack<GAME_STATE> mGameStateStack;
 
-  void handleChangeGameStateMessage(sf::Packet message);
-  void handleShutdownMessage(sf::Packet message);
+  void handleChangeGameStateMessage(sf::Packet& message);
+  void handleShutdownMessage(sf::Packet& message);
 };

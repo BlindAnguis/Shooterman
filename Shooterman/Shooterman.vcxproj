@@ -210,7 +210,6 @@
     <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
-    <ClCompile Include="Client\Sound\Sound.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
     <ClCompile Include="Common\Socket\Socket.cpp" />
     <ClCompile Include="Common\Socket\Tcp.cpp" />
@@ -297,7 +296,6 @@
     <ClInclude Include="Common\Socket\Socket.h" />
     <ClInclude Include="Common\Socket\Tcp.h" />
     <ClInclude Include="Common\Socket\Udp.h" />
-    <ClInclude Include="Client\Sound\Sound.h" />
     <ClInclude Include="Common\Constants.h" />
     <ClInclude Include="Common\KeyBindings.h" />
     <ClInclude Include="Common\MessageId.h" />

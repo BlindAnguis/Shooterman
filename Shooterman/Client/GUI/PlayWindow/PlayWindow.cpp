@@ -9,11 +9,8 @@ PlayWindow::PlayWindow() {
   mIsSubscribed = false;
   mGuiFrame = std::make_shared<Frame>();
 
-  auto handleSpriteListCacheMessageCallback = std::bind(&PlayWindow::handleSpriteListCacheMessage, this, std::placeholders::_1);
-  mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST_CACHE, handleSpriteListCacheMessageCallback);
-
-  auto handleSpriteListMessageCallback = std::bind(&PlayWindow::handleSpriteListMessage, this, std::placeholders::_1);
-  mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST, handleSpriteListMessageCallback);
+  mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST_CACHE, std::bind(&PlayWindow::handleSpriteListCacheMessage, this, std::placeholders::_1));
+  mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST, std::bind(&PlayWindow::handleSpriteListMessage, this, std::placeholders::_1));
 }
 
 PlayWindow::~PlayWindow() {
@@ -88,7 +85,7 @@ void PlayWindow::buildSpriteCache() {
   mCachedSprite = sf::Sprite(mRenderTexture.getTexture());
 }
 
-void PlayWindow::handleSpriteListMessage(sf::Packet message) {
+void PlayWindow::handleSpriteListMessage(sf::Packet& message) {
   mWindow->clear(sf::Color::White);
   mIsRenderNeeded = true;
 
@@ -105,7 +102,7 @@ void PlayWindow::handleSpriteListMessage(sf::Packet message) {
   }
 }
 
-void PlayWindow::handleSpriteListCacheMessage(sf::Packet message) {
+void PlayWindow::handleSpriteListCacheMessage(sf::Packet& message) {
   mCachedSprites.clear();
   mSpriteListCacheMessage.unpack(message);
   buildSpriteCache();

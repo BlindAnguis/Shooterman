@@ -126,14 +126,14 @@ void Input::run() {
   TRACE_FUNC_EXIT();
 }
 
-void Input::handleShutdownMessage(sf::Packet message) {
+void Input::handleShutdownMessage(sf::Packet& message) {
   TRACE_FUNC_ENTER();
   mRunning = false;
   TRACE_INFO("Preparing to shut down");
   TRACE_FUNC_EXIT();
 }
 
-void Input::handleChangeGameStateMessage(sf::Packet message) {
+void Input::handleChangeGameStateMessage(sf::Packet& message) {
   TRACE_FUNC_ENTER();
   GameStateMessage gsm(message);
   mCurrentGameState = gsm.getGameState();
@@ -141,7 +141,7 @@ void Input::handleChangeGameStateMessage(sf::Packet message) {
   TRACE_FUNC_EXIT();
 }
 
-void Input::handleMousePositionMessage(sf::Packet message) {
+void Input::handleMousePositionMessage(sf::Packet& message) {
   TRACE_FUNC_ENTER();
   MouseMessage mm(message);
   if (mm.getPosition() != sf::Vector2i()) {

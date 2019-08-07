@@ -22,5 +22,5 @@ private:
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mStaminaBars;
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mManaBars;
 
-  void handlePlayerData(sf::Packet message);
+  void handlePlayerData(sf::Packet& message);
 };

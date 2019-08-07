@@ -19,7 +19,7 @@ public:
     return components;
   }
 
-  std::map<int, std::shared_ptr<Component>> getAllEntitiesWithComponent() {
+  std::map<int, std::shared_ptr<Component>>& getAllEntitiesWithComponent() {
     return mComponents;
   }
 

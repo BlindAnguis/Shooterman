@@ -29,6 +29,6 @@ private:
   void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData);
   void buildSpriteCache();
 
-  void handleSpriteListMessage(sf::Packet message);
-  void handleSpriteListCacheMessage(sf::Packet message);
+  void handleSpriteListMessage(sf::Packet& message);
+  void handleSpriteListCacheMessage(sf::Packet& message);
 };

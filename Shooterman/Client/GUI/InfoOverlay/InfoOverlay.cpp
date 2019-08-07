@@ -27,7 +27,7 @@ void InfoOverlay::publishInfoMessagesInterface() {
   TRACE_FUNC_EXIT();
 }
 
-void InfoOverlay::handleInfoMessage(sf::Packet message) {
+void InfoOverlay::handleInfoMessage(sf::Packet& message) {
   TRACE_FUNC_ENTER();
   InfoMessage msg(message);
   mTextBox->setText(msg.getMessage());

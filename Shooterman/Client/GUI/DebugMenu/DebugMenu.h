@@ -19,8 +19,8 @@ private:
   std::map<int, std::shared_ptr<GuiComponent>> mSubscirberToComponentMap;
   sf::Clock mInterfaceFetchTimer;
 
-  void handleAddDebugButtonMessage(sf::Packet message);
-  void handleRemoveDebugButtonMessage(sf::Packet message);
+  void handleAddDebugButtonMessage(sf::Packet& message);
+  void handleRemoveDebugButtonMessage(sf::Packet& message);
   
   void onToggleButton(TRACE_LEVEL traceLevel, int subscriberId, int secondarySubscriberId);
 };

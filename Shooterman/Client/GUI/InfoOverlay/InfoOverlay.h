@@ -18,6 +18,6 @@ private:
   int mNumberOfSecToShowMsg;
 
   void publishInfoMessagesInterface();
-  void handleInfoMessage(sf::Packet message);
+  void handleInfoMessage(sf::Packet& message);
 };
 

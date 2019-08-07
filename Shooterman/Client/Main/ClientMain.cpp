@@ -2,7 +2,6 @@
 
 #include "../Input/Input.h"
 #include "../GUI/Gui.h"
-#include "../Sound/Sound.h"
 #include "../Network/NetworkHandler.h"
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
 #include "../../Server/Main/GameLoop.h"
@@ -49,18 +48,12 @@ ClientMain::ClientMain() {
         if (networkHandlerStarted) {
           networkHandler.shutDown();
           networkHandlerStarted = false;
-          soundSystem.unsubscribeToSoundList();
         }
         sentIpMessage = false;
-        if (!soundSystem.isBackgroundMusicPlaying(Sounds::MainMenuBackgroundSong)) {
-          soundSystem.stopBackgroundMusic();
-          soundSystem.setBackgroundMusic(Sounds::MainMenuBackgroundSong);
-          soundSystem.startBackGroundMusic();
-        }
         break; 
       }
-      case GAME_STATE::LOBBY: {
-        // In the lobby
+      case GAME_STATE::LOBBY:
+      {
         if (!mServerStarted) {
           server = std::make_shared<GameLoop>();
           server->start();
@@ -77,43 +70,24 @@ ClientMain::ClientMain() {
           MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
           sentIpMessage = true;
         }
-        if (!soundSystem.isBackgroundMusicPlaying(Sounds::LobbyBackgroundSong)) {
-          soundSystem.stopBackgroundMusic();
-          soundSystem.setBackgroundMusic(Sounds::LobbyBackgroundSong);
-          soundSystem.startBackGroundMusic();
-        }
-        break; 
+        break;
       }
       case GAME_STATE::CLIENT_LOBBY:
-      {
-        if (!soundSystem.isBackgroundMusicPlaying(Sounds::LobbyBackgroundSong)) {
-          soundSystem.stopBackgroundMusic();
-          soundSystem.setBackgroundMusic(Sounds::LobbyBackgroundSong);
-          soundSystem.startBackGroundMusic();
-        }
        break;
-      }
       case GAME_STATE::JOIN:
         if (!networkHandlerStarted) {
           networkHandler.start();
           networkHandlerStarted = true;
         }
         break;
-	    case GAME_STATE::PLAYING: {
-        if (!soundSystem.isBackgroundMusicPlaying(Sounds::PlayingBackgroundSong)) {
-          soundSystem.stopBackgroundMusic();
-          soundSystem.setBackgroundMusic(Sounds::PlayingBackgroundSong);
-          soundSystem.startBackGroundMusic();
-        }
+	    case GAME_STATE::PLAYING:
 		    break;
-	      }
       case GAME_STATE::OPTIONS:
 		    break;
-      case GAME_STATE::PAUSE: {
+      case GAME_STATE::PAUSE:
         break;
       case GAME_STATE::MAP_EDITOR:
         break;
-      }
       default:
         TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
     }
@@ -137,7 +111,7 @@ ClientMain::ClientMain() {
   TRACE_INFO("Shutting down complete");
 }
 
-void ClientMain::handleChangeGameStateMessage(sf::Packet message) {
+void ClientMain::handleChangeGameStateMessage(sf::Packet& message) {
   GameStateMessage gsm(message);
 
   if (gsm.getGameState() == GAME_STATE::PREVIOUS) {
@@ -159,7 +133,7 @@ void ClientMain::handleChangeGameStateMessage(sf::Packet message) {
   mGameStateInterface.pushMessage(gsm.pack());
 }
 
-void ClientMain::handleShutdownMessage(sf::Packet message) {
+void ClientMain::handleShutdownMessage(sf::Packet& message) {
   sf::Packet packet;
   packet << MessageId::SHUT_DOWN;
   mSystemMessageInterface.pushMessage(packet);

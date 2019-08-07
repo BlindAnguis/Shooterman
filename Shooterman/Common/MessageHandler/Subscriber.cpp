@@ -40,7 +40,7 @@ void Subscriber::setCallback(std::function<void(sf::Packet message)> callback) {
   mCallback = callback;
 }
 
-void Subscriber::addSignalCallback(int signalId, std::function<void(sf::Packet message)> callback) {
+void Subscriber::addSignalCallback(int signalId, std::function<void(sf::Packet& message)> callback) {
   mMessageFunctionMap.emplace(signalId, callback);
 }
 

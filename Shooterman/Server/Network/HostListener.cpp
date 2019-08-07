@@ -108,7 +108,7 @@ void HostListener::listen() {
   MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber);
 }
 
-void HostListener::handleNewUsernameMessage(sf::Packet message) {
+void HostListener::handleNewUsernameMessage(sf::Packet& message) {
   ChangeUsernameMessage cum(message);
 
   (*mConnectedClients)[cum.getId()]->setUsername(cum.getUsername());
@@ -124,12 +124,12 @@ void HostListener::handleNewUsernameMessage(sf::Packet message) {
   }
 }
 
-void HostListener::handleCharacterChoosenMessage(sf::Packet message) {
+void HostListener::handleCharacterChoosenMessage(sf::Packet& message) {
   CharacherChoosenMessage ccm(message);
   (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
 }
 
-void HostListener::handleClientDisconnectedMessage(sf::Packet message) {
+void HostListener::handleClientDisconnectedMessage(sf::Packet& message) {
   ClientDisconnectedMessage cdm(message);
   mConnectedClients->erase(cdm.getId());
 
@@ -144,7 +144,7 @@ void HostListener::handleClientDisconnectedMessage(sf::Packet message) {
   }
 }
 
-void HostListener::handleMapDataMessage(sf::Packet message) {
+void HostListener::handleMapDataMessage(sf::Packet& message) {
   MapMessage mm(message);
   mMapData = mm.getData();
 }

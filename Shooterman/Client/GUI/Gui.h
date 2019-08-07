@@ -39,6 +39,6 @@ private:
   void render();
   void handleWindowEvents();
   bool renderGameState(GAME_STATE gameState);
-  void handleShutdownMessage(sf::Packet message);
-  void handleChangedGameStateMessage(sf::Packet message);
+  void handleShutdownMessage(sf::Packet& message);
+  void handleChangedGameStateMessage(sf::Packet& message);
 };

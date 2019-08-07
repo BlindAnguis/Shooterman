@@ -47,7 +47,7 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
   return MenuBase::render(window, mousePosition);
 }
 
-void DebugMenu::handleAddDebugButtonMessage(sf::Packet message) {
+void DebugMenu::handleAddDebugButtonMessage(sf::Packet& message) {
   AddDebugButtonMessage debMess(message);
   TRACE_DEBUG1("New button added for " << debMess.getSubscriberId());
   int subscriberId = debMess.getSubscriberId();
@@ -82,7 +82,7 @@ void DebugMenu::handleAddDebugButtonMessage(sf::Packet message) {
   mCategoriesMap[debMess.getCategoryText()]->addGuiComponent(list);
 }
 
-void DebugMenu::handleRemoveDebugButtonMessage(sf::Packet message) {
+void DebugMenu::handleRemoveDebugButtonMessage(sf::Packet& message) {
   RemoveDebugButtonMessage rdbm(message);
 
   auto it = mCategoriesMap.begin();

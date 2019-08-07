@@ -34,7 +34,7 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
   return true;
 }
 
-void Hud::handlePlayerData(sf::Packet message) {
+void Hud::handlePlayerData(sf::Packet& message) {
   PlayerDataMessage pdm(message);
   for (unsigned int i = 0; i < pdm.getNumberOfPlayerData(); ++i) {
     PlayerData playerData = pdm.getPlayerData(i);

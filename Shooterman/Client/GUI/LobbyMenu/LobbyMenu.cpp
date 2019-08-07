@@ -160,7 +160,7 @@ void LobbyMenu::init() {
   }
 }
 
-void LobbyMenu::handlePlayerUsernameMessage(sf::Packet message) {
+void LobbyMenu::handlePlayerUsernameMessage(sf::Packet& message) {
   TRACE_REC("PLAYER_USERNAMES");
   LobbyDataMessage ldm(message);
 
@@ -170,7 +170,7 @@ void LobbyMenu::handlePlayerUsernameMessage(sf::Packet message) {
   }
 }
 
-void LobbyMenu::handlePlayableCharactersMessage(sf::Packet message) {
+void LobbyMenu::handlePlayableCharactersMessage(sf::Packet& message) {
   TRACE_REC("PLAYABLE_CHARACTERS");
   mPlayableCharactersList->clear();
   PlayableCharactersMessage pcm(message);
@@ -218,7 +218,7 @@ void LobbyMenu::handlePlayableCharactersMessage(sf::Packet message) {
   }
 }
 
-void LobbyMenu::handleServerReadyMessage(sf::Packet message) {
+void LobbyMenu::handleServerReadyMessage(sf::Packet& message) {
   TRACE_REC("SERVER_READY");
   // when server is ready we activate the start game button
   mStartGameButton->setEnabled();

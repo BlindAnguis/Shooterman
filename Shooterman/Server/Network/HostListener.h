@@ -34,9 +34,9 @@ private:
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::string mMapData;
 
-  void handleNewUsernameMessage(sf::Packet message);
-  void handleCharacterChoosenMessage(sf::Packet message);
-  void handleClientDisconnectedMessage(sf::Packet message);
-  void handleMapDataMessage(sf::Packet message);
+  void handleNewUsernameMessage(sf::Packet& message);
+  void handleCharacterChoosenMessage(sf::Packet& message);
+  void handleClientDisconnectedMessage(sf::Packet& message);
+  void handleMapDataMessage(sf::Packet& message);
 };
 

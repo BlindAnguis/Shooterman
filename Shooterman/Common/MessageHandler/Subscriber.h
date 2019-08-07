@@ -21,7 +21,7 @@ public:
 
   void setCallback(std::function<void(sf::Packet message)> callback);
 
-  void addSignalCallback(int signalId, std::function<void(sf::Packet message)> callback);
+  void addSignalCallback(int signalId, std::function<void(sf::Packet& message)> callback);
 
   void handleMessages();
   void clearMessages();
@@ -33,5 +33,5 @@ private:
   std::queue<sf::Packet> mMessageQueue;
   std::mutex* mQueueLock;
   std::function<void(sf::Packet message)> mCallback = nullptr;
-  std::map<int, std::function<void(sf::Packet message)>> mMessageFunctionMap;
+  std::map<int, std::function<void(sf::Packet& message)>> mMessageFunctionMap;
 };

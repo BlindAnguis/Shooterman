@@ -228,7 +228,7 @@ void NetworkSystem::updateInternalMap() {
   }
 }
 
-void NetworkSystem::handleServerReadyMessage(sf::Packet message) {
+void NetworkSystem::handleServerReadyMessage(sf::Packet& message) {
   ServerReadyMessage srm;
 
   for (auto clientSocket : mClientsSockets) {
@@ -237,7 +237,7 @@ void NetworkSystem::handleServerReadyMessage(sf::Packet message) {
   }
 }
 
-void NetworkSystem::handlePlayerDataMessage(sf::Packet message) {
+void NetworkSystem::handlePlayerDataMessage(sf::Packet& message) {
   PlayerDataMessage pdm(message);
 
   for (auto client : mClientsSockets) {
@@ -246,7 +246,7 @@ void NetworkSystem::handlePlayerDataMessage(sf::Packet message) {
   }
 }
 
-void NetworkSystem::handleAddDebugButtonMessage(sf::Packet message) {
+void NetworkSystem::handleAddDebugButtonMessage(sf::Packet& message) {
   AddDebugButtonMessage adbm(message);
 
   sf::Packet packet = adbm.pack();
@@ -255,7 +255,7 @@ void NetworkSystem::handleAddDebugButtonMessage(sf::Packet message) {
   }
 }
 
-void NetworkSystem::handleRemoveDebugButtonMessage(sf::Packet message) {
+void NetworkSystem::handleRemoveDebugButtonMessage(sf::Packet& message) {
   RemoveDebugButtonMessage rdbm(message);
 
   sf::Packet packet = rdbm.pack();
@@ -264,7 +264,7 @@ void NetworkSystem::handleRemoveDebugButtonMessage(sf::Packet message) {
   }
 }
 
-void NetworkSystem::handleSoundListMessage(sf::Packet message) {
+void NetworkSystem::handleSoundListMessage(sf::Packet& message) {
   SoundMessage sm(message);
 
   for (auto clientSocket : mClientsSockets) {
@@ -273,7 +273,7 @@ void NetworkSystem::handleSoundListMessage(sf::Packet message) {
   }
 }
 
-void NetworkSystem::handleChangeGameStateMessage(sf::Packet message) {
+void NetworkSystem::handleChangeGameStateMessage(sf::Packet& message) {
   GameStateMessage gsm(message);
   for (auto clientSocket : mClientsSockets) {
     sf::Packet gsmPacket = gsm.pack();

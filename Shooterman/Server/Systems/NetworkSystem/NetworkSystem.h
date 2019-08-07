@@ -49,10 +49,10 @@ private:
   void updateInternalMap();
   std::shared_ptr<SpriteMessage> getRenderData();
 
-  void handleServerReadyMessage(sf::Packet message);
-  void handlePlayerDataMessage(sf::Packet message);
-  void handleAddDebugButtonMessage(sf::Packet message);
-  void handleRemoveDebugButtonMessage(sf::Packet message);
-  void handleSoundListMessage(sf::Packet message);
-  void handleChangeGameStateMessage(sf::Packet message);
+  void handleServerReadyMessage(sf::Packet& message);
+  void handlePlayerDataMessage(sf::Packet& message);
+  void handleAddDebugButtonMessage(sf::Packet& message);
+  void handleRemoveDebugButtonMessage(sf::Packet& message);
+  void handleSoundListMessage(sf::Packet& message);
+  void handleChangeGameStateMessage(sf::Packet& message);
 };

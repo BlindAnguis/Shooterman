@@ -176,12 +176,12 @@ bool Gui::renderGameState(GAME_STATE gameState) {
   return mRenderNeeded;
 }
 
-void Gui::handleShutdownMessage(sf::Packet message) {
+void Gui::handleShutdownMessage(sf::Packet& message) {
   TRACE_INFO("Closing GUI window");
   mWindow->close();
 }
 
-void Gui::handleChangedGameStateMessage(sf::Packet message) {
+void Gui::handleChangedGameStateMessage(sf::Packet& message) {
   GameStateMessage gsm(message);
   TRACE_REC("New Game State: " << gsm.getGameStateAsString());
   if (gsm.getGameState() != mCurrentGameState) {

@@ -4,6 +4,7 @@
 #include "../../Common/Trace.h"
 #include "../Network/NetworkHandler.h"
 #include "../../Common/Messages/SoundMessage.h"
+#include "../../Common/Messages/GameStateMessage.h"
 
 #include "SFML/Audio.hpp"
 
@@ -15,23 +16,20 @@ public:
   SoundSystem();
   ~SoundSystem();
   void update();
-  void setBackgroundMusic(Sounds backgroundMusic);
-  void stopBackgroundMusic();
-  void pauseBackgroundMusic();
-  void startBackGroundMusic();
-  bool isBackgroundMusicPlaying(Sounds backgroundMusic);
-  void unsubscribeToSoundList();
+
 private:
+  bool mSubscribedToSounds = false;
+  GAME_STATE mCurrentGameState;
   std::vector<sf::Sound> mPlayingSounds;
   std::queue<sf::Sound> mPlayQueue;
   std::map<Sounds, sf::SoundBuffer> mSoundBuffers;
-  bool mSubscribedToSounds = false;
+  std::map<GAME_STATE, std::shared_ptr<sf::Music>> mBackgroundSoundBuffers;
   Subscriber mSoundSubcription;
-  sf::Music mBackgroundMusic;
-  Sounds mCurrentBackgroundMusic;
-  std::map<Sounds, std::string> mPathsToBackgroundMusic;
 
   void loadSounds();
-  void handleSoundListMessage(sf::Packet message);
+  void loadSoundBuffer(Sounds sound, std::string filename);
+  void loadMusic(GAME_STATE gameState, std::string filename);
+  void handleChangeGameStateMessage(sf::Packet& message);
+  void handleSoundListMessage(sf::Packet& message);
 };
 

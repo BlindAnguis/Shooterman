@@ -24,7 +24,7 @@ private:
 
   void run();
 
-  void handleShutdownMessage(sf::Packet message);
-  void handleChangeGameStateMessage(sf::Packet message);
-  void handleMousePositionMessage(sf::Packet message);
+  void handleShutdownMessage(sf::Packet& message);
+  void handleChangeGameStateMessage(sf::Packet& message);
+  void handleMousePositionMessage(sf::Packet& message);
 };
