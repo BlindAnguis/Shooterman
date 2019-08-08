@@ -21,6 +21,16 @@ ClientMain::ClientMain() {
 
   MessageHandler::get().publishInterface(Interfaces::CLIENT_GAME_STATE, &mGameStateInterface);
   MessageHandler::get().publishInterface(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSystemMessageInterface);
+  
+  run();
+
+  MessageHandler::get().unpublishInterface("ClientGameState");
+  MessageHandler::get().shutdown();
+
+  TRACE_INFO("Shutting down complete");
+}
+
+void ClientMain::run() {
   Input input;
   Gui gui;
   std::shared_ptr<GameLoop> server;
@@ -28,7 +38,6 @@ ClientMain::ClientMain() {
   SoundSystem soundSystem;
 
   mServerStarted = false;
-  bool networkHandlerStarted = false;
   mGameStateStack.push(GAME_STATE::MAIN_MENU);
   Interface ipInterface;
   bool sentIpMessage = false;
@@ -38,77 +47,65 @@ ClientMain::ClientMain() {
 
   while (mRunning) {
     switch (mGameStateStack.top()) {
-      case GAME_STATE::MAIN_MENU: {
-        // Stop Server
-        if (mServerStarted) {
-          server->stop();
-          server = nullptr;
-          mServerStarted = false;
-        }
-        if (networkHandlerStarted) {
-          networkHandler.shutDown();
-          networkHandlerStarted = false;
-        }
-        sentIpMessage = false;
-        break; 
+    case GAME_STATE::MAIN_MENU:
+    {
+      // Stop Server
+      if (mServerStarted) {
+        server->stop();
+        server = nullptr;
+        mServerStarted = false;
       }
-      case GAME_STATE::LOBBY:
-      {
-        if (!mServerStarted) {
-          server = std::make_shared<GameLoop>();
-          server->start();
-          mServerStarted = true;
-        }
-        if (!networkHandlerStarted) {
-          MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &ipInterface);
-          networkHandler.start();
-          networkHandlerStarted = true;
-        }
-        if (!sentIpMessage && ipInterface.getNumberOfSubscribers() > 0) {
+      sentIpMessage = false;
+      break;
+    }
+    case GAME_STATE::LOBBY:
+    {
+      if (!mServerStarted) {
+        server = std::make_shared<GameLoop>();
+        server->start();
+        mServerStarted = true;
+      }
+      if (!sentIpMessage) {
+
+        MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &ipInterface);
+
+        if (ipInterface.getNumberOfSubscribers() > 0) {
           IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), 1337);
           ipInterface.pushMessage(ipm.pack());
           MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
           sentIpMessage = true;
         }
-        break;
       }
-      case GAME_STATE::CLIENT_LOBBY:
-       break;
-      case GAME_STATE::JOIN:
-        if (!networkHandlerStarted) {
-          networkHandler.start();
-          networkHandlerStarted = true;
-        }
-        break;
-	    case GAME_STATE::PLAYING:
-		    break;
-      case GAME_STATE::OPTIONS:
-		    break;
-      case GAME_STATE::PAUSE:
-        break;
-      case GAME_STATE::MAP_EDITOR:
-        break;
-      default:
-        TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
+      break;
+    }
+    case GAME_STATE::CLIENT_LOBBY:
+      break;
+    case GAME_STATE::JOIN:
+      break;
+    case GAME_STATE::PLAYING:
+      break;
+    case GAME_STATE::OPTIONS:
+      break;
+    case GAME_STATE::PAUSE:
+      break;
+    case GAME_STATE::MAP_EDITOR:
+      break;
+    default:
+      TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
     }
     soundSystem.update();
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     mGameStateInterface.handleMessages();
     mSystemMessageInterface.handleMessages();
-
   }
+
+  networkHandler.shutDown();
   input.shutDown();
   gui.shutDown();
-  if (networkHandlerStarted) {
-    networkHandler.shutDown();
-  }
   if (mServerStarted) {
     server->stop();
     server = nullptr;
   }
-
-  MessageHandler::get().unpublishInterface("ClientGameState");
-  TRACE_INFO("Shutting down complete");
 }
 
 void ClientMain::handleChangeGameStateMessage(sf::Packet& message) {

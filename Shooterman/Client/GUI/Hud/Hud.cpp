@@ -8,12 +8,14 @@
 Hud::Hud() {  
   mGuiFrame = std::make_shared<Frame>();
   mSubscriber.addSignalCallback(MessageId::PLAYER_DATA, std::bind(&Hud::handlePlayerData, this, std::placeholders::_1));
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
 }
 
-Hud::~Hud() { }
+Hud::~Hud() {
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
+}
 
 void Hud::reset() {
-  mSubscribedToPlayerData = false;
   mUsernames.clear();
   mHealthBars.clear();
   mStaminaBars.clear();
@@ -23,10 +25,6 @@ void Hud::reset() {
 }
 
 bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  if (!mSubscribedToPlayerData) {
-    mSubscribedToPlayerData = MessageHandler::get().subscribeTo(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
-  }
-
   mSubscriber.handleMessages();
 
   MenuBase::render(window, mousePosition);

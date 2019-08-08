@@ -190,6 +190,8 @@
     <ClCompile Include="Common\Messages\ServerReadyMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteCacheMessage.cpp" />
     <ClCompile Include="Common\Messages\SpriteMessage.cpp" />
+    <ClCompile Include="Common\Messages\SubscribeDoneMessage.cpp" />
+    <ClCompile Include="Common\Messages\SubscribeTimeoutMessage.cpp" />
     <ClCompile Include="Common\Messages\ToggleDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Trace.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiFrameComponent.cpp" />
@@ -266,6 +268,8 @@
     <ClInclude Include="Common\Messages\RemoveDebugButtonMessage.h" />
     <ClInclude Include="Common\Messages\ServerInternal\ClientDisconnectedMessage.h" />
     <ClInclude Include="Common\Messages\ServerReadyMessage.h" />
+    <ClInclude Include="Common\Messages\SubscribeDoneMessage.h" />
+    <ClInclude Include="Common\Messages\SubscribeTimeoutMessage.h" />
     <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
     <ClInclude Include="Common\Sounds.h" />
     <ClInclude Include="Client\GUI\Resources\GuiFrameComponent.h" />

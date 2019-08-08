@@ -13,6 +13,13 @@
 
 class Interface;
 
+struct NewSubscriber {
+  std::string interfaceName;
+  Subscriber* subscriber;
+  std::shared_ptr<sf::Clock> timer;
+  int timeoutLength;
+};
+
 class MessageHandler : Trace {
 public:
   static MessageHandler& get() {
@@ -26,16 +33,28 @@ public:
   void unpublishInterface(std::string name);
 
   bool subscribeTo(std::string name, Subscriber* subscriber);
+  void subscribeToWithTimeout(std::string interfaceName, Subscriber* subscriber, int timeoutLength = 5000);
   void unsubscribeTo(std::string name, Subscriber* subscriber);
 
   std::list<std::string> getPublishedInterfaces();
 
+  void shutdown();
+
 private:
-  MessageHandler() : mCurrentId(0) { mName = "MESSAGEHANDLER"; mDebugEnabled1 = false; }
-  
+  bool mRunning;
   int mCurrentId;
   std::mutex mIdGeneratorLock;
   std::mutex mGameStateSubscriberLock;
+  std::mutex mMutex;
+
+  std::unique_ptr<std::thread> mMessageHandlerThread;
 
   std::map<std::string, Interface*> mPublishedInterfacesMap;
+  std::list<NewSubscriber> mPendingSubscribers;
+
+  MessageHandler();
+  ~MessageHandler();
+
+  void start();
+  void handleNewSubscribers();
 };

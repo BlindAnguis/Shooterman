@@ -6,38 +6,28 @@
 
 PlayWindow::PlayWindow() {
   mName = "CLIENT: PLAY_WINDOW";
-  mIsSubscribed = false;
   mGuiFrame = std::make_shared<Frame>();
 
   mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST_CACHE, std::bind(&PlayWindow::handleSpriteListCacheMessage, this, std::placeholders::_1));
   mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST, std::bind(&PlayWindow::handleSpriteListMessage, this, std::placeholders::_1));
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
 }
 
 PlayWindow::~PlayWindow() {
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
-  mIsSubscribed = false;
 }
 
 void PlayWindow::uninit() {
-  // This will clear the queue in case there is crap left over from previous game
   mSpriteListSubscriber.clearMessages();
 }
 
 void PlayWindow::reset() {
-  mIsSubscribed = false;
   mCachedSprites.clear();
 }
 
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   mWindow = window;
   mIsRenderNeeded = false;
-
-  if (!mIsSubscribed) {
-    mIsSubscribed = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
-    if (!mIsSubscribed) {
-      return false;
-    }
-  }
 
   mSpriteListSubscriber.handleMessages();
 

@@ -21,245 +21,170 @@
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
-}
-
-NetworkHandler::~NetworkHandler() {
-  TRACE_FUNC_ENTER();
-  TRACE_FUNC_EXIT();
-}
-
-void NetworkHandler::start() {
   TRACE_INFO("Starting module...");
   mNetworkHandlerThread = std::make_unique<std::thread>(&NetworkHandler::run, this);
   TRACE_INFO("Starting module done");
 }
 
+NetworkHandler::~NetworkHandler() { }
+
 void NetworkHandler::run() {
-  TRACE_FUNC_ENTER();
+  mIpSubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&NetworkHandler::handleSubscribeIpListTimeoutMessage, this, std::placeholders::_1));
+  mIpSubscriber.addSignalCallback(MessageId::IP_MESSAGE, std::bind(&NetworkHandler::handleIpListMessage, this, std::placeholders::_1));
+  mGameStateSubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&NetworkHandler::handleSubscribeGameStateTimeoutMessage, this, std::placeholders::_1));
+  mGameStateSubscriber.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&NetworkHandler::handleChangeGameStateMessage, this, std::placeholders::_1));
+
+  mCurrentState = STATE::Disconnected;
+
   setupSubscribersAndInterfaces();
 
-  CONNECTION_STATUS connectionStatus = setupSocketConnection();
+  int connectionTriesLeft = 10;
 
-  if (connectionStatus == CONNECTION_STATUS::Cancel) {
-    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
-    teardownSubscribersAndInterfaces();
-    return;
+  while (mRunning) {
+    mIpSubscriber.handleMessages();
+    mGameStateSubscriber.handleMessages();
+
+    switch (mCurrentState) {
+    case STATE::Disconnected:
+      connectionTriesLeft = 10;
+      break;
+    case STATE::Connecting: {
+      sf::Socket::Status result = mSocket.connect(sf::IpAddress(mServerIp), mServerPort, sf::milliseconds(100));
+      if (result == sf::Socket::Status::Done) {
+        TRACE_INFO("Connected!");
+        mCurrentState = STATE::Connected;
+        mSocket.setBlocking(false);
+      } else {
+        sf::sleep(sf::milliseconds(200));
+        --connectionTriesLeft;
+        if (connectionTriesLeft < 0) {
+          mCurrentState = STATE::Disconnected;
+          TRACE_ERROR("Connection failed! " << result);
+          InfoMessage msg("Connection failed.", 3);
+          mInfoMessageSubscriber.reverseSendMessage(msg.pack());
+
+          GameStateMessage gsm(GAME_STATE::JOIN);
+          mGameStateSubscriber.reverseSendMessage(gsm.pack());
+
+          mHeartbeatClock.restart();
+        }
+      }
+      break;
+    }
+    case STATE::Connected:
+      handlePackets();
+      break;
+    case STATE::Disconnecting:
+      mSocket.disconnect();
+      mCurrentState = STATE::Disconnected;
+      break;
+    default:
+      break;
+    }
+
+    sf::sleep(sf::milliseconds(1));
   }
+ 
+  teardownSubscribersAndInterfaces();
+}
 
-  // Failed to connect to server
-  if (connectionStatus != CONNECTION_STATUS::Done) {
-    TRACE_ERROR("Connection failed! " << connectionStatus);
-    InfoMessage msg("Connection failed.", 3);
-    mInfoMessageSubscriber.reverseSendMessage(msg.pack());
-    
-    GameStateMessage gsm(GAME_STATE::JOIN);
-    mGameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
-    teardownDebugMessages();
-    return;
-  }
-
-  TRACE_INFO("Connected!");
+void NetworkHandler::setupSubscribersAndInterfaces() {
+  setupDebugMessages("Client", "Network");
 
   MessageHandler::get().publishInterface(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListInterface);
   MessageHandler::get().publishInterface(Interfaces::CLIENT_PLAYER_DATA, &mPlayerDataInterface);
   MessageHandler::get().publishInterface(Interfaces::CLIENT_SOUND_LIST, &mSoundListInterface);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_INPUT_LIST, &mMessageSubscriber);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
-
-  mSocket.setBlocking(false);
-  mRunning = true;
-
-  handlePackets();
- 
-  mSocket.disconnect();
-  teardownSubscribersAndInterfaces();
-  TRACE_FUNC_EXIT();
-}
-
-void NetworkHandler::setupSubscribersAndInterfaces() {
-  TRACE_FUNC_ENTER();
   MessageHandler::get().publishInterface(Interfaces::CLIENT_LOBBY, &mLobbyInterface);
   MessageHandler::get().publishInterface(Interfaces::CLIENT_SERVER_READY, &mServerReadyInterface);
 
-  while (!setupDebugMessages("Client", "Network")) {
-    sf::sleep(sf::milliseconds(5));
-  }
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
 
-  while (!MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber)) {
-    sf::sleep(sf::milliseconds(5));
-  }
-
-  while (!MessageHandler::get().subscribeTo(Interfaces::CLIENT_IP_LIST, &mMessageSubscriber)) {
-    sf::sleep(sf::milliseconds(5));
-  }
-  while (!MessageHandler::get().subscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber)) {
-    sf::sleep(sf::milliseconds(5));
-  }
-  TRACE_FUNC_EXIT();
-}
-
-CONNECTION_STATUS NetworkHandler::setupSocketConnection() {
-  TRACE_FUNC_ENTER();
-  CONNECTION_STATUS connectionStatus = CONNECTION_STATUS::Cancel;
-
-  // Wait for IP address
-  std::queue<sf::Packet> messages;
-  while (messages.size() == 0) {
-    messages = mMessageSubscriber.getMessageQueue();
-    sf::sleep(sf::milliseconds(5));
-  }
-  // We have the IP, no need to be subscribed
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_IP_LIST, &mMessageSubscriber);
-
-  int ID = -1;
-  auto ipMessage = messages.front();
-  ipMessage >> ID;
-  if (ID != MessageId::IP_MESSAGE) {
-    if (ID != MessageId::SHUT_DOWN) {
-      // Received unexpected message
-      TRACE_ERROR("Received unexpected message with ID: " << ID);
-      GameStateMessage gsm(GAME_STATE::PREVIOUS);
-      mGameStateSubscriber.reverseSendMessage(gsm.pack());
-    }
-    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
-    return connectionStatus;
-  }
-
-  IpMessage ipm(ipMessage);
-  TRACE_INFO("Connecting socket to " << ipm.getIp());
-  int connectionAttempts = 10;
-  // Try to connect multiple times
-  while (connectionStatus != sf::Socket::Status::Done && connectionAttempts > 0) {
-    connectionStatus = (CONNECTION_STATUS)mSocket.connect(sf::IpAddress(ipm.getIp()), ipm.getPort(), sf::milliseconds(100));
-    connectionAttempts--;
-    sf::sleep(sf::milliseconds(500));
-
-    if (!checkIfConnectionIsCancelled()) {
-      return CONNECTION_STATUS::Cancel;
-    }
-  }
-
-  TRACE_FUNC_EXIT();
-  return connectionStatus;
-}
-
-bool NetworkHandler::checkIfConnectionIsCancelled() {
-  auto gameStateMessageQueue = mGameStateSubscriber.getMessageQueue();
-  sf::Packet packet;
-  while (!gameStateMessageQueue.empty()) {
-    packet = gameStateMessageQueue.front();
-    gameStateMessageQueue.pop();
-  }
-  if (packet.getDataSize() > 0) {
-    int id;
-    packet >> id;
-    if (id == MessageId::CHANGE_GAME_STATE) {
-      GameStateMessage gsm(packet);
-      if (gsm.getGameState() != GAME_STATE::CLIENT_LOBBY) {
-        return false;
-      }
-    }
-  }
-  return true;
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_INPUT_LIST, &mForwaringSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mForwaringSubscriber);
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mForwaringSubscriber);
 }
 
 void NetworkHandler::handlePackets() {
-  TRACE_FUNC_ENTER();
+  auto forwardMessageQueue = mForwaringSubscriber.getMessageQueue();
+  while (!forwardMessageQueue.empty()) {
+    sf::Packet packet = forwardMessageQueue.front();
+    forwardMessageQueue.pop();
+    mSocket.send(packet);
+  }
 
-  mHeartbeatClock.restart();
+  auto lobbyMessageQueue = mLobbyInterface.getMessageQueue();
+  while (!lobbyMessageQueue.empty()) {
+    sf::Packet packet = lobbyMessageQueue.front();
+    lobbyMessageQueue.pop();
+    mSocket.send(packet);
+  }
 
-  while (mRunning) {
-    auto systemMessageQueue = mMessageSubscriber.getMessageQueue();
-    while (!systemMessageQueue.empty()) {
-      sf::Packet packet = systemMessageQueue.front();
-      systemMessageQueue.pop();
-      mSocket.send(packet);
-    }
+  auto debugMessageQueue = mServerDebugSubscriber.getMessageQueue();
+  while (!debugMessageQueue.empty()) {
+    sf::Packet packet = debugMessageQueue.front();
+    debugMessageQueue.pop();
+    int id = -1;
+    packet >> id;
 
-    auto gameStateMessageQueue = mGameStateSubscriber.getMessageQueue();
-    while (!gameStateMessageQueue.empty()) {
-      sf::Packet packet = gameStateMessageQueue.front();
-      gameStateMessageQueue.pop();
-      mSocket.send(packet);
-    }
+    AddDebugButtonMessage adbm(packet);
+    sf::Packet networkPacket = adbm.pack();
+    mSocket.send(networkPacket);
+  }
 
-    auto lobbyMessageQueue = mLobbyInterface.getMessageQueue();
-    while (!lobbyMessageQueue.empty()) {
-      sf::Packet packet = lobbyMessageQueue.front();
-      lobbyMessageQueue.pop();
-      mSocket.send(packet);
-    }
-
-    auto debugMessageQueue = mServerDebugSubscriber.getMessageQueue();
-    while (!debugMessageQueue.empty()) {
-      sf::Packet packet = debugMessageQueue.front();
-      debugMessageQueue.pop();
-      int id = -1;
-      packet >> id;
-
-      AddDebugButtonMessage adbm(packet);
-      sf::Packet p2 = adbm.pack();
-      mSocket.send(p2);
-    }
-
-    sf::Packet packet;
-    if (mSocket.receive(packet) == sf::Socket::Done) {
-      int id = -1;
-      packet >> id;
-      if (id == MessageId::SPRITE_LIST_CACHE) {
-        SpriteCacheMessage sm(packet);
-        mSpriteListInterface.pushMessage(sm.pack());
-      } else if (id == MessageId::SPRITE_LIST) {
-        SpriteMessage sm(packet);
-        mSpriteListInterface.pushMessage(sm.pack());
-      } else if (id == MessageId::PLAYER_DATA) {
-        PlayerDataMessage pdm(packet);
-        mPlayerDataInterface.pushMessage(pdm.pack());
-      } else if (id == MessageId::PLAYER_USERNAMES) {
-        LobbyDataMessage ldm(packet);
-        mLobbyInterface.pushMessage(ldm.pack());
-      } else if (id == MessageId::PLAYABLE_CHARACTERS) {
-        PlayableCharactersMessage pcm(packet);
-        mLobbyInterface.pushMessage(pcm.pack());
-      } else if (id == MessageId::CHANGE_GAME_STATE) {
-        GameStateMessage gsm(packet);
-        mGameStateSubscriber.reverseSendMessage(gsm.pack());
-      } else if (id == MessageId::ADD_DEBUG_BUTTON) {
-        AddDebugButtonMessage adbm(packet);
-        AddDebugButtonMessage adbm2(adbm.getSubscriberId(), adbm.getButtonText(), adbm.getCategoryText(), mServerDebugSubscriber.getId());
-        mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
-      } else if (id == MessageId::REMOVE_DEBUG_BUTTON) {
-        RemoveDebugButtonMessage rdbm(packet);
-        mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
-      } else if (id == MessageId::SOUND_LIST) {
-        SoundMessage sm(packet);
-        mSoundListInterface.pushMessage(sm.pack());
-      } else if (id == MessageId::SERVER_READY) {
-        ServerReadyMessage srm;
-        mServerReadyInterface.pushMessage(srm.pack());
-      } else if (id == MessageId::HEARTBEAT) {
-        packet << MessageId::HEARTBEAT;
-        mHeartbeatClock.restart();
-        mSocket.send(packet);
-      } else {
-        TRACE_ERROR("Packet not known: " << id);
-      }
-    }
-    sf::sleep(sf::milliseconds(1));
-
-    if (mHeartbeatClock.getElapsedTime() > sf::milliseconds(30000)) {
-      TRACE_ERROR("Received no heartbeat for 30 seconds. Lost connection to server!");
-      mRunning = false;
-      GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+  sf::Packet packet;
+  if (mSocket.receive(packet) == sf::Socket::Done) {
+    int id = -1;
+    packet >> id;
+    if (id == MessageId::SPRITE_LIST_CACHE) {
+      SpriteCacheMessage sm(packet);
+      mSpriteListInterface.pushMessage(sm.pack());
+    } else if (id == MessageId::SPRITE_LIST) {
+      SpriteMessage sm(packet);
+      mSpriteListInterface.pushMessage(sm.pack());
+    } else if (id == MessageId::PLAYER_DATA) {
+      PlayerDataMessage pdm(packet);
+      mPlayerDataInterface.pushMessage(pdm.pack());
+    } else if (id == MessageId::PLAYER_USERNAMES) {
+      LobbyDataMessage ldm(packet);
+      mLobbyInterface.pushMessage(ldm.pack());
+    } else if (id == MessageId::PLAYABLE_CHARACTERS) {
+      PlayableCharactersMessage pcm(packet);
+      mLobbyInterface.pushMessage(pcm.pack());
+    } else if (id == MessageId::CHANGE_GAME_STATE) {
+      GameStateMessage gsm(packet);
       mGameStateSubscriber.reverseSendMessage(gsm.pack());
+    } else if (id == MessageId::ADD_DEBUG_BUTTON) {
+      AddDebugButtonMessage adbm(packet);
+      AddDebugButtonMessage adbm2(adbm.getSubscriberId(), adbm.getButtonText(), adbm.getCategoryText(), mServerDebugSubscriber.getId());
+      mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
+    } else if (id == MessageId::REMOVE_DEBUG_BUTTON) {
+      RemoveDebugButtonMessage rdbm(packet);
+      mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
+    } else if (id == MessageId::SOUND_LIST) {
+      SoundMessage sm(packet);
+      mSoundListInterface.pushMessage(sm.pack());
+    } else if (id == MessageId::SERVER_READY) {
+      ServerReadyMessage srm;
+      mServerReadyInterface.pushMessage(srm.pack());
+    } else if (id == MessageId::HEARTBEAT) {
+      packet << MessageId::HEARTBEAT;
+      mHeartbeatClock.restart();
+      mSocket.send(packet);
+    } else {
+      TRACE_ERROR("Packet not known: " << id);
     }
   }
-  TRACE_FUNC_EXIT();
+
+  if (mHeartbeatClock.getElapsedTime() > sf::milliseconds(30000)) {
+    TRACE_ERROR("Received no heartbeat for 30 seconds. Lost connection to server!");
+    mRunning = false;
+    GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+    mGameStateSubscriber.reverseSendMessage(gsm.pack());
+  }
 }
 
 void NetworkHandler::teardownSubscribersAndInterfaces() {
-  TRACE_FUNC_ENTER();
   teardownDebugMessages();
 
   MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SPRITE_LIST);
@@ -267,13 +192,38 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SERVER_READY);
   MessageHandler::get().unpublishInterface(Interfaces::CLIENT_PLAYER_DATA);
   MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SOUND_LIST);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_INPUT_LIST, &mMessageSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
 
   mGameStateSubscriber.clearMessages();
-  TRACE_FUNC_EXIT()
+}
+
+void NetworkHandler::handleSubscribeIpListTimeoutMessage(sf::Packet& message) {
+  TRACE_ERROR("Subscribe to IpList timed out");
+}
+
+void NetworkHandler::handleIpListMessage(sf::Packet& message) {
+  IpMessage ipm(message);
+  mServerIp = ipm.getIp();
+  mServerPort = ipm.getPort();
+  mCurrentState = STATE::Connecting;
+  TRACE_INFO("Connecting socket to " << mServerIp << ", " << mServerPort);
+}
+
+void NetworkHandler::handleSubscribeGameStateTimeoutMessage(sf::Packet & message) {
+  TRACE_ERROR("Subscribe to game state timed out");
+}
+
+void NetworkHandler::handleChangeGameStateMessage(sf::Packet & message) {
+  GameStateMessage gsm(message);
+  if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
+    mCurrentState = STATE::Disconnecting;
+  } else if (gsm.getGameState() == GAME_STATE::LOBBY) {
+    MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+  } else if (gsm.getGameState() == GAME_STATE::JOIN) {
+    MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+  }
 }
 
 void NetworkHandler::shutDown() {

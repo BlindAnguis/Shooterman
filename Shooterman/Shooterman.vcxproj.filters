@@ -90,6 +90,8 @@
     <ClCompile Include="Client\Map.cpp" />
     <ClCompile Include="Common\Messages\MapMessage.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiFrameComponent.cpp" />
+    <ClCompile Include="Common\Messages\SubscribeTimeoutMessage.cpp" />
+    <ClCompile Include="Common\Messages\SubscribeDoneMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -196,6 +198,8 @@
     <ClInclude Include="Common\Messages\MapMessage.h" />
     <ClInclude Include="Client\GUI\Resources\GuiFrameComponent.h" />
     <ClInclude Include="Common\Interfaces.h" />
+    <ClInclude Include="Common\Messages\SubscribeTimeoutMessage.h" />
+    <ClInclude Include="Common\Messages\SubscribeDoneMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

@@ -46,9 +46,7 @@ void Gui::run() {
   mMenuMap.emplace(GAME_STATE::MAP_EDITOR, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MapEditor>() });
 
   // This needs to be after the DebugMenu is created
-  while (!setupDebugMessages("Client", "Gui")) {
-    sf::sleep(sf::milliseconds(5));
-  }
+  setupDebugMessages("Client", "Gui");
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
   mWindowOpen = true;

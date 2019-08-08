@@ -17,13 +17,13 @@ protected:
   bool mSendRecEnabled = false;
   bool mFunctionEnabled = false;
 
-  bool setupDebugMessages(std::string category, std::string name);
+  void setupDebugMessages(std::string category, std::string name);
   void handleDebugMessages();
   void teardownDebugMessages();
 
 private:
-  bool mIsSubscribed = false;
   std::string mCategory;
+  std::string mButtonName;
   Subscriber* mDebugSubscriber;
 };
 

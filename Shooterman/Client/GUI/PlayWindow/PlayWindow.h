@@ -18,7 +18,6 @@ private:
   Subscriber mSpriteListSubscriber;
   SpriteCacheMessage mSpriteListCacheMessage;
   SpriteMessage mSpriteListMessage;
-  bool mIsSubscribed;
   bool mIsRenderNeeded;
   sf::Packet mLatestSpriteMessage;
   std::vector<sf::Sprite> mCachedSprites;

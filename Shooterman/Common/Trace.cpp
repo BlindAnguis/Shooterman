@@ -11,17 +11,13 @@
 #include "Messages/ToggleDebugButtonMessage.h"
 #include "Messages/RemoveDebugButtonMessage.h"
 
-bool Trace::setupDebugMessages(std::string category, std::string name) {
+void Trace::setupDebugMessages(std::string category, std::string name) {
   if (!mDebugSubscriber) {
     mDebugSubscriber = new Subscriber();
   }
   mCategory = category;
-  mIsSubscribed = MessageHandler::get().subscribeTo(category + "DebugMenu", mDebugSubscriber);
-  if (mIsSubscribed) {
-    AddDebugButtonMessage debMess(mDebugSubscriber->getId(), name, category);
-    mDebugSubscriber->reverseSendMessage(debMess.pack());
-  }
-  return mIsSubscribed;
+  mButtonName = name;
+  MessageHandler::get().subscribeToWithTimeout(category + "DebugMenu", mDebugSubscriber);
 }
 
 void Trace::handleDebugMessages() {
@@ -60,6 +56,9 @@ void Trace::handleDebugMessages() {
         mFunctionEnabled = !mFunctionEnabled;
         break;
       }
+    } else if (id == MessageId::SUBSCRIBE_DONE) {
+      AddDebugButtonMessage debMess(mDebugSubscriber->getId(), mButtonName, mCategory);
+      mDebugSubscriber->reverseSendMessage(debMess.pack());
     }
   }
 }
@@ -74,6 +73,5 @@ void Trace::teardownDebugMessages() {
 
     delete mDebugSubscriber;
     mDebugSubscriber = nullptr;
-    mIsSubscribed = false;
   }
 }

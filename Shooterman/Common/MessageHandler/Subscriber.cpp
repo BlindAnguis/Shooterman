@@ -1,5 +1,7 @@
 #include "Subscriber.h"
 
+#include "../MessageId.h"
+
 Subscriber::Subscriber() : mId(-1) {
   mName = "Subscriber without ID";
   mQueueLock = new std::mutex();
@@ -54,8 +56,12 @@ void Subscriber::handleMessages() {
 
     auto it = mMessageFunctionMap.find(messageId);
     if (it == mMessageFunctionMap.end()) {
-      TRACE_ERROR("Could not find message ID: " << messageId << " in signal map");
-      continue;
+      if (messageId == MessageId::SUBSCRIBE_DONE) {
+        continue; // If subscribe done is not watched, ignore it
+      } else {
+        TRACE_ERROR("Could not find message ID: " << messageId << " in signal map");
+        continue;
+      }
     }
 
     it->second(message);

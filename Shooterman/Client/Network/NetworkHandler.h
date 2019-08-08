@@ -7,14 +7,13 @@
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/Trace.h"
 
-enum CONNECTION_STATUS { Done, NotReady, Partial, Disconnected, Error, Cancel };
+enum STATE { Disconnected, Connecting, Connected, Disconnecting };
 
 class NetworkHandler : Trace {
 public:
   NetworkHandler();
   ~NetworkHandler();
 
-  void start();
   void shutDown();
 
 private:
@@ -25,17 +24,24 @@ private:
   Interface mPlayerDataInterface;
   Interface mSoundListInterface;
   Interface mServerReadyInterface;
+  Subscriber mIpSubscriber;
+  Subscriber mForwaringSubscriber;
   Subscriber mInfoMessageSubscriber;
-  Subscriber mMessageSubscriber;
   Subscriber mGameStateSubscriber;
   Subscriber mServerDebugSubscriber;
   sf::TcpSocket mSocket;
   sf::Clock mHeartbeatClock;
+  STATE mCurrentState;
+  std::string mServerIp;
+  unsigned short mServerPort;
 
   void run();
   void setupSubscribersAndInterfaces();
-  CONNECTION_STATUS setupSocketConnection();
-  bool checkIfConnectionIsCancelled();
   void handlePackets();
   void teardownSubscribersAndInterfaces();
+
+  void handleSubscribeIpListTimeoutMessage(sf::Packet& message);
+  void handleIpListMessage(sf::Packet& message);
+  void handleSubscribeGameStateTimeoutMessage(sf::Packet& message);
+  void handleChangeGameStateMessage(sf::Packet& message);
 };

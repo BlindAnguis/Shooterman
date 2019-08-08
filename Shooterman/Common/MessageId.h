@@ -12,6 +12,9 @@ namespace MessageId{
 
   const int HEARTBEAT = 10;
 
+  const int SUBSCRIBE_DONE = 98;
+  const int SUBSCRIBE_TIMEOUT = 99;
+
 // Client to Server
   const int INPUT_KEYS = 100;
   const int NEW_USERNAME = 110;

@@ -34,11 +34,10 @@ void Input::run() {
 
   MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
   MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
-  bool subscribedToMouse = MessageHandler::get().subscribeTo(Interfaces::MOUSE_POSITION, &mSubscriber);
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::MOUSE_POSITION, &mSubscriber);
   MessageHandler::get().publishInterface(Interfaces::CLIENT_INPUT_LIST, &mClientInputInterface);
-  while (!setupDebugMessages("Client", "Input")) {
-    sf::sleep(sf::milliseconds(5));
-  }
+  setupDebugMessages("Client", "Input");
+
   std::uint32_t keyboardBitmask;
   while (mRunning) {
     switch (mCurrentGameState) {
@@ -114,9 +113,6 @@ void Input::run() {
     mGameStateMessageSubscriber.handleMessages();
 
     handleDebugMessages();
-    if (!subscribedToMouse) {
-      subscribedToMouse = MessageHandler::get().subscribeTo(Interfaces::MOUSE_POSITION, &mSubscriber);
-    }
   }
 
   teardownDebugMessages();
