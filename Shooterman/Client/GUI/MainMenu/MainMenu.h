@@ -8,6 +8,8 @@ public:
   MainMenu();
   ~MainMenu();
 
+  void backgroundUpdate() override;
+
 private:
   void onExitCLick();
 };

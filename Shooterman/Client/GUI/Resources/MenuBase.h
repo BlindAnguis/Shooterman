@@ -14,6 +14,7 @@ public:
   virtual void init();
   virtual void uninit();
   virtual void reset();
+  virtual void backgroundUpdate();
   virtual bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition);
   virtual bool checkMouse(sf::Vector2f mousePosition);
   void handleNewText(sf::Uint32 newChar);

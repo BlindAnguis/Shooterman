@@ -13,6 +13,7 @@ public:
   MapEditor();
   ~MapEditor();
 
+  void backgroundUpdate() override;
   bool checkMouse(sf::Vector2f mousePosition) override;
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 

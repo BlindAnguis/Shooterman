@@ -9,6 +9,7 @@ public:
   InfoOverlay();
   ~InfoOverlay();
 
+  void backgroundUpdate() override;
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 
 private: 

@@ -75,9 +75,15 @@ LobbyMenu::LobbyMenu(bool server) {
 
   mLevelDirectories.emplace_back("Levels/UserCreated/");
   mLevelDirectories.emplace_back("Levels/DefaultLevels/");
+
+  setupDebugMessages("Client", "Lobby Menu");
 }
 
 LobbyMenu::~LobbyMenu() { }
+
+void LobbyMenu::backgroundUpdate() {
+  handleDebugMessages();
+}
 
 bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
   mLobbySubscriber.handleMessages();

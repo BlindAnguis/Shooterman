@@ -7,6 +7,8 @@ public:
   PauseMenu();
   ~PauseMenu();
 
+  void backgroundUpdate() override;
+
 private:
   void onExitClick();
 };

@@ -11,6 +11,8 @@ PlayWindow::PlayWindow() {
   mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST_CACHE, std::bind(&PlayWindow::handleSpriteListCacheMessage, this, std::placeholders::_1));
   mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST, std::bind(&PlayWindow::handleSpriteListMessage, this, std::placeholders::_1));
   MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
+
+  setupDebugMessages("Client", "Play Window");
 }
 
 PlayWindow::~PlayWindow() {
@@ -23,6 +25,10 @@ void PlayWindow::uninit() {
 
 void PlayWindow::reset() {
   mCachedSprites.clear();
+}
+
+void PlayWindow::backgroundUpdate() {
+  handleDebugMessages();
 }
 
 bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {

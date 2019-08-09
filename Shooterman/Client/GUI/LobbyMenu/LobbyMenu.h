@@ -11,6 +11,7 @@ public:
   LobbyMenu(bool server);
   ~LobbyMenu();
 
+  void backgroundUpdate() override;
   bool render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) override;
 
   void init() override;

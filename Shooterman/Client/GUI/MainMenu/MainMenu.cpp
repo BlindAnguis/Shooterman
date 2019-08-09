@@ -27,9 +27,15 @@ MainMenu::MainMenu() {
   mainMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", std::bind(&MainMenu::onExitCLick, this)));
   
   mGuiFrame->addGuiComponent(mainMenuList);
+
+  setupDebugMessages("Client", "Main Menu");
 }
 
 MainMenu::~MainMenu() { }
+
+void MainMenu::backgroundUpdate() {
+  handleDebugMessages();
+}
 
 void MainMenu::onExitCLick() {
   sf::Packet shutdownMessage;

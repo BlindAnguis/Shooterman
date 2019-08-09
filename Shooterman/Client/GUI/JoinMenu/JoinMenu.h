@@ -13,6 +13,8 @@ public:
   void init() override;
   void uninit() override;
 
+  void backgroundUpdate() override;
+
 private:
   std::string mIpString;
   std::shared_ptr<GuiInputText> mIpText;

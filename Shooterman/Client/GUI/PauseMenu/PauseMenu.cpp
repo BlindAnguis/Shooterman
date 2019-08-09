@@ -8,25 +8,31 @@
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
 PauseMenu::PauseMenu() {
-    mName = "CLIENT: PAUSE_MENU";
-    mDebugEnabled1 = true;
+  mName = "CLIENT: PAUSE_MENU";
+  mDebugEnabled1 = true;
 
-    mGuiFrame = std::make_shared<Frame>();
+  mGuiFrame = std::make_shared<Frame>();
 
-    auto pauseMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
+  auto pauseMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
 
-    mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Pause"));
+  mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Pause"));
 
-    pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Unpause", GAME_STATE::PREVIOUS));
-    pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Leave Game", GAME_STATE::MAIN_MENU));
-    pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS));
+  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Unpause", GAME_STATE::PREVIOUS));
+  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Leave Game", GAME_STATE::MAIN_MENU));
+  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS));
 
-    pauseMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", std::bind(&PauseMenu::onExitClick, this)));
+  pauseMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", std::bind(&PauseMenu::onExitClick, this)));
 
-    mGuiFrame->addGuiComponent(pauseMenuList);
+  mGuiFrame->addGuiComponent(pauseMenuList);
+
+  setupDebugMessages("Client", "Pause Menu");
 }
 
 PauseMenu::~PauseMenu() { }
+
+void PauseMenu::backgroundUpdate() {
+  handleDebugMessages();
+}
 
 void PauseMenu::onExitClick() {
   GameStateMessage gsm(GAME_STATE::MAIN_MENU);

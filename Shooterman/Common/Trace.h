@@ -24,7 +24,7 @@ protected:
 private:
   std::string mCategory;
   std::string mButtonName;
-  Subscriber* mDebugSubscriber;
+  Subscriber* mDebugSubscriber = nullptr;
 };
 
 #define TRACE(type, msg) { \

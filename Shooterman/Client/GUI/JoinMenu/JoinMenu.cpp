@@ -26,6 +26,8 @@ JoinMenu::JoinMenu() {
   joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
 
   mGuiFrame->addGuiComponent(joinMenuList);
+
+  setupDebugMessages("Client", "Join Menu");
 }
 
 JoinMenu::~JoinMenu() { uninit(); }
@@ -38,6 +40,10 @@ void JoinMenu::init() {
 
 void JoinMenu::uninit() {
   MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
+}
+
+void JoinMenu::backgroundUpdate() {
+  handleDebugMessages();
 }
 
 void JoinMenu::onIpTextClicked() {

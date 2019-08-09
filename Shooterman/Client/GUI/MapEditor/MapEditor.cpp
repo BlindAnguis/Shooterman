@@ -94,9 +94,15 @@ MapEditor::MapEditor() {
     mRenderSavePopup = false;
   }));
   mSavePopupBackground->addGuiComponent(filesList3);
+
+  setupDebugMessages("Client", "Map Editor");
 }
 
 MapEditor::~MapEditor() { }
+
+void MapEditor::backgroundUpdate() {
+  handleDebugMessages();
+}
 
 bool MapEditor::checkMouse(sf::Vector2f mousePosition) {
   if (mRenderSavePopup) {

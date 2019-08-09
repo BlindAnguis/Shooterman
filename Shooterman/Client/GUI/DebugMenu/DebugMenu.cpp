@@ -40,7 +40,7 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
     }
 
     for (std::string interfaceInfo : MessageHandler::get().getPublishedInterfaces()) {
-      mCategoriesMap["Interfaces"]->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, interfaceInfo, 20));
+      mCategoriesMap["Interfaces"]->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, interfaceInfo, 20, FONT::COURIER));
     }
   }
 
@@ -54,14 +54,14 @@ void DebugMenu::handleAddDebugButtonMessage(sf::Packet& message) {
   int secondarySubscriberId = debMess.getSecondarySubscriberId();
 
   auto list = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::HORIZONTAL);
-  auto text = std::make_shared<GuiText>(GuiComponentPosition::LEFT, debMess.getButtonText() + ":");
+  auto text = std::make_shared<GuiText>(GuiComponentPosition::LEFT, debMess.getButtonText() + ":", 20, FONT::COURIER);
 
-  auto button1 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb1", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_1, subscriberId, secondarySubscriberId));
-  auto button2 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb2", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_2, subscriberId, secondarySubscriberId));
-  auto button3 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb3", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_3, subscriberId, secondarySubscriberId));
-  auto button4 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb4", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_4, subscriberId, secondarySubscriberId));
-  auto buttonSR = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Send/Rec", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::SEND_REC, subscriberId, secondarySubscriberId));
-  auto buttonF = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Fucntion", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::FUNC, subscriberId, secondarySubscriberId));
+  auto button1 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb1", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_1, subscriberId, secondarySubscriberId), 20, FONT::COURIER);
+  auto button2 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb2", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_2, subscriberId, secondarySubscriberId), 20, FONT::COURIER);
+  auto button3 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb3", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_3, subscriberId, secondarySubscriberId), 20, FONT::COURIER);
+  auto button4 = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Deb4", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::DEB_4, subscriberId, secondarySubscriberId), 20, FONT::COURIER);
+  auto buttonSR = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Send/Rec", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::SEND_REC, subscriberId, secondarySubscriberId), 20, FONT::COURIER);
+  auto buttonF = std::make_shared<GuiToggleButton>(GuiComponentPosition::LEFT, "Fucntion", std::bind(&DebugMenu::onToggleButton, this, TRACE_LEVEL::FUNC, subscriberId, secondarySubscriberId), 20, FONT::COURIER);
 
   list->addGuiComponent(text);
   list->addGuiComponent(button1);

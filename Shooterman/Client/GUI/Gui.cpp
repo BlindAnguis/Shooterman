@@ -35,6 +35,7 @@ void Gui::run() {
   MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
   MessageHandler::get().publishInterface(Interfaces::MOUSE_POSITION, &mMouseInterface);
 
+  mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
   mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
   mMenuMap.emplace(GAME_STATE::LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
   mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(false) });
@@ -42,7 +43,6 @@ void Gui::run() {
   mMenuMap.emplace(GAME_STATE::PLAYING, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PlayWindow>(), std::make_shared<Hud>() });
   mMenuMap.emplace(GAME_STATE::OPTIONS, std::list<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>() });
   mMenuMap.emplace(GAME_STATE::PAUSE, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>() });
-  mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
   mMenuMap.emplace(GAME_STATE::MAP_EDITOR, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MapEditor>() });
 
   // This needs to be after the DebugMenu is created
@@ -70,6 +70,12 @@ void Gui::run() {
 void Gui::render() {
   TRACE_FUNC_ENTER();
   while (mWindow != nullptr && mWindow->isOpen()) {
+    for (auto menues : mMenuMap) {
+      for (auto menu : menues.second) {
+        menu->backgroundUpdate();
+      }
+    }
+
     mRenderClock.restart();
     handleWindowEvents();
     

@@ -16,9 +16,23 @@ InfoOverlay::InfoOverlay() {
   mGuiFrame = std::make_shared<Frame>();
   mTextBox = GCF::createTextBox(GuiComponentPosition::BOTTOM_LEFT, "Test infobox");
   mGuiFrame->addGuiComponent(mTextBox);
+
+  setupDebugMessages("Client", "Join Menu");
 }
 
 InfoOverlay::~InfoOverlay() { }
+
+void InfoOverlay::backgroundUpdate() {
+  handleDebugMessages();
+}
+
+bool InfoOverlay::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
+  mInfoMessageInterface.handleMessages();
+  if (mClock.getElapsedTime() < sf::seconds((float)mNumberOfSecToShowMsg)) {
+    mGuiFrame->render(window);
+  }
+  return true;
+}
 
 void InfoOverlay::publishInfoMessagesInterface() {
   TRACE_FUNC_ENTER();
@@ -31,15 +45,8 @@ void InfoOverlay::handleInfoMessage(sf::Packet& message) {
   TRACE_FUNC_ENTER();
   InfoMessage msg(message);
   mTextBox->setText(msg.getMessage());
+  TRACE_REC("INFO_MESSAGE: " << msg.getMessage() << ", will be shown for: " << msg.getMsgDuration() << "s.");
   mNumberOfSecToShowMsg = msg.getMsgDuration();
   mClock.restart();
   TRACE_FUNC_EXIT();
-}
-
-bool InfoOverlay::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  mInfoMessageInterface.handleMessages();
-  if (mClock.getElapsedTime() < sf::seconds((float)mNumberOfSecToShowMsg)) {
-    mGuiFrame->render(window);
-  }
-  return true;
 }
