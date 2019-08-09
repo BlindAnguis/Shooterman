@@ -7,4 +7,7 @@ class MainMenu : public MenuBase {
 public:
   MainMenu();
   ~MainMenu();
+
+private:
+  void onExitCLick();
 };

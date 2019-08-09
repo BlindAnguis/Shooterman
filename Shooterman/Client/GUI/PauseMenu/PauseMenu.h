@@ -4,6 +4,9 @@
 
 class PauseMenu : public MenuBase {
 public:
-    PauseMenu();
-    ~PauseMenu();
+  PauseMenu();
+  ~PauseMenu();
+
+private:
+  void onExitClick();
 };

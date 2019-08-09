@@ -29,7 +29,13 @@ private:
   std::shared_ptr<GuiInputText> mUsernameText;
   std::vector<std::string> mLevelDirectories;
 
+  void handleServerSubscribeTimeout(sf::Packet& message);
+  void handleServerReadyMessage(sf::Packet& message);
+  void handleLobbySubscribeDoneMessage(sf::Packet& message);
+  void handleLobbySubscribeTimeout(sf::Packet& message);
   void handlePlayerUsernameMessage(sf::Packet& message);
   void handlePlayableCharactersMessage(sf::Packet& message);
-  void handleServerReadyMessage(sf::Packet& message);
+
+  void onChangeUsernameClick();
+  void onUsernameSelect();
 };

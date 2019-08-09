@@ -124,7 +124,7 @@ void NetworkSystem::run() {
             break;
           }
           case MessageId::CHARACTER_CHOOSEN: {
-            CharacherChoosenMessage ccm(packet);
+            CharacterChoosenMessage ccm(packet);
             ccm.setId(client.first);
             mPlayerLobbyInterface.pushMessage(ccm.pack());
             break;

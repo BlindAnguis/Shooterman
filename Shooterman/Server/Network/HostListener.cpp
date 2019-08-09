@@ -125,7 +125,7 @@ void HostListener::handleNewUsernameMessage(sf::Packet& message) {
 }
 
 void HostListener::handleCharacterChoosenMessage(sf::Packet& message) {
-  CharacherChoosenMessage ccm(message);
+  CharacterChoosenMessage ccm(message);
   (*mConnectedClients)[ccm.getId()]->setPlayerClass(ccm.getPlayerClass());
 }
 

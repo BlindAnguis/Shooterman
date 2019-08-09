@@ -15,37 +15,12 @@ JoinMenu::JoinMenu() {
   auto joinMenuList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
 
   auto ipList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::HORIZONTAL);
-  mIpText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Enter IP", [=]() {
-    while (mIpInterface.getNumberOfSubscribers() == 0) {
-      sf::sleep(sf::milliseconds(5));
-    }
-  
-    IpMessage ipm(mIpString, 1337);
-    mIpInterface.pushMessage(ipm.pack());
-  
-    GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
-    Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
-    gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
-  });
+  mIpText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Enter IP", std::bind(&JoinMenu::onIpTextClicked, this));
   mIpText->enableReceiveInput();
   addTextListener(mIpText);
+
   ipList->addGuiComponent(mIpText);
-  ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", [this](){
-    while (mIpInterface.getNumberOfSubscribers() == 0) {
-      sf::sleep(sf::milliseconds(5));
-    }
-
-    IpMessage ipm(mIpString, 1337);
-    mIpInterface.pushMessage(ipm.pack());
-
-    GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
-    Subscriber gameStateSubscriber;
-    MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
-    gameStateSubscriber.reverseSendMessage(gsm.pack());
-    MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
-  }));
+  ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", std::bind(&JoinMenu::onJoinClicked, this)));
 
   joinMenuList->addGuiComponent(ipList);
   joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
@@ -63,4 +38,36 @@ void JoinMenu::init() {
 
 void JoinMenu::uninit() {
   MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
+}
+
+void JoinMenu::onIpTextClicked() {
+  while (mIpInterface.getNumberOfSubscribers() == 0) {
+    sf::sleep(sf::milliseconds(5));
+  }
+
+  IpMessage ipm(mIpString, 1337);
+  mIpInterface.pushMessage(ipm.pack());
+
+  GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
+  Subscriber gameStateSubscriber;
+  MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+  TRACE_SEND("GAME_STATE: CLIENT_LOBBY");
+  gameStateSubscriber.reverseSendMessage(gsm.pack());
+  MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+}
+
+void JoinMenu::onJoinClicked() {
+  while (mIpInterface.getNumberOfSubscribers() == 0) {
+    sf::sleep(sf::milliseconds(5));
+  }
+
+  IpMessage ipm(mIpString, 1337);
+  mIpInterface.pushMessage(ipm.pack());
+
+  GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
+  Subscriber gameStateSubscriber;
+  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
+  TRACE_SEND("GAME_STATE: CLIENT_LOBBY");
+  gameStateSubscriber.reverseSendMessage(gsm.pack());
+  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
 }

@@ -18,11 +18,18 @@
 
 LobbyMenu::LobbyMenu(bool server) {
   mName = "CLIENT: LOBBY_MENU";
+  mSubscribedToLobby = false;
   mServer = server;
 
+  mServerReadySubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&LobbyMenu::handleServerSubscribeTimeout, this, std::placeholders::_1));
   mServerReadySubscriber.addSignalCallback(MessageId::SERVER_READY, std::bind(&LobbyMenu::handleServerReadyMessage, this, std::placeholders::_1));
+  mLobbySubscriber.addSignalCallback(MessageId::SUBSCRIBE_DONE, std::bind(&LobbyMenu::handleLobbySubscribeDoneMessage, this, std::placeholders::_1));
+  mLobbySubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&LobbyMenu::handleLobbySubscribeTimeout, this, std::placeholders::_1));
   mLobbySubscriber.addSignalCallback(MessageId::PLAYER_USERNAMES, std::bind(&LobbyMenu::handlePlayerUsernameMessage, this, std::placeholders::_1));
   mLobbySubscriber.addSignalCallback(MessageId::PLAYABLE_CHARACTERS, std::bind(&LobbyMenu::handlePlayableCharactersMessage, this, std::placeholders::_1));
+
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
+  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
 
   mGuiFrame = std::make_shared<Frame>();
 
@@ -31,23 +38,11 @@ LobbyMenu::LobbyMenu(bool server) {
   auto allPlayerList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::VERTICAL);
   auto myPlayerList = std::make_shared<GuiList>(GuiComponentPosition::LEFT, GuiListDirection::HORIZONTAL);
   
-  auto changeUsernameButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Set username", [=]() {
-    while (!mSubscribedToLobby) {
-      mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
-    }
-    ChangeUsernameMessage cum(mUsernameText->getText());
-    mLobbySubscriber.reverseSendMessage(cum.pack());
-  });
+  auto changeUsernameButton = std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Set username", std::bind(&LobbyMenu::onChangeUsernameClick, this));
 
   myPlayerList->addGuiComponent(changeUsernameButton);
   myPlayerList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, "  "));
-  mUsernameText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Username", [=]() {
-    while (!mSubscribedToLobby) {
-      mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
-    }
-    ChangeUsernameMessage cum(mUsernameText->getText());
-    mLobbySubscriber.reverseSendMessage(cum.pack());
-  });
+  mUsernameText = std::make_shared<GuiInputText>(GuiComponentPosition::CENTER, "Username", std::bind(&LobbyMenu::onUsernameSelect, this));
   mUsernameText->enableReceiveInput();
   addTextListener(mUsernameText);
   
@@ -70,7 +65,6 @@ LobbyMenu::LobbyMenu(bool server) {
 
   mGuiFrame->addGuiComponent(rightList);
 
-
   auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::BOTTOM, GuiListDirection::VERTICAL);
   if (server) {
     mStartGameButton = GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING, true);
@@ -81,22 +75,14 @@ LobbyMenu::LobbyMenu(bool server) {
 
   mLevelDirectories.emplace_back("Levels/UserCreated/");
   mLevelDirectories.emplace_back("Levels/DefaultLevels/");
-
-  mSubscribedToLobby = false;
 }
 
 LobbyMenu::~LobbyMenu() { }
 
 bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
-  if (!mSubscribedToLobby) {
-    mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
-  }
   mLobbySubscriber.handleMessages();
 
   if (mServer) {
-    if (!mSubscribedToServerReady) {
-      mSubscribedToServerReady = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
-    }
     mServerReadySubscriber.handleMessages();
   }
   mGuiFrame->render(window);
@@ -106,9 +92,7 @@ bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
 void LobbyMenu::init() {
   mPlayersList->clear();
   mPlayableCharactersList->clear();
-  mSubscribedToLobby = false;
   if (mServer) {
-    mSubscribedToServerReady = false;
     mStartGameButton->setDisabled();
   }
 
@@ -144,6 +128,9 @@ void LobbyMenu::init() {
                 data += "\n";
               }
 
+              while (!mSubscribedToLobby) {
+                sf::sleep(sf::milliseconds(5));
+              }
               MapMessage mm(data);
               mLobbySubscriber.reverseSendMessage(mm.pack());
 
@@ -158,6 +145,16 @@ void LobbyMenu::init() {
       }
     }
   }
+}
+
+void LobbyMenu::handleLobbySubscribeDoneMessage(sf::Packet & message) {
+  TRACE_REC("SUBSCRIBE_DONE");
+  mSubscribedToLobby = true;
+}
+
+void LobbyMenu::handleLobbySubscribeTimeout(sf::Packet & message) {
+  TRACE_REC("SUBSCRIBE_TIMEOUT");
+  TRACE_ERROR("Could not subscribe to lobby interface within timeout");
 }
 
 void LobbyMenu::handlePlayerUsernameMessage(sf::Packet& message) {
@@ -208,18 +205,40 @@ void LobbyMenu::handlePlayableCharactersMessage(sf::Packet& message) {
       newImageButton->select();
 
       while (!mSubscribedToLobby) {
-        mSubscribedToLobby = MessageHandler::get().subscribeTo(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
+        sf::sleep(sf::milliseconds(5));
       }
 
-      CharacherChoosenMessage ccm(playerClass);
+      CharacterChoosenMessage ccm(playerClass);
+      TRACE_SEND("CHARACTER_CHOOSEN");
       mLobbySubscriber.reverseSendMessage(ccm.pack());
     });
     mPlayableCharactersList->addGuiComponent(newImageButton);
   }
 }
 
+void LobbyMenu::handleServerSubscribeTimeout(sf::Packet & message) {
+  TRACE_REC("SUBSCRIBE_TIMEOUT");
+  TRACE_ERROR("Could not subscribe to server ready interface within timeout");
+}
+
 void LobbyMenu::handleServerReadyMessage(sf::Packet& message) {
   TRACE_REC("SERVER_READY");
   // when server is ready we activate the start game button
   mStartGameButton->setEnabled();
+}
+
+void LobbyMenu::onChangeUsernameClick() {
+  while (!mSubscribedToLobby) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  ChangeUsernameMessage cum(mUsernameText->getText());
+  mLobbySubscriber.reverseSendMessage(cum.pack());
+}
+
+void LobbyMenu::onUsernameSelect() {
+  while (!mSubscribedToLobby) {
+    sf::sleep(sf::milliseconds(5));
+  }
+  ChangeUsernameMessage cum(mUsernameText->getText());
+  mLobbySubscriber.reverseSendMessage(cum.pack());
 }

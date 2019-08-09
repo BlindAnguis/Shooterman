@@ -17,4 +17,7 @@ private:
   std::string mIpString;
   std::shared_ptr<GuiInputText> mIpText;
   Interface mIpInterface;
+
+  void onIpTextClicked();
+  void onJoinClicked();
 };

@@ -3,10 +3,10 @@
 #include "Message.h"
 #include "../../Server/Components/Components.h"
 
-class CharacherChoosenMessage : public Message {
+class CharacterChoosenMessage : public Message {
 public:
-  CharacherChoosenMessage(PlayerClass playerClass);
-  CharacherChoosenMessage(sf::Packet packet);
+  CharacterChoosenMessage(PlayerClass playerClass);
+  CharacterChoosenMessage(sf::Packet packet);
 
   void unpack(sf::Packet packet) override;
   sf::Packet pack() override;

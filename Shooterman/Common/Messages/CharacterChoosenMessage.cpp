@@ -1,20 +1,20 @@
 #include "CharacterChoosenMessage.h"
 #include "../MessageId.h"
 
-CharacherChoosenMessage::CharacherChoosenMessage(PlayerClass playerClass) : mPlayerClass(playerClass) {}
+CharacterChoosenMessage::CharacterChoosenMessage(PlayerClass playerClass) : mPlayerClass(playerClass) {}
 
-CharacherChoosenMessage::CharacherChoosenMessage(sf::Packet packet) {
+CharacterChoosenMessage::CharacterChoosenMessage(sf::Packet packet) {
   unpack(packet);
 }
 
-void CharacherChoosenMessage::unpack(sf::Packet packet) {
+void CharacterChoosenMessage::unpack(sf::Packet packet) {
   sf::Int16 playerClassNr;
   packet >> playerClassNr;
   packet >> mId;
   mPlayerClass = (PlayerClass)playerClassNr;
 }
 
-sf::Packet CharacherChoosenMessage::pack() {
+sf::Packet CharacterChoosenMessage::pack() {
   sf::Packet packet;
   packet << MessageId::CHARACTER_CHOOSEN;
   packet << (sf::Int16)mPlayerClass;
@@ -22,14 +22,14 @@ sf::Packet CharacherChoosenMessage::pack() {
   return packet;
 }
 
-void CharacherChoosenMessage::setId(int id) {
+void CharacterChoosenMessage::setId(int id) {
   mId = id;
 }
 
-int CharacherChoosenMessage::getId() {
+int CharacterChoosenMessage::getId() {
   return mId;
 }
 
-PlayerClass CharacherChoosenMessage::getPlayerClass() {
+PlayerClass CharacterChoosenMessage::getPlayerClass() {
   return mPlayerClass;
 }
