@@ -207,27 +207,31 @@ void Engine::update() {
 }
 
 void Engine::createPlayers() {
-  float xPos = 100;
+  auto spawnPositions = mMapCreator.getSpawnPositions();
+  int index = 0;
+
   for (auto it = mConnectedClients->begin(); it != mConnectedClients->end(); ++it) {
+
+    auto spawnPosition = spawnPositions[index];
 
     switch (it->second->getPlayerClass()) {
       case PlayerClass::Mage:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerMage, sf::Vector2f(xPos, 100), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerMage, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         break;
       case PlayerClass::Knight:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerKnight, sf::Vector2f(xPos, 100), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerKnight, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         break;
       case PlayerClass::Spearman:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerSpearman, sf::Vector2f(xPos, 100), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerSpearman, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         break;
       case PlayerClass::Archer:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerArcher, sf::Vector2f(xPos, 100), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerArcher, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         //it->second->setEntity(mEntityCreator.createPlayer(PlayerClass::Archer, sf::Vector2f(xPos, 100)));
         break;
       default:
         break;
     }
-    xPos += 100;
+    ++index;
   }
   
   setupDebugMessages("Server", "Engine");

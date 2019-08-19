@@ -54,6 +54,10 @@ void ClientMain::run() {
         server->stop();
         server = nullptr;
         mServerStarted = false;
+
+        if (!sentIpMessage) {
+          MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
+        }
       }
       sentIpMessage = false;
       break;
@@ -63,12 +67,10 @@ void ClientMain::run() {
       if (!mServerStarted) {
         server = std::make_shared<GameLoop>();
         server->start();
+        MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &ipInterface);
         mServerStarted = true;
       }
       if (!sentIpMessage) {
-
-        MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &ipInterface);
-
         if (ipInterface.getNumberOfSubscribers() > 0) {
           IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), 1337);
           ipInterface.pushMessage(ipm.pack());

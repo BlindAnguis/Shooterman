@@ -18,6 +18,7 @@
 #include "../../Common/Messages/ClientInternal/IpMessage.h"
 #include "../../Common/Messages/SoundMessage.h"
 #include "../../Common/Messages/InfoMessage.h"
+#include "../../Common/Messages/MapMessage.h"
 
 NetworkHandler::NetworkHandler() {
   mName = "CLIENT: NETWORK_HANDLER";
@@ -52,8 +53,9 @@ void NetworkHandler::run() {
       sf::Socket::Status result = mSocket.connect(sf::IpAddress(mServerIp), mServerPort, sf::milliseconds(100));
       if (result == sf::Socket::Status::Done) {
         TRACE_INFO("Connected!");
-        mCurrentState = STATE::Connected;
         mSocket.setBlocking(false);
+        mHeartbeatClock.restart();
+        mCurrentState = STATE::Connected;
       } else {
         sf::sleep(sf::milliseconds(200));
         --connectionTriesLeft;
@@ -65,8 +67,6 @@ void NetworkHandler::run() {
 
           GameStateMessage gsm(GAME_STATE::JOIN);
           mGameStateSubscriber.reverseSendMessage(gsm.pack());
-
-          mHeartbeatClock.restart();
         }
       }
       break;
@@ -171,6 +171,9 @@ void NetworkHandler::handlePackets() {
       packet << MessageId::HEARTBEAT;
       mHeartbeatClock.restart();
       mSocket.send(packet);
+    } else if (id == MessageId::MAP_DATA) {
+      MapMessage mm(packet);
+      mLobbyInterface.pushMessage(mm.pack());
     } else {
       TRACE_ERROR("Packet not known: " << id);
     }
@@ -195,8 +198,6 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   MessageHandler::get().unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
-
-  mGameStateSubscriber.clearMessages();
 }
 
 void NetworkHandler::handleSubscribeIpListTimeoutMessage(sf::Packet& message) {

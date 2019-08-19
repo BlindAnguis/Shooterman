@@ -3,17 +3,27 @@
 #include <string>
 #include <sstream>
 
+#include <SFML/Graphics/Image.hpp>
+
 #include "GUI/Resources/GuiResourceManager.h"
 
-Map::Map() {}
+Map::Map() : mNumberOfPlayers(0) {}
 
 Map::~Map() {}
 
 void Map::setTile(int x, int y, Textures tileId, sf::Sprite sprite) {
-  if ((x == 0 || y == 0 || x == 31 || y == 31) && 
+  if ((x == 0 || y == 0 || x == 31 || y == 31) &&
     !(tileId == Textures::HorizontalWall1 || tileId == Textures::VerticalWall1 || tileId == Textures::FloorSpikes)) {
     // Only these are allowed on the edges
     return;
+  }
+
+  if (mMapMatrix[x][y].first == Textures::SpawnPoint) {
+    --mNumberOfPlayers;
+  }
+
+  if (tileId == Textures::SpawnPoint) {
+    ++mNumberOfPlayers;
   }
 
   mMapMatrix[x][y] = std::make_pair(tileId, sprite);
@@ -40,6 +50,8 @@ void Map::createDefaultMap() {
       }
     }
   }
+
+  mNumberOfPlayers = 0;
 }
 
 std::string Map::toString() {
@@ -69,9 +81,41 @@ void Map::fromString(std::string data) {
     std::string idAsString;
     while (std::getline(idSs, idAsString, ' ')) {
       mMapMatrix[x][y] = std::make_pair((Textures)std::stoi(idAsString), GuiResourceManager::getInstance().createSprite((Textures)std::stoi(idAsString)));
+      if (mMapMatrix[x][y].first == Textures::SpawnPoint) {
+        ++mNumberOfPlayers;
+      }
       ++x;
     }
     x = 0;
     ++y;
   }
+}
+
+sf::Texture Map::generateThumbnail() {
+  sf::Image image;
+  image.create(32, 32, sf::Color::Magenta);
+
+  for (int y = 0; y < 32; ++y) {
+    for (int x = 0; x < 32; ++x) {
+      switch (mMapMatrix[x][y].first) {
+      case Textures::FloorWhole:
+      case Textures::FloorCracked:
+        image.setPixel(x, y, sf::Color(0, 120, 0));
+        break;
+      case Textures::HorizontalWall1:
+      case Textures::VerticalWall1:
+        image.setPixel(x, y, sf::Color(0, 0, 0));
+        break;
+      case Textures::FloorSpikes:
+        image.setPixel(x, y, sf::Color(200, 0, 0));
+        break;
+      case Textures::SpawnPoint:
+        image.setPixel(x, y, sf::Color(0, 0, 200));
+      }
+    }
+  }
+
+  sf::Texture texture;
+  texture.loadFromImage(image);
+  return texture;
 }

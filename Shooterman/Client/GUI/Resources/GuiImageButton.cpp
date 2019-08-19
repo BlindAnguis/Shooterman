@@ -5,8 +5,8 @@
 GuiImageButton::GuiImageButton(GuiComponentPosition guiComponentPosition, std::string text, sf::Sprite image, const std::function<void(void)>& callback, int fontSize, FONT font) :
   GuiText(guiComponentPosition, std::move(text), fontSize, font), mImage(image), mCallback(callback) {
 
-  mWidth = (int)std::max(mImage.getLocalBounds().width, mText.getLocalBounds().width);
-  mHeight = (int)mImage.getLocalBounds().height + mText.getCharacterSize() + 10;
+  mWidth = (int)std::max(mImage.getGlobalBounds().width, mText.getLocalBounds().width);
+  mHeight = (int)mImage.getGlobalBounds().height + mText.getCharacterSize() + 10;
 }
 
 void GuiImageButton::setCallback(const std::function<void(void)>& callback) {
@@ -44,9 +44,15 @@ void GuiImageButton::unselect() {
   mIsSelected = false;
 }
 
+void GuiImageButton::setImage(sf::Sprite image) {
+  mImage = image;
+  mWidth = (int)std::max(mImage.getGlobalBounds().width, mText.getLocalBounds().width);
+  mHeight = (int)mImage.getGlobalBounds().height + mText.getCharacterSize() + 10;
+}
+
 void GuiImageButton::renderImage(std::shared_ptr<sf::RenderWindow> window) {
   float boundingBoxXCenter = (float)(mXPosition + (mWidth / 2));
-  mImage.setPosition(boundingBoxXCenter - (mImage.getLocalBounds().width / 2), (float)mYPosition);
+  mImage.setPosition(boundingBoxXCenter - (mImage.getGlobalBounds().width / 2), (float)mYPosition);
   window->draw(mImage);
 }
 

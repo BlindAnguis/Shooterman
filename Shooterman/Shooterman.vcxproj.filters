@@ -11,9 +11,6 @@
     <ClCompile Include="Client\Main\ClientMain.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
-    <ClCompile Include="Common\Socket\Socket.cpp" />
-    <ClCompile Include="Common\Socket\Tcp.cpp" />
-    <ClCompile Include="Common\Socket\Udp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Server\Network\HostListener.cpp" />
     <ClCompile Include="Server\Engine\Engine.cpp" />
@@ -106,9 +103,6 @@
     <ClInclude Include="Common\Messages\ClientInternal\IpMessage.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Common\Messages\InputMessage.h" />
-    <ClInclude Include="Common\Socket\Socket.h" />
-    <ClInclude Include="Common\Socket\Tcp.h" />
-    <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Common\Constants.h" />
     <ClInclude Include="Common\KeyBindings.h" />
     <ClInclude Include="Common\MessageId.h" />

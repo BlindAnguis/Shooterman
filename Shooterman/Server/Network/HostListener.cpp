@@ -146,7 +146,13 @@ void HostListener::handleClientDisconnectedMessage(sf::Packet& message) {
 
 void HostListener::handleMapDataMessage(sf::Packet& message) {
   MapMessage mm(message);
+  mMapName = mm.getName();
   mMapData = mm.getData();
+
+  for (auto client : *mConnectedClients) {
+    sf::Packet packet = mm.pack();
+    client.second->getSocket()->send(packet);
+  }
 }
 
 bool HostListener::hasMapData() {

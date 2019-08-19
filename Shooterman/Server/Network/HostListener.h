@@ -32,6 +32,7 @@ private:
   sf::TcpListener* mListener;
   Subscriber mSubscriber;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
+  std::string mMapName;
   std::string mMapData;
 
   void handleNewUsernameMessage(sf::Packet& message);

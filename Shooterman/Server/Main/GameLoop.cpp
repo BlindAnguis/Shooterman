@@ -105,8 +105,8 @@ void GameLoop::gameLoop() {
             world.setMap(hostListener.getMapData());
           }
           world.setConnectedClients(tempMap);
-          world.createPlayers();
           world.createMap();
+          world.createPlayers();
         }
         world.update();
         world.collectPlayerData();

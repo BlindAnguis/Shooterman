@@ -12,7 +12,6 @@
 #include "../../../Common/Constants.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Trace.h"
-#include "../../../Common/Socket/Tcp.h"
 
 class NetworkSystem : Trace {
 public:

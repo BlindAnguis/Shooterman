@@ -25,5 +25,6 @@ enum class Textures {
   HealthPotion,
   ManaPotion,
   Ammo,
+  SpawnPoint,
   Unknown = 99
 };

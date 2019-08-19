@@ -23,10 +23,23 @@ private:
   Textures mCurrentTileId;
   sf::Sprite mCurrentSprite;
   std::string tmpMap;
-  std::shared_ptr<Frame> mPopupFrame;
+  std::shared_ptr<Frame> mSavePopupFrame;
+  std::shared_ptr<Frame> mLoadPopupFrame;
   std::shared_ptr<GuiInputText> mSavePopupInput;
   std::shared_ptr<GuiImageButton> addButton(Textures texture, std::string name);
+  
   bool mRenderSavePopup = false;
   std::shared_ptr<GuiFrameComponent> mSavePopupBackground;
+
+  bool mRenderLoadPopup = false;
+  std::shared_ptr<GuiFrameComponent> mLoadPopupBackground;
+
+  std::vector<std::string> getFilepaths();
+
+  void onNewClicked();
+  void onShowLoadClicked();
+  void onLoadClicked(std::string filepath);
+  void onShowSaveClicked();
+  void onSaveClicked();
 };
 

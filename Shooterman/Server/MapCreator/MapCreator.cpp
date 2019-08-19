@@ -41,9 +41,16 @@ void MapCreator::createMap(std::array<std::array<Textures, 32>, 32> gameMap) {
         createFloor(Textures::FloorCracked, sf::Vector2f(j * 32.0f, i * 32.0f), sf::IntRect(32 * 3, 32 * 1, 32, 32));
       } else if (textureId == Textures::FloorSpikes) {
         createFloorSpikes(sf::Vector2f(j * 32.0f, i * 32.0f));
+      } else if (textureId == Textures::SpawnPoint) {
+        createFloor(Textures::FloorWhole, sf::Vector2f(j * 32.0f, i * 32.0f), sf::IntRect(32 * 2, 32 * 1, 32, 32));
+        mSpawnPositions.emplace_back(std::make_pair(j * 32.0f, i * 32.0f));
       }
     }
   }
+}
+
+std::vector<std::pair<float, float>> MapCreator::getSpawnPositions() {
+  return mSpawnPositions;
 }
 
 Entity* MapCreator::createHorizontalWall(float xPos, float yPos) {

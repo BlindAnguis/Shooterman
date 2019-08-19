@@ -61,6 +61,8 @@ GuiResourceManager::GuiResourceManager() {
   mSpriteTextureRectMap[Textures::FloorCracked] = sf::IntRect(32 * 3, 32 * 1, 32, 32);
   loadSpriteTexture(Textures::FloorSpikes, "fantasy-tileset");
   mSpriteTextureRectMap[Textures::FloorSpikes] = sf::IntRect(32 * 3, 32 * 3, 32, 32);
+  loadSpriteTexture(Textures::SpawnPoint, "fantasy-tileset");
+  mSpriteTextureRectMap[Textures::SpawnPoint] = sf::IntRect(32 * 2, 32 * 25, 32, 32);
 
   // Other
   loadSpriteTexture(Textures::Tombstone, "Tombstone");

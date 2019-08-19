@@ -13,6 +13,7 @@ public:
   ~MapCreator();
 
   void createMap(std::array<std::array<Textures, 32>, 32> gameMap);
+  std::vector<std::pair<float, float>> getSpawnPositions();
 
 private:
   EntityManager *mEntityManager;
@@ -24,6 +25,8 @@ private:
   GridSystem *mGridSystem;
 
   std::array<sf::Texture*, 99> mTextures;
+
+  std::vector<std::pair<float, float>> mSpawnPositions;
 
   Entity* createHorizontalWall(float xPos, float yPos);
   Entity* createVerticalWall(float xPos, float yPos);

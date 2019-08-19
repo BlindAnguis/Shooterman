@@ -6,8 +6,8 @@
 #include <fstream>
 
 #include "../Resources/GuiText.h"
-#include "../Resources/GuiImageButton.h"
 #include "../Resources/GuiComponentFactory.h"
+#include "../../Map.h"
 #include "../../../Common/Interfaces.h"
 #include "../../../Common/Messages/LobbyDataMessage.h"
 #include "../../../Common/Messages/ChangeUsernameMessage.h"
@@ -27,6 +27,7 @@ LobbyMenu::LobbyMenu(bool server) {
   mLobbySubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&LobbyMenu::handleLobbySubscribeTimeout, this, std::placeholders::_1));
   mLobbySubscriber.addSignalCallback(MessageId::PLAYER_USERNAMES, std::bind(&LobbyMenu::handlePlayerUsernameMessage, this, std::placeholders::_1));
   mLobbySubscriber.addSignalCallback(MessageId::PLAYABLE_CHARACTERS, std::bind(&LobbyMenu::handlePlayableCharactersMessage, this, std::placeholders::_1));
+  mLobbySubscriber.addSignalCallback(MessageId::MAP_DATA, std::bind(&LobbyMenu::handleMapMessage, this, std::placeholders::_1));
 
   MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
   MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
@@ -56,12 +57,14 @@ LobbyMenu::LobbyMenu(bool server) {
   auto rightList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::VERTICAL);
   mPlayableCharactersList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::HORIZONTAL);
   rightList->addGuiComponent(mPlayableCharactersList);
-  rightList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, "Levels:", 50));
-
   if (server) {
-    mFileList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::VERTICAL);
-    rightList->addGuiComponent(mFileList);
+    rightList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, "Levels:", 50));
+  } else {
+    rightList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, "Level:", 50));
   }
+
+  mFileList = std::make_shared<GuiList>(GuiComponentPosition::RIGHT, GuiListDirection::VERTICAL);
+  rightList->addGuiComponent(mFileList);
 
   mGuiFrame->addGuiComponent(rightList);
 
@@ -72,6 +75,9 @@ LobbyMenu::LobbyMenu(bool server) {
   }
   lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
   mGuiFrame->addGuiComponent(lobbyMenuList);
+
+  mThumbnailImage = std::make_shared<GuiImageButton>(GuiComponentPosition::TOP_RIGHT, "", mThumbnail);
+  mGuiFrame->addGuiComponent(mThumbnailImage);
 
   mLevelDirectories.emplace_back("Levels/UserCreated/");
   mLevelDirectories.emplace_back("Levels/DefaultLevels/");
@@ -92,6 +98,7 @@ bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
     mServerReadySubscriber.handleMessages();
   }
   mGuiFrame->render(window);
+
   return true;
 }
 
@@ -137,11 +144,16 @@ void LobbyMenu::init() {
               while (!mSubscribedToLobby) {
                 sf::sleep(sf::milliseconds(5));
               }
-              MapMessage mm(data);
+              MapMessage mm(newButton->getText(), data);
               mLobbySubscriber.reverseSendMessage(mm.pack());
 
-            }
-            else {
+              Map map;
+              map.fromString(data);
+              mThumbnailTexture = map.generateThumbnail();
+              mThumbnail.setTexture(mThumbnailTexture);
+              mThumbnail.setScale(sf::Vector2f(4, 4));
+              mThumbnailImage->setImage(mThumbnail);
+            } else {
               TRACE_ERROR("Failed to open file: " << saveFileName);
             }
             saveFile.close();
@@ -220,6 +232,25 @@ void LobbyMenu::handlePlayableCharactersMessage(sf::Packet& message) {
     });
     mPlayableCharactersList->addGuiComponent(newImageButton);
   }
+}
+
+void LobbyMenu::handleMapMessage(sf::Packet& message) {
+  if (mServer) {
+    return; // Don't care about this message if server
+  }
+
+  MapMessage mm(message);
+  TRACE_REC("MAP_DATA: Name: " << mm.getName());
+
+  mFileList->clear();
+  mFileList->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::CENTER, mm.getName()));
+
+  Map map;
+  map.fromString(mm.getData());
+  mThumbnailTexture = map.generateThumbnail();
+  mThumbnail.setTexture(mThumbnailTexture);
+  mThumbnail.setScale(sf::Vector2f(4, 4));
+  mThumbnailImage->setImage(mThumbnail);
 }
 
 void LobbyMenu::handleServerSubscribeTimeout(sf::Packet & message) {

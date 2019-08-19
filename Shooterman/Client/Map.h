@@ -20,6 +20,9 @@ public:
   std::string toString();
   void fromString(std::string data);
 
+  sf::Texture generateThumbnail();
+
 private:
   std::array<std::array<std::pair<Textures, sf::Sprite>, 32>, 32> mMapMatrix;
+  int mNumberOfPlayers;
 };
