@@ -10,7 +10,7 @@
 #include "../Resources/GuiExpandableList.h"
 #include "../Resources/GuiComponentFactory.h"
 
-MapEditor::MapEditor() {
+MapEditor::MapEditor() : mCurrentTileId(Textures::Unknown) {
   mName = "CLIENT: MAP_EDITOR";
   mMap.clear();
   mMap.createDefaultMap();
@@ -57,7 +57,10 @@ MapEditor::MapEditor() {
   mSavePopupInput->enableReceiveInput();
   addTextListener(mSavePopupInput);
   filesList3->addGuiComponent(mSavePopupInput);
-  filesList3->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Save", std::bind(&MapEditor::onSaveClicked, this)));
+  auto buttonList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
+  buttonList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Save", std::bind(&MapEditor::onSaveClicked, this)));
+  buttonList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Cancel", std::bind(&MapEditor::onSaveCancelClicked, this)));
+  filesList3->addGuiComponent(buttonList);
   mSavePopupBackground->addGuiComponent(filesList3);
 
   // Create load popup
@@ -99,6 +102,10 @@ bool MapEditor::checkMouse(sf::Vector2f mousePosition) {
   
   if (mGuiFrame->checkMouse(mousePosition)) {
     return true;
+  }
+
+  if (mCurrentTileId == Textures::Unknown) {
+    return false;
   }
 
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left) &&
@@ -160,38 +167,37 @@ std::vector<std::string> MapEditor::getFilepaths() {
   for (auto levelDirectory : levelDirectories) {
     for (const auto& entry : std::filesystem::directory_iterator(levelDirectory)) {
       if (entry.path().string().find(".level") != std::string::npos) {
-        std::string pathAsString = entry.path().string();
-        int pos = pathAsString.find_last_of("/") + 1;
-        auto fileName = pathAsString.substr(pos, pathAsString.length() - pos);
-        pos = fileName.find_last_of(".");
-        fileName = fileName.substr(0, pos);
-        filepaths.emplace_back(pathAsString);
+        filepaths.emplace_back(entry.path().string());
       }
     }
   }
   return filepaths;
 }
 
+std::string MapEditor::filepathToFilename(std::string filepath) {
+  int pos = filepath.find_last_of("/") + 1;
+  auto fileName = filepath.substr(pos, filepath.length() - pos);
+  pos = fileName.find_last_of(".");
+  return fileName.substr(0, pos);
+}
+
 void MapEditor::onNewClicked() {
   mMap.clear();
   mMap.createDefaultMap();
+  mSavePopupInput->setText("");
 }
 
 void MapEditor::onShowLoadClicked() {
   mLoadPopupBackground->clear();
 
-  auto loadHeadline = std::make_shared<GuiText>(GuiComponentPosition::TOP, "Load map");
-  mLoadPopupBackground->addGuiComponent(loadHeadline);
+  mLoadPopupBackground->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::TOP, "Load map"));
   auto filesList = std::make_shared<GuiList>(GuiComponentPosition::CENTER, GuiListDirection::VERTICAL);
   mLoadPopupBackground->addGuiComponent(filesList);
 
   for (auto filepath : getFilepaths()) {
-    int pos = filepath.find_last_of("/") + 1;
-    auto fileName = filepath.substr(pos, filepath.length() - pos);
-    pos = fileName.find_last_of(".");
-    fileName = fileName.substr(0, pos);
-    filesList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, fileName, std::bind(&MapEditor::onLoadClicked, this, filepath)));
+    filesList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, filepathToFilename(filepath), std::bind(&MapEditor::onLoadClicked, this, filepath)));
   }
+  filesList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Cancel", std::bind(&MapEditor::onLoadCancelClicked, this)));
   mRenderLoadPopup = true;
 }
 
@@ -207,10 +213,15 @@ void MapEditor::onLoadClicked(std::string filepath) {
       data += "\n";
     }
     mMap.fromString(data);
+    mSavePopupInput->setText(filepathToFilename(filepath));
   } else {
     TRACE_ERROR("Failed to open file");
   }
   saveFile.close();
+  mRenderLoadPopup = false;
+}
+
+void MapEditor::onLoadCancelClicked() {
   mRenderLoadPopup = false;
 }
 
@@ -229,5 +240,9 @@ void MapEditor::onSaveClicked() {
     TRACE_ERROR("Failed to open file: " << mapPath);
   }
   saveFile.close();
+  mRenderSavePopup = false;
+}
+
+void MapEditor::onSaveCancelClicked() {
   mRenderSavePopup = false;
 }

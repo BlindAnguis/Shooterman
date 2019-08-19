@@ -35,11 +35,14 @@ private:
   std::shared_ptr<GuiFrameComponent> mLoadPopupBackground;
 
   std::vector<std::string> getFilepaths();
+  std::string filepathToFilename(std::string filepath);
 
   void onNewClicked();
   void onShowLoadClicked();
   void onLoadClicked(std::string filepath);
+  void onLoadCancelClicked();
   void onShowSaveClicked();
   void onSaveClicked();
+  void onSaveCancelClicked();
 };
 
