@@ -3,6 +3,7 @@
 #include <thread>
 
 #include <SFML/Network/TcpSocket.hpp>
+#include <SFML/System/Clock.hpp>
 
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
