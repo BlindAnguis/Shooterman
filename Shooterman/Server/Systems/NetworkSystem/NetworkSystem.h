@@ -15,10 +15,10 @@
 
 class NetworkSystem : Trace {
 public:
-  NetworkSystem();
+  NetworkSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~NetworkSystem();
 
-  static NetworkSystem& get();
+  static NetworkSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void start();
   void shutDown();
 
@@ -42,6 +42,7 @@ private:
   Interface mSoundInterface;
   Interface mServerServerReadyInterface;
   Interface mPlayerLobbyInterface;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   sf::Clock mHeartbeatTimer;
 
   void run();

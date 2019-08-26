@@ -13,7 +13,7 @@
 
 class SoundSystem : Trace {
 public:
-  SoundSystem();
+  SoundSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~SoundSystem();
   void update();
 
@@ -25,6 +25,7 @@ private:
   std::map<Sounds, sf::SoundBuffer> mSoundBuffers;
   std::map<GAME_STATE, std::shared_ptr<sf::Music>> mBackgroundSoundBuffers;
   Subscriber mSoundSubcription;
+  std::shared_ptr<MessageHandler> mMessageHandler;
 
   void loadSounds();
   void loadSoundBuffer(Sounds sound, std::string filename);

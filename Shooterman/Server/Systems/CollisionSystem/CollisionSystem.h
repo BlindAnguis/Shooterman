@@ -11,9 +11,9 @@
 class CollisionSystem : Trace
 {
 public:
-  CollisionSystem();
+  CollisionSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~CollisionSystem();
-  static CollisionSystem& get();
+  static CollisionSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem);
   void resetCollisionInformation();
   void resetSystem();
@@ -23,6 +23,7 @@ private:
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
   DeleteSystem* mDeleteSystem;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   bool mDebugMenuSubscribed = false;
   Subscriber mDebugMenuSubscriber;
   std::map<int, int> mCollisions; // First is the causing collider entity and second is the affected colidee entity.

@@ -7,7 +7,7 @@
 
 class Hud : public MenuBase {
 public:
-  Hud();
+  Hud(std::shared_ptr<MessageHandler> messageHandler);
   ~Hud();
 
   void reset() override;
@@ -16,6 +16,7 @@ public:
 
 private:
   Subscriber mSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   std::vector<std::shared_ptr<GuiText>> mUsernames;
   std::vector<std::shared_ptr<GuiProgressBar>> mHealthBars;
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mStaminaBars;

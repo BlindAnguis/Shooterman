@@ -4,8 +4,10 @@
 #include <chrono>
 #include <ctime>
 #include <sstream>
+#include <memory>
 
 class Subscriber;
+class MessageHandler;
 
 class Trace {
 protected:
@@ -17,7 +19,7 @@ protected:
   bool mSendRecEnabled = false;
   bool mFunctionEnabled = false;
 
-  void setupDebugMessages(std::string category, std::string name);
+  void setupDebugMessages(std::string category, std::string name, std::shared_ptr<MessageHandler> messageHandler);
   void handleDebugMessages();
   void teardownDebugMessages();
 
@@ -25,6 +27,7 @@ private:
   std::string mCategory;
   std::string mButtonName;
   Subscriber* mDebugSubscriber = nullptr;
+  std::shared_ptr<MessageHandler> mMessageHandler;
 };
 
 #define TRACE(type, msg) { \

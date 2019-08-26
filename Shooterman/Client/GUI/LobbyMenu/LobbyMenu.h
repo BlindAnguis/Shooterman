@@ -9,7 +9,7 @@
 
 class LobbyMenu : public MenuBase {
 public:
-  LobbyMenu(bool server);
+  LobbyMenu(bool server, std::shared_ptr<MessageHandler> messageHandler);
   ~LobbyMenu();
 
   void backgroundUpdate() override;
@@ -23,6 +23,7 @@ private:
   bool mSubscribedToServerReady = false;
   Subscriber mLobbySubscriber;
   Subscriber mServerReadySubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   std::shared_ptr<GuiList> mPlayersList;
   std::shared_ptr<GuiList> mPlayableCharactersList;
   std::shared_ptr<GuiList> mFileList;

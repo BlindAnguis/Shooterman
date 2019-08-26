@@ -2,22 +2,22 @@
 #include <stdio.h>
 #include "../../../Common/Interfaces.h"
 
-InputSystem::InputSystem() { 
+InputSystem::InputSystem(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mCurrentGameState = GAME_STATE::LOBBY;
   mName = "Server: INPUT_SYSTEM";
   mAttack = [](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {};
 }
 
 InputSystem::~InputSystem() {
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
   TRACE_DEBUG1("Enter Destructor");
 }
 
 void InputSystem::resetSystem() {
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
   mIsSubscribedToInput = false;
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
   mGameStateSubscriber.clearMessages();
   mInputSubscriber.clearMessages();
   mIsSubscribedToGameState = false;
@@ -26,14 +26,14 @@ void InputSystem::resetSystem() {
   mObservers.clear();
 }
 
-InputSystem& InputSystem::get() {
-  static InputSystem instance;
+InputSystem& InputSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
+  static InputSystem instance(messageHandler);
   return instance;
 }
 
 std::queue<sf::Packet> InputSystem::getInput() {
   if (!mIsSubscribedToInput) {
-    mIsSubscribedToInput = MessageHandler::get().subscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
+    mIsSubscribedToInput = mMessageHandler->subscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);
   }
   return mInputSubscriber.getMessageQueue();
 }
@@ -62,7 +62,7 @@ InputMessage InputSystem::getLatestInput() {
 
 GAME_STATE InputSystem::getLatestGameStateMessage() {
   if (!mIsSubscribedToGameState) {
-    mIsSubscribedToGameState = MessageHandler::get().subscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
+    mIsSubscribedToGameState = mMessageHandler->subscribeTo(Interfaces::SERVER_GAME_STATE, &mGameStateSubscriber);
   }
 
   std::queue<sf::Packet> gameStateMessagesQueue = mGameStateSubscriber.getMessageQueue();

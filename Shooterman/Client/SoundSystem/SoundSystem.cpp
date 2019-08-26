@@ -2,7 +2,7 @@
 
 #include "../../Common/Interfaces.h"
 
-SoundSystem::SoundSystem() : mCurrentGameState(GAME_STATE::NO_STATE) {
+SoundSystem::SoundSystem(std::shared_ptr<MessageHandler> messageHandler) : mCurrentGameState(GAME_STATE::NO_STATE), mMessageHandler(messageHandler) {
   mName = "CLIENT: SOUND_SYSTEM";
   mSoundSubcription.addSignalCallback(MessageId::SOUND_LIST, std::bind(&SoundSystem::handleSoundListMessage, this, std::placeholders::_1));
   mSoundSubcription.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&SoundSystem::handleChangeGameStateMessage, this, std::placeholders::_1));
@@ -10,14 +10,14 @@ SoundSystem::SoundSystem() : mCurrentGameState(GAME_STATE::NO_STATE) {
   GameStateMessage gsm(GAME_STATE::MAIN_MENU);
   mSoundSubcription.sendMessage(gsm.pack());
 
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
 
   loadSounds();
 }
 
 SoundSystem::~SoundSystem() {
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
 }
 
 void SoundSystem::loadSounds() {
@@ -59,7 +59,7 @@ void SoundSystem::handleChangeGameStateMessage(sf::Packet& message) {
   switch (gsm.getGameState()) {
   case GAME_STATE::MAIN_MENU:
     if (mSubscribedToSounds) {
-      MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
+      mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
       mSubscribedToSounds = false;
     }
   case GAME_STATE::LOBBY:
@@ -90,7 +90,7 @@ void SoundSystem::handleSoundListMessage(sf::Packet& message) {
 
 void SoundSystem::update() {
   if (!mSubscribedToSounds) {
-    mSubscribedToSounds = MessageHandler::get().subscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
+    mSubscribedToSounds = mMessageHandler->subscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
   }
   mSoundSubcription.handleMessages();
 

@@ -7,54 +7,33 @@
 
 #include <SFML/Network.hpp>
 
-#include "Interface.h"
 #include "../../Common/MessageHandler/Subscriber.h"
-#include "../../Common/Trace.h"
 
 class Interface;
 
-struct NewSubscriber {
-  std::string interfaceName;
-  Subscriber* subscriber;
-  std::shared_ptr<sf::Clock> timer;
-  int timeoutLength;
+class MessageHandler {
+public:
+  virtual ~MessageHandler() {}
+
+  virtual void publishInterface(std::string name, Interface* interface) = 0;
+  virtual void unpublishInterface(std::string name) = 0;
+
+  virtual bool subscribeTo(std::string name, Subscriber* subscriber) = 0;
+  virtual void subscribeToWithTimeout(std::string interfaceName, Subscriber* subscriber, int timeoutLength = 5000) = 0;
+  virtual void unsubscribeTo(std::string name, Subscriber* subscriber) = 0;
+
+  virtual std::list<std::string> getPublishedInterfaces() = 0;
 };
 
-class MessageHandler : Trace {
+class MessageHandlerUtils {
 public:
-  static MessageHandler& get() {
-    static MessageHandler instance;
-    return instance;
+  static void tryToGiveId(Subscriber* subscriber) {
+    static std::mutex mIdGeneratorLock;
+    std::lock_guard<std::mutex> lockGuard(mIdGeneratorLock);
+    static int currentId = 0;
+    if (subscriber->getId() == -1) {
+      subscriber->setId(currentId);
+      currentId++;
+    }
   }
-
-  void tryToGiveId(Subscriber* subscriber);
-
-  void publishInterface(std::string name, Interface* interface);
-  void unpublishInterface(std::string name);
-
-  bool subscribeTo(std::string name, Subscriber* subscriber);
-  void subscribeToWithTimeout(std::string interfaceName, Subscriber* subscriber, int timeoutLength = 5000);
-  void unsubscribeTo(std::string name, Subscriber* subscriber);
-
-  std::list<std::string> getPublishedInterfaces();
-
-  void shutdown();
-
-private:
-  bool mRunning;
-  int mCurrentId;
-  std::mutex mIdGeneratorLock;
-  std::mutex mGameStateSubscriberLock;
-  std::mutex mMutex;
-
-  std::unique_ptr<std::thread> mMessageHandlerThread;
-
-  std::map<std::string, Interface*> mPublishedInterfacesMap;
-  std::list<NewSubscriber> mPendingSubscribers;
-
-  MessageHandler();
-  ~MessageHandler();
-
-  void start();
-  void handleNewSubscribers();
 };

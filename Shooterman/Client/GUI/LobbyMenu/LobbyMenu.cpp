@@ -16,7 +16,7 @@
 #include "../../../Common/Messages/MapMessage.h"
 #include "../../../Common/MessageHandler/Subscriber.h"
 
-LobbyMenu::LobbyMenu(bool server) {
+LobbyMenu::LobbyMenu(bool server, std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: LOBBY_MENU";
   mSubscribedToLobby = false;
   mServer = server;
@@ -29,8 +29,8 @@ LobbyMenu::LobbyMenu(bool server) {
   mLobbySubscriber.addSignalCallback(MessageId::PLAYABLE_CHARACTERS, std::bind(&LobbyMenu::handlePlayableCharactersMessage, this, std::placeholders::_1));
   mLobbySubscriber.addSignalCallback(MessageId::MAP_DATA, std::bind(&LobbyMenu::handleMapMessage, this, std::placeholders::_1));
 
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
+ mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
+ mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
 
   mGuiFrame = std::make_shared<Frame>();
 
@@ -70,10 +70,10 @@ LobbyMenu::LobbyMenu(bool server) {
 
   auto lobbyMenuList = std::make_shared<GuiList>(GuiComponentPosition::BOTTOM, GuiListDirection::VERTICAL);
   if (server) {
-    mStartGameButton = GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING, true);
+    mStartGameButton = GCF::createGameStateButton(GuiComponentPosition::CENTER, "Start Game", GAME_STATE::PLAYING, mMessageHandler, true);
     lobbyMenuList->addGuiComponent(mStartGameButton);
   }
-  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+  lobbyMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU, mMessageHandler));
   mGuiFrame->addGuiComponent(lobbyMenuList);
 
   mThumbnailImage = std::make_shared<GuiImageButton>(GuiComponentPosition::TOP_RIGHT, "", mThumbnail);
@@ -82,7 +82,7 @@ LobbyMenu::LobbyMenu(bool server) {
   mLevelDirectories.emplace_back("Levels/UserCreated/");
   mLevelDirectories.emplace_back("Levels/DefaultLevels/");
 
-  setupDebugMessages("Client", "Lobby Menu");
+  setupDebugMessages("Client", "Lobby Menu", mMessageHandler);
 }
 
 LobbyMenu::~LobbyMenu() { }

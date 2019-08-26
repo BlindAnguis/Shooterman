@@ -14,7 +14,7 @@
 
 #define HOST 1
 
-NetworkSystem::NetworkSystem() {
+NetworkSystem::NetworkSystem(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "SERVER: NETWORK_SYSTEM";
   mMapLock = new std::mutex();
   mRenderLock = new std::mutex();
@@ -26,8 +26,8 @@ NetworkSystem::~NetworkSystem() {
   TRACE_DEBUG1("Enter Destructor");
 }
 
-NetworkSystem& NetworkSystem::get() {
-  static NetworkSystem instance;
+NetworkSystem& NetworkSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
+  static NetworkSystem instance(messageHandler);
   return instance;
 }
 
@@ -48,13 +48,13 @@ void NetworkSystem::run() {
   mGameStateInterface.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&NetworkSystem::handleChangeGameStateMessage, this, std::placeholders::_1));
 
   Interface inputListInterface;
-  MessageHandler::get().publishInterface(Interfaces::SERVER_INPUT_LIST, &inputListInterface);
-  MessageHandler::get().publishInterface(Interfaces::SERVER_SERVER_READY, &mServerServerReadyInterface);
-  MessageHandler::get().publishInterface(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataInterface);
-  MessageHandler::get().publishInterface(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyInterface);
-  MessageHandler::get().publishInterface(Interfaces::SERVER_GAME_STATE, &mGameStateInterface);
-  MessageHandler::get().publishInterface(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuInterface);
-  MessageHandler::get().publishInterface(Interfaces::SERVER_SOUND_LIST, &mSoundInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_INPUT_LIST, &inputListInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_SERVER_READY, &mServerServerReadyInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_PLAYER_LOBBY, &mPlayerLobbyInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_GAME_STATE, &mGameStateInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_SOUND_LIST, &mSoundInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   mDebugMenuInterface.clearMessages();
@@ -170,13 +170,13 @@ void NetworkSystem::run() {
   }
 
   TRACE_INFO("UNPUBLISHING");
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_INPUT_LIST);
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_SERVER_READY);
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_PLAYER_DATA);
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_PLAYER_LOBBY);
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_GAME_STATE);
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_DEBUG_MENU);
-  MessageHandler::get().unpublishInterface(Interfaces::SERVER_SOUND_LIST);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_INPUT_LIST);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_SERVER_READY);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_PLAYER_DATA);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_PLAYER_LOBBY);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_GAME_STATE);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_DEBUG_MENU);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_SOUND_LIST);
 
   for (auto client : mClientsSockets) {
     client.second.first->disconnect();

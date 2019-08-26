@@ -2,21 +2,22 @@
 #include "../../../Common/Interfaces.h"
 #include "../../../Common/Messages/SoundMessage.h"
 
-HealthSystem::HealthSystem() :
+HealthSystem::HealthSystem(std::shared_ptr<MessageHandler> messageHandler) :
   mHealthComponentManager(&ComponentManager<HealthComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()) {
+  mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
+  mMessageHandler(messageHandler) {
   mName = "SERVER: HEALTH_SYSTEM";
-  MessageHandler::get().subscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 HealthSystem::~HealthSystem() {
   TRACE_DEBUG1("Enter Destructor");
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
-HealthSystem& HealthSystem::get() {
-  static HealthSystem instance;
+HealthSystem& HealthSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
+  static HealthSystem instance(messageHandler);
   return instance;
 }
 

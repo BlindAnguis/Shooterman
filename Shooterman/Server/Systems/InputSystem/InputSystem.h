@@ -16,15 +16,16 @@ private:
   bool mIsSubscribedToInput = false;
   Subscriber mInputSubscriber;
   Subscriber mGameStateSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   GAME_STATE mCurrentGameState;
   std::function<void(int entityId, std::uint32_t input, sf::Vector2i mousePosition)> mAttack = nullptr;
   std::shared_ptr<std::map<int, Player*>> mPlayersMap;
   std::queue<sf::Packet> getInput();
 
 public:
-  InputSystem();
+  InputSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~InputSystem();
-  static InputSystem& get();
+  static InputSystem& get(std::shared_ptr<MessageHandler> messageHandler);
 	void handleInput();
   InputMessage getLatestInput();
   void setPlayers(std::shared_ptr<std::map<int, Player*>> playersMap) { mPlayersMap = playersMap; }

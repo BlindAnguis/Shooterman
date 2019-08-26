@@ -11,13 +11,14 @@
 #include "Messages/ToggleDebugButtonMessage.h"
 #include "Messages/RemoveDebugButtonMessage.h"
 
-void Trace::setupDebugMessages(std::string category, std::string name) {
+void Trace::setupDebugMessages(std::string category, std::string name, std::shared_ptr<MessageHandler> messageHandler) {
   if (!mDebugSubscriber) {
     mDebugSubscriber = new Subscriber();
   }
   mCategory = category;
   mButtonName = name;
-  MessageHandler::get().subscribeToWithTimeout(category + "DebugMenu", mDebugSubscriber);
+  messageHandler->subscribeToWithTimeout(category + "DebugMenu", mDebugSubscriber);
+  mMessageHandler = messageHandler;
 }
 
 void Trace::handleDebugMessages() {
@@ -69,7 +70,7 @@ void Trace::teardownDebugMessages() {
     sf::Packet packet = rdbm.pack();
     mDebugSubscriber->reverseSendMessage(packet);
 
-    MessageHandler::get().unsubscribeTo(mCategory + "DebugMenu", mDebugSubscriber);
+    mMessageHandler->unsubscribeTo(mCategory + "DebugMenu", mDebugSubscriber);
 
     delete mDebugSubscriber;
     mDebugSubscriber = nullptr;

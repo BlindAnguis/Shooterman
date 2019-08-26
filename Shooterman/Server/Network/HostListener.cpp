@@ -10,7 +10,7 @@
 #include "../../Common/Messages/ServerInternal/ClientDisconnectedMessage.h"
 #include "../Systems/NetworkSystem/NetworkSystem.h"
 
-HostListener::HostListener() {
+HostListener::HostListener(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "SERVER: HOST_LISTENER";
   TRACE_INFO("Created a HostListener");
   mListener = new sf::TcpListener;
@@ -46,7 +46,7 @@ void HostListener::listen() {
   mSubscriber.addSignalCallback(MessageId::MAP_DATA, std::bind(&HostListener::handleMapDataMessage, this, std::placeholders::_1));
 
   mConnectedClients = std::make_shared<std::map<int, Player*>>();
-  while (!MessageHandler::get().subscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber)) {
+  while (!mMessageHandler->subscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   TRACE_INFO("Start to listen");
@@ -54,7 +54,7 @@ void HostListener::listen() {
   sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
   mListener->setBlocking(false);
   //sf::Socket::Status status = mListener->listen(1337, "localhost");
-  auto networkSystem = &NetworkSystem::get();
+  auto networkSystem = &NetworkSystem::get(mMessageHandler);
   if (status != sf::Socket::Status::Done) {
     TRACE_ERROR("Couldn't start listening to port 1337 on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
     //TRACE_ERROR("Couldn't start listening to port 1337 on IP: localhost, status: " << status);
@@ -105,7 +105,7 @@ void HostListener::listen() {
   }
   delete client; // Delete unused client socket
 
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_PLAYER_LOBBY, &mSubscriber);
 }
 
 void HostListener::handleNewUsernameMessage(sf::Packet& message) {

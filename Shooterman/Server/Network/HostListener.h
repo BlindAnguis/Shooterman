@@ -12,7 +12,7 @@
 class HostListener : Trace
 {
 public:
-  HostListener();
+  HostListener(std::shared_ptr<MessageHandler> messageHandler);
   ~HostListener();
   void startListening();
   std::shared_ptr<std::map<int, Player*>> stopListening();
@@ -31,6 +31,7 @@ private:
   bool mRunning = false;
   sf::TcpListener* mListener;
   Subscriber mSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::string mMapName;
   std::string mMapData;

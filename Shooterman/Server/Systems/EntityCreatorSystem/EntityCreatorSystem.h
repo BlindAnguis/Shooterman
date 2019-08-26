@@ -25,9 +25,9 @@ struct EntityToCreate {
 class EntityCreatorSystem : Trace
 {
 public:
-  EntityCreatorSystem();
+  EntityCreatorSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~EntityCreatorSystem();
-  static EntityCreatorSystem& get();
+  static EntityCreatorSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void update();
   void addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation, std::set<int> immuneEntityIds);
   void reset();
@@ -35,4 +35,5 @@ public:
 private:
   std::vector<EntityToCreate> mEntitiesToCreate;
   EntityCreator* mEntityCreator;
+  std::shared_ptr<MessageHandler> mMessageHandler;
 };

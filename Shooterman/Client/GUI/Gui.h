@@ -15,7 +15,7 @@
 
 class Gui : Trace {
 public:
-  Gui();
+  Gui(std::shared_ptr<MessageHandler> messageHandler);
 
   void shutDown();
 
@@ -27,12 +27,13 @@ private:
   std::shared_ptr<sf::RenderWindow> mWindow;
   Subscriber mSubscriber;
   Interface mMouseInterface;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   GAME_STATE mCurrentGameState;
   GAME_STATE mPreviousGameState;
   bool mRenderNeeded;
   bool mLeftButtonAlreadyPressed;
   std::map<GAME_STATE, std::list<std::shared_ptr<MenuBase>>> mMenuMap;
-  InfoOverlay mInfoOverlay;
+  std::shared_ptr<InfoOverlay> mInfoOverlay;
   sf::Clock mRenderClock;
 
   void run();

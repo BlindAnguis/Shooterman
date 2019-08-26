@@ -9,10 +9,10 @@ const int MAX_NR_OF_PICKUPS = 10;
 const int MAX_TIME_TO_NEXT_PICKUP = 5000;
 const int MIN_TIME_TO_NEXT_PICKUP = 2500;
 
-PickupSystem::PickupSystem()
+PickupSystem::PickupSystem(std::shared_ptr<MessageHandler> messageHandler)
   :
   mPickupComponentManager(&ComponentManager<PickupComponent>::get()),
-  mEntityCreatorSystem(&EntityCreatorSystem::get())
+  mEntityCreatorSystem(&EntityCreatorSystem::get(messageHandler))
 {
   srand((int)time(0));
   mTimeToNextPickup = (rand() % MIN_TIME_TO_NEXT_PICKUP) + (MAX_TIME_TO_NEXT_PICKUP - MIN_TIME_TO_NEXT_PICKUP);
@@ -21,8 +21,8 @@ PickupSystem::PickupSystem()
 
 PickupSystem::~PickupSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
-PickupSystem& PickupSystem::get() {
-  static PickupSystem instance;
+PickupSystem& PickupSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
+  static PickupSystem instance(messageHandler);
   return instance;
 }
 

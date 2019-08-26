@@ -4,19 +4,19 @@
 #include "../../../Common/Messages/SpriteMessage.h"
 #include "../../../Common/Interfaces.h"
 
-PlayWindow::PlayWindow() {
+PlayWindow::PlayWindow(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: PLAY_WINDOW";
   mGuiFrame = std::make_shared<Frame>();
 
   mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST_CACHE, std::bind(&PlayWindow::handleSpriteListCacheMessage, this, std::placeholders::_1));
   mSpriteListSubscriber.addSignalCallback(MessageId::SPRITE_LIST, std::bind(&PlayWindow::handleSpriteListMessage, this, std::placeholders::_1));
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
 
-  setupDebugMessages("Client", "Play Window");
+  setupDebugMessages("Client", "Play Window", mMessageHandler);
 }
 
 PlayWindow::~PlayWindow() {
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListSubscriber);
 }
 
 void PlayWindow::uninit() {

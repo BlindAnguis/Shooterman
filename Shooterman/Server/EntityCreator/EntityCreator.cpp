@@ -13,7 +13,7 @@
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
 
-EntityCreator::EntityCreator() :
+EntityCreator::EntityCreator(std::shared_ptr<MessageHandler> messageHandler) :
   mEntityManager(&EntityManager::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
@@ -24,7 +24,8 @@ EntityCreator::EntityCreator() :
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
   mGridSystem(&GridSystem::get()),
-  mDeleteSystem(&DeleteSystem::get())
+  mDeleteSystem(&DeleteSystem::get()),
+  mMessageHandler(messageHandler)
 {
   mName = "SERVER: ENTITY_CREATOR";
   loadTexture(Textures::CharacterBandana, "CharacterBandana1.png");
@@ -47,11 +48,11 @@ EntityCreator::EntityCreator() :
   loadTexture(Textures::HealthPotion, "Potions/pt1Small.png");
   loadTexture(Textures::ManaPotion, "Potions/pt2Small.png");
   loadTexture(Textures::Ammo, "Potions/pt4Small.png");
-  MessageHandler::get().subscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 EntityCreator::~EntityCreator() {
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
 Entity* EntityCreator::createPlayer(PlayerClass playerClass, sf::Vector2f position) {
@@ -196,7 +197,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
       float posX = (rand() % (1024 - 32)) + 32.0f;
       float posY = (rand() % (1024 - 32)) + 32.0f;
       framesUntilAttack += (int)(rand() % (5 - 2) + 2);
-      EntityCreatorSystem::get().addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
+      EntityCreatorSystem::get(mMessageHandler).addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
     }
   };
 

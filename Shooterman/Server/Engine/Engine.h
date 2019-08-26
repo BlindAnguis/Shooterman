@@ -24,8 +24,8 @@
 
 class Engine : Trace {
 public:
-  Engine();
-  Engine(std::array<std::array<Textures, 32>, 32> gameMap);
+  Engine(std::shared_ptr<MessageHandler> messageHandler);
+  Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr<MessageHandler> messageHandler);
   ~Engine();
   void update();
   // EntityFactory entityFactory;
@@ -73,6 +73,7 @@ private:
   ComponentManager<PickupComponent>* mPickupComponentManager;
 
   Subscriber mPlayerDataSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   std::shared_ptr<std::map<int, Player*>> mConnectedClients;
   std::array<std::array<Textures, 32>, 32> mGameMap;
   std::array<sf::Texture*, 99> mTextures;

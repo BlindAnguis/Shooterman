@@ -5,13 +5,14 @@
 #include <SFML/Network/TcpSocket.hpp>
 
 #include "../../Common/MessageHandler/Interface.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Trace.h"
 
 enum STATE { Disconnected, Connecting, Connected, Disconnecting };
 
 class NetworkHandler : Trace {
 public:
-  NetworkHandler();
+  NetworkHandler(std::shared_ptr<MessageHandler> messageHandler);
   ~NetworkHandler();
 
   void shutDown();
@@ -29,6 +30,7 @@ private:
   Subscriber mInfoMessageSubscriber;
   Subscriber mGameStateSubscriber;
   Subscriber mServerDebugSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   sf::TcpSocket mSocket;
   sf::Clock mHeartbeatClock;
   STATE mCurrentState;

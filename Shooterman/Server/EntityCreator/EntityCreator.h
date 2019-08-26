@@ -41,7 +41,7 @@
 class EntityCreator : Trace
 {
 public:
-  EntityCreator();
+  EntityCreator(std::shared_ptr<MessageHandler> messageHandler);
   ~EntityCreator();
 
   Entity* createPlayer(PlayerClass playerClass, sf::Vector2f position);
@@ -66,6 +66,7 @@ private:
   GridSystem *mGridSystem;
 
   Subscriber mSoundSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   std::map<Textures, sf::Texture*> mTextures;
 
   Entity* createPlayerBase(float maxVelocity, Textures textureType, sf::Vector2f position, int health, int attackSpeed);

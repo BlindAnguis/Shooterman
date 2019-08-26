@@ -7,9 +7,8 @@
 #include "../Resources/GuiResourceManager.h"
 #include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
-#include "../../../Common/MessageHandler/MessageHandler.h"
 
-MainMenu::MainMenu() {
+MainMenu::MainMenu(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: MAIN_MENU";
   mDebugEnabled1 = true;
 
@@ -19,16 +18,16 @@ MainMenu::MainMenu() {
 
   mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Shooterman"));
 
-  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Host Game", GAME_STATE::LOBBY));
-  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Join Game", GAME_STATE::JOIN));
-  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Map Editor", GAME_STATE::MAP_EDITOR));
-  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS));
+  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Host Game", GAME_STATE::LOBBY, mMessageHandler));
+  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Join Game", GAME_STATE::JOIN, mMessageHandler));
+  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Map Editor", GAME_STATE::MAP_EDITOR, mMessageHandler));
+  mainMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS, mMessageHandler));
 
   mainMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", std::bind(&MainMenu::onExitCLick, this)));
   
   mGuiFrame->addGuiComponent(mainMenuList);
 
-  setupDebugMessages("Client", "Main Menu");
+  setupDebugMessages("Client", "Main Menu", mMessageHandler);
 }
 
 MainMenu::~MainMenu() { }
@@ -41,8 +40,8 @@ void MainMenu::onExitCLick() {
   sf::Packet shutdownMessage;
   shutdownMessage << MessageId::SHUT_DOWN;
   Subscriber s;
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+ mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
   TRACE_SEND("SHUT_DOWN");
   s.reverseSendMessage(shutdownMessage);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+ mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
 }

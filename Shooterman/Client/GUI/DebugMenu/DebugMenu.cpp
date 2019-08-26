@@ -7,7 +7,7 @@
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
 #include "../../../Common/MessageHandler/Interface.h"
 
-DebugMenu::DebugMenu() {
+DebugMenu::DebugMenu(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: DEBUG_MENU";
   mIf.addSignalCallback(MessageId::ADD_DEBUG_BUTTON, std::bind(&DebugMenu::handleAddDebugButtonMessage, this, std::placeholders::_1));
   mIf.addSignalCallback(MessageId::REMOVE_DEBUG_BUTTON, std::bind(&DebugMenu::handleRemoveDebugButtonMessage, this, std::placeholders::_1));
@@ -15,7 +15,7 @@ DebugMenu::DebugMenu() {
   mGuiFrame = std::make_shared<Frame>();
   mGuiList = std::make_shared<GuiList>(GuiComponentPosition::TOP_LEFT, GuiListDirection::VERTICAL);
   mGuiFrame->addGuiComponent(mGuiList);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_DEBUG_MENU, &mIf);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_DEBUG_MENU, &mIf);
   mInterfaceFetchTimer.restart();
 
   auto expandableList = std::make_shared<GuiExpandableList>(GuiComponentPosition::TOP_LEFT, "Interfaces");
@@ -24,7 +24,7 @@ DebugMenu::DebugMenu() {
 }
 
 DebugMenu::~DebugMenu() {
-  MessageHandler::get().unpublishInterface("ClientDebugMenu");
+  mMessageHandler->unpublishInterface("ClientDebugMenu");
 }
 
 bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
@@ -39,7 +39,7 @@ bool DebugMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
       mCategoriesMap["Interfaces"]->clear();
     }
 
-    for (std::string interfaceInfo : MessageHandler::get().getPublishedInterfaces()) {
+    for (std::string interfaceInfo : mMessageHandler->getPublishedInterfaces()) {
       mCategoriesMap["Interfaces"]->addGuiComponent(std::make_shared<GuiText>(GuiComponentPosition::LEFT, interfaceInfo, 20, FONT::COURIER));
     }
   }

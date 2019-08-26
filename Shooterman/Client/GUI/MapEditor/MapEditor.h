@@ -7,10 +7,11 @@
 #include "../Resources/GuiInputText.h"
 #include "../../Map.h"
 #include "../Resources/GuiFrameComponent.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
 class MapEditor : public MenuBase {
 public:
-  MapEditor();
+  MapEditor(std::shared_ptr<MessageHandler> messageHandler);
   ~MapEditor();
 
   void backgroundUpdate() override;
@@ -26,6 +27,8 @@ private:
   std::shared_ptr<Frame> mSavePopupFrame;
   std::shared_ptr<Frame> mLoadPopupFrame;
   std::shared_ptr<GuiInputText> mSavePopupInput;
+  std::shared_ptr<MessageHandler> mMessageHandler;
+
   std::shared_ptr<GuiImageButton> addButton(Textures texture, std::string name);
   
   bool mRenderSavePopup = false;

@@ -9,12 +9,16 @@
 #include "../Shooterman/Server/Systems/CollisionSystem/Collision.cpp"
 #include "../Shooterman/Common/Animation/Animation.cpp"
 #include "../Shooterman/Common/MessageHandler/Subscriber.cpp"
+#include "../Shooterman/Common/MessageHandler/Interface.cpp"
 #include "../Shooterman/Common/MessageHandler/MessageHandler.cpp"
 #include "../Shooterman/Common/Messages/SoundMessage.cpp"
-#include "../Shooterman/Common/MessageHandler/Interface.cpp"
+#include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
+#include "../Shooterman/Common/Messages/SubscribeTimeoutMessage.cpp"
 
 TEST(EntityCreatorTests, createMage) {
-  EntityCreator e = EntityCreator();
+  std::shared_ptr<MessageHandler> mh;
+
+  EntityCreator e = EntityCreator(mh);
   sf::Vector2f magePosition = sf::Vector2f(10, 50); // Arbitrary position
   int numberOfMageAnimations = 17;
   auto mage = e.createPlayer(PlayerClass::Mage, magePosition);
@@ -74,7 +78,8 @@ TEST(EntityCreatorTests, createMage) {
 }
 
 TEST(EntityCreatorTests, createKnight) {
-  EntityCreator e = EntityCreator();
+  std::shared_ptr<MessageHandler> mh;
+  EntityCreator e = EntityCreator(mh);
   sf::Vector2f knightPosition = sf::Vector2f(550, 230); // Arbitrary position
   int numberOfKnightAnimations = 17;
   auto knight = e.createPlayer(PlayerClass::Knight, knightPosition);
@@ -134,7 +139,8 @@ TEST(EntityCreatorTests, createKnight) {
 }
 
 TEST(EntityCreatorTests, createSpearman) {
-  EntityCreator e = EntityCreator();
+  std::shared_ptr<MessageHandler> mh;
+  EntityCreator e = EntityCreator(mh);
   sf::Vector2f spearmanPosition = sf::Vector2f(1002, 1004); // Arbitrary position
   int numberOfSpearmanAnimations = 17;
   auto spearman = e.createPlayer(PlayerClass::Spearman, spearmanPosition);
@@ -194,7 +200,8 @@ TEST(EntityCreatorTests, createSpearman) {
 }
 
 TEST(EntityCreatorTests, createRandomPickup) {
-  EntityCreator e = EntityCreator();
+  std::shared_ptr<MessageHandler> mh;
+  EntityCreator e = EntityCreator(mh);
   auto randomPickup = e.createRandomPickup();
   
   // Get all components a spearman is suppose to have.

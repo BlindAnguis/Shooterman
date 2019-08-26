@@ -7,7 +7,7 @@
 
 class JoinMenu : public MenuBase {
 public:
-  JoinMenu();
+  JoinMenu(std::shared_ptr<MessageHandler> messageHandler);
   ~JoinMenu();
 
   void init() override;
@@ -19,6 +19,7 @@ private:
   std::string mIpString;
   std::shared_ptr<GuiInputText> mIpText;
   Interface mIpInterface;
+  std::shared_ptr<MessageHandler> mMessageHandler;
 
   void onIpTextClicked();
   void onJoinClicked();

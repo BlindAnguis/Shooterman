@@ -1,16 +1,19 @@
-#include "MessageHandler.h"
+#include "MessageHandlerImpl.h"
 
 #include "../Messages/SubscribeDoneMessage.h"
 #include "../Messages/SubscribeTimeoutMessage.h"
 
-MessageHandler::MessageHandler() : mCurrentId(0), mRunning(true) {
+MessageHandlerImpl::MessageHandlerImpl() : mRunning(true) {
   mName = "MESSAGEHANDLER";
-  mMessageHandlerThread = std::make_unique<std::thread>(&MessageHandler::start, this);
+  mMessageHandlerThread = std::make_unique<std::thread>(&MessageHandlerImpl::start, this);
 }
 
-MessageHandler::~MessageHandler() { }
+MessageHandlerImpl::~MessageHandlerImpl() {
+  mRunning = false;
+  mMessageHandlerThread->join();
+}
 
-void MessageHandler::start() {
+void MessageHandlerImpl::start() {
   while (mRunning) {
     handleNewSubscribers();
 
@@ -18,7 +21,7 @@ void MessageHandler::start() {
   }
 }
 
-void MessageHandler::handleNewSubscribers() {
+void MessageHandlerImpl::handleNewSubscribers() {
   std::lock_guard<std::mutex> lockGuard(mMutex);
   auto subscriberIt = mPendingSubscribers.begin();
   while (subscriberIt != mPendingSubscribers.end()) {
@@ -44,15 +47,7 @@ void MessageHandler::handleNewSubscribers() {
   }
 }
 
-void MessageHandler::tryToGiveId(Subscriber* subscriber) {
-  std::lock_guard<std::mutex> lockGuard(mIdGeneratorLock);
-  if (subscriber->getId() == -1) {
-    subscriber->setId(mCurrentId);
-    mCurrentId++;
-  }
-}
-
-void MessageHandler::publishInterface(std::string name, Interface* interface) {
+void MessageHandlerImpl::publishInterface(std::string name, Interface* interface) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
   auto it = mPublishedInterfacesMap.find(name);
   if (it == mPublishedInterfacesMap.end()) {
@@ -64,7 +59,7 @@ void MessageHandler::publishInterface(std::string name, Interface* interface) {
   }
 }
 
-void MessageHandler::unpublishInterface(std::string name) {
+void MessageHandlerImpl::unpublishInterface(std::string name) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
   auto interface = mPublishedInterfacesMap.find(name);
   if (interface != mPublishedInterfacesMap.end()) {
@@ -76,7 +71,7 @@ void MessageHandler::unpublishInterface(std::string name) {
   }
 }
 
-bool MessageHandler::subscribeTo(std::string name, Subscriber* subscriber) {
+bool MessageHandlerImpl::subscribeTo(std::string name, Subscriber* subscriber) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
   auto it = mPublishedInterfacesMap.find(name);
   if (it != mPublishedInterfacesMap.end()) {
@@ -86,7 +81,7 @@ bool MessageHandler::subscribeTo(std::string name, Subscriber* subscriber) {
   return false;
 }
 
-void MessageHandler::subscribeToWithTimeout(std::string interfaceName, Subscriber* subscriber, int timeoutLength) {
+void MessageHandlerImpl::subscribeToWithTimeout(std::string interfaceName, Subscriber* subscriber, int timeoutLength) {
   std::lock_guard<std::mutex> lockGuard(mMutex);
   NewSubscriber newSubscriber;
   newSubscriber.interfaceName = interfaceName;
@@ -96,7 +91,7 @@ void MessageHandler::subscribeToWithTimeout(std::string interfaceName, Subscribe
   mPendingSubscribers.emplace_back(newSubscriber);
 }
 
-void MessageHandler::unsubscribeTo(std::string name, Subscriber* subscriber) {
+void MessageHandlerImpl::unsubscribeTo(std::string name, Subscriber* subscriber) {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
   auto it = mPublishedInterfacesMap.find(name);
   if (it != mPublishedInterfacesMap.end()) {
@@ -106,19 +101,14 @@ void MessageHandler::unsubscribeTo(std::string name, Subscriber* subscriber) {
   }
 }
 
-std::list<std::string> MessageHandler::getPublishedInterfaces() {
+std::list<std::string> MessageHandlerImpl::getPublishedInterfaces() {
   std::lock_guard<std::mutex> lockGuard(mGameStateSubscriberLock);
   std::list<std::string> interfaceList;
 
   for (auto publishedInterface : mPublishedInterfacesMap) {
-    std::string interfaceInfo = publishedInterface.first +  " (" + std::to_string(publishedInterface.second->getSubscribers().size()) +")";
+    std::string interfaceInfo = publishedInterface.first + " (" + std::to_string(publishedInterface.second->getSubscribers().size()) + ")";
     interfaceList.push_back(interfaceInfo);
   }
 
   return interfaceList;
-}
-
-void MessageHandler::shutdown() {
-  mRunning = false;
-  mMessageHandlerThread->join();
 }

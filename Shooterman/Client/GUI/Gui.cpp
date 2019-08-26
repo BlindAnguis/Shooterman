@@ -18,7 +18,7 @@
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/MouseMessage.h"
 
-Gui::Gui() {
+Gui::Gui(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler), mInfoOverlay(std::make_shared<InfoOverlay>(messageHandler)) {
   mName = "CLIENT: GUI";
   TRACE_INFO("Starting module...");
   mGuiThread = std::make_unique<std::thread>(&Gui::run, this);
@@ -31,22 +31,22 @@ void Gui::run() {
   mSubscriber.addSignalCallback(MessageId::SHUT_DOWN, std::bind(&Gui::handleShutdownMessage, this, std::placeholders::_1));
   mSubscriber.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&Gui::handleChangedGameStateMessage, this, std::placeholders::_1));
 
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
-  MessageHandler::get().publishInterface(Interfaces::MOUSE_POSITION, &mMouseInterface);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
+  mMessageHandler->publishInterface(Interfaces::MOUSE_POSITION, &mMouseInterface);
 
-  mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>() });
-  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>() });
-  mMenuMap.emplace(GAME_STATE::LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true) });
-  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(false) });
-  mMenuMap.emplace(GAME_STATE::JOIN, std::list<std::shared_ptr<MenuBase>> { std::make_shared<JoinMenu>() });
-  mMenuMap.emplace(GAME_STATE::PLAYING, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PlayWindow>(), std::make_shared<Hud>() });
-  mMenuMap.emplace(GAME_STATE::OPTIONS, std::list<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>() });
-  mMenuMap.emplace(GAME_STATE::PAUSE, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>() });
-  mMenuMap.emplace(GAME_STATE::MAP_EDITOR, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MapEditor>() });
+  mMenuMap.emplace(GAME_STATE::DEBUG, std::list<std::shared_ptr<MenuBase>> { std::make_shared<DebugMenu>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::MAIN_MENU, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MainMenu>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(true, mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::CLIENT_LOBBY, std::list<std::shared_ptr<MenuBase>> { std::make_shared<LobbyMenu>(false, mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::JOIN, std::list<std::shared_ptr<MenuBase>> { std::make_shared<JoinMenu>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::PLAYING, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PlayWindow>(mMessageHandler), std::make_shared<Hud>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::OPTIONS, std::list<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::PAUSE, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::MAP_EDITOR, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MapEditor>(mMessageHandler) });
 
   // This needs to be after the DebugMenu is created
-  setupDebugMessages("Client", "Gui");
+  setupDebugMessages("Client", "Gui", mMessageHandler);
 
   mWindow = std::make_shared<sf::RenderWindow>(sf::VideoMode(1024, 1024), "Shooterman");
   mWindowOpen = true;
@@ -58,9 +58,9 @@ void Gui::run() {
 
   teardownDebugMessages();
 
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
-  MessageHandler::get().unpublishInterface(Interfaces::MOUSE_POSITION);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
+  mMessageHandler->unpublishInterface(Interfaces::MOUSE_POSITION);
 
   GuiResourceManager::getInstance().clear();
   mMenuMap.clear();
@@ -110,9 +110,9 @@ void Gui::handleWindowEvents() {
       sf::Packet shutdownMessage;
       shutdownMessage << MessageId::SHUT_DOWN;
       Subscriber s;
-      MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+      mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
       s.reverseSendMessage(shutdownMessage);
-      MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+      mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
     }
     if (event.type == sf::Event::MouseMoved) {
       MouseMessage mm(sf::Mouse::getPosition(*mWindow));
@@ -171,7 +171,7 @@ bool Gui::renderGameState(GAME_STATE gameState) {
       }
     }
     mRenderNeeded = menu->render(mWindow, mousePosition);
-    mInfoOverlay.render(mWindow, mousePosition);
+    mInfoOverlay->render(mWindow, mousePosition);
     if (!mRenderNeeded) {
       return mRenderNeeded;
     }

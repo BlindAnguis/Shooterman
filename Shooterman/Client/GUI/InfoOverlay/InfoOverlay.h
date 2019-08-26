@@ -6,7 +6,7 @@
 
 class InfoOverlay : public MenuBase {
 public:
-  InfoOverlay();
+  InfoOverlay(std::shared_ptr<MessageHandler> messageHandler);
   ~InfoOverlay();
 
   void backgroundUpdate() override;
@@ -15,6 +15,7 @@ public:
 private: 
   sf::Clock mClock;
   Interface mInfoMessageInterface;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   std::shared_ptr<GuiText> mTextBox;
   int mNumberOfSecToShowMsg;
 

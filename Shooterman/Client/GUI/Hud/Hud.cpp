@@ -5,14 +5,14 @@
 #include "../../../Common/Messages/PlayerDataMessage.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
-Hud::Hud() {  
+Hud::Hud(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mGuiFrame = std::make_shared<Frame>();
   mSubscriber.addSignalCallback(MessageId::PLAYER_DATA, std::bind(&Hud::handlePlayerData, this, std::placeholders::_1));
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
 }
 
 Hud::~Hud() {
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
 }
 
 void Hud::reset() {

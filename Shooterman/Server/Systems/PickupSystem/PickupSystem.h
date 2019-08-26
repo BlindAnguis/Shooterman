@@ -8,9 +8,9 @@
 class PickupSystem : public Trace
 {
 public:
-  PickupSystem();
+  PickupSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~PickupSystem();
-  static PickupSystem& get();
+  static PickupSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void update();
 private:
   ComponentManager<PickupComponent>* mPickupComponentManager;

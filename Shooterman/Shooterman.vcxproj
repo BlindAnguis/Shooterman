@@ -172,6 +172,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiResourceManager.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
     <ClCompile Include="Client\Map.cpp" />
+    <ClCompile Include="Common\MessageHandler\MessageHandlerImpl.cpp" />
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
@@ -209,7 +210,6 @@
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
     <ClCompile Include="Client\Input\Input.cpp" />
     <ClCompile Include="Client\Main\ClientMain.cpp" />
-    <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
     <ClCompile Include="Client\Network\NetworkHandler.cpp" />
     <ClCompile Include="Common\Messages\GameStateMessage.cpp" />
@@ -255,6 +255,7 @@
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
     <ClInclude Include="Client\Map.h" />
     <ClInclude Include="Common\Interfaces.h" />
+    <ClInclude Include="Common\MessageHandler\MessageHandlerImpl.h" />
     <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
     <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
     <ClInclude Include="Common\Messages\InfoMessage.h" />

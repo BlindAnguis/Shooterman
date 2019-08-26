@@ -1,11 +1,14 @@
 #pragma once
 
 #include "../Resources/MenuBase.h"
+#include "../../../Common/MessageHandler/MessageHandler.h"
 
-class OptionsMenu : public MenuBase
-{
+class OptionsMenu : public MenuBase {
 public:
-  OptionsMenu();
+  OptionsMenu(std::shared_ptr<MessageHandler> messageHandler);
   ~OptionsMenu();
+
+private:
+  std::shared_ptr<MessageHandler> mMessageHandler;
 };
 

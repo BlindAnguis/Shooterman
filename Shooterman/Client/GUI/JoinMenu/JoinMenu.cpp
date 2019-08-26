@@ -6,7 +6,7 @@
 #include "../../../Common/Messages/ClientInternal/IpMessage.h"
 #include "../../../Common/Interfaces.h"
 
-JoinMenu::JoinMenu() {
+JoinMenu::JoinMenu(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: JOIN_MENU";
 
   mGuiFrame = std::make_shared<Frame>();
@@ -23,23 +23,23 @@ JoinMenu::JoinMenu() {
   ipList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, " Join", std::bind(&JoinMenu::onJoinClicked, this)));
 
   joinMenuList->addGuiComponent(ipList);
-  joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU));
+  joinMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Back", GAME_STATE::MAIN_MENU, mMessageHandler));
 
   mGuiFrame->addGuiComponent(joinMenuList);
 
-  setupDebugMessages("Client", "Join Menu");
+  setupDebugMessages("Client", "Join Menu", mMessageHandler);
 }
 
 JoinMenu::~JoinMenu() { uninit(); }
 
 void JoinMenu::init() {
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_IP_LIST, &mIpInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_IP_LIST, &mIpInterface);
   mIpString = "";
   mIpText->setText("");
 }
 
 void JoinMenu::uninit() {
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_IP_LIST);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_IP_LIST);
 }
 
 void JoinMenu::backgroundUpdate() {
@@ -56,10 +56,10 @@ void JoinMenu::onIpTextClicked() {
 
   GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
   Subscriber gameStateSubscriber;
-  MessageHandler::get().subscribeTo("ClientGameState", &gameStateSubscriber);
+  mMessageHandler->subscribeTo("ClientGameState", &gameStateSubscriber);
   TRACE_SEND("GAME_STATE: CLIENT_LOBBY");
   gameStateSubscriber.reverseSendMessage(gsm.pack());
-  MessageHandler::get().unsubscribeTo("ClientGameState", &gameStateSubscriber);
+  mMessageHandler->unsubscribeTo("ClientGameState", &gameStateSubscriber);
 }
 
 void JoinMenu::onJoinClicked() {
@@ -72,8 +72,8 @@ void JoinMenu::onJoinClicked() {
 
   GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
   Subscriber gameStateSubscriber;
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
   TRACE_SEND("GAME_STATE: CLIENT_LOBBY");
   gameStateSubscriber.reverseSendMessage(gsm.pack());
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
 }

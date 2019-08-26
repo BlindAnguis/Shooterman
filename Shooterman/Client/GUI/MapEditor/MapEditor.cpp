@@ -10,7 +10,7 @@
 #include "../Resources/GuiExpandableList.h"
 #include "../Resources/GuiComponentFactory.h"
 
-MapEditor::MapEditor() : mCurrentTileId(Textures::Unknown) {
+MapEditor::MapEditor(std::shared_ptr<MessageHandler> messageHandler) : mCurrentTileId(Textures::Unknown), mMessageHandler(messageHandler) {
   mName = "CLIENT: MAP_EDITOR";
   mMap.clear();
   mMap.createDefaultMap();
@@ -44,7 +44,7 @@ MapEditor::MapEditor() : mCurrentTileId(Textures::Unknown) {
   toolbar->addGuiComponent(wallList);
 
 
-  toolbar->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Close Editor", GAME_STATE::PREVIOUS));
+  toolbar->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Close Editor", GAME_STATE::PREVIOUS, mMessageHandler));
   mGuiFrame->addGuiComponent(toolbar);
 
   // Create save popup
@@ -68,7 +68,7 @@ MapEditor::MapEditor() : mCurrentTileId(Textures::Unknown) {
   mLoadPopupBackground = std::make_shared<GuiFrameComponent>(GuiComponentPosition::CENTER, sf::RectangleShape(sf::Vector2f(520, 520)));
   mLoadPopupFrame->addGuiComponent(mLoadPopupBackground);
 
-  setupDebugMessages("Client", "Map Editor");
+  setupDebugMessages("Client", "Map Editor", messageHandler);
 }
 
 MapEditor::~MapEditor() { }

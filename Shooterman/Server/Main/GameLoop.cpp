@@ -6,11 +6,13 @@
 #include "../Engine/Engine.h"
 #include "../Network/HostListener.h"
 #include "../../Common/Messages/ServerReadyMessage.h"
+#include "../../Common/MessageHandler/MessageHandlerImpl.h"
 #include "../../Common/Interfaces.h"
 
 GameLoop::GameLoop() {
   mName = "SERVER: GAME_LOOP";
   mDebugEnabled1 = false;
+  mMessageHandler = std::dynamic_pointer_cast<MessageHandler>(std::make_shared<MessageHandlerImpl>());
 }
 
 void GameLoop::start() {
@@ -25,7 +27,7 @@ void GameLoop::stop() {
 }
 
 void GameLoop::gameLoop() {
-  mNetworkSystem = &NetworkSystem::get();
+  mNetworkSystem = &NetworkSystem::get(mMessageHandler);
   GAME_STATE state;
   mRunning = true;
   TRACE_INFO("Gameloop started");
@@ -73,21 +75,21 @@ void GameLoop::gameLoop() {
     }
   }
 
-  HostListener hostListener = HostListener();
+  HostListener hostListener = HostListener(mMessageHandler);
   hostListener.startListening();
   mNetworkSystem->start();
   sf::Clock c;
   // send message to client, tell it to enable the button.
   Subscriber serverReadySubscriber;
-  while (!MessageHandler::get().subscribeTo(Interfaces::SERVER_SERVER_READY, &serverReadySubscriber)) {
+  while (!mMessageHandler->subscribeTo(Interfaces::SERVER_SERVER_READY, &serverReadySubscriber)) {
     sf::sleep(sf::milliseconds(5));
   }
   ServerReadyMessage srm;
   serverReadySubscriber.reverseSendMessage(srm.pack());
-  Engine world = Engine(gameMap2);
+  Engine world = Engine(gameMap2, mMessageHandler);
   while (mRunning) {
     c.restart();
-    state = InputSystem::get().getLatestGameStateMessage();
+    state = InputSystem::get(mMessageHandler).getLatestGameStateMessage();
 
     switch (state) {
       case GAME_STATE::LOBBY:
@@ -146,7 +148,7 @@ void GameLoop::gameLoop() {
   if (hostListener.isListening()) {
     hostListener.stopListening();
   }
-  InputSystem::get().resetSystem();
+  InputSystem::get(mMessageHandler).resetSystem();
   world.shutDown();
   mNetworkSystem->shutDown();
 }

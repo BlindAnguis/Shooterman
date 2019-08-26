@@ -4,11 +4,12 @@
 
 #include "../../Common/Trace.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/Messages/GameStateMessage.h"
 
 class Input : Trace {
 public:
-	Input();
+	Input(std::shared_ptr<MessageHandler> messageHandler);
   ~Input();
   void shutDown();
 
@@ -19,6 +20,7 @@ private:
   Subscriber mSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Interface mClientInputInterface;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   GAME_STATE mCurrentGameState;
   sf::Vector2i mLastMousePosition;
 

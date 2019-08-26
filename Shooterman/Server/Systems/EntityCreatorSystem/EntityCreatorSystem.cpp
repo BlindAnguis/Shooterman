@@ -1,7 +1,8 @@
 #include "EntityCreatorSystem.h"
 
-EntityCreatorSystem::EntityCreatorSystem() :
-  mEntityCreator(new EntityCreator())
+EntityCreatorSystem::EntityCreatorSystem(std::shared_ptr<MessageHandler> messageHandler) :
+  mEntityCreator(new EntityCreator(messageHandler)),
+  mMessageHandler(messageHandler)
 {
   mName = "SERVER: ENTITY_CREATOR_SYSTEM";
 }
@@ -13,15 +14,15 @@ EntityCreatorSystem::~EntityCreatorSystem()
     delete(mEntityCreator);
 }
 
-EntityCreatorSystem& EntityCreatorSystem::get() {
-  static EntityCreatorSystem instance;
+EntityCreatorSystem& EntityCreatorSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
+  static EntityCreatorSystem instance(messageHandler);
   return instance;
 }
 
 void EntityCreatorSystem::reset() {
   if (mEntityCreator != nullptr) {
     delete(mEntityCreator);
-    mEntityCreator = new EntityCreator();
+    mEntityCreator = new EntityCreator(mMessageHandler);
   }
     
   mEntitiesToCreate.clear();

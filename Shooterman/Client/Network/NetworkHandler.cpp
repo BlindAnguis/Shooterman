@@ -4,7 +4,6 @@
 #include "../../Common/Constants.h"
 #include "../../Common/MessageId.h"
 #include "../../Common/Interfaces.h"
-#include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
 #include "../../Common/Messages/ClientMainAndNetworkHandlerMessages.h"
@@ -20,7 +19,7 @@
 #include "../../Common/Messages/InfoMessage.h"
 #include "../../Common/Messages/MapMessage.h"
 
-NetworkHandler::NetworkHandler() {
+NetworkHandler::NetworkHandler(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: NETWORK_HANDLER";
   TRACE_INFO("Starting module...");
   mNetworkHandlerThread = std::make_unique<std::thread>(&NetworkHandler::run, this);
@@ -89,20 +88,20 @@ void NetworkHandler::run() {
 }
 
 void NetworkHandler::setupSubscribersAndInterfaces() {
-  setupDebugMessages("Client", "Network");
+  setupDebugMessages("Client", "Network", mMessageHandler);
 
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_PLAYER_DATA, &mPlayerDataInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_SOUND_LIST, &mSoundListInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_LOBBY, &mLobbyInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_SERVER_READY, &mServerReadyInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_SPRITE_LIST, &mSpriteListInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_PLAYER_DATA, &mPlayerDataInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_SOUND_LIST, &mSoundListInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_LOBBY, &mLobbyInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_SERVER_READY, &mServerReadyInterface);
 
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
 
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_INPUT_LIST, &mForwaringSubscriber);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mForwaringSubscriber);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mForwaringSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_INPUT_LIST, &mForwaringSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mForwaringSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mForwaringSubscriber);
 }
 
 void NetworkHandler::handlePackets() {
@@ -190,14 +189,14 @@ void NetworkHandler::handlePackets() {
 void NetworkHandler::teardownSubscribersAndInterfaces() {
   teardownDebugMessages();
 
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SPRITE_LIST);
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_LOBBY);
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SERVER_READY);
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_PLAYER_DATA);
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_SOUND_LIST);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
-  MessageHandler::get().unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_SPRITE_LIST);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_LOBBY);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_SERVER_READY);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_PLAYER_DATA);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_SOUND_LIST);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
 }
 
 void NetworkHandler::handleSubscribeIpListTimeoutMessage(sf::Packet& message) {
@@ -221,9 +220,9 @@ void NetworkHandler::handleChangeGameStateMessage(sf::Packet & message) {
   if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
     mCurrentState = STATE::Disconnecting;
   } else if (gsm.getGameState() == GAME_STATE::LOBBY) {
-    MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+    mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
   } else if (gsm.getGameState() == GAME_STATE::JOIN) {
-    MessageHandler::get().subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+    mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
   }
 }
 

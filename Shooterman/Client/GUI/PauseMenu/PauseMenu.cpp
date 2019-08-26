@@ -5,9 +5,8 @@
 #include "../Resources/GuiComponentFactory.h"
 #include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
-#include "../../../Common/MessageHandler/MessageHandler.h"
 
-PauseMenu::PauseMenu() {
+PauseMenu::PauseMenu(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: PAUSE_MENU";
   mDebugEnabled1 = true;
 
@@ -17,15 +16,15 @@ PauseMenu::PauseMenu() {
 
   mGuiFrame->addGuiComponent(GCF::createHeader(GuiComponentPosition::TOP, "Pause"));
 
-  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Unpause", GAME_STATE::PREVIOUS));
-  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Leave Game", GAME_STATE::MAIN_MENU));
-  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS));
+  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Unpause", GAME_STATE::PREVIOUS, mMessageHandler));
+  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Leave Game", GAME_STATE::MAIN_MENU, mMessageHandler));
+  pauseMenuList->addGuiComponent(GCF::createGameStateButton(GuiComponentPosition::CENTER, "Options", GAME_STATE::OPTIONS, mMessageHandler));
 
   pauseMenuList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Exit Game", std::bind(&PauseMenu::onExitClick, this)));
 
   mGuiFrame->addGuiComponent(pauseMenuList);
 
-  setupDebugMessages("Client", "Pause Menu");
+  setupDebugMessages("Client", "Pause Menu", mMessageHandler);
 }
 
 PauseMenu::~PauseMenu() { }
@@ -38,17 +37,17 @@ void PauseMenu::onExitClick() {
   GameStateMessage gsm(GAME_STATE::MAIN_MENU);
 
   Subscriber gameStateSubscriber;
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
   TRACE_SEND("GAME_STATE: MAIN_MENU");
   gameStateSubscriber.reverseSendMessage(gsm.pack());
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
 
   sf::sleep(sf::milliseconds(100));
   sf::Packet shutdownMessage;
   shutdownMessage << MessageId::SHUT_DOWN;
   Subscriber s;
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
   TRACE_SEND("SHUT_DOWN");
   s.reverseSendMessage(shutdownMessage);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
 }

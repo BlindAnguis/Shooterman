@@ -27,14 +27,10 @@
     <ClCompile Include="Client\GUI\Resources\MenuBase.cpp" />
     <ClCompile Include="Client\GUI\PlayWindow\PlayWindow.cpp" />
     <ClCompile Include="Client\GUI\JoinMenu\JoinMenu.cpp" />
-    <ClCompile Include="Common\Socket\Socket.cpp" />
-    <ClCompile Include="Common\Socket\Udp.cpp" />
-    <ClCompile Include="Common\Socket\Tcp.cpp" />
     <ClCompile Include="Client\GUI\OptionsMenu\OptionsMenu.cpp" />
     <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
     <ClCompile Include="Server\Systems\AnimationSystem\AnimationSystem.cpp" />
     <ClCompile Include="Common\MessageHandler\Interface.cpp" />
-    <ClCompile Include="Common\MessageHandler\MessageHandler.cpp" />
     <ClCompile Include="Client\GUI\DebugMenu\DebugMenu.cpp" />
     <ClCompile Include="Server\Systems\HealthSystem\HealthSystem.cpp" />
     <ClCompile Include="Server\Player.cpp" />
@@ -89,6 +85,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiFrameComponent.cpp" />
     <ClCompile Include="Common\Messages\SubscribeTimeoutMessage.cpp" />
     <ClCompile Include="Common\Messages\SubscribeDoneMessage.cpp" />
+    <ClCompile Include="Common\MessageHandler\MessageHandlerImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -131,9 +128,6 @@
     <ClInclude Include="Client\GUI\Resources\MenuBase.h" />
     <ClInclude Include="Client\GUI\PlayWindow\PlayWindow.h" />
     <ClInclude Include="Client\GUI\JoinMenu\JoinMenu.h" />
-    <ClInclude Include="Common\Socket\Socket.h" />
-    <ClInclude Include="Common\Socket\Tcp.h" />
-    <ClInclude Include="Common\Socket\Udp.h" />
     <ClInclude Include="Client\GUI\OptionsMenu\OptionsMenu.h" />
     <ClInclude Include="Common\Messages\ClientMainAndNetworkHandlerMessages.h" />
     <ClInclude Include="Server\Systems\NetworkSystem\NetworkSystem.h" />
@@ -194,6 +188,7 @@
     <ClInclude Include="Common\Interfaces.h" />
     <ClInclude Include="Common\Messages\SubscribeTimeoutMessage.h" />
     <ClInclude Include="Common\Messages\SubscribeDoneMessage.h" />
+    <ClInclude Include="Common\MessageHandler\MessageHandlerImpl.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

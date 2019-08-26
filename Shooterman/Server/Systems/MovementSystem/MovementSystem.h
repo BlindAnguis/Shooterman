@@ -11,9 +11,9 @@
 class MovementSystem : public ObserverIf
 {
 public:
-  MovementSystem();
+  MovementSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~MovementSystem();
-  static MovementSystem& get();
+  static MovementSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void update(InputMessage inputMessage);
   void ownUpdate();
   void setPlayers(std::shared_ptr<std::map<int, Player*>> playersMap) { mPlayersMap = playersMap; }
@@ -30,5 +30,6 @@ private:
   GridSystem* mGridSystem;
   EntityManager* mEntityManager;
   std::shared_ptr<std::map<int, Player*>> mPlayersMap;
+  std::shared_ptr<MessageHandler> mMessageHandler;
 };
 

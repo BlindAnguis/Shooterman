@@ -11,7 +11,7 @@
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
 
-Input::Input() {
+Input::Input(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: INPUT";
   TRACE_INFO("Starting module...");
   mInputThread = std::make_unique<std::thread>(&Input::run, this);
@@ -19,7 +19,7 @@ Input::Input() {
 }
 Input::~Input() {
   TRACE_FUNC_ENTER();
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
   TRACE_FUNC_EXIT();
 }
 
@@ -32,11 +32,11 @@ void Input::run() {
   mGameStateMessageSubscriber.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&Input::handleChangeGameStateMessage, this, std::placeholders::_1));
   mSubscriber.addSignalCallback(MessageId::MOUSE_MESSAGE, std::bind(&Input::handleMousePositionMessage, this, std::placeholders::_1));
 
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
-  MessageHandler::get().subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
-  MessageHandler::get().subscribeToWithTimeout(Interfaces::MOUSE_POSITION, &mSubscriber);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_INPUT_LIST, &mClientInputInterface);
-  setupDebugMessages("Client", "Input");
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateMessageSubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::MOUSE_POSITION, &mSubscriber);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_INPUT_LIST, &mClientInputInterface);
+  setupDebugMessages("Client", "Input", mMessageHandler);
 
   std::uint32_t keyboardBitmask;
   while (mRunning) {
@@ -116,9 +116,9 @@ void Input::run() {
   }
 
   teardownDebugMessages();
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_INPUT_LIST);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
-  MessageHandler::get().unsubscribeTo(Interfaces::CLIENT_INPUT_LIST, &mSubscriber);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_INPUT_LIST);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_INPUT_LIST, &mSubscriber);
   TRACE_FUNC_EXIT();
 }
 

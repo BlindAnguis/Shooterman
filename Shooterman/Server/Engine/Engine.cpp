@@ -5,10 +5,10 @@
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
 #include "../../Common/Interfaces.h"
 
-Engine::Engine() :
-  mInputSystem(&InputSystem::get()),
+Engine::Engine(std::shared_ptr<MessageHandler> messageHandler) :
+  mInputSystem(&InputSystem::get(messageHandler)),
   mEntityManager(&EntityManager::get()),
-  mNetworkSystem(&NetworkSystem::get()),
+  mNetworkSystem(&NetworkSystem::get(messageHandler)),
   mDeleteSystem(&DeleteSystem::get()),
   mGridSystem(&GridSystem::get()),
   mClockSystem(&ClockSystem::get()),
@@ -20,25 +20,27 @@ Engine::Engine() :
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mCollisionSystem(&CollisionSystem::get()),
-  mMovementSystem(&MovementSystem::get()),
-  mRenderSystem(&RenderSystem::get()),
+  mCollisionSystem(&CollisionSystem::get(messageHandler)),
+  mMovementSystem(&MovementSystem::get(messageHandler)),
+  mRenderSystem(&RenderSystem::get(messageHandler)),
   mAnimationSystem(&AnimationSystem::get()),
-  mHealthSystem(&HealthSystem::get()),
-  mEntityCreatorSystem(&EntityCreatorSystem::get()),
-  mPickupSystem(&PickupSystem::get()),
-  mMapCreator(MapCreator(mEntityManager, mGridSystem))
+  mHealthSystem(&HealthSystem::get(messageHandler)),
+  mEntityCreatorSystem(&EntityCreatorSystem::get(messageHandler)),
+  mPickupSystem(&PickupSystem::get(messageHandler)),
+  mMapCreator(MapCreator(mEntityManager, mGridSystem)),
+  mMessageHandler(messageHandler)
 {
   mName = "SERVER: ENGINE";
   mInputSystem->attach(mMovementSystem);
   mInputSystem->setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { });
   mEntityCreatorSystem->reset();
+  setupDebugMessages("Server", "Engine", mMessageHandler);
 }
 
-Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap) :
-  mInputSystem(&InputSystem::get()),
+Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr<MessageHandler> messageHandler) :
+  mInputSystem(&InputSystem::get(messageHandler)),
   mEntityManager(&EntityManager::get()),
-  mNetworkSystem(&NetworkSystem::get()),
+  mNetworkSystem(&NetworkSystem::get(messageHandler)),
   mDeleteSystem(&DeleteSystem::get()),
   mGridSystem(&GridSystem::get()),
   mClockSystem(&ClockSystem::get()),
@@ -50,15 +52,16 @@ Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap) :
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mCollisionSystem(&CollisionSystem::get()),
-  mMovementSystem(&MovementSystem::get()),
-  mRenderSystem(&RenderSystem::get()),
+  mCollisionSystem(&CollisionSystem::get(messageHandler)),
+  mMovementSystem(&MovementSystem::get(messageHandler)),
+  mRenderSystem(&RenderSystem::get(messageHandler)),
   mAnimationSystem(&AnimationSystem::get()),
-  mHealthSystem(&HealthSystem::get()),
-  mEntityCreatorSystem(&EntityCreatorSystem::get()),
-  mPickupSystem(&PickupSystem::get()),
+  mHealthSystem(&HealthSystem::get(messageHandler)),
+  mEntityCreatorSystem(&EntityCreatorSystem::get(messageHandler)),
+  mPickupSystem(&PickupSystem::get(messageHandler)),
   mMapCreator(MapCreator(mEntityManager, mGridSystem)),
-  mGameMap(gameMap)
+  mGameMap(gameMap),
+  mMessageHandler(messageHandler)
 {
   mName = "SERVER: ENGINE";
   mInputSystem->attach(mMovementSystem);
@@ -81,6 +84,7 @@ Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap) :
     }
   });
   mEntityCreatorSystem->reset(); // "Init" the system.
+  setupDebugMessages("Server", "Engine", mMessageHandler);
 }
 
 Engine::~Engine() {
@@ -112,7 +116,7 @@ void Engine::shutDown() {
   mCollisionSystem->resetSystem();
   mEntityCreatorSystem->reset();
   teardownDebugMessages();
-  MessageHandler::get().unsubscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
 }
 
 void Engine::update() {
@@ -234,8 +238,7 @@ void Engine::createPlayers() {
     ++index;
   }
   
-  setupDebugMessages("Server", "Engine");
-  MessageHandler::get().subscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
+  mMessageHandler->subscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
 }
 
 void Engine::createMap() {

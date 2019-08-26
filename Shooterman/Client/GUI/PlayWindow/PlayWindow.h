@@ -6,7 +6,7 @@
 
 class PlayWindow : public MenuBase {
 public:
-  PlayWindow();
+  PlayWindow(std::shared_ptr<MessageHandler> messageHandler);
   ~PlayWindow();
 
   void uninit() override;
@@ -17,6 +17,7 @@ public:
 
 private:
   Subscriber mSpriteListSubscriber;
+  std::shared_ptr<MessageHandler> mMessageHandler;
   SpriteCacheMessage mSpriteListCacheMessage;
   SpriteMessage mSpriteListMessage;
   bool mIsRenderNeeded;
