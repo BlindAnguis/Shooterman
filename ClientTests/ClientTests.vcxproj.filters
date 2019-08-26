@@ -4,6 +4,8 @@
     <ClCompile Include="NetworkHandlerTest.cpp">
       <Filter>Network</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NetworkHandlerTest.h">

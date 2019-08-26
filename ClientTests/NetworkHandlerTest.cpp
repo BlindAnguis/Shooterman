@@ -4,7 +4,8 @@
 
 #include "../Shooterman/Common/Trace.cpp"
 #include "../Shooterman/Common/MessageHandler/Subscriber.cpp"
-#include "../Shooterman/Common/MessageHandler/MessageHandler.cpp"
+#include "../Shooterman/Common/MessageHandler/Interface.cpp"
+#include "../Shooterman/Common/MessageHandler/MessageHandlerImpl.cpp"
 #include "../Shooterman/Common/Messages/AddDebugButtonMessage.cpp"
 #include "../Shooterman/Common/Messages/RemoveDebugButtonMessage.cpp"
 #include "../Shooterman/Common/Messages/ClientMainAndNetworkHandlerMessages.cpp"
@@ -23,68 +24,108 @@
 #include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
 #include "../Shooterman/Common/Messages/SubscribeTimeoutMessage.cpp"
 
+using ::testing::_;
+using ::testing::Invoke;
+
 NetworkHandlerTest::NetworkHandlerTest() {}
 
 NetworkHandlerTest::~NetworkHandlerTest() {}
 
 void NetworkHandlerTest::SetUp() {
-  setupInterfaces();
+  mMessageHandlerMock = std::make_shared<MessageHandlerMock>();
+  expectSubscribersToSubscribe();
+  expectInterfacesToPublish();
 }
 
 void NetworkHandlerTest::TearDown() {
-  teardownInterfaces();
+  mSubscriberMap.clear();
+}
+
+void NetworkHandlerTest::expectSubscribeTo(std::string interfaceName) {
+  EXPECT_CALL(*mMessageHandlerMock, subscribeToWithTimeoutImpl(interfaceName, _, _))
+    .WillOnce(Invoke([this](std::string interfaceName, Subscriber* subscriber, int dontCare) {
+    mSubscriberMap.insert(std::make_pair(interfaceName, subscriber));
+  }));
+}
+
+void NetworkHandlerTest::expectSubscribe(std::string interfaceName) {
+  EXPECT_CALL(*mMessageHandlerMock, subscribeTo(interfaceName, _))
+    .WillOnce(Invoke([this](std::string interfaceName, Subscriber* subscriber) {
+    mSubscriberMap.insert(std::make_pair(interfaceName, subscriber));
+    return true;
+  }));
+}
+
+void NetworkHandlerTest::expectSubscribersToSubscribe() {
+  expectSubscribeTo(Interfaces::CLIENT_GAME_STATE);
+  expectSubscribeTo(Interfaces::INFO_MESSAGE);
+  expectSubscribeTo(Interfaces::CLIENT_DEBUG_MENU);
+  expectSubscribe(Interfaces::CLIENT_INPUT_LIST);
+  expectSubscribe(Interfaces::CLIENT_DEBUG_MENU);
+  expectSubscribe(Interfaces::CLIENT_GAME_STATE);
+}
+
+void NetworkHandlerTest::expectInterfacesToPublish() {
+  EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_SPRITE_LIST, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_PLAYER_DATA, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_SOUND_LIST, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_LOBBY, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_SERVER_READY, _)).Times(1);
+}
+
+void NetworkHandlerTest::expectSubscribersToUnsubscribe() {
+  EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::CLIENT_GAME_STATE, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::INFO_MESSAGE, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::CLIENT_INPUT_LIST, _)).Times(1);
+  // 1 time for the networkHandler and 1 time for the server (via socket)
+  EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, _)).Times(2);
+}
+
+void NetworkHandlerTest::expectInterfacesToUnpublish() {
+  EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SPRITE_LIST)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_PLAYER_DATA)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SOUND_LIST)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_LOBBY)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SERVER_READY)).Times(1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Publish all the interafaces used by network handler
+// Verify that the network handler subscribes/unsubscribes to all interfaces and 
+// publishes/unpublishes all interfaces
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-void NetworkHandlerTest::setupInterfaces() {
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_GAME_STATE, &mGameStateInterface);
-  MessageHandler::get().publishInterface(Interfaces::INFO_MESSAGE, &mInfoInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_INPUT_LIST, &mInputInterface);
-  MessageHandler::get().publishInterface(Interfaces::CLIENT_DEBUG_MENU, &mDebugInterface);
-}
+TEST_F(NetworkHandlerTest, verifyBasicStartupAndShutdown) {
+  NetworkHandler networkHandler(mMessageHandlerMock);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Unpublish all the interafaces used by network handler
-///////////////////////////////////////////////////////////////////////////////////////////////////
-void NetworkHandlerTest::teardownInterfaces() {
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_GAME_STATE);
-  MessageHandler::get().unpublishInterface(Interfaces::INFO_MESSAGE);
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_INPUT_LIST);
-  MessageHandler::get().unpublishInterface(Interfaces::CLIENT_DEBUG_MENU);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Verify that the network handler subscribes/unsubscribes to all interfaces
-///////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F(NetworkHandlerTest, verifySubscribers) {
-  NetworkHandler networkHandler;
-
-  sf::sleep(sf::milliseconds(10)); // wait for messagehandler to handle new subscribers
-
-  ASSERT_EQ(mGameStateInterface.getNumberOfSubscribers(), 2);
-  ASSERT_EQ(mInfoInterface.getNumberOfSubscribers(), 1);
-  ASSERT_EQ(mInputInterface.getNumberOfSubscribers(), 1);
-  ASSERT_EQ(mDebugInterface.getNumberOfSubscribers(), 2);
-
+  expectSubscribersToUnsubscribe();
+  expectInterfacesToUnpublish();
   networkHandler.shutDown();
-
-  ASSERT_EQ(mGameStateInterface.getNumberOfSubscribers(), 0);
-  ASSERT_EQ(mInfoInterface.getNumberOfSubscribers(), 0);
-  ASSERT_EQ(mInputInterface.getNumberOfSubscribers(), 0);
-  ASSERT_EQ(mDebugInterface.getNumberOfSubscribers(), 0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Verify that the network handler publishes/unpublishes all interfaces
+// Verify that the network handler connets to a server socket after receiving the game state LOBBY
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F(NetworkHandlerTest, verifyInterfaces) {
-  NetworkHandler networkHandler;
+TEST_F(NetworkHandlerTest, verifySocketConnect) {
+  NetworkHandler networkHandler(mMessageHandlerMock);
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
 
-  sf::sleep(sf::milliseconds(10)); // wait for messagehandler to handle new subscribers
+  // Expect network handler to subscribe to ip messages
+  expectSubscribeTo(Interfaces::CLIENT_IP_LIST);
+  GameStateMessage gsmL(GAME_STATE::LOBBY);
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to handle new message
 
+  // Expect network handler to connect to server socket after receiving a ip message
+  IpMessage im("localhost", 1337);
+  mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
+  ASSERT_EQ(mServerSocket.listen(1337), sf::Socket::Done);
+  ASSERT_EQ(mServerSocket.accept(mClientSocket), sf::Socket::Done);
 
+  GameStateMessage gsmM(GAME_STATE::MAIN_MENU);
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmM.pack());
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to disconnect socket
+  ASSERT_EQ(mClientSocket.receive(sf::Packet()), sf::Socket::Disconnected);
 
+  expectSubscribersToUnsubscribe();
+  expectInterfacesToUnpublish();
   networkHandler.shutDown();
 }

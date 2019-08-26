@@ -197,6 +197,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   mMessageHandler->unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_INPUT_LIST, &mForwaringSubscriber);
 }
 
 void NetworkHandler::handleSubscribeIpListTimeoutMessage(sf::Packet& message) {

@@ -173,6 +173,7 @@
     <ClCompile Include="Client\GUI\Resources\GuiToggleButton.cpp" />
     <ClCompile Include="Client\Map.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandlerImpl.cpp" />
+    <ClCompile Include="Common\MessageHandler\Mock\MessageHandlerMock.cpp" />
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
@@ -336,7 +337,17 @@
     <Image Include="Client\Resources\Sprites\Character.png" />
     <Image Include="Client\Resources\Sprites\Player.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\gmock.1.8.1\build\native\gmock.targets" Condition="Exists('..\packages\gmock.1.8.1\build\native\gmock.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\gmock.1.8.1\build\native\gmock.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\gmock.1.8.1\build\native\gmock.targets'))" />
+  </Target>
 </Project>

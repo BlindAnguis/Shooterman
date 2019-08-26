@@ -10,7 +10,7 @@
 #include "../Shooterman/Common/Animation/Animation.cpp"
 #include "../Shooterman/Common/MessageHandler/Subscriber.cpp"
 #include "../Shooterman/Common/MessageHandler/Interface.cpp"
-#include "../Shooterman/Common/MessageHandler/MessageHandler.cpp"
+#include "../Shooterman/Common/MessageHandler/MessageHandler.h"
 #include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
 #include "../Shooterman/common/Messages/SubscribeTimeoutMessage.cpp"
 #include "../Shooterman/Common/Messages/SoundMessage.cpp"
