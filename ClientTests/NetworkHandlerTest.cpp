@@ -89,6 +89,45 @@ void NetworkHandlerTest::expectInterfacesToUnpublish() {
   EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SERVER_READY)).Times(1);
 }
 
+void NetworkHandlerTest::sendGameStateLobby(bool expectSubscribe) {
+  if (expectSubscribe) {
+    // Expect network handler to subscribe to ip messages
+    expectSubscribeTo(Interfaces::CLIENT_IP_LIST);
+  }
+  GameStateMessage gsmL(GAME_STATE::LOBBY);
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to handle new message
+}
+
+void NetworkHandlerTest::sendGameStateJoin(bool expectSubscribe) {
+  if (expectSubscribe) {
+    // Expect network handler to subscribe to ip messages
+    expectSubscribeTo(Interfaces::CLIENT_IP_LIST);
+  }
+  GameStateMessage gsmL(GAME_STATE::JOIN);
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to handle new message
+}
+
+void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
+  // Expect network handler to disconnect socket
+  EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::CLIENT_IP_LIST, _)).Times(1);
+  GameStateMessage gsmM(GAME_STATE::MAIN_MENU);
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmM.pack());
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to disconnect socket
+  if (hasSocketBeenConnected) {
+    ASSERT_EQ(mClientSocket.receive(sf::Packet()), sf::Socket::Disconnected); // Verify socket disconnected
+  }
+}
+
+void NetworkHandlerTest::sendIpMessage() {
+  // Expect network handler to connect to server socket after receiving a ip message
+  IpMessage im("localhost", 1337);
+  mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
+  ASSERT_EQ(mServerSocket.listen(1337), sf::Socket::Done);
+  ASSERT_EQ(mServerSocket.accept(mClientSocket), sf::Socket::Done);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Verify that the network handler subscribes/unsubscribes to all interfaces and 
 // publishes/unpublishes all interfaces
@@ -104,26 +143,65 @@ TEST_F(NetworkHandlerTest, verifyBasicStartupAndShutdown) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Verify that the network handler connets to a server socket after receiving the game state LOBBY
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F(NetworkHandlerTest, verifySocketConnect) {
+TEST_F(NetworkHandlerTest, verifySocketConnectByLobbyState) {
   NetworkHandler networkHandler(mMessageHandlerMock);
   sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
 
-  // Expect network handler to subscribe to ip messages
-  expectSubscribeTo(Interfaces::CLIENT_IP_LIST);
-  GameStateMessage gsmL(GAME_STATE::LOBBY);
-  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to handle new message
+  sendGameStateLobby();
+  sendIpMessage();
+  sendGameStateMainMenu();
 
-  // Expect network handler to connect to server socket after receiving a ip message
-  IpMessage im("localhost", 1337);
-  mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
-  ASSERT_EQ(mServerSocket.listen(1337), sf::Socket::Done);
-  ASSERT_EQ(mServerSocket.accept(mClientSocket), sf::Socket::Done);
+  expectSubscribersToUnsubscribe();
+  expectInterfacesToUnpublish();
+  networkHandler.shutDown();
+}
 
-  GameStateMessage gsmM(GAME_STATE::MAIN_MENU);
-  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmM.pack());
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to disconnect socket
-  ASSERT_EQ(mClientSocket.receive(sf::Packet()), sf::Socket::Disconnected);
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Verify that the network handler connets to a server socket after receiving the game state JOIN
+///////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F(NetworkHandlerTest, verifySocketConnectByJoinState) {
+  NetworkHandler networkHandler(mMessageHandlerMock);
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
+
+  sendGameStateJoin();
+  sendIpMessage();
+  sendGameStateMainMenu();
+
+  expectSubscribersToUnsubscribe();
+  expectInterfacesToUnpublish();
+  networkHandler.shutDown();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Verify that the network handler only subscribes to ip messages once when receiving both game 
+// state LOBBY and JOIN (should not happen in normal case)
+///////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F(NetworkHandlerTest, verifySocketConnectByLobbyJoinState) {
+  NetworkHandler networkHandler(mMessageHandlerMock);
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
+
+  sendGameStateLobby();
+  sendGameStateJoin(false);
+  sendIpMessage();
+  sendGameStateMainMenu();
+
+  expectSubscribersToUnsubscribe();
+  expectInterfacesToUnpublish();
+  networkHandler.shutDown();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Verify that the network handler subscribes again after going back to main menu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F(NetworkHandlerTest, verifySubscribeToIpTwice) {
+  NetworkHandler networkHandler(mMessageHandlerMock);
+  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
+
+  sendGameStateLobby();
+  sendGameStateMainMenu(false);
+  sendGameStateLobby();
+  sendIpMessage();
+  sendGameStateMainMenu();
 
   expectSubscribersToUnsubscribe();
   expectInterfacesToUnpublish();

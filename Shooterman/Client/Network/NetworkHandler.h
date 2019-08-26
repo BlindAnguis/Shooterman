@@ -20,6 +20,7 @@ public:
 
 private:
   bool mRunning = true;
+  bool mSubscribedToIpMessage = false;
   std::unique_ptr<std::thread> mNetworkHandlerThread;
   Interface mLobbyInterface;
   Interface mSpriteListInterface;

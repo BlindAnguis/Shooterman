@@ -75,6 +75,10 @@ void NetworkHandler::run() {
       break;
     case STATE::Disconnecting:
       mSocket.disconnect();
+      if (mSubscribedToIpMessage) {
+        mMessageHandler->unsubscribeTo(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+        mSubscribedToIpMessage = false;
+      }
       mCurrentState = STATE::Disconnected;
       break;
     default:
@@ -202,6 +206,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
 
 void NetworkHandler::handleSubscribeIpListTimeoutMessage(sf::Packet& message) {
   TRACE_ERROR("Subscribe to IpList timed out");
+  mSubscribedToIpMessage = false;
 }
 
 void NetworkHandler::handleIpListMessage(sf::Packet& message) {
@@ -220,10 +225,9 @@ void NetworkHandler::handleChangeGameStateMessage(sf::Packet & message) {
   GameStateMessage gsm(message);
   if (gsm.getGameState() == GAME_STATE::MAIN_MENU) {
     mCurrentState = STATE::Disconnecting;
-  } else if (gsm.getGameState() == GAME_STATE::LOBBY) {
+  } else if (!mSubscribedToIpMessage && (gsm.getGameState() == GAME_STATE::LOBBY || gsm.getGameState() == GAME_STATE::JOIN)) {
     mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
-  } else if (gsm.getGameState() == GAME_STATE::JOIN) {
-    mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+    mSubscribedToIpMessage = true;
   }
 }
 

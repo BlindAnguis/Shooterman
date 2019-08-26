@@ -21,6 +21,12 @@ public:
   void SetUp();
   void TearDown();
 
+protected:
+  std::shared_ptr<MessageHandlerMock> mMessageHandlerMock;
+  std::map<std::string, Subscriber*> mSubscriberMap;
+  sf::TcpListener mServerSocket;
+  sf::TcpSocket mClientSocket;
+
   void expectSubscribeTo(std::string interfaceName);
   void expectSubscribe(std::string interfaceName);
   void expectSubscribersToSubscribe();
@@ -28,10 +34,9 @@ public:
   void expectSubscribersToUnsubscribe();
   void expectInterfacesToUnpublish();
 
-protected:
-  std::shared_ptr<MessageHandlerMock> mMessageHandlerMock;
-  std::map<std::string, Subscriber*> mSubscriberMap;
-  sf::TcpListener mServerSocket;
-  sf::TcpSocket mClientSocket;
+  void sendGameStateLobby(bool expectSubscribe = true);
+  void sendGameStateJoin(bool expectSubscribe = true);
+  void sendGameStateMainMenu(bool hasSocketBeenConnected = true);
+  void sendIpMessage();
 };
 
