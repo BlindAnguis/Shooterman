@@ -38,6 +38,6 @@ protected:
   void sendGameStateLobby(bool expectSubscribe = true);
   void sendGameStateJoin(bool expectSubscribe = true);
   void sendGameStateMainMenu(bool hasSocketBeenConnected = true);
-  void sendIpMessage();
+  void sendIpMessage(Soc::Status connectionResult = Soc::Status::Done);
 };
 

@@ -26,6 +26,7 @@
 
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::Return;
 
 NetworkHandlerTest::NetworkHandlerTest() {}
 
@@ -135,12 +136,12 @@ void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
   mNetworkHandler->run();
 }
 
-void NetworkHandlerTest::sendIpMessage() {
+void NetworkHandlerTest::sendIpMessage(Soc::Status connectionResult) {
   // Expect network handler to connect to server socket after receiving a ip message
   IpMessage im("localhost", 1337);
   mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
   
-  EXPECT_CALL(*mSocketMock, connect("localhost", 1337, _));
+  EXPECT_CALL(*mSocketMock, connect("localhost", 1337, _)).WillOnce(Return(connectionResult));
   mNetworkHandler->handleSubscribers();
   mNetworkHandler->run();
 }
@@ -191,4 +192,26 @@ TEST_F(NetworkHandlerTest, verifySubscribeToIpTwice) {
   sendGameStateLobby();
   sendIpMessage();
   sendGameStateMainMenu();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Verify that the network handler subscribes again after going back to main menu
+///////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F(NetworkHandlerTest, verifyGoesBackToCorrectStateAfterFailedSocketConnection) {
+  sendGameStateLobby();
+
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->setCallback([](sf::Packet packet) {
+    int id = -1;
+    packet >> id;
+    ASSERT_EQ(id, MessageId::CHANGE_GAME_STATE);
+    GameStateMessage gsm(packet);
+    ASSERT_EQ(gsm.getGameState(), GAME_STATE::PREVIOUS);
+  });
+
+  sendIpMessage(Soc::Status::NotReady);
+
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_CALL(*mSocketMock, connect("localhost", 1337, _)).WillOnce(Return(Soc::Status::NotReady));
+    mNetworkHandler->run();
+  }
 }

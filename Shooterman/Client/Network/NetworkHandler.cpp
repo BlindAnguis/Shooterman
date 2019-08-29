@@ -71,7 +71,7 @@ void NetworkHandler::run() {
         InfoMessage msg("Connection failed.", 3);
         mInfoMessageSubscriber.reverseSendMessage(msg.pack());
 
-        GameStateMessage gsm(GAME_STATE::JOIN);
+        GameStateMessage gsm(GAME_STATE::PREVIOUS);
         mGameStateSubscriber.reverseSendMessage(gsm.pack());
       }
     }
