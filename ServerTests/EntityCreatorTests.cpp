@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "gtest/gtest.h"
+
 #include "../Shooterman/Server/EntityCreator/EntityCreator.cpp"
 #include "../Shooterman/Server/EntityManager/EntityManager.cpp"
 #include "../Shooterman/Server/Systems/GridSystem/GridSystem.cpp"
@@ -10,17 +12,16 @@
 #include "../Shooterman/Common/Animation/Animation.cpp"
 #include "../Shooterman/Common/MessageHandler/Subscriber.cpp"
 #include "../Shooterman/Common/MessageHandler/Interface.cpp"
-#include "../Shooterman/Common/MessageHandler/MessageHandler.h"
+#include "../Shooterman/Common/MessageHandler/Mock/MessageHandlerMock.cpp"
 #include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
 #include "../Shooterman/common/Messages/SubscribeTimeoutMessage.cpp"
 #include "../Shooterman/Common/Messages/SoundMessage.cpp"
-#include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
-#include "../Shooterman/Common/Messages/SubscribeTimeoutMessage.cpp"
+
+using ::testing::_;
+using ::testing::Return;
 
 TEST(EntityCreatorTests, createMage) {
-  std::shared_ptr<MessageHandler> mh;
-
-  EntityCreator e = EntityCreator(mh);
+  EntityCreator e = EntityCreator(std::make_shared<MessageHandlerMock>());
   sf::Vector2f magePosition = sf::Vector2f(10, 50); // Arbitrary position
   int numberOfMageAnimations = 17;
   auto mage = e.createPlayer(PlayerClass::Mage, magePosition);
@@ -80,8 +81,7 @@ TEST(EntityCreatorTests, createMage) {
 }
 
 TEST(EntityCreatorTests, createKnight) {
-  std::shared_ptr<MessageHandler> mh;
-  EntityCreator e = EntityCreator(mh);
+  EntityCreator e = EntityCreator(std::make_shared<MessageHandlerMock>());
   sf::Vector2f knightPosition = sf::Vector2f(550, 230); // Arbitrary position
   int numberOfKnightAnimations = 17;
   auto knight = e.createPlayer(PlayerClass::Knight, knightPosition);
@@ -141,8 +141,11 @@ TEST(EntityCreatorTests, createKnight) {
 }
 
 TEST(EntityCreatorTests, createSpearman) {
-  std::shared_ptr<MessageHandler> mh;
-  EntityCreator e = EntityCreator(mh);
+  auto messageHandlerMock = std::make_shared<MessageHandlerMock>();
+  EXPECT_CALL(*messageHandlerMock, subscribeTo(_, _)).WillOnce(Return(true));
+  EXPECT_CALL(*messageHandlerMock, unsubscribeTo(_, _));
+
+  EntityCreator e = EntityCreator(messageHandlerMock);
   sf::Vector2f spearmanPosition = sf::Vector2f(1002, 1004); // Arbitrary position
   int numberOfSpearmanAnimations = 17;
   auto spearman = e.createPlayer(PlayerClass::Spearman, spearmanPosition);
@@ -202,8 +205,7 @@ TEST(EntityCreatorTests, createSpearman) {
 }
 
 TEST(EntityCreatorTests, createRandomPickup) {
-  std::shared_ptr<MessageHandler> mh;
-  EntityCreator e = EntityCreator(mh);
+  EntityCreator e = EntityCreator(std::make_shared<MessageHandlerMock>());
   auto randomPickup = e.createRandomPickup();
   
   // Get all components a spearman is suppose to have.
