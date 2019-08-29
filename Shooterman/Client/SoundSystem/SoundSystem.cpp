@@ -1,23 +1,45 @@
 #include "SoundSystem.h"
 
 #include "../../Common/Interfaces.h"
+#include "../../Common/Messages/SoundMessage.h"
 
 SoundSystem::SoundSystem(std::shared_ptr<MessageHandler> messageHandler) : mCurrentGameState(GAME_STATE::NO_STATE), mMessageHandler(messageHandler) {
   mName = "CLIENT: SOUND_SYSTEM";
+}
+
+SoundSystem::~SoundSystem() { }
+
+void SoundSystem::start() {
   mSoundSubcription.addSignalCallback(MessageId::SOUND_LIST, std::bind(&SoundSystem::handleSoundListMessage, this, std::placeholders::_1));
   mSoundSubcription.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&SoundSystem::handleChangeGameStateMessage, this, std::placeholders::_1));
 
   GameStateMessage gsm(GAME_STATE::MAIN_MENU);
   mSoundSubcription.sendMessage(gsm.pack());
 
-  mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
+  mSubscribedToSounds = mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
+
+  startListenToSubscriber(&mSoundSubcription);
 
   loadSounds();
 }
 
-SoundSystem::~SoundSystem() {
+void SoundSystem::run() {
+  if (!mSubscribedToSounds) {
+    mSubscribedToSounds = mMessageHandler->subscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
+  }
+
+  while (!mPlayQueue.empty() && mPlayQueue.front().getStatus() == sf::Sound::Stopped) {
+    //TRACE_INFO("Sound has stopped");
+    mPlayQueue.pop();
+  }
+  sf::sleep(sf::milliseconds(1));
+}
+
+void SoundSystem::stop() {
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
+
+  stopListenToSubscriber(&mSoundSubcription);
 }
 
 void SoundSystem::loadSounds() {
@@ -85,17 +107,5 @@ void SoundSystem::handleSoundListMessage(sf::Packet& message) {
     mPlayQueue.push(sf::Sound());
     mPlayQueue.back().setBuffer(mSoundBuffers.at(sm.getSound(i)));
     mPlayQueue.back().play();
-  }
-}
-
-void SoundSystem::update() {
-  if (!mSubscribedToSounds) {
-    mSubscribedToSounds = mMessageHandler->subscribeTo(Interfaces::CLIENT_SOUND_LIST, &mSoundSubcription);
-  }
-  mSoundSubcription.handleMessages();
-
-  while (!mPlayQueue.empty() && mPlayQueue.front().getStatus() == sf::Sound::Stopped) {
-    //TRACE_INFO("Sound has stopped");
-    mPlayQueue.pop();
   }
 }

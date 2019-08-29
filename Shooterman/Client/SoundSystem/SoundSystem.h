@@ -2,20 +2,23 @@
 
 #include "../../Common/Sounds.h"
 #include "../../Common/Trace.h"
-#include "../Network/NetworkHandler.h"
-#include "../../Common/Messages/SoundMessage.h"
 #include "../../Common/Messages/GameStateMessage.h"
+#include "../../Common/MessageHandler/MessageHandler.h"
+#include "../../Common/Process/Runnable.h"
 
 #include "SFML/Audio.hpp"
 
 #include <vector>
 #include <map>
 
-class SoundSystem : Trace {
+class SoundSystem : public Runnable, Trace {
 public:
   SoundSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~SoundSystem();
-  void update();
+  
+  void start() override;
+  void run() override;
+  void stop() override;
 
 private:
   bool mSubscribedToSounds = false;

@@ -39,7 +39,7 @@ void ClientMain::run() {
   Process guiProcess(std::move(std::make_unique<Gui>(mMessageHandler)));
   std::shared_ptr<GameLoop> server;
   Process networkHandlerProcess(std::move(std::make_unique<NetworkHandler>(mMessageHandler, std::make_shared<SocketFactoryImpl>())));
-  SoundSystem soundSystem(mMessageHandler);
+  Process soundSystemProcess(std::move(std::make_unique<SoundSystem>(mMessageHandler)));
 
   mServerStarted = false;
   mGameStateStack.push(GAME_STATE::MAIN_MENU);
@@ -97,7 +97,7 @@ void ClientMain::run() {
       default:
         TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
     }
-    soundSystem.update();
+
     sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS));
     mGameStateInterface.handleMessages();
     mSystemMessageInterface.handleMessages();
@@ -106,6 +106,7 @@ void ClientMain::run() {
   networkHandlerProcess.shutdown();
   inputProcess.shutdown();
   guiProcess.shutdown();
+  soundSystemProcess.shutdown();
   if (mServerStarted) {
     server->stop();
     server = nullptr;
