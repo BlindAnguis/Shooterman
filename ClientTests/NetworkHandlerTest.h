@@ -5,9 +5,6 @@
 #include <memory>
 #include <map>
 
-#include <SFML/Network/TcpListener.hpp>
-#include <SFML/Network/TcpSocket.hpp>
-
 #include "../Shooterman/Client/Network/NetworkHandler.cpp"
 #include "../Shooterman/Common/MessageHandler/Mock/MessageHandlerMock.cpp"
 #include "../Shooterman/Common/Network/Mock/SocketMock.cpp"

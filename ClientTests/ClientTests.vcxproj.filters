@@ -6,15 +6,24 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc" />
+    <ClCompile Include="InputTest.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NetworkHandlerTest.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="InputTest.h">
+      <Filter>Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Network">
       <UniqueIdentifier>{0d7e999e-029e-43a5-bae2-4d7ce2f345d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{1c8edc32-b729-4a8e-bfda-c4873d2d2543}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

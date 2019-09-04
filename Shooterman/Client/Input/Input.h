@@ -2,6 +2,7 @@
 
 #include <thread>
 
+#include "Keyboard.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Process/Runnable.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
@@ -10,7 +11,7 @@
 
 class Input : public Runnable, public Trace {
 public:
-	Input(std::shared_ptr<MessageHandler> messageHandler);
+	Input(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<Keyboard> keyboard);
   ~Input();
 
   void start() override;
@@ -20,6 +21,7 @@ public:
 private:
   bool recentlyChangedState = true;
   std::unique_ptr<std::thread> mInputThread;
+  std::shared_ptr<Keyboard> mKeyboard;
   Subscriber mSubscriber;
   Subscriber mGameStateMessageSubscriber;
   Interface mClientInputInterface;

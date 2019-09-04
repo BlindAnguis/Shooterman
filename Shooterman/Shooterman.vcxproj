@@ -237,6 +237,7 @@
     <ClCompile Include="Server\Systems\NetworkSystem\NetworkSystem.cpp" />
     <ClCompile Include="Server\Systems\ObservableIf.cpp" />
     <ClCompile Include="Server\Systems\RenderSystem\RenderSystem.cpp" />
+    <ClCompile Include="Client\Input\SfmlKeyboard.cpp" />
     <ClCompile Include="Shooterman.cpp" />
     <ClCompile Include="Common\Messages\SoundMessage.cpp" />
     <ClCompile Include="Client\SoundSystem\SoundSystem.cpp" />
@@ -259,6 +260,9 @@
     <ClInclude Include="Client\GUI\Resources\GuiProgressBar.h" />
     <ClInclude Include="Client\GUI\Resources\GuiText.h" />
     <ClInclude Include="Client\GUI\Resources\GuiToggleButton.h" />
+    <ClInclude Include="Client\Input\Keyboard.h" />
+    <ClInclude Include="Client\Input\Mock\KeyboardMock.cpp" />
+    <ClInclude Include="Client\Input\SfmlKeyboard.h" />
     <ClInclude Include="Client\Map.h" />
     <ClInclude Include="Common\Interfaces.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandlerImpl.h" />

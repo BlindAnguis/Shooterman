@@ -1,6 +1,7 @@
 #include "ClientMain.h"
 
 #include "../Input/Input.h"
+#include "../Input/SfmlKeyboard.h"
 #include "../GUI/Gui.h"
 #include "../Network/NetworkHandler.h"
 #include "../SoundSystem/SoundSystem.h"
@@ -34,7 +35,7 @@ ClientMain::ClientMain() {
 }
 
 void ClientMain::run() {
-  Process inputProcess(std::move(std::make_unique<Input>(mMessageHandler)));
+  Process inputProcess(std::move(std::make_unique<Input>(mMessageHandler, std::make_shared<SfmlKeyboard>())));
   Process guiProcess(std::move(std::make_unique<Gui>(mMessageHandler)));
   std::shared_ptr<GameLoop> server;
   Process networkHandlerProcess(std::move(std::make_unique<NetworkHandler>(mMessageHandler, std::make_shared<SocketFactoryImpl>())));

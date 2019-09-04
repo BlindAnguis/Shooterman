@@ -1,8 +1,5 @@
 #include "Input.h"
 
-#include <SFML/Window/Mouse.hpp>
-#include <SFML/Window/Keyboard.hpp>
-
 #include "../../Common/KeyBindings.h"
 #include "../../Common/Constants.h"
 #include "../../Common/Interfaces.h"
@@ -11,7 +8,7 @@
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
 
-Input::Input(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler), mSubscriber("INPUT") {
+Input::Input(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<Keyboard> keyboard) : mMessageHandler(messageHandler), mSubscriber("INPUT"), mKeyboard(keyboard) {
   mName = "CLIENT: INPUT";
 }
 Input::~Input() { }
@@ -49,11 +46,11 @@ void Input::run() {
       // Do nothing
       break;
     case GAME_STATE::PAUSE:
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && recentlyChangedState) {
+      if (mKeyboard->isKeyPressed(KEY::ESC) && recentlyChangedState) {
         break;
       }
       recentlyChangedState = false;
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+      if (mKeyboard->isKeyPressed(KEY::ESC)) {
         GameStateMessage gsm(GAME_STATE::PLAYING);
         TRACE_SEND("New Game State: PLAYING");
 		    mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
@@ -61,34 +58,34 @@ void Input::run() {
       }
       break;
     case GAME_STATE::PLAYING: {
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && recentlyChangedState) {
+      if (mKeyboard->isKeyPressed(KEY::ESC) && recentlyChangedState) {
         break;
       }
       recentlyChangedState = false;
       keyboardBitmask = 0;
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+      if (mKeyboard->isKeyPressed(KEY::A) || mKeyboard->isKeyPressed(KEY::LEFT)) {
         keyboardBitmask |= A_KEY;
       }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      if (mKeyboard->isKeyPressed(KEY::D) || mKeyboard->isKeyPressed(KEY::RIGHT)) {
         keyboardBitmask |= D_KEY;
       }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      if (mKeyboard->isKeyPressed(KEY::W) || mKeyboard->isKeyPressed(KEY::UP)) {
         keyboardBitmask |= W_KEY;
       }
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+      if (mKeyboard->isKeyPressed(KEY::S) || mKeyboard->isKeyPressed(KEY::DOWN)) {
         keyboardBitmask |= S_KEY;
       }
-      if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        keyboardBitmask |= LEFT_MOUSE;
+      if (mKeyboard->isKeyPressed(KEY::LEFT_MOUSE)) {
+        keyboardBitmask |= LEFT_MOUSE_VALUE;
       }
-      if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-        keyboardBitmask |= RIGHT_MOUSE;
+      if (mKeyboard->isKeyPressed(KEY::RIGHT_MOUSE)) {
+        keyboardBitmask |= RIGHT_MOUSE_VALUE;
       }
 
       InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
       mClientInputInterface.pushMessage(im.pack());
 
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+      if (mKeyboard->isKeyPressed(KEY::ESC)) {
         GameStateMessage gsm(GAME_STATE::PAUSE);
         TRACE_SEND("New Game State: PAUSE");
         mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());

@@ -36,9 +36,11 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="InputTest.h" />
     <ClInclude Include="NetworkHandlerTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InputTest.cpp" />
     <ClCompile Include="NetworkHandlerTest.cpp" />
   </ItemGroup>
   <ItemGroup>

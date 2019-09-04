@@ -94,6 +94,7 @@
     <ClCompile Include="Common\Network\SocketFactoryImpl.cpp" />
     <ClCompile Include="Common\Network\SocketImpl.cpp" />
     <ClCompile Include="Common\Network\Mock\SocketMock.cpp" />
+    <ClCompile Include="Client\Input\SfmlKeyboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -203,6 +204,9 @@
     <ClInclude Include="Common\Network\SocketFactory.h" />
     <ClInclude Include="Common\Network\SocketImpl.h" />
     <ClInclude Include="Common\Network\Socket.h" />
+    <ClInclude Include="Client\Input\Keyboard.h" />
+    <ClInclude Include="Client\Input\SfmlKeyboard.h" />
+    <ClInclude Include="Client\Input\Mock\KeyboardMock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />
