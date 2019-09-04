@@ -2,11 +2,11 @@
 
 ObservableIf::~ObservableIf() {
 }
-void ObservableIf::attach(ObserverIf* subscriber) {
+void ObservableIf::attach(std::shared_ptr<ObserverIf> subscriber) {
   mObservers.push_back(subscriber);
 }
 
-void ObservableIf::detach(ObserverIf* subscriber) {
+void ObservableIf::detach(std::shared_ptr<ObserverIf> subscriber) {
   // TODO: Remove subscriper from vector.
 }
 

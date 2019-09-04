@@ -26,11 +26,6 @@ NetworkSystem::~NetworkSystem() {
   TRACE_DEBUG1("Enter Destructor");
 }
 
-NetworkSystem& NetworkSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static NetworkSystem instance(messageHandler);
-  return instance;
-}
-
 void NetworkSystem::start() {
   TRACE_INFO("Starting module...");
   mNetworkSystemThread = std::make_unique<std::thread>(&NetworkSystem::run, this);

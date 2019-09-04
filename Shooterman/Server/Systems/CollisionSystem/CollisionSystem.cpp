@@ -4,24 +4,19 @@
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
 
-CollisionSystem::CollisionSystem(std::shared_ptr<MessageHandler> messageHandler)
+CollisionSystem::CollisionSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<DeleteSystem> deleteSystem)
   :
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
-  mDeleteSystem(&DeleteSystem::get()),
+  mDeleteSystem(deleteSystem),
   mMessageHandler(messageHandler) {
   mName = "ENGINE: COLLISION_SYSTEM";
 }
 
-CollisionSystem& CollisionSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static CollisionSystem instance(messageHandler);
-  return instance;
-}
-
 CollisionSystem::~CollisionSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
-void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem) {
+void CollisionSystem::handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, std::shared_ptr<GridSystem> gridSystem) {
   if (!mDebugMenuSubscribed) {
     mDebugMenuSubscribed = mMessageHandler->subscribeTo(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuSubscriber);
     if (mDebugMenuSubscribed) {

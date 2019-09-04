@@ -7,10 +7,10 @@ class ObservableIf
 {
 public:
   virtual ~ObservableIf();
-  virtual void attach(ObserverIf* subscriber);
-  virtual void detach(ObserverIf* subscriber);
+  virtual void attach(std::shared_ptr<ObserverIf> subscriber);
+  virtual void detach(std::shared_ptr<ObserverIf> subscriber);
   virtual void notify(InputMessage message);
   virtual void notify(int message, int ID);
 protected:
-  std::vector<ObserverIf*> mObservers;
+  std::vector<std::shared_ptr<ObserverIf>> mObservers;
 };

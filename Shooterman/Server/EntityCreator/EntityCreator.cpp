@@ -1,6 +1,5 @@
 #include "EntityCreator.h"
 #include "../Systems/CollisionSystem/Collision.h"
-#include "../Systems/ManaSystem/ManaSystem.h"
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
 #include "../../Common/Interfaces.h"
 #include "../../Common/Messages/SoundMessage.h"
@@ -13,7 +12,7 @@
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MIN 15
 #define MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX 40
 
-EntityCreator::EntityCreator(std::shared_ptr<MessageHandler> messageHandler) :
+EntityCreator::EntityCreator(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<DeleteSystem> deleteSystem, EntityCreatorSystem* entityCreatorSystem, std::shared_ptr<GridSystem> gridSystem, std::shared_ptr<ManaSystem> manaSystem) :
   mEntityManager(&EntityManager::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
@@ -23,9 +22,11 @@ EntityCreator::EntityCreator(std::shared_ptr<MessageHandler> messageHandler) :
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mGridSystem(&GridSystem::get()),
-  mDeleteSystem(&DeleteSystem::get()),
-  mMessageHandler(messageHandler)
+  mGridSystem(gridSystem),
+  mDeleteSystem(deleteSystem),
+  mEntityCreatorSystem(entityCreatorSystem),
+  mMessageHandler(messageHandler),
+  mManaSystem(manaSystem)
 {
   mName = "SERVER: ENTITY_CREATOR";
   loadTexture(Textures::CharacterBandana, "CharacterBandana1.png");
@@ -181,7 +182,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
     if (mc) {
       if (mc->currentMana >= MAGE_MANA_COST) {
         createBullet(entityId, 0, player->nextAttackMousePosition);
-        ManaSystem::get().changeMana(entityId, -MAGE_MANA_COST);
+        mManaSystem->changeMana(entityId, -MAGE_MANA_COST);
         auto attackClock = mClockComponentManager->getComponent(entityId);
         //attackClock->clock.restart();
       }
@@ -197,7 +198,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
       float posX = (rand() % (1024 - 32)) + 32.0f;
       float posY = (rand() % (1024 - 32)) + 32.0f;
       framesUntilAttack += (int)(rand() % (5 - 2) + 2);
-      EntityCreatorSystem::get(mMessageHandler).addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
+      mEntityCreatorSystem->addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
     }
   };
 

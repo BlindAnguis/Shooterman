@@ -10,7 +10,6 @@ public:
   ManaSystem();
   ~ManaSystem();
   void update();
-  static ManaSystem& get();
   void changeMana(int entityId, int addedManaEffect);
 private:
   ComponentManager<ManaComponent>* mManaComponentManager;

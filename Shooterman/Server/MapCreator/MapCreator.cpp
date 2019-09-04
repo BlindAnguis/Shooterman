@@ -3,7 +3,7 @@
 
 MapCreator::MapCreator(
   EntityManager *entityManager,
-  GridSystem *gridSystem
+  std::shared_ptr<GridSystem> gridSystem
 ) :
   mEntityManager(entityManager),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),

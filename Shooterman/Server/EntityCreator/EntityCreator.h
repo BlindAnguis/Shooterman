@@ -5,11 +5,14 @@
 #include "../EntityManager/EntityManager.h"
 #include "../Systems/GridSystem/GridSystem.h"
 #include "../Systems/DeleteSystem/DeleteSystem.h"
+#include "../Systems/ManaSystem/ManaSystem.h"
 #include "../../Common/Trace.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/MessageHandler/Subscriber.h"
 
 #include <array>
+
+class EntityCreatorSystem;
 
 #define MAGE_MAX_VELOCITY 4.5f
 #define MAGE_MAX_HEALTH 100
@@ -41,7 +44,7 @@
 class EntityCreator : Trace
 {
 public:
-  EntityCreator(std::shared_ptr<MessageHandler> messageHandler);
+  EntityCreator(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<DeleteSystem> deleteSystem, EntityCreatorSystem* entityCreatorSystem, std::shared_ptr<GridSystem> gridSystem, std::shared_ptr<ManaSystem> manaSystem);
   ~EntityCreator();
 
   Entity* createPlayer(PlayerClass playerClass, sf::Vector2f position);
@@ -50,7 +53,7 @@ public:
 
   void clearSprites();
 
-  DeleteSystem *mDeleteSystem;
+  std::shared_ptr<DeleteSystem> mDeleteSystem;
 
 private:
   EntityManager *mEntityManager;
@@ -63,10 +66,12 @@ private:
   ComponentManager<PlayerComponent> *mPlayerComponentManager;
   ComponentManager<HealthChangerComponent> *mHealthChangerComponentManager;
   
-  GridSystem *mGridSystem;
+  std::shared_ptr<GridSystem> mGridSystem;
 
   Subscriber mSoundSubscriber;
   std::shared_ptr<MessageHandler> mMessageHandler;
+  EntityCreatorSystem* mEntityCreatorSystem;
+  std::shared_ptr<ManaSystem> mManaSystem;
   std::map<Textures, sf::Texture*> mTextures;
 
   Entity* createPlayerBase(float maxVelocity, Textures textureType, sf::Vector2f position, int health, int attackSpeed);

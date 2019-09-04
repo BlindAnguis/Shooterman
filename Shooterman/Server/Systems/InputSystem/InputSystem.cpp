@@ -26,11 +26,6 @@ void InputSystem::resetSystem() {
   mObservers.clear();
 }
 
-InputSystem& InputSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static InputSystem instance(messageHandler);
-  return instance;
-}
-
 std::queue<sf::Packet> InputSystem::getInput() {
   if (!mIsSubscribedToInput) {
     mIsSubscribedToInput = mMessageHandler->subscribeTo(Interfaces::SERVER_INPUT_LIST, &mInputSubscriber);

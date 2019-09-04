@@ -1,21 +1,13 @@
 #include "RenderSystem.h"
 
-RenderSystem::RenderSystem(std::shared_ptr<MessageHandler> messageHandler)
+RenderSystem::RenderSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<NetworkSystem> networkSystem)
   : mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
-  mMessageHandler(messageHandler) {
+  mMessageHandler(messageHandler),
+  mNetworkSystem(networkSystem) {
   mName = "SERVER: RENDER_SYSTEM";
 }
 
 RenderSystem::~RenderSystem() { TRACE_DEBUG1("Enter Destructor"); }
-
-RenderSystem& RenderSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static RenderSystem instance(messageHandler);
-  return instance;
-}
-
-void RenderSystem::resetSystem() {
-  mSentCachedSpriteList = false;
-}
 
 void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClients) {
 
@@ -39,7 +31,7 @@ void RenderSystem::render(std::shared_ptr<std::map<int, Player*>> connectedClien
   }
   auto first = c.getElapsedTime().asMicroseconds();
   c.restart();
-  NetworkSystem::get(mMessageHandler).setRenderData(sm);
+  mNetworkSystem->setRenderData(sm);
   auto second = c.getElapsedTime().asMicroseconds();
   //TRACE_INFO("Render f: " << first << "us, s: " << second << "us");
 }

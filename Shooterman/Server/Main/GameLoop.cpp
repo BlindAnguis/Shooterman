@@ -27,7 +27,7 @@ void GameLoop::stop() {
 }
 
 void GameLoop::gameLoop() {
-  mNetworkSystem = &NetworkSystem::get(mMessageHandler);
+  mNetworkSystem = std::make_shared<NetworkSystem>(mMessageHandler);
   GAME_STATE state;
   mRunning = true;
   TRACE_INFO("Gameloop started");
@@ -75,7 +75,8 @@ void GameLoop::gameLoop() {
     }
   }
 
-  HostListener hostListener = HostListener(mMessageHandler);
+  HostListener hostListener = HostListener(mMessageHandler, mNetworkSystem);
+  InputSystem inputSystem(mMessageHandler);
   hostListener.startListening();
   mNetworkSystem->start();
   sf::Clock c;
@@ -86,10 +87,10 @@ void GameLoop::gameLoop() {
   }
   ServerReadyMessage srm;
   serverReadySubscriber.reverseSendMessage(srm.pack());
-  Engine world = Engine(gameMap2, mMessageHandler);
+  Engine world = Engine(gameMap2, mMessageHandler, mNetworkSystem);
   while (mRunning) {
     c.restart();
-    state = InputSystem::get(mMessageHandler).getLatestGameStateMessage();
+    state = inputSystem.getLatestGameStateMessage();
 
     switch (state) {
       case GAME_STATE::LOBBY:
@@ -148,7 +149,6 @@ void GameLoop::gameLoop() {
   if (hostListener.isListening()) {
     hostListener.stopListening();
   }
-  InputSystem::get(mMessageHandler).resetSystem();
   world.shutDown();
   mNetworkSystem->shutDown();
 }

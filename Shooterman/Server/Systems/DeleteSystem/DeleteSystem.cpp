@@ -4,11 +4,6 @@ DeleteSystem::DeleteSystem() { mName = "SERVER: DELETE_SYSTEM"; }
 
 DeleteSystem::~DeleteSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
-DeleteSystem& DeleteSystem::get() {
-  static DeleteSystem instance;
-  return instance;
-}
-
 void DeleteSystem::addEntity(int entityId) {
   mEntitiesToRemove.emplace_back(entityId);
 }

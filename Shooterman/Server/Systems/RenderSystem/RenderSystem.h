@@ -14,16 +14,15 @@
 
 class RenderSystem : Trace {
 public:
-  RenderSystem(std::shared_ptr<MessageHandler> messageHandler);
-  static RenderSystem& get(std::shared_ptr<MessageHandler> messageHandler);
+  RenderSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<NetworkSystem> networkSystem);
   ~RenderSystem();
   void render(std::shared_ptr<std::map<int, Player*>> connectedClients);
-  void resetSystem();
 
 private:
   bool mSentCachedSpriteList = false;
   ComponentManager<RenderComponent>* mRenderComponentManager;
   std::shared_ptr<MessageHandler> mMessageHandler;
+  std::shared_ptr<NetworkSystem> mNetworkSystem;
 
   void renderCached(std::shared_ptr<std::map<int, Player*>> connectedClients);
 };

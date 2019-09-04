@@ -20,12 +20,6 @@ GridSystem::~GridSystem()
   TRACE_DEBUG1("Enter Destructor");
 }
 
-GridSystem & GridSystem::get()
-{
-  static GridSystem instance;
-  return instance;
-}
-
 void GridSystem::resetGridSystem() {
   mGrid.clear();
   for (int i = 0; i < mGridBoxSize; i++) {

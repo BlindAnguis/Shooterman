@@ -10,7 +10,6 @@ class AnimationSystem : Trace
 public:
   AnimationSystem();
   ~AnimationSystem();
-  static AnimationSystem& get();
   void update();
 private:
   ComponentManager<AnimationComponent>* mAnimationComponentManager;

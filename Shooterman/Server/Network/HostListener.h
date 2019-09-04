@@ -8,11 +8,12 @@
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Player.h"
+#include "../Systems/NetworkSystem/NetworkSystem.h"
 
 class HostListener : Trace
 {
 public:
-  HostListener(std::shared_ptr<MessageHandler> messageHandler);
+  HostListener(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<NetworkSystem> networkSystem);
   ~HostListener();
   void startListening();
   std::shared_ptr<std::map<int, Player*>> stopListening();
@@ -26,6 +27,7 @@ private:
   int getNextID() {
     return ++lastID;
   }
+  std::shared_ptr<NetworkSystem> mNetworkSystem;
   int lastID = 0;
   std::thread* mHostListenerThread;
   bool mRunning = false;

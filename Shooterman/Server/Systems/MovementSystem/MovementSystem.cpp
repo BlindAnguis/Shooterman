@@ -1,12 +1,12 @@
 #include "MovementSystem.h"
 #include "../../../Common/KeyBindings.h"
 
-MovementSystem::MovementSystem(std::shared_ptr<MessageHandler> messageHandler) :
+MovementSystem::MovementSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<CollisionSystem> collisionSystem, std::shared_ptr<GridSystem> gridSystem) :
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
-  mCollisionSystem(&CollisionSystem::get(messageHandler)),
-  mGridSystem(&GridSystem::get()),
+  mCollisionSystem(collisionSystem),
+  mGridSystem(gridSystem),
   mEntityManager(&EntityManager::get()),
   mAnimationComponentManager(&ComponentManager<AnimationComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
@@ -14,11 +14,6 @@ MovementSystem::MovementSystem(std::shared_ptr<MessageHandler> messageHandler) :
 {}
 
 MovementSystem::~MovementSystem() { TRACE_DEBUG1("Enter Destructor"); }
-
-MovementSystem& MovementSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static MovementSystem instance(messageHandler);
-  return instance;
-}
 
 void MovementSystem::update(InputMessage inputMessage)
 {

@@ -25,7 +25,7 @@
 class Engine : Trace {
 public:
   Engine(std::shared_ptr<MessageHandler> messageHandler);
-  Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr<MessageHandler> messageHandler);
+  Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<NetworkSystem> networkHandler);
   ~Engine();
   void update();
   // EntityFactory entityFactory;
@@ -46,18 +46,19 @@ public:
 
 private:
   // Systems
-  MovementSystem* mMovementSystem;
-  InputSystem* mInputSystem;
-  RenderSystem* mRenderSystem;
-  CollisionSystem* mCollisionSystem;
-  ClockSystem* mClockSystem;
-  AnimationSystem* mAnimationSystem;
-  HealthSystem* mHealthSystem;
-  GridSystem* mGridSystem;
-  DeleteSystem* mDeleteSystem;
-  NetworkSystem* mNetworkSystem;
-  PickupSystem* mPickupSystem;
-  EntityCreatorSystem* mEntityCreatorSystem;
+  std::shared_ptr<MovementSystem> mMovementSystem;
+  std::shared_ptr<InputSystem> mInputSystem;
+  std::shared_ptr<RenderSystem> mRenderSystem;
+  std::shared_ptr<CollisionSystem> mCollisionSystem;
+  std::shared_ptr<ClockSystem> mClockSystem;
+  std::shared_ptr<AnimationSystem> mAnimationSystem;
+  std::shared_ptr<HealthSystem> mHealthSystem;
+  std::shared_ptr<GridSystem> mGridSystem;
+  std::shared_ptr<DeleteSystem> mDeleteSystem;
+  std::shared_ptr<NetworkSystem> mNetworkSystem;
+  std::shared_ptr<PickupSystem> mPickupSystem;
+  std::shared_ptr<EntityCreatorSystem> mEntityCreatorSystem;
+  std::shared_ptr<ManaSystem> mManaSystem;
 
   // Managers
   EntityManager* mEntityManager;

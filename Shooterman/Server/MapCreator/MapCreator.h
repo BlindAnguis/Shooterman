@@ -9,7 +9,7 @@
 
 class MapCreator : public Trace {
 public:
-  MapCreator(EntityManager *entityManager, GridSystem *gridSystem);
+  MapCreator(EntityManager *entityManager, std::shared_ptr<GridSystem> gridSystem);
   ~MapCreator();
 
   void createMap(std::array<std::array<Textures, 32>, 32> gameMap);
@@ -22,7 +22,7 @@ private:
   ComponentManager<HealthComponent>* mHealthComponentManager;
   ComponentManager<HealthChangerComponent>* mHealthChangerComponentManager;
 
-  GridSystem *mGridSystem;
+  std::shared_ptr<GridSystem> mGridSystem;
 
   std::array<sf::Texture*, 99> mTextures;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Collision.h"
 #include "../../Components/ComponentManager.h"
 #include "../../Components/Components.h"
@@ -11,10 +13,9 @@
 class CollisionSystem : Trace
 {
 public:
-  CollisionSystem(std::shared_ptr<MessageHandler> messageHandler);
+  CollisionSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<DeleteSystem> deleteSystem);
   ~CollisionSystem();
-  static CollisionSystem& get(std::shared_ptr<MessageHandler> messageHandler);
-  void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, GridSystem* gridSystem);
+  void handleAnyCollision(int causingColliderEntityId, float newXPos, float newYPos, std::shared_ptr<GridSystem> gridSystem);
   void resetCollisionInformation();
   void resetSystem();
 private:
@@ -22,7 +23,7 @@ private:
   ComponentManager<RenderComponent>* mRenderComponentManager;
   ComponentManager<VelocityComponent>* mVelocityComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
-  DeleteSystem* mDeleteSystem;
+  std::shared_ptr<DeleteSystem> mDeleteSystem;
   std::shared_ptr<MessageHandler> mMessageHandler;
   bool mDebugMenuSubscribed = false;
   Subscriber mDebugMenuSubscriber;

@@ -3,16 +3,16 @@
 #include <vector>
 #include <map>
 #include "../HealthSystem/HealthSystem.h"
-#include "../ManaSystem/ManaSystem.h"
 
 const int MAX_NR_OF_PICKUPS = 10;
 const int MAX_TIME_TO_NEXT_PICKUP = 5000;
 const int MIN_TIME_TO_NEXT_PICKUP = 2500;
 
-PickupSystem::PickupSystem(std::shared_ptr<MessageHandler> messageHandler)
+PickupSystem::PickupSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<EntityCreatorSystem> entityCreatorSystem, std::shared_ptr<ManaSystem> manaSystem)
   :
   mPickupComponentManager(&ComponentManager<PickupComponent>::get()),
-  mEntityCreatorSystem(&EntityCreatorSystem::get(messageHandler))
+  mEntityCreatorSystem(entityCreatorSystem),
+  mManaSystem(manaSystem)
 {
   srand((int)time(0));
   mTimeToNextPickup = (rand() % MIN_TIME_TO_NEXT_PICKUP) + (MAX_TIME_TO_NEXT_PICKUP - MIN_TIME_TO_NEXT_PICKUP);
@@ -20,11 +20,6 @@ PickupSystem::PickupSystem(std::shared_ptr<MessageHandler> messageHandler)
 }
 
 PickupSystem::~PickupSystem() { TRACE_DEBUG1("Enter Destructor"); }
-
-PickupSystem& PickupSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static PickupSystem instance(messageHandler);
-  return instance;
-}
 
 void PickupSystem::update() {
   if (mPickupClock.getElapsedTime().asMilliseconds() >= mTimeToNextPickup) {
@@ -53,7 +48,7 @@ void PickupSystem::update() {
         // TODO: Change to mana component.
         for (auto entity : cc->collidedList) {
           if (ComponentManager<ManaComponent>::get().hasComponent(entity)) {
-            ManaSystem::get().changeMana(entity, pickup.second->addedEffect);
+            mManaSystem->changeMana(entity, pickup.second->addedEffect);
           }
         }
         break;

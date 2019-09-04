@@ -8,9 +8,8 @@
 #include "../../Common/Messages/CharacterChoosenMessage.h"
 #include "../../Common/Messages/MapMessage.h"
 #include "../../Common/Messages/ServerInternal/ClientDisconnectedMessage.h"
-#include "../Systems/NetworkSystem/NetworkSystem.h"
 
-HostListener::HostListener(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
+HostListener::HostListener(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<NetworkSystem> networkSystem) : mMessageHandler(messageHandler), mNetworkSystem(networkSystem) {
   mName = "SERVER: HOST_LISTENER";
   TRACE_INFO("Created a HostListener");
   mListener = new sf::TcpListener;
@@ -54,7 +53,6 @@ void HostListener::listen() {
   sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
   mListener->setBlocking(false);
   //sf::Socket::Status status = mListener->listen(1337, "localhost");
-  auto networkSystem = &NetworkSystem::get(mMessageHandler);
   if (status != sf::Socket::Status::Done) {
     TRACE_ERROR("Couldn't start listening to port 1337 on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
     //TRACE_ERROR("Couldn't start listening to port 1337 on IP: localhost, status: " << status);
@@ -97,7 +95,7 @@ void HostListener::listen() {
         client.second->getSocket()->send(packet);
       }
 
-      networkSystem->addNewClientSocket(player->getSocket(), playerId);
+      mNetworkSystem->addNewClientSocket(player->getSocket(), playerId);
     }
     mSubscriber.handleMessages();
 

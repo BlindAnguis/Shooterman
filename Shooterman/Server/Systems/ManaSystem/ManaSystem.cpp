@@ -8,11 +8,6 @@ ManaSystem::ManaSystem() :
 
 ManaSystem::~ManaSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
-ManaSystem& ManaSystem::get() {
-  static ManaSystem instance;
-  return instance;
-}
-
 void ManaSystem::changeMana(int entityId, int addedManaEffect) {
   if (mManaComponentManager->hasComponent(entityId)) {
     auto hc = mManaComponentManager->getComponent(entityId);

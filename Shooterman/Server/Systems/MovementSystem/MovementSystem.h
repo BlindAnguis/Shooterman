@@ -11,9 +11,8 @@
 class MovementSystem : public ObserverIf
 {
 public:
-  MovementSystem(std::shared_ptr<MessageHandler> messageHandler);
+  MovementSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<CollisionSystem> collisionSystem, std::shared_ptr<GridSystem> gridSystem);
   ~MovementSystem();
-  static MovementSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void update(InputMessage inputMessage);
   void ownUpdate();
   void setPlayers(std::shared_ptr<std::map<int, Player*>> playersMap) { mPlayersMap = playersMap; }
@@ -26,8 +25,8 @@ private:
   ComponentManager<AnimationComponent>* mAnimationComponentManager;
   ComponentManager<CollisionComponent>* mCollisionComponentManager;
   ComponentManager<PlayerComponent>* mPlayerComponentManager;
-  CollisionSystem* mCollisionSystem;
-  GridSystem* mGridSystem;
+  std::shared_ptr<CollisionSystem> mCollisionSystem;
+  std::shared_ptr<GridSystem> mGridSystem;
   EntityManager* mEntityManager;
   std::shared_ptr<std::map<int, Player*>> mPlayersMap;
   std::shared_ptr<MessageHandler> mMessageHandler;

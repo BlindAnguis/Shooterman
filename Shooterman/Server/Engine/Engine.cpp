@@ -6,12 +6,7 @@
 #include "../../Common/Interfaces.h"
 
 Engine::Engine(std::shared_ptr<MessageHandler> messageHandler) :
-  mInputSystem(&InputSystem::get(messageHandler)),
   mEntityManager(&EntityManager::get()),
-  mNetworkSystem(&NetworkSystem::get(messageHandler)),
-  mDeleteSystem(&DeleteSystem::get()),
-  mGridSystem(&GridSystem::get()),
-  mClockSystem(&ClockSystem::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
@@ -20,30 +15,17 @@ Engine::Engine(std::shared_ptr<MessageHandler> messageHandler) :
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mCollisionSystem(&CollisionSystem::get(messageHandler)),
-  mMovementSystem(&MovementSystem::get(messageHandler)),
-  mRenderSystem(&RenderSystem::get(messageHandler)),
-  mAnimationSystem(&AnimationSystem::get()),
-  mHealthSystem(&HealthSystem::get(messageHandler)),
-  mEntityCreatorSystem(&EntityCreatorSystem::get(messageHandler)),
-  mPickupSystem(&PickupSystem::get(messageHandler)),
   mMapCreator(MapCreator(mEntityManager, mGridSystem)),
   mMessageHandler(messageHandler)
 {
   mName = "SERVER: ENGINE";
   mInputSystem->attach(mMovementSystem);
   mInputSystem->setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) { });
-  mEntityCreatorSystem->reset();
   setupDebugMessages("Server", "Engine", mMessageHandler);
 }
 
-Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr<MessageHandler> messageHandler) :
-  mInputSystem(&InputSystem::get(messageHandler)),
+Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<NetworkSystem> networkHandler) :
   mEntityManager(&EntityManager::get()),
-  mNetworkSystem(&NetworkSystem::get(messageHandler)),
-  mDeleteSystem(&DeleteSystem::get()),
-  mGridSystem(&GridSystem::get()),
-  mClockSystem(&ClockSystem::get()),
   mRenderComponentManager(&ComponentManager<RenderComponent>::get()),
   mVelocityComponentManager(&ComponentManager<VelocityComponent>::get()),
   mCollisionComponentManager(&ComponentManager<CollisionComponent>::get()),
@@ -52,17 +34,24 @@ Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr
   mClockComponentManager(&ComponentManager<ClockComponent>::get()),
   mPlayerComponentManager(&ComponentManager<PlayerComponent>::get()),
   mHealthChangerComponentManager(&ComponentManager<HealthChangerComponent>::get()),
-  mCollisionSystem(&CollisionSystem::get(messageHandler)),
-  mMovementSystem(&MovementSystem::get(messageHandler)),
-  mRenderSystem(&RenderSystem::get(messageHandler)),
-  mAnimationSystem(&AnimationSystem::get()),
-  mHealthSystem(&HealthSystem::get(messageHandler)),
-  mEntityCreatorSystem(&EntityCreatorSystem::get(messageHandler)),
-  mPickupSystem(&PickupSystem::get(messageHandler)),
   mMapCreator(MapCreator(mEntityManager, mGridSystem)),
   mGameMap(gameMap),
-  mMessageHandler(messageHandler)
+  mMessageHandler(messageHandler),
+  mGridSystem(std::make_shared<GridSystem>()),
+  mDeleteSystem(std::make_shared<DeleteSystem>()),
+  mAnimationSystem(std::make_shared<AnimationSystem>()),
+  mClockSystem(std::make_shared<ClockSystem>()),
+  mHealthSystem(std::make_shared<HealthSystem>(messageHandler)),
+  mInputSystem(std::make_shared<InputSystem>(messageHandler)),
+  mNetworkSystem(networkHandler),
+  mRenderSystem(std::make_shared<RenderSystem>(messageHandler, networkHandler)),
+  mManaSystem(std::make_shared<ManaSystem>())
 {
+  mCollisionSystem = std::make_shared<CollisionSystem>(messageHandler, mDeleteSystem);
+  mEntityCreatorSystem = std::make_shared<EntityCreatorSystem>(messageHandler, mDeleteSystem, mGridSystem, mManaSystem);
+  mPickupSystem = std::make_shared<PickupSystem>(messageHandler, mEntityCreatorSystem, mManaSystem);
+  mMovementSystem = std::make_shared<MovementSystem>(messageHandler, mCollisionSystem, mGridSystem);
+
   mName = "SERVER: ENGINE";
   mInputSystem->attach(mMovementSystem);
   mInputSystem->setAttackCallback([this](int entityId, std::uint32_t input, sf::Vector2i mousePosition) {
@@ -83,7 +72,6 @@ Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr
       }
     }
   });
-  mEntityCreatorSystem->reset(); // "Init" the system.
   setupDebugMessages("Server", "Engine", mMessageHandler);
 }
 
@@ -111,10 +99,8 @@ Engine::~Engine() {
 }
 
 void Engine::shutDown() {
-  mRenderSystem->resetSystem();
   mGridSystem->resetGridSystem();
   mCollisionSystem->resetSystem();
-  mEntityCreatorSystem->reset();
   teardownDebugMessages();
   mMessageHandler->unsubscribeTo(Interfaces::SERVER_PLAYER_DATA, &mPlayerDataSubscriber);
 }

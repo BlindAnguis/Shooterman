@@ -10,11 +10,6 @@ AnimationSystem::AnimationSystem() :
 
 AnimationSystem::~AnimationSystem() { TRACE_DEBUG1("Enter Destructor"); }
 
-AnimationSystem& AnimationSystem::get() {
-  static AnimationSystem instance;
-  return instance;
-}
-
 void AnimationSystem::update() {
   for (auto entity : mAnimationComponentManager->getAllEntitiesWithComponent()) {
     auto entityHealth = mHealthComponentManager->getComponent(entity.first);

@@ -12,7 +12,6 @@ public:
   HealthSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~HealthSystem();
   void update();
-  static HealthSystem& get(std::shared_ptr<MessageHandler> messageHandler);
   void changeHealth(int entityId, int addedHealthEffect);
 private:
   ComponentManager<HealthComponent>* mHealthComponentManager;

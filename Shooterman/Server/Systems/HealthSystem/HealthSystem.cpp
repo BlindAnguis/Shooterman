@@ -16,11 +16,6 @@ HealthSystem::~HealthSystem() {
   mMessageHandler->unsubscribeTo(Interfaces::SERVER_SOUND_LIST, &mSoundSubscriber);
 }
 
-HealthSystem& HealthSystem::get(std::shared_ptr<MessageHandler> messageHandler) {
-  static HealthSystem instance(messageHandler);
-  return instance;
-}
-
 void HealthSystem::changeHealth(int entityId, int addedHealthEffect) {
   if (mHealthComponentManager->hasComponent(entityId)) {
     auto health = mHealthComponentManager->getComponent(entityId);

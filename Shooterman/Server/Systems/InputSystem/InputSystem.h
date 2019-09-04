@@ -25,7 +25,6 @@ private:
 public:
   InputSystem(std::shared_ptr<MessageHandler> messageHandler);
   ~InputSystem();
-  static InputSystem& get(std::shared_ptr<MessageHandler> messageHandler);
 	void handleInput();
   InputMessage getLatestInput();
   void setPlayers(std::shared_ptr<std::map<int, Player*>> playersMap) { mPlayersMap = playersMap; }

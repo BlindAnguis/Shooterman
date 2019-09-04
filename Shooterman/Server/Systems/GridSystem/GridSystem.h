@@ -10,7 +10,6 @@ class GridSystem : Trace
 public:
   GridSystem();
   ~GridSystem();
-  static GridSystem& get();
   std::vector<int> getNearEntities(sf::Vector2i spritePosition);
   std::vector<sf::Vector2i> getNearGridPositions(sf::Vector2i spritePosition);
   std::vector<sf::Vector2i> getEmptyGridPositions();
