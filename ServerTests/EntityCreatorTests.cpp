@@ -21,7 +21,12 @@ using ::testing::_;
 using ::testing::Return;
 
 TEST(EntityCreatorTests, createMage) {
-  EntityCreator e = EntityCreator(std::make_shared<MessageHandlerMock>());
+  auto deleteSystem = std::make_shared<DeleteSystem>();
+  auto gridSystem = std::make_shared<GridSystem>();
+  auto manaSystem = std::make_shared<ManaSystem>();
+  auto messageHandlerMock = std::make_shared<MessageHandlerMock>();
+  auto entityCreatorSystem = new EntityCreatorSystem(messageHandlerMock, deleteSystem, gridSystem, manaSystem);
+  EntityCreator e = EntityCreator(messageHandlerMock, deleteSystem, entityCreatorSystem, gridSystem, manaSystem);
   sf::Vector2f magePosition = sf::Vector2f(10, 50); // Arbitrary position
   int numberOfMageAnimations = 17;
   auto mage = e.createPlayer(PlayerClass::Mage, magePosition);
@@ -81,7 +86,12 @@ TEST(EntityCreatorTests, createMage) {
 }
 
 TEST(EntityCreatorTests, createKnight) {
-  EntityCreator e = EntityCreator(std::make_shared<MessageHandlerMock>());
+  auto deleteSystem = std::make_shared<DeleteSystem>();
+  auto gridSystem = std::make_shared<GridSystem>();
+  auto manaSystem = std::make_shared<ManaSystem>();
+  auto messageHandlerMock = std::make_shared<MessageHandlerMock>();
+  auto entityCreatorSystem = new EntityCreatorSystem(messageHandlerMock, deleteSystem, gridSystem, manaSystem);
+  EntityCreator e = EntityCreator(messageHandlerMock, deleteSystem, entityCreatorSystem, gridSystem, manaSystem);
   sf::Vector2f knightPosition = sf::Vector2f(550, 230); // Arbitrary position
   int numberOfKnightAnimations = 17;
   auto knight = e.createPlayer(PlayerClass::Knight, knightPosition);
@@ -142,10 +152,14 @@ TEST(EntityCreatorTests, createKnight) {
 
 TEST(EntityCreatorTests, createSpearman) {
   auto messageHandlerMock = std::make_shared<MessageHandlerMock>();
-  EXPECT_CALL(*messageHandlerMock, subscribeTo(_, _)).WillOnce(Return(true));
+  ON_CALL(*messageHandlerMock, subscribeTo(_, _)).WillByDefault(Return(true));
   EXPECT_CALL(*messageHandlerMock, unsubscribeTo(_, _));
 
-  EntityCreator e = EntityCreator(messageHandlerMock);
+  auto deleteSystem = std::make_shared<DeleteSystem>();
+  auto gridSystem = std::make_shared<GridSystem>();
+  auto manaSystem = std::make_shared<ManaSystem>();
+  auto entityCreatorSystem = new EntityCreatorSystem(messageHandlerMock, deleteSystem, gridSystem, manaSystem);
+  EntityCreator e = EntityCreator(messageHandlerMock, deleteSystem, entityCreatorSystem, gridSystem, manaSystem);
   sf::Vector2f spearmanPosition = sf::Vector2f(1002, 1004); // Arbitrary position
   int numberOfSpearmanAnimations = 17;
   auto spearman = e.createPlayer(PlayerClass::Spearman, spearmanPosition);
@@ -205,7 +219,12 @@ TEST(EntityCreatorTests, createSpearman) {
 }
 
 TEST(EntityCreatorTests, createRandomPickup) {
-  EntityCreator e = EntityCreator(std::make_shared<MessageHandlerMock>());
+  auto deleteSystem = std::make_shared<DeleteSystem>();
+  auto gridSystem = std::make_shared<GridSystem>();
+  auto manaSystem = std::make_shared<ManaSystem>();
+  auto messageHandlerMock = std::make_shared<MessageHandlerMock>();
+  auto entityCreatorSystem = new EntityCreatorSystem(messageHandlerMock, deleteSystem, gridSystem, manaSystem);
+  EntityCreator e = EntityCreator(messageHandlerMock, deleteSystem, entityCreatorSystem, gridSystem, manaSystem);
   auto randomPickup = e.createRandomPickup();
   
   // Get all components a spearman is suppose to have.
