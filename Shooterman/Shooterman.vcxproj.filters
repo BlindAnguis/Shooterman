@@ -91,6 +91,9 @@
     <ClCompile Include="Common\MessageHandler\Mock\MessageHandlerMock.cpp" />
     <ClCompile Include="Common\Process\Process.cpp" />
     <ClCompile Include="Common\Process\Runnable.cpp" />
+    <ClCompile Include="Common\Network\SocketFactoryImpl.cpp" />
+    <ClCompile Include="Common\Network\SocketImpl.cpp" />
+    <ClCompile Include="Common\Network\Mock\SocketMock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -196,6 +199,10 @@
     <ClInclude Include="Common\MessageHandler\MessageHandlerImpl.h" />
     <ClInclude Include="Common\Process\Process.h" />
     <ClInclude Include="Common\Process\Runnable.h" />
+    <ClInclude Include="Common\Network\SocketFactoryImpl.h" />
+    <ClInclude Include="Common\Network\SocketFactory.h" />
+    <ClInclude Include="Common\Network\SocketImpl.h" />
+    <ClInclude Include="Common\Network\Socket.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

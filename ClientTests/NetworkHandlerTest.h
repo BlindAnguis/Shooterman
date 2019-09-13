@@ -10,9 +10,9 @@
 
 #include "../Shooterman/Client/Network/NetworkHandler.cpp"
 #include "../Shooterman/Common/MessageHandler/Mock/MessageHandlerMock.cpp"
+#include "../Shooterman/Common/Network/Mock/SocketMock.cpp"
 
 #define _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING  1 // Remove stupid google test warning, or something
-
 
 class NetworkHandlerTest : public ::testing::Test {
 public:
@@ -25,9 +25,8 @@ public:
 protected:
   std::shared_ptr<NetworkHandler> mNetworkHandler;
   std::shared_ptr<MessageHandlerMock> mMessageHandlerMock;
+  std::shared_ptr<SocketMock> mSocketMock;
   std::map<std::string, Subscriber*> mSubscriberMap;
-  sf::TcpListener mServerSocket;
-  sf::TcpSocket mClientSocket;
 
   void expectSubscribeTo(std::string interfaceName);
   void expectSubscribe(std::string interfaceName);

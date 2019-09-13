@@ -22,6 +22,7 @@
 #include "../Shooterman/Common/Messages/ToggleDebugButtonMessage.cpp"
 #include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
 #include "../Shooterman/Common/Messages/SubscribeTimeoutMessage.cpp"
+#include "../Shooterman/Common/Network/SocketImpl.cpp"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -32,7 +33,8 @@ NetworkHandlerTest::~NetworkHandlerTest() {}
 
 void NetworkHandlerTest::SetUp() {
   mMessageHandlerMock = std::make_shared<MessageHandlerMock>();
-  mNetworkHandler = std::make_shared<NetworkHandler>(mMessageHandlerMock);
+  mSocketMock = std::make_shared<SocketMock>();
+  mNetworkHandler = std::make_shared<NetworkHandler>(mMessageHandlerMock, std::make_shared<SocketFactoryMocker>(mSocketMock));
 
   expectSubscribersToSubscribe();
   expectInterfacesToPublish();
@@ -128,12 +130,9 @@ void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
   GameStateMessage gsmM(GAME_STATE::MAIN_MENU);
   mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmM.pack());
 
+  EXPECT_CALL(*mSocketMock, disconnect());
   mNetworkHandler->handleSubscribers();
   mNetworkHandler->run();
-
-  if (hasSocketBeenConnected) {
-    ASSERT_EQ(mClientSocket.receive(sf::Packet()), sf::Socket::Disconnected); // Verify socket disconnected
-  }
 }
 
 void NetworkHandlerTest::sendIpMessage() {
@@ -141,11 +140,9 @@ void NetworkHandlerTest::sendIpMessage() {
   IpMessage im("localhost", 1337);
   mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
   
+  EXPECT_CALL(*mSocketMock, connect("localhost", 1337, _));
   mNetworkHandler->handleSubscribers();
   mNetworkHandler->run();
-
-  ASSERT_EQ(mServerSocket.listen(1337), sf::Socket::Done);
-  ASSERT_EQ(mServerSocket.accept(mClientSocket), sf::Socket::Done);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

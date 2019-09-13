@@ -12,6 +12,7 @@
 #include "../../Server/Main/GameLoop.h"
 
 #include "../../Common/Process/Process.h"
+#include "../../Common/Network/SocketFactoryImpl.h"
 
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
@@ -36,7 +37,7 @@ void ClientMain::run() {
   Process inputProcess(std::move(std::make_unique<Input>(mMessageHandler)));
   Process guiProcess(std::move(std::make_unique<Gui>(mMessageHandler)));
   std::shared_ptr<GameLoop> server;
-  Process networkHandlerProcess(std::move(std::make_unique<NetworkHandler>(mMessageHandler)));
+  Process networkHandlerProcess(std::move(std::make_unique<NetworkHandler>(mMessageHandler, std::make_shared<SocketFactoryImpl>())));
   SoundSystem soundSystem(mMessageHandler);
 
   mServerStarted = false;

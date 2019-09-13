@@ -19,7 +19,9 @@
 #include "../../Common/Messages/InfoMessage.h"
 #include "../../Common/Messages/MapMessage.h"
 
-NetworkHandler::NetworkHandler(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
+NetworkHandler::NetworkHandler(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<SocketFactory> socketFactory) : 
+  mMessageHandler(messageHandler),
+  mSocketFactory(socketFactory) {
   mName = "CLIENT: NETWORK_HANDLER";
 }
 
@@ -27,6 +29,9 @@ NetworkHandler::~NetworkHandler() { }
 
 void NetworkHandler::start() {
   TRACE_INFO("Starting module...");
+
+  mSocket = mSocketFactory->createTcpSocket();
+
   mIpSubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&NetworkHandler::handleSubscribeIpListTimeoutMessage, this, std::placeholders::_1));
   mIpSubscriber.addSignalCallback(MessageId::IP_MESSAGE, std::bind(&NetworkHandler::handleIpListMessage, this, std::placeholders::_1));
   mGameStateSubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&NetworkHandler::handleSubscribeGameStateTimeoutMessage, this, std::placeholders::_1));
@@ -51,10 +56,10 @@ void NetworkHandler::run() {
     mConnectionTriesLeft = 10;
     break;
   case STATE::Connecting: {
-    sf::Socket::Status result = mSocket.connect(sf::IpAddress(mServerIp), mServerPort, sf::milliseconds(100));
-    if (result == sf::Socket::Status::Done) {
+    Soc::Status result = mSocket->connect(mServerIp, mServerPort, 100);
+    if (result == Soc::Status::Done) {
       TRACE_INFO("Connected!");
-      mSocket.setBlocking(false);
+      mSocket->setBlocking(false);
       mHeartbeatClock.restart();
       mCurrentState = STATE::Connected;
     } else {
@@ -76,7 +81,7 @@ void NetworkHandler::run() {
     handlePackets();
     break;
   case STATE::Disconnecting:
-    mSocket.disconnect();
+    mSocket->disconnect();
     if (mSubscribedToIpMessage) {
       mMessageHandler->unsubscribeTo(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
       mSubscribedToIpMessage = false;
@@ -121,14 +126,14 @@ void NetworkHandler::handlePackets() {
   while (!forwardMessageQueue.empty()) {
     sf::Packet packet = forwardMessageQueue.front();
     forwardMessageQueue.pop();
-    mSocket.send(packet);
+    mSocket->send(packet);
   }
 
   auto lobbyMessageQueue = mLobbyInterface.getMessageQueue();
   while (!lobbyMessageQueue.empty()) {
     sf::Packet packet = lobbyMessageQueue.front();
     lobbyMessageQueue.pop();
-    mSocket.send(packet);
+    mSocket->send(packet);
   }
 
   auto debugMessageQueue = mServerDebugSubscriber.getMessageQueue();
@@ -140,11 +145,11 @@ void NetworkHandler::handlePackets() {
 
     AddDebugButtonMessage adbm(packet);
     sf::Packet networkPacket = adbm.pack();
-    mSocket.send(networkPacket);
+    mSocket->send(networkPacket);
   }
 
   sf::Packet packet;
-  if (mSocket.receive(packet) == sf::Socket::Done) {
+  if (mSocket->receive(packet) == Soc::Status::Done) {
     int id = -1;
     packet >> id;
     if (id == MessageId::SPRITE_LIST_CACHE) {
@@ -181,7 +186,7 @@ void NetworkHandler::handlePackets() {
     } else if (id == MessageId::HEARTBEAT) {
       packet << MessageId::HEARTBEAT;
       mHeartbeatClock.restart();
-      mSocket.send(packet);
+      mSocket->send(packet);
     } else if (id == MessageId::MAP_DATA) {
       MapMessage mm(packet);
       mLobbyInterface.pushMessage(mm.pack());

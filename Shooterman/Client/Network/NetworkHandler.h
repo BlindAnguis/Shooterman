@@ -2,20 +2,19 @@
 
 #include <thread>
 
-#include <SFML/Network/TcpSocket.hpp>
 #include <SFML/System/Clock.hpp>
 
 #include "../../Common/MessageHandler/Interface.h"
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Trace.h"
-
+#include "../../Common/Network/SocketFactory.h"
 #include "../../Common/Process/Runnable.h"
 
 enum STATE { Disconnected, Connecting, Connected, Disconnecting };
 
 class NetworkHandler : public Runnable, Trace {
 public:
-  NetworkHandler(std::shared_ptr<MessageHandler> messageHandler);
+  NetworkHandler(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<SocketFactory> socketFactory);
   ~NetworkHandler();
 
   void start() override;
@@ -37,7 +36,8 @@ private:
   Subscriber mGameStateSubscriber;
   Subscriber mServerDebugSubscriber;
   std::shared_ptr<MessageHandler> mMessageHandler;
-  sf::TcpSocket mSocket;
+  std::shared_ptr<SocketFactory> mSocketFactory;
+  std::shared_ptr<Socket> mSocket;
   sf::Clock mHeartbeatClock;
   STATE mCurrentState;
   std::string mServerIp;
