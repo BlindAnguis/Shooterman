@@ -45,7 +45,7 @@ void PauseMenu::onExitClick() {
   sf::sleep(sf::milliseconds(100));
   sf::Packet shutdownMessage;
   shutdownMessage << MessageId::SHUT_DOWN;
-  Subscriber s;
+  Subscriber s("PAUSE_MENU");
   mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
   TRACE_SEND("SHUT_DOWN");
   s.reverseSendMessage(shutdownMessage);

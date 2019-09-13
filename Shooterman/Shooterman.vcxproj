@@ -174,6 +174,7 @@
     <ClCompile Include="Client\Map.cpp" />
     <ClCompile Include="Common\MessageHandler\MessageHandlerImpl.cpp" />
     <ClCompile Include="Common\MessageHandler\Mock\MessageHandlerMock.cpp" />
+    <ClCompile Include="Common\Process\Runnable.cpp" />
     <ClCompile Include="Common\MessageHandler\Subscriber.cpp" />
     <ClCompile Include="Common\Messages\AddDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Messages\ChangeUsernameMessage.cpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Common\Messages\ToggleDebugButtonMessage.cpp" />
     <ClCompile Include="Common\Trace.cpp" />
     <ClCompile Include="Client\GUI\Resources\GuiFrameComponent.cpp" />
+    <ClCompile Include="Common\Process\Process.cpp" />
     <ClCompile Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.cpp" />
     <ClCompile Include="Server\Systems\ManaSystem\ManaSystem.cpp" />
     <ClCompile Include="Server\Systems\PickupSystem\PickupSystem.cpp" />
@@ -257,6 +259,7 @@
     <ClInclude Include="Client\Map.h" />
     <ClInclude Include="Common\Interfaces.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandlerImpl.h" />
+    <ClInclude Include="Common\Process\Runnable.h" />
     <ClInclude Include="Common\Messages\ChangeUsernameMessage.h" />
     <ClInclude Include="Common\Messages\CharacterChoosenMessage.h" />
     <ClInclude Include="Common\Messages\InfoMessage.h" />
@@ -272,6 +275,7 @@
     <ClInclude Include="Common\Messages\ToggleDebugButtonMessage.h" />
     <ClInclude Include="Common\Sounds.h" />
     <ClInclude Include="Client\GUI\Resources\GuiFrameComponent.h" />
+    <ClInclude Include="Common\Process\Process.h" />
     <ClInclude Include="Server\Systems\EntityCreatorSystem\EntityCreatorSystem.h" />
     <ClInclude Include="Server\Systems\ManaSystem\ManaSystem.h" />
     <ClInclude Include="Server\Systems\PickupSystem\PickupSystem.h" />

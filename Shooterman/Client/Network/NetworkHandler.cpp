@@ -21,74 +21,82 @@
 
 NetworkHandler::NetworkHandler(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: NETWORK_HANDLER";
-  TRACE_INFO("Starting module...");
-  mNetworkHandlerThread = std::make_unique<std::thread>(&NetworkHandler::run, this);
-  TRACE_INFO("Starting module done");
 }
 
 NetworkHandler::~NetworkHandler() { }
 
-void NetworkHandler::run() {
+void NetworkHandler::start() {
+  TRACE_INFO("Starting module...");
   mIpSubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&NetworkHandler::handleSubscribeIpListTimeoutMessage, this, std::placeholders::_1));
   mIpSubscriber.addSignalCallback(MessageId::IP_MESSAGE, std::bind(&NetworkHandler::handleIpListMessage, this, std::placeholders::_1));
   mGameStateSubscriber.addSignalCallback(MessageId::SUBSCRIBE_TIMEOUT, std::bind(&NetworkHandler::handleSubscribeGameStateTimeoutMessage, this, std::placeholders::_1));
   mGameStateSubscriber.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&NetworkHandler::handleChangeGameStateMessage, this, std::placeholders::_1));
 
+  startListenToSubscriber(&mIpSubscriber);
+  startListenToSubscriber(&mGameStateSubscriber);
+
   mCurrentState = STATE::Disconnected;
 
   setupSubscribersAndInterfaces();
 
-  int connectionTriesLeft = 10;
+  mConnectionTriesLeft = 10;
+  TRACE_INFO("Starting module done");
+}
 
-  while (mRunning) {
-    mIpSubscriber.handleMessages();
-    mGameStateSubscriber.handleMessages();
+void NetworkHandler::run() {
+  handleDebugMessages();
 
-    switch (mCurrentState) {
-    case STATE::Disconnected:
-      connectionTriesLeft = 10;
-      break;
-    case STATE::Connecting: {
-      sf::Socket::Status result = mSocket.connect(sf::IpAddress(mServerIp), mServerPort, sf::milliseconds(100));
-      if (result == sf::Socket::Status::Done) {
-        TRACE_INFO("Connected!");
-        mSocket.setBlocking(false);
-        mHeartbeatClock.restart();
-        mCurrentState = STATE::Connected;
-      } else {
-        sf::sleep(sf::milliseconds(200));
-        --connectionTriesLeft;
-        if (connectionTriesLeft < 0) {
-          mCurrentState = STATE::Disconnected;
-          TRACE_ERROR("Connection failed! " << result);
-          InfoMessage msg("Connection failed.", 3);
-          mInfoMessageSubscriber.reverseSendMessage(msg.pack());
+  switch (mCurrentState) {
+  case STATE::Disconnected:
+    mConnectionTriesLeft = 10;
+    break;
+  case STATE::Connecting: {
+    sf::Socket::Status result = mSocket.connect(sf::IpAddress(mServerIp), mServerPort, sf::milliseconds(100));
+    if (result == sf::Socket::Status::Done) {
+      TRACE_INFO("Connected!");
+      mSocket.setBlocking(false);
+      mHeartbeatClock.restart();
+      mCurrentState = STATE::Connected;
+    } else {
+      sf::sleep(sf::milliseconds(200));
+      --mConnectionTriesLeft;
+      if (mConnectionTriesLeft < 0) {
+        mCurrentState = STATE::Disconnected;
+        TRACE_ERROR("Connection failed! " << result);
+        InfoMessage msg("Connection failed.", 3);
+        mInfoMessageSubscriber.reverseSendMessage(msg.pack());
 
-          GameStateMessage gsm(GAME_STATE::JOIN);
-          mGameStateSubscriber.reverseSendMessage(gsm.pack());
-        }
+        GameStateMessage gsm(GAME_STATE::JOIN);
+        mGameStateSubscriber.reverseSendMessage(gsm.pack());
       }
-      break;
     }
-    case STATE::Connected:
-      handlePackets();
-      break;
-    case STATE::Disconnecting:
-      mSocket.disconnect();
-      if (mSubscribedToIpMessage) {
-        mMessageHandler->unsubscribeTo(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
-        mSubscribedToIpMessage = false;
-      }
-      mCurrentState = STATE::Disconnected;
-      break;
-    default:
-      break;
-    }
-
-    sf::sleep(sf::milliseconds(1));
+    break;
   }
- 
+  case STATE::Connected:
+    handlePackets();
+    break;
+  case STATE::Disconnecting:
+    mSocket.disconnect();
+    if (mSubscribedToIpMessage) {
+      mMessageHandler->unsubscribeTo(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
+      mSubscribedToIpMessage = false;
+    }
+    mCurrentState = STATE::Disconnected;
+    break;
+  default:
+    break;
+  }
+
+  sf::sleep(sf::milliseconds(1));
+}
+
+void NetworkHandler::stop() {
+  TRACE_INFO("Stopping module...");
   teardownSubscribersAndInterfaces();
+
+  stopListenToSubscriber(&mIpSubscriber);
+  stopListenToSubscriber(&mGameStateSubscriber);
+  TRACE_INFO("Stopping module done");
 }
 
 void NetworkHandler::setupSubscribersAndInterfaces() {
@@ -184,7 +192,6 @@ void NetworkHandler::handlePackets() {
 
   if (mHeartbeatClock.getElapsedTime() > sf::milliseconds(30000)) {
     TRACE_ERROR("Received no heartbeat for 30 seconds. Lost connection to server!");
-    mRunning = false;
     GameStateMessage gsm(GAME_STATE::MAIN_MENU);
     mGameStateSubscriber.reverseSendMessage(gsm.pack());
   }
@@ -229,11 +236,4 @@ void NetworkHandler::handleChangeGameStateMessage(sf::Packet & message) {
     mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_IP_LIST, &mIpSubscriber);
     mSubscribedToIpMessage = true;
   }
-}
-
-void NetworkHandler::shutDown() {
-  TRACE_INFO("Shutdown of module requested...");
-  mRunning = false;
-  mNetworkHandlerThread->join();
-  TRACE_INFO("Shutdown of module done");
 }

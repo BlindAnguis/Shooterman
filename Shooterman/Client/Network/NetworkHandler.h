@@ -9,18 +9,22 @@
 #include "../../Common/MessageHandler/MessageHandler.h"
 #include "../../Common/Trace.h"
 
+#include "../../Common/Process/Runnable.h"
+
 enum STATE { Disconnected, Connecting, Connected, Disconnecting };
 
-class NetworkHandler : Trace {
+class NetworkHandler : public Runnable, Trace {
 public:
   NetworkHandler(std::shared_ptr<MessageHandler> messageHandler);
   ~NetworkHandler();
 
-  void shutDown();
+  void start() override;
+  void run() override;
+  void stop() override;
 
 private:
-  bool mRunning = true;
   bool mSubscribedToIpMessage = false;
+  int mConnectionTriesLeft;
   std::unique_ptr<std::thread> mNetworkHandlerThread;
   Interface mLobbyInterface;
   Interface mSpriteListInterface;
@@ -39,7 +43,6 @@ private:
   std::string mServerIp;
   unsigned short mServerPort;
 
-  void run();
   void setupSubscribersAndInterfaces();
   void handlePackets();
   void teardownSubscribersAndInterfaces();

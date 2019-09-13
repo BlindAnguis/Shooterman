@@ -39,9 +39,9 @@ void MainMenu::backgroundUpdate() {
 void MainMenu::onExitCLick() {
   sf::Packet shutdownMessage;
   shutdownMessage << MessageId::SHUT_DOWN;
-  Subscriber s;
- mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+  Subscriber s("MAIN_MENU");
+  mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
   TRACE_SEND("SHUT_DOWN");
   s.reverseSendMessage(shutdownMessage);
- mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
 }

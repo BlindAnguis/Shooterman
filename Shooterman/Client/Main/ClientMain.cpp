@@ -11,6 +11,8 @@
 #include "../../Common/Messages/SoundMessage.h"
 #include "../../Server/Main/GameLoop.h"
 
+#include "../../Common/Process/Process.h"
+
 ClientMain::ClientMain() {
   mName = "CLIENT: CLIENT_MAIN";
   TRACE_INFO("Starting...");
@@ -31,10 +33,10 @@ ClientMain::ClientMain() {
 }
 
 void ClientMain::run() {
-  Input input(mMessageHandler);
-  Gui gui(mMessageHandler);
+  Process inputProcess(std::move(std::make_unique<Input>(mMessageHandler)));
+  Process guiProcess(std::move(std::make_unique<Gui>(mMessageHandler)));
   std::shared_ptr<GameLoop> server;
-  NetworkHandler networkHandler(mMessageHandler);
+  Process networkHandlerProcess(std::move(std::make_unique<NetworkHandler>(mMessageHandler)));
   SoundSystem soundSystem(mMessageHandler);
 
   mServerStarted = false;
@@ -99,9 +101,9 @@ void ClientMain::run() {
     mSystemMessageInterface.handleMessages();
   }
 
-  networkHandler.shutDown();
-  input.shutDown();
-  gui.shutDown();
+  networkHandlerProcess.shutdown();
+  inputProcess.shutdown();
+  guiProcess.shutdown();
   if (mServerStarted) {
     server->stop();
     server = nullptr;

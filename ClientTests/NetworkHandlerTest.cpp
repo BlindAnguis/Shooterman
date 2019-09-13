@@ -1,8 +1,7 @@
 #include "NetworkHandlerTest.h"
 
-#include"../Shooterman/Client/Network/NetworkHandler.cpp"
-
 #include "../Shooterman/Common/Trace.cpp"
+#include "../Shooterman/Common/Process/Runnable.cpp"
 #include "../Shooterman/Common/MessageHandler/Subscriber.cpp"
 #include "../Shooterman/Common/MessageHandler/Interface.cpp"
 #include "../Shooterman/Common/MessageHandler/MessageHandlerImpl.cpp"
@@ -33,12 +32,22 @@ NetworkHandlerTest::~NetworkHandlerTest() {}
 
 void NetworkHandlerTest::SetUp() {
   mMessageHandlerMock = std::make_shared<MessageHandlerMock>();
+  mNetworkHandler = std::make_shared<NetworkHandler>(mMessageHandlerMock);
+
   expectSubscribersToSubscribe();
   expectInterfacesToPublish();
+  mNetworkHandler->start();
 }
 
 void NetworkHandlerTest::TearDown() {
+  expectSubscribersToUnsubscribe();
+  expectInterfacesToUnpublish();
+
+  mNetworkHandler->stop();
+
   mSubscriberMap.clear();
+  mNetworkHandler = nullptr;
+  mMessageHandlerMock = nullptr;
 }
 
 void NetworkHandlerTest::expectSubscribeTo(std::string interfaceName) {
@@ -96,7 +105,9 @@ void NetworkHandlerTest::sendGameStateLobby(bool expectSubscribe) {
   }
   GameStateMessage gsmL(GAME_STATE::LOBBY);
   mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to handle new message
+
+  mNetworkHandler->handleSubscribers();
+  mNetworkHandler->run();
 }
 
 void NetworkHandlerTest::sendGameStateJoin(bool expectSubscribe) {
@@ -106,7 +117,9 @@ void NetworkHandlerTest::sendGameStateJoin(bool expectSubscribe) {
   }
   GameStateMessage gsmL(GAME_STATE::JOIN);
   mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to handle new message
+
+  mNetworkHandler->handleSubscribers();
+  mNetworkHandler->run();
 }
 
 void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
@@ -114,7 +127,10 @@ void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
   EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::CLIENT_IP_LIST, _)).Times(1);
   GameStateMessage gsmM(GAME_STATE::MAIN_MENU);
   mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmM.pack());
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to disconnect socket
+
+  mNetworkHandler->handleSubscribers();
+  mNetworkHandler->run();
+
   if (hasSocketBeenConnected) {
     ASSERT_EQ(mClientSocket.receive(sf::Packet()), sf::Socket::Disconnected); // Verify socket disconnected
   }
@@ -124,6 +140,10 @@ void NetworkHandlerTest::sendIpMessage() {
   // Expect network handler to connect to server socket after receiving a ip message
   IpMessage im("localhost", 1337);
   mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
+  
+  mNetworkHandler->handleSubscribers();
+  mNetworkHandler->run();
+
   ASSERT_EQ(mServerSocket.listen(1337), sf::Socket::Done);
   ASSERT_EQ(mServerSocket.accept(mClientSocket), sf::Socket::Done);
 }
@@ -133,43 +153,25 @@ void NetworkHandlerTest::sendIpMessage() {
 // publishes/unpublishes all interfaces
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 TEST_F(NetworkHandlerTest, verifyBasicStartupAndShutdown) {
-  NetworkHandler networkHandler(mMessageHandlerMock);
-
-  expectSubscribersToUnsubscribe();
-  expectInterfacesToUnpublish();
-  networkHandler.shutDown();
+  mNetworkHandler->run();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Verify that the network handler connets to a server socket after receiving the game state LOBBY
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 TEST_F(NetworkHandlerTest, verifySocketConnectByLobbyState) {
-  NetworkHandler networkHandler(mMessageHandlerMock);
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
-
   sendGameStateLobby();
   sendIpMessage();
   sendGameStateMainMenu();
-
-  expectSubscribersToUnsubscribe();
-  expectInterfacesToUnpublish();
-  networkHandler.shutDown();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Verify that the network handler connets to a server socket after receiving the game state JOIN
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 TEST_F(NetworkHandlerTest, verifySocketConnectByJoinState) {
-  NetworkHandler networkHandler(mMessageHandlerMock);
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
-
   sendGameStateJoin();
   sendIpMessage();
   sendGameStateMainMenu();
-
-  expectSubscribersToUnsubscribe();
-  expectInterfacesToUnpublish();
-  networkHandler.shutDown();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,33 +179,19 @@ TEST_F(NetworkHandlerTest, verifySocketConnectByJoinState) {
 // state LOBBY and JOIN (should not happen in normal case)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 TEST_F(NetworkHandlerTest, verifySocketConnectByLobbyJoinState) {
-  NetworkHandler networkHandler(mMessageHandlerMock);
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
-
   sendGameStateLobby();
   sendGameStateJoin(false);
   sendIpMessage();
   sendGameStateMainMenu();
-
-  expectSubscribersToUnsubscribe();
-  expectInterfacesToUnpublish();
-  networkHandler.shutDown();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Verify that the network handler subscribes again after going back to main menu
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 TEST_F(NetworkHandlerTest, verifySubscribeToIpTwice) {
-  NetworkHandler networkHandler(mMessageHandlerMock);
-  sf::sleep(sf::milliseconds(5)); // Wait for network handler to subscribe
-
   sendGameStateLobby();
   sendGameStateMainMenu(false);
   sendGameStateLobby();
   sendIpMessage();
   sendGameStateMainMenu();
-
-  expectSubscribersToUnsubscribe();
-  expectInterfacesToUnpublish();
-  networkHandler.shutDown();
 }

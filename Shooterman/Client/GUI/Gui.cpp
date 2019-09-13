@@ -18,16 +18,15 @@
 #include "../../Common/Messages/SpriteMessage.h"
 #include "../../Common/Messages/MouseMessage.h"
 
-Gui::Gui(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler), mInfoOverlay(std::make_shared<InfoOverlay>(messageHandler)) {
+Gui::Gui(std::shared_ptr<MessageHandler> messageHandler) 
+  : mMessageHandler(messageHandler), 
+  mInfoOverlay(std::make_shared<InfoOverlay>(messageHandler)),
+  mSubscriber("GUI") {
   mName = "CLIENT: GUI";
-  TRACE_INFO("Starting module...");
-  mGuiThread = std::make_unique<std::thread>(&Gui::run, this);
-  TRACE_INFO("Starting module done");
 }
 
-void Gui::run() {
-  TRACE_FUNC_ENTER();
-
+void Gui::start() {
+  TRACE_INFO("Starting module...");
   mSubscriber.addSignalCallback(MessageId::SHUT_DOWN, std::bind(&Gui::handleShutdownMessage, this, std::placeholders::_1));
   mSubscriber.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&Gui::handleChangedGameStateMessage, this, std::placeholders::_1));
 
@@ -54,9 +53,48 @@ void Gui::run() {
   mCurrentGameState = GAME_STATE::MAIN_MENU;
   mLeftButtonAlreadyPressed = false;
 
-  render();
+  startListenToSubscriber(&mSubscriber);
 
+  TRACE_INFO("Starting module done");
+}
+
+void Gui::run() {
+  if (!mWindow || !mWindow->isOpen()) {
+    return;
+  }
+
+  for (auto menues : mMenuMap) {
+    for (auto menu : menues.second) {
+      menu->backgroundUpdate();
+    }
+  }
+
+  mRenderClock.restart();
+  handleWindowEvents();
+
+  bool renderNeeded = false;
+  renderNeeded = renderGameState(mCurrentGameState);
+
+  if (mRenderNeeded) {
+    mWindow->display();
+  }
+
+  handleDebugMessages();
+
+  auto currentFrameLength = mRenderClock.getElapsedTime().asMilliseconds();
+  if (currentFrameLength < FRAME_LENGTH_IN_MS) {
+    sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS - currentFrameLength));
+  } else {
+    // No need to sleep, frame took to long
+    TRACE_DEBUG3("Frame length: " << currentFrameLength << " ms");
+  }
+}
+
+void Gui::stop() {
+  TRACE_INFO("Shutdown of module requested...");
   teardownDebugMessages();
+
+  stopListenToSubscriber(&mSubscriber);
 
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &mSubscriber);
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mSubscriber);
@@ -64,41 +102,10 @@ void Gui::run() {
 
   GuiResourceManager::getInstance().clear();
   mMenuMap.clear();
-  TRACE_FUNC_EXIT();
-}
 
-void Gui::render() {
-  TRACE_FUNC_ENTER();
-  while (mWindow != nullptr && mWindow->isOpen()) {
-    for (auto menues : mMenuMap) {
-      for (auto menu : menues.second) {
-        menu->backgroundUpdate();
-      }
-    }
+  mWindow->close();
 
-    mRenderClock.restart();
-    handleWindowEvents();
-    
-    bool renderNeeded = false;
-    renderNeeded = renderGameState(mCurrentGameState);
-
-    if (mRenderNeeded) {
-      mWindow->display();
-    }
-
-    mSubscriber.handleMessages();
-    handleDebugMessages();
-
-    auto currentFrameLength = mRenderClock.getElapsedTime().asMilliseconds();
-    if (currentFrameLength < FRAME_LENGTH_IN_MS) {
-      sf::sleep(sf::milliseconds(FRAME_LENGTH_IN_MS - currentFrameLength));
-    } else {
-      // No need to sleep, frame took to long
-      TRACE_DEBUG3("Frame length: " << currentFrameLength << " ms");
-    }
-  }
-  mWindowOpen = false;
-  TRACE_FUNC_EXIT();
+  TRACE_INFO("Shutdown of module done");
 }
 
 void Gui::handleWindowEvents() {
@@ -109,7 +116,7 @@ void Gui::handleWindowEvents() {
     if (event.type == sf::Event::Closed) {
       sf::Packet shutdownMessage;
       shutdownMessage << MessageId::SHUT_DOWN;
-      Subscriber s;
+      Subscriber s("GUI");
       mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
       s.reverseSendMessage(shutdownMessage);
       mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
@@ -217,14 +224,4 @@ void Gui::handleChangedGameStateMessage(sf::Packet& message) {
       }
     }
   }
-}
-
-void Gui::shutDown() {
-  TRACE_INFO("Shutdown of module requested...");
-  while (mWindowOpen) {
-    sf::sleep(sf::milliseconds(5));
-    // Wait for GUI to close window
-  }
-  mGuiThread->join();
-  TRACE_INFO("Shutdown of module done");
 }

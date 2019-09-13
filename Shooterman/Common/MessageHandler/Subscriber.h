@@ -10,7 +10,7 @@
 
 class Subscriber : protected Trace {
 public:
-  Subscriber();
+  Subscriber(std::string name = "");
   ~Subscriber();
 
   void sendMessage(sf::Packet message);

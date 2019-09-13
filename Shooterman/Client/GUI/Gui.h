@@ -11,13 +11,16 @@
 #include "../../Common/MessageHandler/Subscriber.h"
 #include "../../Common/Trace.h"
 #include "../../Common/Messages/GameStateMessage.h"
+#include "../../Common/Process/Runnable.h"
 #include "InfoOverlay/InfoOverlay.h"
 
-class Gui : Trace {
+class Gui : public Runnable, public Trace {
 public:
   Gui(std::shared_ptr<MessageHandler> messageHandler);
 
-  void shutDown();
+  void start() override;
+  void run() override;
+  void stop() override;
 
 private:
   bool mDebugEnabled1 = true;
@@ -36,8 +39,6 @@ private:
   std::shared_ptr<InfoOverlay> mInfoOverlay;
   sf::Clock mRenderClock;
 
-  void run();
-  void render();
   void handleWindowEvents();
   bool renderGameState(GAME_STATE gameState);
   void handleShutdownMessage(sf::Packet& message);

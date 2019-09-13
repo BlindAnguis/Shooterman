@@ -89,6 +89,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gtest\gtest-all.cc" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\gmock\gmock-all.cc" />
     <ClCompile Include="Common\MessageHandler\Mock\MessageHandlerMock.cpp" />
+    <ClCompile Include="Common\Process\Process.cpp" />
+    <ClCompile Include="Common\Process\Runnable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -192,6 +194,8 @@
     <ClInclude Include="Common\Messages\SubscribeTimeoutMessage.h" />
     <ClInclude Include="Common\Messages\SubscribeDoneMessage.h" />
     <ClInclude Include="Common\MessageHandler\MessageHandlerImpl.h" />
+    <ClInclude Include="Common\Process\Process.h" />
+    <ClInclude Include="Common\Process\Runnable.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

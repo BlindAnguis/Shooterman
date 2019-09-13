@@ -2,8 +2,8 @@
 
 #include "../MessageId.h"
 
-Subscriber::Subscriber() : mId(-1) {
-  mName = "Subscriber without ID";
+Subscriber::Subscriber(std::string name) : mId(-1) {
+  mName = name + ": ";
   mQueueLock = new std::mutex();
 }
 
@@ -31,7 +31,7 @@ int Subscriber::getId() {
 
 void Subscriber::setId(int id) {
   if (mId == -1) {
-    mName = "SUBSCRIBER " + std::to_string(id);
+    mName += "SUBSCRIBER " + std::to_string(id);
     mId = id;
   } else {
     TRACE_WARNING("Subscriber already have id " << mId << " cannot set it again to " << id);
