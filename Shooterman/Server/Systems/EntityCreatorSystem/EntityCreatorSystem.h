@@ -16,6 +16,7 @@ enum class EntityType {
 };
 
 struct EntityToCreate {
+  int entityId;
   EntityType type;
   sf::Vector2f pos;
   int framesToCreation;
@@ -28,8 +29,8 @@ public:
   EntityCreatorSystem(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<DeleteSystem> deleteSystem, std::shared_ptr<GridSystem> gridSystem, std::shared_ptr<ManaSystem> manaSystem);
   ~EntityCreatorSystem();
   void update();
-  void addEntityToCreate(EntityType type, sf::Vector2f pos, int framesToCreation, std::set<int> immuneEntityIds);
-  Entity* createEntity(EntityType type, sf::Vector2f pos, std::set<int> immuneEntityIds);
+  void addEntityToCreate(int entityId, EntityType type, sf::Vector2f pos, int framesToCreation, std::set<int> immuneEntityIds);
+  Entity* createEntity(int entityId, EntityType type, sf::Vector2f pos, std::set<int> immuneEntityIds);
 private:
   std::vector<EntityToCreate> mEntitiesToCreate;
   EntityCreator* mEntityCreator;

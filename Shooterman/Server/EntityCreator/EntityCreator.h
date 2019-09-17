@@ -49,7 +49,7 @@ public:
 
   Entity* createPlayer(PlayerClass playerClass, sf::Vector2f position);
   Entity* createRandomPickup();
-  Entity* createLightningStrike(sf::Vector2f position, std::set<int> immuneEntityIds);
+  Entity* createLightningStrike(int entityId, sf::Vector2f position, std::set<int> immuneEntityIds);
 
   void clearSprites();
 
@@ -83,6 +83,6 @@ private:
   Entity* createBullet(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createArrow(int entityId, std::uint32_t input, sf::Vector2i mousePosition, bool visible = true);
   Entity* createMelee(int entityId, std::uint32_t input, sf::Vector2i mousePosition);
-  void createRandomLightningBolts();
+  void createRandomLightningBolts(int entityId);
   void handleFinishedSuperAttack(int entityId);
 };

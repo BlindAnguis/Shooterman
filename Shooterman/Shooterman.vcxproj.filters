@@ -95,6 +95,8 @@
     <ClCompile Include="Common\Network\SocketImpl.cpp" />
     <ClCompile Include="Common\Network\Mock\SocketMock.cpp" />
     <ClCompile Include="Client\Input\SfmlKeyboard.cpp" />
+    <ClCompile Include="Common\Messages\DeathMessage.cpp" />
+    <ClCompile Include="Server\Systems\ScoreSystem\ScoreSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -207,6 +209,8 @@
     <ClInclude Include="Client\Input\Keyboard.h" />
     <ClInclude Include="Client\Input\SfmlKeyboard.h" />
     <ClInclude Include="Client\Input\Mock\KeyboardMock.cpp" />
+    <ClInclude Include="Common\Messages\DeathMessage.h" />
+    <ClInclude Include="Server\Systems\ScoreSystem\ScoreSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

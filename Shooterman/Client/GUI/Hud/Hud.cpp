@@ -9,6 +9,8 @@ Hud::Hud(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messa
   mGuiFrame = std::make_shared<Frame>();
   mSubscriber.addSignalCallback(MessageId::PLAYER_DATA, std::bind(&Hud::handlePlayerData, this, std::placeholders::_1));
   mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_PLAYER_DATA, &mSubscriber);
+  mScoreList = std::make_shared<GuiList>(GuiComponentPosition::TOP_LEFT, GuiListDirection::VERTICAL);
+  mGuiFrame->addGuiComponent(mScoreList);
 }
 
 Hud::~Hud() {
@@ -20,7 +22,10 @@ void Hud::reset() {
   mHealthBars.clear();
   mStaminaBars.clear();
   mManaBars.clear();
+  mScores.clear();
+  mScoreList->clear();
   mGuiFrame->clearGuiComponents();
+  mGuiFrame->addGuiComponent(mScoreList);
   mSubscriber.clearMessages();
 }
 
@@ -77,5 +82,12 @@ void Hud::handlePlayerData(sf::Packet& message) {
       mStaminaBars[i]->setCurrentValue(playerData.currentStamina);
       mStaminaBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 15);
     }
+
+    if (i >= mScores.size()) {
+      auto score = std::make_shared<GuiText>(GuiComponentPosition::LEFT, "");
+      mScores.push_back(score);
+      mScoreList->addGuiComponent(score);
+    }
+    mScores[i]->setText(playerData.username + "\n" + std::to_string(playerData.score));
   }
 }

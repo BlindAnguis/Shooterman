@@ -3,6 +3,7 @@
 #include "../Resources/MenuBase.h"
 #include "../Resources/GuiProgressBar.h"
 #include "../Resources/GuiText.h"
+#include "../Resources/GuiList.h"
 #include "../../../Common/MessageHandler/MessageHandler.h"
 
 class Hud : public MenuBase {
@@ -21,6 +22,8 @@ private:
   std::vector<std::shared_ptr<GuiProgressBar>> mHealthBars;
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mStaminaBars;
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mManaBars;
+  std::vector<std::shared_ptr<GuiText>> mScores;
+  std::shared_ptr<GuiList> mScoreList;
 
   void handlePlayerData(sf::Packet& message);
 };
