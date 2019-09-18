@@ -40,10 +40,10 @@ bool PlayWindow::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f m
   return mIsRenderNeeded;
 }
 
-void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData) {
+void PlayWindow::renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData, sf::Vector2f offset) {
   //TRACE_DEBUG1(static_cast<int>(spriteData.textureId));
   sf::Sprite sprite = GuiResourceManager::getInstance().createSprite(spriteData.textureId);
-  sprite.setPosition(spriteData.position);
+  sprite.setPosition(spriteData.position + offset);
   sprite.setTextureRect(spriteData.texturePosition);
   sprite.setOrigin((float)(sprite.getTextureRect().width / 2),
     (float)(sprite.getTextureRect().height / 2));
@@ -85,6 +85,12 @@ void PlayWindow::handleSpriteListMessage(sf::Packet& message) {
   mWindow->clear(sf::Color::White);
   mIsRenderNeeded = true;
 
+  sf::Vector2f windowSize = (sf::Vector2f)mWindow->getSize();
+  sf::Vector2f offset = windowSize - sf::Vector2f(1024, 1024);
+  offset.x /= 2;
+  offset.y /= 2;
+
+  mCachedSprite.setPosition(offset);
   mWindow->draw(mCachedSprite);
 
   mSpriteListMessage.unpack(message);
@@ -92,7 +98,7 @@ void PlayWindow::handleSpriteListMessage(sf::Packet& message) {
   SpriteData spriteData = mSpriteListMessage.getSpriteData(position);
   //TRACE_DEBUG1("SpriteID: " << static_cast<int>(spriteData.textureId));
   while (spriteData.textureId != Textures::Unknown) {
-    renderSpriteData(mWindow, spriteData);
+    renderSpriteData(mWindow, spriteData, offset);
     position--;
     spriteData = mSpriteListMessage.getSpriteData(position);
   }

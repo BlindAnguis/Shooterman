@@ -30,6 +30,7 @@ void Hud::reset() {
 }
 
 bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePosition) {
+  mWindow = window;
   mSubscriber.handleMessages();
 
   MenuBase::render(window, mousePosition);
@@ -38,6 +39,10 @@ bool Hud::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mousePos
 }
 
 void Hud::handlePlayerData(sf::Packet& message) {
+  sf::Vector2f windowSize = (sf::Vector2f)mWindow->getSize();
+  sf::Vector2f offset = windowSize - sf::Vector2f(1024, 1024);
+  offset.x /= 2;
+  offset.y /= 2;
   PlayerDataMessage pdm(message);
   for (unsigned int i = 0; i < pdm.getNumberOfPlayerData(); ++i) {
     PlayerData playerData = pdm.getPlayerData(i);
@@ -49,7 +54,7 @@ void Hud::handlePlayerData(sf::Packet& message) {
       mGuiFrame->addGuiComponent(username);
     }
     mUsernames[i]->setText(playerData.username);
-    mUsernames[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height - 10);
+    mUsernames[i]->setPosition(playerData.position.x + offset.x, playerData.position.y - playerData.globalBounds.height - 10 + offset.y);
 
 
     if (i >= mHealthBars.size()) {
@@ -59,7 +64,7 @@ void Hud::handlePlayerData(sf::Packet& message) {
     }
     mHealthBars[i]->setMaxValue(playerData.maxHealth);
     mHealthBars[i]->setCurrentValue(playerData.currentHealth);
-    mHealthBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 5);
+    mHealthBars[i]->setPosition(playerData.position.x + offset.x, playerData.position.y - playerData.globalBounds.height + 5 + offset.y);
 
     if (playerData.hasMana) {
       if (mManaBars.find(i) == mManaBars.end()) {
@@ -69,7 +74,7 @@ void Hud::handlePlayerData(sf::Packet& message) {
       }
       mManaBars[i]->setMaxValue(playerData.maxMana);
       mManaBars[i]->setCurrentValue(playerData.currentMana);
-      mManaBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 15);
+      mManaBars[i]->setPosition(playerData.position.x + offset.x, playerData.position.y - playerData.globalBounds.height + 15 + offset.y);
     }
 
     if (playerData.hasStamina) {
@@ -80,7 +85,7 @@ void Hud::handlePlayerData(sf::Packet& message) {
       }
       mStaminaBars[i]->setMaxValue(playerData.maxStamina);
       mStaminaBars[i]->setCurrentValue(playerData.currentStamina);
-      mStaminaBars[i]->setPosition(playerData.position.x, playerData.position.y - playerData.globalBounds.height + 15);
+      mStaminaBars[i]->setPosition(playerData.position.x + offset.x, playerData.position.y - playerData.globalBounds.height + 15 + offset.y);
     }
 
     if (i >= mScores.size()) {

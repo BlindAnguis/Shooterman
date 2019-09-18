@@ -24,6 +24,7 @@ private:
   std::map<unsigned int, std::shared_ptr<GuiProgressBar>> mManaBars;
   std::vector<std::shared_ptr<GuiText>> mScores;
   std::shared_ptr<GuiList> mScoreList;
+  std::shared_ptr<sf::RenderWindow> mWindow;
 
   void handlePlayerData(sf::Packet& message);
 };
