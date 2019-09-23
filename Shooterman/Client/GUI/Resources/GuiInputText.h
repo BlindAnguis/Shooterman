@@ -17,6 +17,8 @@ public:
   void enableReceiveInput();
   void disableReceiveInput();
 
+  std::string getText() override;
+
 private:
   bool mReceiveInputEnabled = false;
   bool mReceiveInput = false;
