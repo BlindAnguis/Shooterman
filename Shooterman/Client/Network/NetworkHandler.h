@@ -30,6 +30,7 @@ private:
   Interface mPlayerDataInterface;
   Interface mSoundListInterface;
   Interface mServerReadyInterface;
+  Interface mScoreBoardInterface;
   Subscriber mIpSubscriber;
   Subscriber mForwaringSubscriber;
   Subscriber mInfoMessageSubscriber;

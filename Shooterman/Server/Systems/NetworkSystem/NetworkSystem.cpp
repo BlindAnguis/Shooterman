@@ -10,6 +10,7 @@
 #include "../../../Common/Messages/ServerReadyMessage.h"
 #include "../../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../../Common/Messages/RemoveDebugButtonMessage.h"
+#include "../../../Common/Messages/ScoreBoardMessage.h"
 #include "../../../Common/Messages/ServerInternal/ClientDisconnectedMessage.h"
 
 #define HOST 1
@@ -41,6 +42,7 @@ void NetworkSystem::run() {
   mDebugMenuInterface.addSignalCallback(MessageId::REMOVE_DEBUG_BUTTON, std::bind(&NetworkSystem::handleRemoveDebugButtonMessage, this, std::placeholders::_1));
   mSoundInterface.addSignalCallback(MessageId::SOUND_LIST, std::bind(&NetworkSystem::handleSoundListMessage, this, std::placeholders::_1));
   mGameStateInterface.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&NetworkSystem::handleChangeGameStateMessage, this, std::placeholders::_1));
+  mScoreBoardInterface.addSignalCallback(MessageId::SCORE_BOARD, std::bind(&NetworkSystem::handleScoreBoardMessage, this, std::placeholders::_1));
 
   Interface inputListInterface;
   mMessageHandler->publishInterface(Interfaces::SERVER_INPUT_LIST, &inputListInterface);
@@ -50,6 +52,7 @@ void NetworkSystem::run() {
   mMessageHandler->publishInterface(Interfaces::SERVER_GAME_STATE, &mGameStateInterface);
   mMessageHandler->publishInterface(Interfaces::SERVER_DEBUG_MENU, &mDebugMenuInterface);
   mMessageHandler->publishInterface(Interfaces::SERVER_SOUND_LIST, &mSoundInterface);
+  mMessageHandler->publishInterface(Interfaces::SERVER_SCORE_BOARD, &mScoreBoardInterface);
   mClientsSockets.clear();
   mNewClientsSockets.clear();
   mDebugMenuInterface.clearMessages();
@@ -155,6 +158,7 @@ void NetworkSystem::run() {
     mDebugMenuInterface.handleMessages();
     mSoundInterface.handleMessages();
     mGameStateInterface.handleMessages();
+    mScoreBoardInterface.handleMessages();
     //handleServerReady();
     //handlePlayerData();
     //handleDebugMenu();
@@ -172,6 +176,7 @@ void NetworkSystem::run() {
   mMessageHandler->unpublishInterface(Interfaces::SERVER_GAME_STATE);
   mMessageHandler->unpublishInterface(Interfaces::SERVER_DEBUG_MENU);
   mMessageHandler->unpublishInterface(Interfaces::SERVER_SOUND_LIST);
+  mMessageHandler->unpublishInterface(Interfaces::SERVER_SCORE_BOARD);
 
   for (auto client : mClientsSockets) {
     client.second.first->disconnect();
@@ -273,5 +278,13 @@ void NetworkSystem::handleChangeGameStateMessage(sf::Packet& message) {
   for (auto clientSocket : mClientsSockets) {
     sf::Packet gsmPacket = gsm.pack();
     clientSocket.second.first->send(gsmPacket);
+  }
+}
+
+void NetworkSystem::handleScoreBoardMessage(sf::Packet& message) {
+  ScoreBoardMessage sbm(message);
+  for (auto clientSocket : mClientsSockets) {
+    sf::Packet sbmPacket = sbm.pack();
+    clientSocket.second.first->send(sbmPacket);
   }
 }

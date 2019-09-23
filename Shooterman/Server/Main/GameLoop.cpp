@@ -136,6 +136,8 @@ void GameLoop::gameLoop() {
 		    break;
       case GAME_STATE::PAUSE:
         break;
+      case GAME_STATE::SCORE_BOARD:
+        break;
       default:
         TRACE_ERROR("This state doesn't exist " << state);
     }

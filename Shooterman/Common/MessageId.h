@@ -28,6 +28,7 @@ namespace MessageId{
   const int PLAYER_USERNAMES = 230;
   const int PLAYABLE_CHARACTERS = 231;
   const int MAP_DATA = 232;
+  const int SCORE_BOARD = 233;
 
 // Internal Client messages
   const int IP_MESSAGE = 1000;

@@ -97,6 +97,8 @@
     <ClCompile Include="Client\Input\SfmlKeyboard.cpp" />
     <ClCompile Include="Common\Messages\DeathMessage.cpp" />
     <ClCompile Include="Server\Systems\ScoreSystem\ScoreSystem.cpp" />
+    <ClCompile Include="Client\GUI\ScoreMenu\ScoreMenu.cpp" />
+    <ClCompile Include="Common\Messages\ScoreBoardMessage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client\GUI\Gui.h" />
@@ -211,6 +213,8 @@
     <ClInclude Include="Client\Input\Mock\KeyboardMock.cpp" />
     <ClInclude Include="Common\Messages\DeathMessage.h" />
     <ClInclude Include="Server\Systems\ScoreSystem\ScoreSystem.h" />
+    <ClInclude Include="Client\GUI\ScoreMenu\ScoreMenu.h" />
+    <ClInclude Include="Common\Messages\ScoreBoardMessage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client\Resources\Sprites\Player.png" />

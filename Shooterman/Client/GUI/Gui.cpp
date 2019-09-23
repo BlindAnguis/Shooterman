@@ -10,6 +10,7 @@
 #include "DebugMenu/DebugMenu.h"
 #include "PauseMenu/PauseMenu.h"
 #include "MapEditor/MapEditor.h"
+#include "ScoreMenu/ScoreMenu.h"
 #include "../../Common/Constants.h"
 #include "../../Common/Interfaces.h"
 #include "../../Common/MessageId.h"
@@ -43,6 +44,7 @@ void Gui::start() {
   mMenuMap.emplace(GAME_STATE::OPTIONS, std::list<std::shared_ptr<MenuBase>> { std::make_shared<OptionsMenu>(mMessageHandler) });
   mMenuMap.emplace(GAME_STATE::PAUSE, std::list<std::shared_ptr<MenuBase>> { std::make_shared<PauseMenu>(mMessageHandler) });
   mMenuMap.emplace(GAME_STATE::MAP_EDITOR, std::list<std::shared_ptr<MenuBase>> { std::make_shared<MapEditor>(mMessageHandler) });
+  mMenuMap.emplace(GAME_STATE::SCORE_BOARD, std::list<std::shared_ptr<MenuBase>> { std::make_shared<ScoreMenu>(mMessageHandler) });
 
   // This needs to be after the DebugMenu is created
   setupDebugMessages("Client", "Gui", mMessageHandler);

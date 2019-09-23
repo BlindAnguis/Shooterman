@@ -12,6 +12,7 @@ namespace Interfaces {
   const std::string CLIENT_SOUND_LIST = "ClientSoundList";
   const std::string CLIENT_SPRITE_LIST = "ClientSpriteList";
   const std::string CLIENT_SYSTEM_MESSAGE = "ClientSystemMessage";
+  const std::string CLIENT_SCORE_BOARD = "ClientScoreBoard";
   
   const std::string INFO_MESSAGE = "InfoMessage";
   const std::string MOUSE_POSITION = "MousePosition";
@@ -25,5 +26,6 @@ namespace Interfaces {
   const std::string SERVER_SERVER_READY = "ServerServerReady";
   const std::string SERVER_SOUND_LIST = "ServerSoundList";
   const std::string SERVER_PLAYER_DEATH = "ServerPlayerDeath";
+  const std::string SERVER_SCORE_BOARD = "ServerScoreBoard";
 };
 #endif // INTERFACES_H

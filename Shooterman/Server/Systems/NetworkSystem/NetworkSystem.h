@@ -41,6 +41,7 @@ private:
   Interface mSoundInterface;
   Interface mServerServerReadyInterface;
   Interface mPlayerLobbyInterface;
+  Interface mScoreBoardInterface;
   std::shared_ptr<MessageHandler> mMessageHandler;
   sf::Clock mHeartbeatTimer;
 
@@ -54,4 +55,5 @@ private:
   void handleRemoveDebugButtonMessage(sf::Packet& message);
   void handleSoundListMessage(sf::Packet& message);
   void handleChangeGameStateMessage(sf::Packet& message);
+  void handleScoreBoardMessage(sf::Packet& message);
 };

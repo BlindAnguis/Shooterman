@@ -3,6 +3,7 @@
 #include "../../Common/Messages/PlayerDataMessage.h"
 #include "../../Common/Messages/AddDebugButtonMessage.h"
 #include "../../Common/Messages/RemoveDebugButtonMessage.h"
+#include "../../Common/Messages/ScoreBoardMessage.h"
 #include "../../Common/Interfaces.h"
 
 Engine::Engine(std::shared_ptr<MessageHandler> messageHandler) :
@@ -108,6 +109,25 @@ void Engine::shutDown() {
 
 void Engine::update() {
   handleDebugMessages();
+
+  int numberOfAlivePlayers = 0;
+
+  for (auto player : mPlayerComponentManager->getAllEntitiesWithComponent()) {
+    auto healtComponent = mHealthComponentManager->getComponent(player.first);
+    if (!healtComponent) {
+      continue;
+    }
+
+    if (healtComponent->isAlive) {
+      numberOfAlivePlayers++;
+    }
+  }
+
+  if (numberOfAlivePlayers <= 1) {
+    // At least one player is alive, end game
+    showScoreBoard();
+  }
+
   //TRACE_DEBUG1("Frame begins!!");
   sf::Clock c;
   // Reset
@@ -256,6 +276,37 @@ void Engine::destroyEntity(int entityId) {
     }
   }
   mEntityManager->destroyEntity(entityId);
+}
+
+void Engine::showScoreBoard() {
+  Subscriber gameStateSubscriber;
+  while (!mMessageHandler->subscribeTo(Interfaces::SERVER_GAME_STATE, &gameStateSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+    TRACE_ERROR("WAITING FOR " << Interfaces::SERVER_GAME_STATE << " INTERFACE TO BE PUBLISHED, IT SHOULD ALREADY BE PUBLISHED!!!!");
+  }
+  GameStateMessage gsm(GAME_STATE::SCORE_BOARD);
+  gameStateSubscriber.reverseSendMessage(gsm.pack());
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_GAME_STATE, &gameStateSubscriber);
+
+
+  Subscriber scoreBoardSubscriber;
+  while (!mMessageHandler->subscribeTo(Interfaces::SERVER_SCORE_BOARD, &scoreBoardSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+    TRACE_ERROR("WAITING FOR " << Interfaces::SERVER_SCORE_BOARD << " INTERFACE TO BE PUBLISHED, IT SHOULD ALREADY BE PUBLISHED!!!!");
+  }
+
+  ScoreBoardMessage sbm;
+
+  for (auto player : *mConnectedClients) {
+    int playerId = player.second->getEntity()->id;
+    PlayerScore playerScore;
+    playerScore.username = player.second->getUsername();
+    playerScore.score = mScoreSystem->getEntityScore(playerId);
+    sbm.addPlayerScore(playerScore);
+  }
+
+  scoreBoardSubscriber.reverseSendMessage(sbm.pack());
+  mMessageHandler->unsubscribeTo(Interfaces::SERVER_SCORE_BOARD, &scoreBoardSubscriber);
 }
 
 void Engine::collectPlayerData() {

@@ -83,5 +83,7 @@ private:
 
   void destroyEntity(int entityId);
   MapCreator mMapCreator;
+
+  void showScoreBoard();
 };
 

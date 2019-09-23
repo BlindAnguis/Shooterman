@@ -18,6 +18,7 @@
 #include "../../Common/Messages/SoundMessage.h"
 #include "../../Common/Messages/InfoMessage.h"
 #include "../../Common/Messages/MapMessage.h"
+#include "../../Common/Messages/ScoreBoardMessage.h"
 
 NetworkHandler::NetworkHandler(std::shared_ptr<MessageHandler> messageHandler, std::shared_ptr<SocketFactory> socketFactory) : 
   mMessageHandler(messageHandler),
@@ -112,6 +113,7 @@ void NetworkHandler::setupSubscribersAndInterfaces() {
   mMessageHandler->publishInterface(Interfaces::CLIENT_SOUND_LIST, &mSoundListInterface);
   mMessageHandler->publishInterface(Interfaces::CLIENT_LOBBY, &mLobbyInterface);
   mMessageHandler->publishInterface(Interfaces::CLIENT_SERVER_READY, &mServerReadyInterface);
+  mMessageHandler->publishInterface(Interfaces::CLIENT_SCORE_BOARD, &mScoreBoardInterface);
 
   mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   mMessageHandler->subscribeToWithTimeout(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);
@@ -190,7 +192,11 @@ void NetworkHandler::handlePackets() {
     } else if (id == MessageId::MAP_DATA) {
       MapMessage mm(packet);
       mLobbyInterface.pushMessage(mm.pack());
-    } else {
+    } else if (id == MessageId::SCORE_BOARD) {
+      ScoreBoardMessage sbm(packet);
+      mScoreBoardInterface.pushMessage(sbm.pack());
+    }
+    else {
       TRACE_ERROR("Packet not known: " << id);
     }
   }
@@ -210,6 +216,7 @@ void NetworkHandler::teardownSubscribersAndInterfaces() {
   mMessageHandler->unpublishInterface(Interfaces::CLIENT_SERVER_READY);
   mMessageHandler->unpublishInterface(Interfaces::CLIENT_PLAYER_DATA);
   mMessageHandler->unpublishInterface(Interfaces::CLIENT_SOUND_LIST);
+  mMessageHandler->unpublishInterface(Interfaces::CLIENT_SCORE_BOARD);
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_DEBUG_MENU, &mServerDebugSubscriber);
   mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &mGameStateSubscriber);
   mMessageHandler->unsubscribeTo(Interfaces::INFO_MESSAGE, &mInfoMessageSubscriber);

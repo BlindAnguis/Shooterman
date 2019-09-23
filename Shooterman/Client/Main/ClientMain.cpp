@@ -94,6 +94,8 @@ void ClientMain::run() {
         break;
       case GAME_STATE::MAP_EDITOR:
         break;
+      case GAME_STATE::SCORE_BOARD:
+        break;
       default:
         TRACE_ERROR("Unknown game state: " << mGameStateStack.top());
     }

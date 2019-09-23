@@ -253,7 +253,7 @@ void LobbyMenu::handleMapMessage(sf::Packet& message) {
   mThumbnailImage->setImage(mThumbnail);
 }
 
-void LobbyMenu::handleServerSubscribeTimeout(sf::Packet & message) {
+void LobbyMenu::handleServerSubscribeTimeout(sf::Packet& message) {
   TRACE_REC("SUBSCRIBE_TIMEOUT");
   TRACE_ERROR("Could not subscribe to server ready interface within timeout");
 }
