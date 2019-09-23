@@ -43,6 +43,8 @@ public:
 
   void collectPlayerData();
 
+  bool isRoundFinished();
+
   void shutDown();
 
 private:

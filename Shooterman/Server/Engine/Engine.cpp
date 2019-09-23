@@ -109,24 +109,11 @@ void Engine::shutDown() {
 
 void Engine::update() {
   handleDebugMessages();
-
-  int numberOfAlivePlayers = 0;
-
-  for (auto player : mPlayerComponentManager->getAllEntitiesWithComponent()) {
-    auto healtComponent = mHealthComponentManager->getComponent(player.first);
-    if (!healtComponent) {
-      continue;
-    }
-
-    if (healtComponent->isAlive) {
-      numberOfAlivePlayers++;
-    }
-  }
-
-  if (numberOfAlivePlayers <= 1) {
-    // At least one player is alive, end game
+  if (isRoundFinished()) {
     showScoreBoard();
   }
+  
+
 
   //TRACE_DEBUG1("Frame begins!!");
   sf::Clock c;
@@ -356,4 +343,19 @@ void Engine::collectPlayerData() {
     pdm.addPlayerData(playerData);
   }
   mPlayerDataSubscriber.reverseSendMessage(pdm.pack());
+}
+
+bool Engine::isRoundFinished() {
+  auto entitiesWithHealthComponent = mHealthComponentManager->getAllEntitiesWithComponent();
+  int numOfAlivePlayers = std::count_if(entitiesWithHealthComponent.begin(), entitiesWithHealthComponent.end(), [&](auto entity)
+  {
+    return (mPlayerComponentManager->hasComponent(entity.first) && entity.second->isAlive);
+  });
+  int connectedPlayers = mConnectedClients->size();
+  if (connectedPlayers == 1 && numOfAlivePlayers == 0 || connectedPlayers > 1 && numOfAlivePlayers == 1 ) {
+    return true;
+  }
+  return false;
+  
+
 }
