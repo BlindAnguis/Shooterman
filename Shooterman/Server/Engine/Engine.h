@@ -12,6 +12,7 @@
 #include "../Systems/DeleteSystem/DeleteSystem.h"
 #include "../Systems/ClockSystem/ClockSystem.h"
 #include "../Systems/EntityCreatorSystem/EntityCreatorSystem.h"
+#include "../Systems/ScoreSystem/ScoreSystem.h"
 #include "../EntityManager/EntityManager.h"
 #include "../Components/ComponentManager.h"
 #include "../Components/Components.h"
@@ -59,6 +60,7 @@ private:
   std::shared_ptr<PickupSystem> mPickupSystem;
   std::shared_ptr<EntityCreatorSystem> mEntityCreatorSystem;
   std::shared_ptr<ManaSystem> mManaSystem;
+  std::shared_ptr<ScoreSystem> mScoreSystem;
 
   // Managers
   EntityManager* mEntityManager;

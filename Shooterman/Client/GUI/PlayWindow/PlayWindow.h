@@ -27,7 +27,7 @@ private:
   sf::Sprite mCachedSprite;
   std::shared_ptr<sf::RenderWindow> mWindow;
 
-  void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData);
+  void renderSpriteData(std::shared_ptr<sf::RenderWindow> window, SpriteData& spriteData, sf::Vector2f offset);
   void buildSpriteCache();
 
   void handleSpriteListMessage(sf::Packet& message);

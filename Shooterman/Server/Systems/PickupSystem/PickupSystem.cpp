@@ -25,7 +25,7 @@ void PickupSystem::update() {
   if (mPickupClock.getElapsedTime().asMilliseconds() >= mTimeToNextPickup) {
     if (mPickupComponentManager->getAllComponents().size() <= MAX_NR_OF_PICKUPS) {
       TRACE_DEBUG1("*************************************** NEW PICKUP ***********************************");
-      auto pickup = mEntityCreatorSystem->createEntity(EntityType::RandomPickup, sf::Vector2f(), {});
+      auto pickup = mEntityCreatorSystem->createEntity(-1, EntityType::RandomPickup, sf::Vector2f(), {});
       mTimeToNextPickup = (rand() % MIN_TIME_TO_NEXT_PICKUP) + (MAX_TIME_TO_NEXT_PICKUP - MIN_TIME_TO_NEXT_PICKUP);
       TRACE_DEBUG1("Created a pickup of type: " << static_cast<int>(mPickupComponentManager->getComponent(pickup->id)->type) << " with id: " << pickup->id);
       mPickupClock.restart();

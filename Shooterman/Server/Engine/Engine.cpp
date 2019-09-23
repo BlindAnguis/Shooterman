@@ -45,7 +45,8 @@ Engine::Engine(std::array<std::array<Textures, 32>, 32> gameMap, std::shared_ptr
   mInputSystem(std::make_shared<InputSystem>(messageHandler)),
   mNetworkSystem(networkHandler),
   mRenderSystem(std::make_shared<RenderSystem>(messageHandler, networkHandler)),
-  mManaSystem(std::make_shared<ManaSystem>())
+  mManaSystem(std::make_shared<ManaSystem>()),
+  mScoreSystem(std::make_shared<ScoreSystem>(messageHandler))
 {
   mCollisionSystem = std::make_shared<CollisionSystem>(messageHandler, mDeleteSystem);
   mEntityCreatorSystem = std::make_shared<EntityCreatorSystem>(messageHandler, mDeleteSystem, mGridSystem, mManaSystem);
@@ -192,6 +193,9 @@ void Engine::update() {
   sf::Int64 deleteTime = c.getElapsedTime().asMicroseconds();
   c.restart();
 
+
+  mScoreSystem->update();
+
   sf::Int64 totalTime = resetTime + inputTime + movementTime + healthTime + animationTime + renderTime + deleteTime;
   TRACE_DEBUG1("ResetTime: " << resetTime << "us, InputTime: " << inputTime << "us, MovementTime: " << movementTime << "us, PickupTime: " << pickupTime << "us, HealthTime: " << healthTime << "us, AnimationTime: " << animationTime << "us, RenderTime: " << renderTime << "us, DeleteTime: " << deleteTime << "us, TotalTime: " << totalTime << "us");
 }
@@ -206,16 +210,16 @@ void Engine::createPlayers() {
 
     switch (it->second->getPlayerClass()) {
       case PlayerClass::Mage:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerMage, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(-1, EntityType::PlayerMage, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         break;
       case PlayerClass::Knight:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerKnight, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(-1, EntityType::PlayerKnight, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         break;
       case PlayerClass::Spearman:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerSpearman, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(-1, EntityType::PlayerSpearman, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         break;
       case PlayerClass::Archer:
-        it->second->setEntity(mEntityCreatorSystem->createEntity(EntityType::PlayerArcher, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
+        it->second->setEntity(mEntityCreatorSystem->createEntity(-1, EntityType::PlayerArcher, sf::Vector2f(spawnPosition.first, spawnPosition.second), {}));
         //it->second->setEntity(mEntityCreator.createPlayer(PlayerClass::Archer, sf::Vector2f(xPos, 100)));
         break;
       default:
@@ -295,6 +299,8 @@ void Engine::collectPlayerData() {
       playerData.currentStamina = staminaComponent->currentStamina;
       playerData.maxStamina = staminaComponent->maxStamina;
     }
+
+    playerData.score = mScoreSystem->getEntityScore(playerId);
 
     pdm.addPlayerData(playerData);
   }

@@ -198,7 +198,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
       float posX = (rand() % (1024 - 32)) + 32.0f;
       float posY = (rand() % (1024 - 32)) + 32.0f;
       framesUntilAttack += (int)(rand() % (5 - 2) + 2);
-      mEntityCreatorSystem->addEntityToCreate(EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
+      mEntityCreatorSystem->addEntityToCreate(entityId, EntityType::LightningStrike, sf::Vector2f(posX, posY), framesUntilAttack, { entityId });
     }
   };
 
@@ -266,7 +266,7 @@ Entity* EntityCreator::createMage(sf::Vector2f position) {
   return mage;
 }
 
-Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int> immuneEntityIds) {
+Entity* EntityCreator::createLightningStrike(int entityId, sf::Vector2f position, std::set<int> immuneEntityIds) {
   Entity* lightningStrike = mEntityManager->createEntity();
   auto rc = mRenderComponentManager->addComponent(lightningStrike->id);
   rc->visible = true;
@@ -279,6 +279,7 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int
   auto hcc = mHealthChangerComponentManager->addComponent(lightningStrike->id);
   hcc->healthChange = -40;
   hcc->immuneEntityIds = immuneEntityIds;
+  hcc->ownerId = entityId;
 
   auto cc = mCollisionComponentManager->addComponent(lightningStrike->id);
   cc->collided = false;
@@ -303,7 +304,7 @@ Entity* EntityCreator::createLightningStrike(sf::Vector2f position, std::set<int
   return lightningStrike;
 }
 
-void EntityCreator::createRandomLightningBolts() {
+void EntityCreator::createRandomLightningBolts(int entityId) {
   for (int i = 0; i < MAGE_NR_OF_SUPER_LIGHTNING_STRIKES_MAX; i++) {
     int sleepTime = (int)(rand() % (100 - 40) + 40);
     sf::sleep(sf::milliseconds(sleepTime));
@@ -320,6 +321,7 @@ void EntityCreator::createRandomLightningBolts() {
 
     auto hcc = mHealthChangerComponentManager->addComponent(lightningBolt->id);
     hcc->healthChange = -40;
+    hcc->ownerId = entityId;
 
     auto cc = mCollisionComponentManager->addComponent(lightningBolt->id);
     cc->collided = false;
@@ -395,6 +397,7 @@ Entity* EntityCreator::createBullet(int entityId, std::uint32_t input, sf::Vecto
 
     auto hcc = mHealthChangerComponentManager->addComponent(bullet->id);
     hcc->healthChange = -10;
+    hcc->ownerId = entityId;
 
     auto cc = mCollisionComponentManager->addComponent(bullet->id);
     cc->collided = false;
@@ -466,6 +469,7 @@ Entity* EntityCreator::createArrow(int entityId, std::uint32_t input, sf::Vector
 
     auto hcc = mHealthChangerComponentManager->addComponent(arrow->id);
     hcc->healthChange = -10;
+    hcc->ownerId = entityId;
 
     auto cc = mCollisionComponentManager->addComponent(arrow->id);
     cc->collided = false;
@@ -520,6 +524,7 @@ Entity* EntityCreator::createMelee(int entityId, std::uint32_t input, sf::Vector
 
     auto hcc = mHealthChangerComponentManager->addComponent(bullet->id);
     hcc->healthChange = -50;
+    hcc->ownerId = entityId;
 
     auto vc = mVelocityComponentManager->addComponent(bullet->id);
     vc->currentVelocity.x = 0.0001f;

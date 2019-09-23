@@ -36,6 +36,7 @@ namespace MessageId{
 
 // Internal Server messages
   const int CLIENT_DISCONNECTED = 2000;
+  const int PLAYER_DEATH = 2001;
 
 };
 #endif /* MESSAGEID_H_ */

@@ -90,3 +90,7 @@ void GuiInputText::enableReceiveInput() {
 void GuiInputText::disableReceiveInput() {
   mReceiveInputEnabled = false;
 }
+
+std::string GuiInputText::getText() {
+  return mCurrentText;
+}

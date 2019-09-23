@@ -24,6 +24,7 @@ sf::Packet PlayerDataMessage::pack() {
     packet << playerData.hasMana;
     packet << playerData.currentMana;
     packet << playerData.maxMana;
+    packet << playerData.score;
     packet << playerData.position.x;
     packet << playerData.position.y;
     packet << playerData.globalBounds.width;
@@ -48,6 +49,7 @@ void PlayerDataMessage::unpack(sf::Packet packet) {
     packet >> playerData.hasMana;
     packet >> playerData.currentMana;
     packet >> playerData.maxMana;
+    packet >> playerData.score;
     packet >> playerData.position.x;
     packet >> playerData.position.y;
     packet >> playerData.globalBounds.width;

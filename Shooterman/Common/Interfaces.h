@@ -24,5 +24,6 @@ namespace Interfaces {
   const std::string SERVER_PLAYER_LOBBY = "ServerPlayerLobby";
   const std::string SERVER_SERVER_READY = "ServerServerReady";
   const std::string SERVER_SOUND_LIST = "ServerSoundList";
+  const std::string SERVER_PLAYER_DEATH = "ServerPlayerDeath";
 };
 #endif // INTERFACES_H

@@ -85,6 +85,7 @@ struct StaminaComponent {
 struct HealthChangerComponent {
   int healthChange = 0;
   std::set<int> immuneEntityIds;
+  int ownerId = -1;
 };
 
 struct ClockComponent {
