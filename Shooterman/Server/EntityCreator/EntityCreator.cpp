@@ -843,11 +843,11 @@ Entity* EntityCreator::createArcher(sf::Vector2f position) {
 }
 
 Entity* EntityCreator::createRandomPickup() {
-  int randomPercentage = (int)rand() % 101;
+  int randomPercentage = (int)rand() % 100;
   PickupType type;
-  if (randomPercentage >= 0 && randomPercentage <= 99) {
+  if (randomPercentage >= 0 && randomPercentage <= 20) {
     type = PickupType::Ammo;
-  } else if (randomPercentage >= 100 && randomPercentage <= 101) {
+  } else if (randomPercentage >= 21 && randomPercentage <= 75) {
     type = PickupType::HealthPotion;
   } else {
     type = PickupType::ManaPotion;
@@ -873,8 +873,8 @@ Entity* EntityCreator::createRandomPickup() {
     rc->textureId = Textures::HealthPotion;
     rc->sprite = sf::Sprite(*mTextures[rc->textureId]);
     auto hcc = ComponentManager<HealthChangerComponent>::get().addComponent(pickup->id);
-    hcc->healthChange = pc->addedEffect;
     pc->addedEffect = HEALTH_POTION_EFFECT;
+    hcc->healthChange = pc->addedEffect;
     break;
   }
   case PickupType::ManaPotion: {
