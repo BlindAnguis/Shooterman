@@ -4,6 +4,7 @@
 #include "../../../Common/Interfaces.h"
 #include "../../../Common/MessageId.h"
 #include "../../../Common/Messages/ScoreBoardMessage.h"
+#include "../../../Common/Messages/GameStateMessage.h"
 
 ScoreMenu::ScoreMenu(std::shared_ptr<MessageHandler> messageHandler) : mMessageHandler(messageHandler) {
   mName = "CLIENT: PAUSE_MENU";
@@ -18,7 +19,7 @@ ScoreMenu::ScoreMenu(std::shared_ptr<MessageHandler> messageHandler) : mMessageH
   auto bottomList = std::make_shared<GuiList>(GuiComponentPosition::BOTTOM, GuiListDirection::HORIZONTAL);
   mGuiFrame->addGuiComponent(bottomList);
   bottomList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Back To Main Menu", std::bind(&ScoreMenu::onMainMenuClick, this)));
-  bottomList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Back To Lobby", std::bind(&ScoreMenu::onLobbyMenuClick, this)));
+  //bottomList->addGuiComponent(std::make_shared<GuiButton>(GuiComponentPosition::CENTER, "Back To Lobby", std::bind(&ScoreMenu::onLobbyMenuClick, this)));
 
 }
 
@@ -44,6 +45,16 @@ void ScoreMenu::handleScoreBoardMessage(sf::Packet& packet) {
   }
 }
 
-void ScoreMenu::onMainMenuClick() {}
+void ScoreMenu::onMainMenuClick() {
+  Subscriber gameStateSubscriber("CLientScoreBoardLobby");
+  while (!mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber)) {
+    sf::sleep(sf::milliseconds(5));
+    TRACE_ERROR("NO, THIS SHOULD NOT HAPPEN!!! " << Interfaces::CLIENT_GAME_STATE << " IS NOT PUBLISHED YET!");
+      
+  }
+  GameStateMessage gsm(GAME_STATE::MAIN_MENU);
+  gameStateSubscriber.reverseSendMessage(gsm.pack());
+  mMessageHandler->unsubscribeTo(Interfaces::CLIENT_GAME_STATE, &gameStateSubscriber);
+}
 
 void ScoreMenu::onLobbyMenuClick() {}
