@@ -29,8 +29,8 @@ LobbyMenu::LobbyMenu(bool server, std::shared_ptr<MessageHandler> messageHandler
   mLobbySubscriber.addSignalCallback(MessageId::PLAYABLE_CHARACTERS, std::bind(&LobbyMenu::handlePlayableCharactersMessage, this, std::placeholders::_1));
   mLobbySubscriber.addSignalCallback(MessageId::MAP_DATA, std::bind(&LobbyMenu::handleMapMessage, this, std::placeholders::_1));
 
- mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
- mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_LOBBY, &mLobbySubscriber);
+  mMessageHandler->subscribeToWithTimeout(Interfaces::CLIENT_SERVER_READY, &mServerReadySubscriber);
 
   mGuiFrame = std::make_shared<Frame>();
 
@@ -105,6 +105,7 @@ bool LobbyMenu::render(std::shared_ptr<sf::RenderWindow> window, sf::Vector2f mo
 void LobbyMenu::init() {
   mPlayersList->clear();
   mPlayableCharactersList->clear();
+  mThumbnailTexture = sf::Texture();
   if (mServer) {
     mStartGameButton->setDisabled();
   }
