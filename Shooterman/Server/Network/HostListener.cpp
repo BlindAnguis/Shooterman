@@ -50,17 +50,17 @@ void HostListener::listen() {
   }
   TRACE_INFO("Start to listen");
   //sf::TcpListener listener;
-  sf::Socket::Status status = mListener->listen(1337, sf::IpAddress::getLocalAddress());
+  sf::Socket::Status status = mListener->listen(IP_PORT, sf::IpAddress::getLocalAddress());
   mListener->setBlocking(false);
-  //sf::Socket::Status status = mListener->listen(1337, "localhost");
+  //sf::Socket::Status status = mListener->listen(IP_PORT, "localhost");
   if (status != sf::Socket::Status::Done) {
-    TRACE_ERROR("Couldn't start listening to port 1337 on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
-    //TRACE_ERROR("Couldn't start listening to port 1337 on IP: localhost, status: " << status);
+    TRACE_ERROR("Couldn't start listening to port " << IP_PORT << " on IP: " << sf::IpAddress::getLocalAddress() << ", status: " << status);
+    //TRACE_ERROR("Couldn't start listening to port IP_PORT on IP: localhost, status: " << status);
     return;
   }
 
-  TRACE_INFO("Started listening to port: 1337 and IP: " << sf::IpAddress::getLocalAddress());
-  //TRACE_INFO("Started listening to port: 1337 and IP: localhost");
+  TRACE_INFO("Started listening to port: " << IP_PORT << " and IP: " << sf::IpAddress::getLocalAddress());
+  //TRACE_INFO("Started listening to port: IP_PORT and IP: localhost");
   mRunning = true;
   TRACE_INFO("Searching for clients");
   sf::TcpSocket* client = new sf::TcpSocket();

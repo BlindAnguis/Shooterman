@@ -4,6 +4,7 @@
 #include "../Resources/MenuBase.h"
 #include "../../../Common/MessageHandler/Interface.h"
 #include "../../../Common/Trace.h"
+#include "../../../Common/Constants.h"
 
 class JoinMenu : public MenuBase {
 public:

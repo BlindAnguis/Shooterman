@@ -23,6 +23,7 @@
 #include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
 #include "../Shooterman/Common/Messages/SubscribeTimeoutMessage.cpp"
 #include "../Shooterman/Common/Network/SocketImpl.cpp"
+#include "../Shooterman/Common/Constants.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -138,10 +139,10 @@ void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
 
 void NetworkHandlerTest::sendIpMessage(Soc::Status connectionResult) {
   // Expect network handler to connect to server socket after receiving a ip message
-  IpMessage im("localhost", 1337);
+  IpMessage im("localhost", IP_PORT);
   mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
   
-  EXPECT_CALL(*mSocketMock, connect("localhost", 1337, _)).WillOnce(Return(connectionResult));
+  EXPECT_CALL(*mSocketMock, connect("localhost", IP_PORT, _)).WillOnce(Return(connectionResult));
   mNetworkHandler->handleSubscribers();
   mNetworkHandler->run();
 }
@@ -211,7 +212,7 @@ TEST_F(NetworkHandlerTest, verifyGoesBackToCorrectStateAfterFailedSocketConnecti
   sendIpMessage(Soc::Status::NotReady);
 
   for (int i = 0; i < 10; ++i) {
-    EXPECT_CALL(*mSocketMock, connect("localhost", 1337, _)).WillOnce(Return(Soc::Status::NotReady));
+    EXPECT_CALL(*mSocketMock, connect("localhost", IP_PORT, _)).WillOnce(Return(Soc::Status::NotReady));
     mNetworkHandler->run();
   }
 }

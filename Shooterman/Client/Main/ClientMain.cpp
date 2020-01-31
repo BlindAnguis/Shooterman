@@ -74,7 +74,7 @@ void ClientMain::run() {
         }
         if (!sentIpMessage) {
           if (ipInterface.getNumberOfSubscribers() > 0) {
-            IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), 1337);
+            IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), IP_PORT);
             ipInterface.pushMessage(ipm.pack());
             mMessageHandler->unpublishInterface(Interfaces::CLIENT_IP_LIST);
             sentIpMessage = true;
