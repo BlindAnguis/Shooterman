@@ -67,7 +67,7 @@ void JoinMenu::onJoinClicked() {
     sf::sleep(sf::milliseconds(5));
   }
 
-  IpMessage ipm(mIpString, IP_PORT);
+  IpMessage ipm(mIpText->getText(), IP_PORT);
   mIpInterface.pushMessage(ipm.pack());
 
   GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
