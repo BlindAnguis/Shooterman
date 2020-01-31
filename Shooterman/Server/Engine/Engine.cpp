@@ -248,7 +248,11 @@ void Engine::setMap(std::array<std::array<Textures, 32>, 32> map) {
 
 void Engine::destroyEntity(int entityId) {
   auto entityRenderComponent = mRenderComponentManager->getComponent(entityId);
-  mGridSystem->removeEntity(entityId, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
+  if (entityRenderComponent) {
+    mGridSystem->removeEntity(entityId, (sf::Vector2i)entityRenderComponent->sprite.getPosition());
+  } else {
+    TRACE_ERROR("Tried to remove entitiy from grid system, but renderComponent was null, id: " << entityId);
+  }
   mRenderComponentManager->removeComponent(entityId);
   mCollisionComponentManager->removeComponent(entityId);
   mVelocityComponentManager->removeComponent(entityId);
