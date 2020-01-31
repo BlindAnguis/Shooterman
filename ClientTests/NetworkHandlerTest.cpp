@@ -22,6 +22,7 @@
 #include "../Shooterman/Common/Messages/ToggleDebugButtonMessage.cpp"
 #include "../Shooterman/Common/Messages/SubscribeDoneMessage.cpp"
 #include "../Shooterman/Common/Messages/SubscribeTimeoutMessage.cpp"
+#include "../Shooterman/Common/Messages/ScoreBoardMessage.cpp"
 #include "../Shooterman/Common/Network/SocketImpl.cpp"
 #include "../Shooterman/Common/Constants.h"
 
@@ -84,6 +85,7 @@ void NetworkHandlerTest::expectInterfacesToPublish() {
   EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_SOUND_LIST, _)).Times(1);
   EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_LOBBY, _)).Times(1);
   EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_SERVER_READY, _)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, publishInterface(Interfaces::CLIENT_SCORE_BOARD, _)).Times(1);
 }
 
 void NetworkHandlerTest::expectSubscribersToUnsubscribe() {
@@ -100,6 +102,7 @@ void NetworkHandlerTest::expectInterfacesToUnpublish() {
   EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SOUND_LIST)).Times(1);
   EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_LOBBY)).Times(1);
   EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SERVER_READY)).Times(1);
+  EXPECT_CALL(*mMessageHandlerMock, unpublishInterface(Interfaces::CLIENT_SCORE_BOARD)).Times(1);
 }
 
 void NetworkHandlerTest::sendGameStateLobby(bool expectSubscribe) {
