@@ -14,7 +14,7 @@ void SoundSystem::start() {
   mSoundSubcription.addSignalCallback(MessageId::CHANGE_GAME_STATE, std::bind(&SoundSystem::handleChangeGameStateMessage, this, std::placeholders::_1));
 
   GameStateMessage gsm(GAME_STATE::MAIN_MENU);
-  mSoundSubcription.sendMessage(gsm.pack());
+  mSoundSubcription.sendMessage(std::move(gsm.pack()));
 
   mSubscribedToSounds = mMessageHandler->subscribeTo(Interfaces::CLIENT_GAME_STATE, &mSoundSubcription);
 

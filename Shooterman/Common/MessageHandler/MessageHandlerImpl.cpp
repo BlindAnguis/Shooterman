@@ -30,14 +30,14 @@ void MessageHandlerImpl::handleNewSubscribers() {
       // Interface is published, subscribe to it
       interfaceIt->second->subscribe(subscriberIt->subscriber);
       SubscribeDoneMessage sdm;
-      subscriberIt->subscriber->sendMessage(sdm.pack());
+      subscriberIt->subscriber->sendMessage(std::move(sdm.pack()));
       subscriberIt = mPendingSubscribers.erase(subscriberIt);
     } else {
       // Interface is not yet published
       if (subscriberIt->timer->getElapsedTime() >= sf::milliseconds(subscriberIt->timeoutLength)) {
         // Subscribe timeout before interface is published
         SuscribeTimeoutMessage stm;
-        subscriberIt->subscriber->sendMessage(stm.pack());
+        subscriberIt->subscriber->sendMessage(std::move(stm.pack()));
         subscriberIt = mPendingSubscribers.erase(subscriberIt);
       } else {
         // Let the subscriber wait until interface is published

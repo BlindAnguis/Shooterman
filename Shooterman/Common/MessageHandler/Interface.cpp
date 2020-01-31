@@ -36,7 +36,7 @@ void Interface::unsubscribe(Subscriber* subscriber) {
 void Interface::pushMessage(sf::Packet message) {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   for (Subscriber* subscriber : mSubscriberList) {
-    subscriber->sendMessage(message);
+    subscriber->sendMessage(std::move(message));
   }
 }
 
@@ -44,7 +44,7 @@ void Interface::pushMessageTo(sf::Packet message, int subscriberId) {
   std::lock_guard<std::mutex> lockGuard(mSubscriberLock);
   for (Subscriber* subscriber : mSubscriberList) {
     if (subscriber->getId() == subscriberId) {
-      subscriber->sendMessage(message);
+      subscriber->sendMessage(std::move(message));
     }
   }
 }

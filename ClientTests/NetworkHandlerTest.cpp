@@ -111,7 +111,7 @@ void NetworkHandlerTest::sendGameStateLobby(bool expectSubscribe) {
     expectSubscribeTo(Interfaces::CLIENT_IP_LIST);
   }
   GameStateMessage gsmL(GAME_STATE::LOBBY);
-  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(std::move(gsmL.pack()));
 
   mNetworkHandler->handleSubscribers();
   mNetworkHandler->run();
@@ -123,7 +123,7 @@ void NetworkHandlerTest::sendGameStateJoin(bool expectSubscribe) {
     expectSubscribeTo(Interfaces::CLIENT_IP_LIST);
   }
   GameStateMessage gsmL(GAME_STATE::JOIN);
-  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmL.pack());
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(std::move(gsmL.pack()));
 
   mNetworkHandler->handleSubscribers();
   mNetworkHandler->run();
@@ -133,7 +133,7 @@ void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
   // Expect network handler to disconnect socket
   EXPECT_CALL(*mMessageHandlerMock, unsubscribeTo(Interfaces::CLIENT_IP_LIST, _)).Times(1);
   GameStateMessage gsmM(GAME_STATE::MAIN_MENU);
-  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(gsmM.pack());
+  mSubscriberMap[Interfaces::CLIENT_GAME_STATE]->sendMessage(std::move(gsmM.pack()));
 
   EXPECT_CALL(*mSocketMock, disconnect());
   mNetworkHandler->handleSubscribers();
@@ -143,7 +143,7 @@ void NetworkHandlerTest::sendGameStateMainMenu(bool hasSocketBeenConnected) {
 void NetworkHandlerTest::sendIpMessage(Soc::Status connectionResult) {
   // Expect network handler to connect to server socket after receiving a ip message
   IpMessage im("localhost", IP_PORT);
-  mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(im.pack());
+  mSubscriberMap[Interfaces::CLIENT_IP_LIST]->sendMessage(std::move(im.pack()));
   
   EXPECT_CALL(*mSocketMock, connect("localhost", IP_PORT, _)).WillOnce(Return(connectionResult));
   mNetworkHandler->handleSubscribers();

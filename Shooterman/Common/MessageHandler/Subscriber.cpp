@@ -22,7 +22,7 @@ std::queue<sf::Packet> Subscriber::getMessageQueue() {
   std::queue<sf::Packet> returnMessageQueue = mMessageQueue;
   std::queue<sf::Packet> empty;
   std::swap(mMessageQueue, empty);
-  return returnMessageQueue;
+  return std::move(returnMessageQueue);
 }
 
 int Subscriber::getId() { 
@@ -76,6 +76,6 @@ void Subscriber::clearMessages() {
 void Subscriber::reverseSendMessage(sf::Packet message) {
   std::lock_guard<std::mutex> lockGuard(*mQueueLock);
   if (mCallback) {
-    mCallback(message);
+    mCallback(std::move(message));
   }
 }

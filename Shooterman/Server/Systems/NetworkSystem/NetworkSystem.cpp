@@ -66,7 +66,7 @@ void NetworkSystem::run() {
           TRACE_WARNING("Received no heartbeat for 30 seconds. Lost connection to client!");
 
           ClientDisconnectedMessage cdm(client.first);
-          mPlayerLobbyInterface.pushMessage(cdm.pack());
+          mPlayerLobbyInterface.pushMessage(std::move(cdm.pack()));
 
           removeClientSocket(client.first);
           mClientsSockets.erase(client.first);
@@ -80,7 +80,7 @@ void NetworkSystem::run() {
           TRACE_WARNING("Could not send heartbeat to client. Lost connection to client!");
 
           ClientDisconnectedMessage cdm(client.first);
-          mPlayerLobbyInterface.pushMessage(cdm.pack());
+          mPlayerLobbyInterface.pushMessage(std::move(cdm.pack()));
 
           removeClientSocket(client.first);
           mClientsSockets.erase(client.first);
@@ -97,7 +97,7 @@ void NetworkSystem::run() {
         switch (packetId) {
           case MessageId::INPUT_KEYS: {
             packet << client.first;
-            inputListInterface.pushMessage(packet);
+            inputListInterface.pushMessage(std::move(packet));
             break;
           }
           case MessageId::SHUT_DOWN:
@@ -106,30 +106,30 @@ void NetworkSystem::run() {
             // Check if it is the host
             if (client.first == HOST) {
               GameStateMessage gsm(packet);
-              mGameStateInterface.pushMessage(gsm.pack());
+              mGameStateInterface.pushMessage(std::move(gsm.pack()));
             }
             break;
           }
           case MessageId::ADD_DEBUG_BUTTON: {
             AddDebugButtonMessage adbm(packet);
-            mDebugMenuInterface.pushMessageTo(adbm.pack(), adbm.getSubscriberId());
+            mDebugMenuInterface.pushMessageTo(std::move(adbm.pack()), adbm.getSubscriberId());
             break;
           }
           case MessageId::NEW_USERNAME: {
             ChangeUsernameMessage cum(packet);
             cum.setId(client.first);
-            mPlayerLobbyInterface.pushMessage(cum.pack());
+            mPlayerLobbyInterface.pushMessage(std::move(cum.pack()));
             break;
           }
           case MessageId::CHARACTER_CHOOSEN: {
             CharacterChoosenMessage ccm(packet);
             ccm.setId(client.first);
-            mPlayerLobbyInterface.pushMessage(ccm.pack());
+            mPlayerLobbyInterface.pushMessage(std::move(ccm.pack()));
             break;
           }
           case MessageId::MAP_DATA: {
             MapMessage mm(packet);
-            mPlayerLobbyInterface.pushMessage(mm.pack());
+            mPlayerLobbyInterface.pushMessage(std::move(mm.pack()));
           }
           case MessageId::HEARTBEAT: {
             client.second.second->restart();
@@ -159,11 +159,6 @@ void NetworkSystem::run() {
     mSoundInterface.handleMessages();
     mGameStateInterface.handleMessages();
     mScoreBoardInterface.handleMessages();
-    //handleServerReady();
-    //handlePlayerData();
-    //handleDebugMenu();
-    //handleSoundList();
-    //handleGameState();
 
     sf::sleep(sf::milliseconds(1));
   }

@@ -120,7 +120,7 @@ void Gui::handleWindowEvents() {
       shutdownMessage << MessageId::SHUT_DOWN;
       Subscriber s("GUI");
       mMessageHandler->subscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
-      s.reverseSendMessage(shutdownMessage);
+      s.reverseSendMessage(std::move(shutdownMessage));
       mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
     }
     if (event.type == sf::Event::MouseMoved) {
@@ -129,7 +129,7 @@ void Gui::handleWindowEvents() {
       offset.y /= 2;
       auto res = (sf::Vector2f)sf::Mouse::getPosition(*mWindow) - offset;
       MouseMessage mm((sf::Vector2i)res);
-      mMouseInterface.pushMessage(mm.pack());
+      mMouseInterface.pushMessage(std::move(mm.pack()));
     }
     if (event.type == sf::Event::Resized) {
       sf::FloatRect visibleArea(0, 0, (float)event.size.width, (float)event.size.height);

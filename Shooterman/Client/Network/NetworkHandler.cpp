@@ -155,46 +155,46 @@ void NetworkHandler::handlePackets() {
     int id = -1;
     packet >> id;
     if (id == MessageId::SPRITE_LIST_CACHE) {
-      SpriteCacheMessage sm(packet);
-      mSpriteListInterface.pushMessage(sm.pack());
+      SpriteCacheMessage sm(std::move(packet));
+      mSpriteListInterface.pushMessage(std::move(sm.pack()));
     } else if (id == MessageId::SPRITE_LIST) {
-      SpriteMessage sm(packet);
-      mSpriteListInterface.pushMessage(sm.pack());
+      SpriteMessage sm(std::move(packet));
+      mSpriteListInterface.pushMessage(std::move(sm.pack()));
     } else if (id == MessageId::PLAYER_DATA) {
-      PlayerDataMessage pdm(packet);
-      mPlayerDataInterface.pushMessage(pdm.pack());
+      PlayerDataMessage pdm(std::move(packet));
+      mPlayerDataInterface.pushMessage(std::move(pdm.pack()));
     } else if (id == MessageId::PLAYER_USERNAMES) {
       LobbyDataMessage ldm(packet);
-      mLobbyInterface.pushMessage(ldm.pack());
+      mLobbyInterface.pushMessage(std::move(ldm.pack()));
     } else if (id == MessageId::PLAYABLE_CHARACTERS) {
       PlayableCharactersMessage pcm(packet);
-      mLobbyInterface.pushMessage(pcm.pack());
+      mLobbyInterface.pushMessage(std::move(pcm.pack()));
     } else if (id == MessageId::CHANGE_GAME_STATE) {
       GameStateMessage gsm(packet);
-      mGameStateSubscriber.reverseSendMessage(gsm.pack());
+      mGameStateSubscriber.reverseSendMessage(std::move(gsm.pack()));
     } else if (id == MessageId::ADD_DEBUG_BUTTON) {
       AddDebugButtonMessage adbm(packet);
       AddDebugButtonMessage adbm2(adbm.getSubscriberId(), adbm.getButtonText(), adbm.getCategoryText(), mServerDebugSubscriber.getId());
-      mServerDebugSubscriber.reverseSendMessage(adbm2.pack());
+      mServerDebugSubscriber.reverseSendMessage(std::move(adbm2.pack()));
     } else if (id == MessageId::REMOVE_DEBUG_BUTTON) {
       RemoveDebugButtonMessage rdbm(packet);
-      mServerDebugSubscriber.reverseSendMessage(rdbm.pack());
+      mServerDebugSubscriber.reverseSendMessage(std::move(rdbm.pack()));
     } else if (id == MessageId::SOUND_LIST) {
       SoundMessage sm(packet);
-      mSoundListInterface.pushMessage(sm.pack());
+      mSoundListInterface.pushMessage(std::move(sm.pack()));
     } else if (id == MessageId::SERVER_READY) {
       ServerReadyMessage srm;
-      mServerReadyInterface.pushMessage(srm.pack());
+      mServerReadyInterface.pushMessage(std::move(srm.pack()));
     } else if (id == MessageId::HEARTBEAT) {
       packet << MessageId::HEARTBEAT;
       mHeartbeatClock.restart();
       mSocket->send(packet);
     } else if (id == MessageId::MAP_DATA) {
       MapMessage mm(packet);
-      mLobbyInterface.pushMessage(mm.pack());
+      mLobbyInterface.pushMessage(std::move(mm.pack()));
     } else if (id == MessageId::SCORE_BOARD) {
       ScoreBoardMessage sbm(packet);
-      mScoreBoardInterface.pushMessage(sbm.pack());
+      mScoreBoardInterface.pushMessage(std::move(sbm.pack()));
     }
     else {
       TRACE_ERROR("Packet not known: " << id);

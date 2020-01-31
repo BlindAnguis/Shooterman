@@ -52,7 +52,7 @@ void JoinMenu::onIpTextClicked() {
   }
 
   IpMessage ipm(mIpString, IP_PORT);
-  mIpInterface.pushMessage(ipm.pack());
+  mIpInterface.pushMessage(std::move(ipm.pack()));
 
   GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
   Subscriber gameStateSubscriber;
@@ -68,7 +68,7 @@ void JoinMenu::onJoinClicked() {
   }
 
   IpMessage ipm(mIpText->getText(), IP_PORT);
-  mIpInterface.pushMessage(ipm.pack());
+  mIpInterface.pushMessage(std::move(ipm.pack()));
 
   GameStateMessage gsm(GAME_STATE::CLIENT_LOBBY);
   Subscriber gameStateSubscriber;

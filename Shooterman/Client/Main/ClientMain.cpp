@@ -75,7 +75,7 @@ void ClientMain::run() {
         if (!sentIpMessage) {
           if (ipInterface.getNumberOfSubscribers() > 0) {
             IpMessage ipm(sf::IpAddress::getLocalAddress().toString(), IP_PORT);
-            ipInterface.pushMessage(ipm.pack());
+            ipInterface.pushMessage(std::move(ipm.pack()));
             mMessageHandler->unpublishInterface(Interfaces::CLIENT_IP_LIST);
             sentIpMessage = true;
           }
@@ -134,13 +134,13 @@ void ClientMain::handleChangeGameStateMessage(sf::Packet& message) {
 
   gsm = GameStateMessage(mGameStateStack.top());
   TRACE_INFO(gsm.getGameStateAsString());
-  mGameStateInterface.pushMessage(gsm.pack());
+  mGameStateInterface.pushMessage(std::move(gsm.pack()));
 }
 
 void ClientMain::handleShutdownMessage(sf::Packet& message) {
   sf::Packet packet;
   packet << MessageId::SHUT_DOWN;
-  mSystemMessageInterface.pushMessage(packet);
+  mSystemMessageInterface.pushMessage(std::move(packet));
 
   TRACE_INFO("Shutting down...");
   mRunning = false;

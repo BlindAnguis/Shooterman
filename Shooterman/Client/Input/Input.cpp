@@ -53,7 +53,7 @@ void Input::run() {
       if (mKeyboard->isKeyPressed(KEY::ESC)) {
         GameStateMessage gsm(GAME_STATE::PLAYING);
         TRACE_SEND("New Game State: PLAYING");
-		    mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
+		    mGameStateMessageSubscriber.reverseSendMessage(std::move(gsm.pack()));
         recentlyChangedState = true;
       }
       break;
@@ -83,12 +83,12 @@ void Input::run() {
       }
 
       InputMessage im(keyboardBitmask, mLastMousePosition.x, mLastMousePosition.y);
-      mClientInputInterface.pushMessage(im.pack());
+      mClientInputInterface.pushMessage(std::move(im.pack()));
 
       if (mKeyboard->isKeyPressed(KEY::ESC)) {
         GameStateMessage gsm(GAME_STATE::PAUSE);
         TRACE_SEND("New Game State: PAUSE");
-        mGameStateMessageSubscriber.reverseSendMessage(gsm.pack());
+        mGameStateMessageSubscriber.reverseSendMessage(std::move(gsm.pack()));
         recentlyChangedState = true;
       }
       break;

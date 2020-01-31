@@ -32,7 +32,7 @@ void HealthSystem::changeHealth(int entityId, int addedHealthEffect, int damager
         health->currentHealth = 0;
         SoundMessage sm;
         sm.addSound(Sounds::Death);
-        mSoundSubscriber.reverseSendMessage(sm.pack());
+        mSoundSubscriber.reverseSendMessage(std::move(sm.pack()));
 
         DeathMessage dm(entityId, damagerEntityId);
         mDeathInterface.pushMessage(dm.pack());
@@ -41,7 +41,7 @@ void HealthSystem::changeHealth(int entityId, int addedHealthEffect, int damager
       if (player && addedHealthEffect < 0 && health->isAlive) {
         SoundMessage sm;
         sm.addSound(Sounds::Hit1);
-        mSoundSubscriber.reverseSendMessage(sm.pack());
+        mSoundSubscriber.reverseSendMessage(std::move(sm.pack()));
       }
     }
   } else {
