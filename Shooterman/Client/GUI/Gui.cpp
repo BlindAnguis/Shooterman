@@ -124,7 +124,11 @@ void Gui::handleWindowEvents() {
       mMessageHandler->unsubscribeTo(Interfaces::CLIENT_SYSTEM_MESSAGE, &s);
     }
     if (event.type == sf::Event::MouseMoved) {
-      MouseMessage mm(sf::Mouse::getPosition(*mWindow));
+      sf::Vector2f offset = (sf::Vector2f)mWindow->getSize() - sf::Vector2f(1024, 1024);
+      offset.x /= 2;
+      offset.y /= 2;
+      auto res = (sf::Vector2f)sf::Mouse::getPosition(*mWindow) - offset;
+      MouseMessage mm((sf::Vector2i)res);
       mMouseInterface.pushMessage(mm.pack());
     }
     if (event.type == sf::Event::Resized) {
